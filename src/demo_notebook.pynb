@@ -1,0 +1,14 @@
+# Demo notebook illustrating basic FeedbackProcessor usage
+from feedback_processor import FeedbackProcessor
+
+# Example goal function
+def goal_fn(x):
+    return x * 2
+
+# Example adjustment function
+def adjust_fn(feedback):
+    print('Adjusting based on feedback:', feedback)
+
+fp = FeedbackProcessor(goal_fn, adjust_fn)
+output = fp.step(5)
+print('Output:', output)
