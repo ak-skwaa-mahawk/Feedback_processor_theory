@@ -1,23 +1,28 @@
+"""
+Feedback Processor Model – Core Loop
+Author: John Carroll / Two Mile Solutions LLC
+License: Transparent Use Only (see README)
+"""
+
+import hashlib, json, time
+
 class FeedbackProcessor:
-    """
-    Feedback Processor (FPM) - A general adaptive system loop
-    Author: John Carroll, Two Mile Solutions LLC
-    """
+    def __init__(self, seed="love"):
+        self.state = {"root": 3.173, "null": seed, "history": []}
 
-    def __init__(self, goal_fn, adjust_fn):
-        """
-        goal_fn: function mapping input -> output
-        adjust_fn: function taking feedback and updating system
-        """
-        self.goal_fn = goal_fn
-        self.adjust_fn = adjust_fn
+    def observe(self, input_signal):
+        """Apply recursive correction to incoming signal."""
+        correction = round(self.state["root"] + 0.001 * len(str(input_signal)), 6)
+        digest = hashlib.sha256(str(input_signal).encode()).hexdigest()
+        entry = {"timestamp": time.time(), "input": input_signal, "digest": digest, "correction": correction}
+        self.state["history"].append(entry)
+        return entry
 
-    def step(self, input_data):
-        output = self.goal_fn(input_data)
-        feedback = self.observe(output)
-        self.adjust_fn(feedback)
-        return output
+    def verify(self, entry):
+        """Verify integrity of a feedback record."""
+        return hashlib.sha256(str(entry["input"]).encode()).hexdigest() == entry["digest"]
 
-    def observe(self, output):
-        # Example observation mechanism
-        return {"quality": self.goal_fn.__name__, "value": output}
+    def export(self, path="feedback_log.json"):
+        with open(path, "w") as f:
+            json.dump(self.state, f, indent=2)
+        return path
