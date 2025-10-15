@@ -1,3 +1,5 @@
+# Overview
+Detailed description of the Feedback Processor Theory and its implications across domains.
 # Feedback Processor Overview
 The Feedback Processor unifies language, physics, and consciousness models through measurable feedback.  
 It operates as:
