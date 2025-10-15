@@ -1,3 +1,4 @@
+echo "Synara-Mission-Mode/" >> .gitignore
 # Python
 __pycache__/
 *.pyc
