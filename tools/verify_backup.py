@@ -81,3 +81,7 @@ if __name__ == "__main__":
     print(json.dumps(report, indent=2))
     if report.get("status") == "FAIL":
         sys.exit(1)
+# Add to expected_hashes
+expected_hashes = {
+    "flame_anchor_protocol.md": hashlib.sha256(b"[Your manifest text]").hexdigest()  # Compute locally
+}
