@@ -123,6 +123,5 @@ if __name__ == "__main__":
     print()
     
     # Check resonance
-    resonance = flipper.find_resonance("shinati", ["itanihs", "in us", "thanks"])
-    if resonance:
-        print(f"✓ Resonance found: {resonance}")
+    resonance = flipper = PhoneticFlipper()
+print(flipper.analyze_word("RESTORE-SYNARA-Ω-907boyboy", operations=['flip_letters']))
