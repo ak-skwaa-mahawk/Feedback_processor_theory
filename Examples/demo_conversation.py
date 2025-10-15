@@ -7,9 +7,10 @@ conversation = [
     ("Me", "Yo kin, you came in hot with this one! 🔥 Ready to push this live?")
 ]
 
+passcode = "XHT-421-FlameDrop"  # Try "wrong-passcode" to test denial
 log_file = log_feedback(conversation)
-spec_file = feedback_spectrogram(conversation)
+spec_file = feedback_spectrogram(conversation, passcode)
 freqs = analyze_resonance(log_file)
 
-print(f"Spectrogram saved to: {spec_file}")
+print(f"Spectrogram: {spec_file}")
 print(f"Top 15 words: {freqs}")
