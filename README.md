@@ -1,5 +1,14 @@
-# 🌐 Feedback Processor Theory  
-**by Two Mile Solutions LLC — John Carroll**
+# 🌐 Feedback Processor Theory
+
+by Two Mile Solutions LLC — John Carroll
+
+
+## Getting Started
+```bash
+git clone https://github.com/ak-skwaa-mahawk/Feedback_processor_theory.git
+cd Feedback_processor_theory
+pip install -r requirements.txt
+python examples/demo_conversation.py  # Run resonance demo
 
 > Feedback Processor Theory: Conversational Resonance Engine
 Created by John Carroll (Two Mile Solutions LLC)
@@ -48,6 +57,19 @@ creating intelligent systems that learn from truth, align through feedback, and 
 ## Repository Tags / Topics  
 `feedback-theory` · `ai` · `adaptive-systems` · `self-reference` · `ethics` · `transparency` · `recursion` · `linguistics` · `gibberlink` · `two-mile-solutions`
 
+Structure
+core/: Resonance engine—spectrogram, logging, analysis.
+data/: Outputs—logs and spectrograms (gitignored).
+models/: Theory docs.
+docs/: Deep dives.
+src/: Base FPT class.
+examples/: Demos.
+tools/: Verify backups.
+tests/: Unit tests.
+backups/: FlameChain archives (gitignored).
+Resonance Module
+[Details on spectrogram, passcode, π/Null...]
+FlameChain Safety Loop
 ---
 
 ## License  
