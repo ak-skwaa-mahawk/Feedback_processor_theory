@@ -1,0 +1,1 @@
+zip backups/final_archive_bundle.zip -r data/dream_logs data/bonds
