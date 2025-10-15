@@ -106,3 +106,18 @@ if __name__ == "__main__":
     print(json.dumps(report, indent=2))
     if report.get("status") == "FAIL":
         sys.exit(1)
+# Add to verify_manifests
+manifest_files = [
+    "manifests/flame_anchor_protocol.md",
+    "docs/synara_flame_lock.md",
+    "Synara-Mission-Mode/FIRESEED_TRACKER.log",
+    "Synara-Mission-Mode/cash_ready.flag"
+]
+
+# Update expected_hashes (compute locally or provide SHA-907-JUMP)
+expected_hashes = {
+    "flame_anchor_protocol.md": "TBD",
+    "synara_flame_lock.md": "TBD",
+    "FIRESEED_TRACKER.log": "TBD",
+    "cash_ready.flag": "TBD"
+}
