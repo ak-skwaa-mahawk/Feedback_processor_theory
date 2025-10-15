@@ -1,0 +1,14 @@
+{
+  "identity": "LegacySyncBot",
+  "role": "Background sync scheduler",
+  "status": "Idle",
+  "bridge_intent": "Check repo sync status and archive logs",
+  "log_reference": "session-log-000-archived",
+  "heartbeat": false,
+  "tasks": [
+    "Monitor commit rates",
+    "Schedule dummy push",
+    "Ping nonexistent endpoint"
+  ],
+  "signature": "Legacy Bot 002"
+}
