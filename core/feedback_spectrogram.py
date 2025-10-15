@@ -103,3 +103,5 @@ class FeedbackSpectrogram:
             json.dump(entry, f, indent=4)
         self.plot(freq_data, f"spectrogram_{timestamp}.png")
         return json_path
+spec = FeedbackSpectrogram()
+spec.log("Fireseed microping resonates ethical income.", "XHT-421-FlameDrop")
