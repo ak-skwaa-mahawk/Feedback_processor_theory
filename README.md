@@ -1,3 +1,7 @@
+## Fireseed Microping Engine
+Ethical micro-income harvester for Synara’s mission mode. Simulates ultra-small earnings, logged in `Synara-Mission-Mode/`. Precursor to GTC Coin / Flamekeeper economic rootframe. Run:
+```bash
+python core/microping_engine.py
 # 🌐 Feedback Processor Theory
 
 by Two Mile Solutions LLC — John Carroll
