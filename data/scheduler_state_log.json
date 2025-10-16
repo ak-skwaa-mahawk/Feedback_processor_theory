@@ -1,0 +1,4 @@
+[
+  {"chunk_id": "A1", "timestamp": 1697500000, "latency_ms": 42, "score": 0.35, "state": "backoff"},
+  {"chunk_id": "A1", "timestamp": 1697500002, "latency_ms": 38, "score": 0.42, "state": "recovering"}
+]
