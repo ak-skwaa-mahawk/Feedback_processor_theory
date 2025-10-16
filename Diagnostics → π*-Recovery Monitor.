@@ -6,22 +6,20 @@ import numpy as np
 import plotly.graph_objs as go
 import time, json, os
 
-# --- Theoretical constants ---
+# --- Constants ---
 PI_STAR = np.pi ** 0.5
 TARGET_RECOVERY = 1.0
 INITIAL_SUPPRESSION = 0.2
-
-# --- Initialize app ---
-app = dash.Dash(__name__)
-
-# Path to live scheduler log file (auto-updating JSON or CSV)
 LOG_PATH = "data/scheduler_state_log.json"
 
-# --- Recovery curve model ---
+# --- Dash init ---
+app = dash.Dash(__name__)
+
+# --- π*-Recovery model ---
 def compute_pi_star_recovery(t, decay_rate):
     return TARGET_RECOVERY - (TARGET_RECOVERY - INITIAL_SUPPRESSION) * np.exp(-decay_rate * np.sqrt(PI_STAR) * t)
 
-# --- Read live data ---
+# --- Read live scheduler data ---
 def load_scheduler_data():
     if not os.path.exists(LOG_PATH):
         return pd.DataFrame(columns=["chunk_id", "timestamp", "latency_ms", "score", "state"])
@@ -29,69 +27,89 @@ def load_scheduler_data():
         data = json.load(f)
     return pd.DataFrame(data)
 
-# --- App layout ---
-app.layout = html.Div(
-    [
-        html.H2("Synara π*-Damped Recovery Curve (Live Chunk View)"),
-        dcc.Dropdown(id='chunk-select', placeholder='Select Chunk ID', style={'width': '60%'}),
-        dcc.Graph(id='recovery-graph'),
-        dcc.Slider(id='decay-slider', min=0.05, max=0.3, step=0.01, value=0.12,
-                   marks={0.05:'0.05', 0.15:'0.15', 0.25:'0.25', 0.3:'0.3'}),
-        dcc.Interval(id='refresh-interval', interval=4000, n_intervals=0)  # refresh every 4s
-    ]
-)
+# --- Stability state based on deviation ratio ---
+def classify_stability(deviation):
+    if deviation < 0.05:
+        return "Stable 🟢"
+    elif deviation < 0.15:
+        return "Adjusting 🟠"
+    else:
+        return "Unstable 🔴"
 
-# --- Populate chunk list dynamically ---
+# --- App layout ---
+app.layout = html.Div([
+    html.H2("Synara π*-Damped Recovery Stability Monitor"),
+    
+    dcc.Dropdown(id='chunk-select', placeholder='Select Chunk ID', style={'width': '60%', 'marginBottom': '15px'}),
+    
+    html.Div(id='stability-status', style={'fontSize': '22px', 'marginBottom': '10px', 'fontWeight': 'bold'}),
+    
+    dcc.Graph(id='recovery-graph'),
+    
+    dcc.Slider(
+        id='decay-slider', min=0.05, max=0.3, step=0.01, value=0.12,
+        marks={0.05:'0.05', 0.15:'0.15', 0.25:'0.25', 0.3:'0.3'},
+        tooltip={"placement": "bottom", "always_visible": True}
+    ),
+    
+    dcc.Interval(id='refresh-interval', interval=4000, n_intervals=0)
+], style={'backgroundColor': '#111', 'color': 'white', 'padding': '20px'})
+
+# --- Populate chunk list ---
 @app.callback(Output('chunk-select', 'options'), Input('refresh-interval', 'n_intervals'))
 def update_chunk_list(_):
     df = load_scheduler_data()
     chunks = df['chunk_id'].unique()
     return [{'label': cid, 'value': cid} for cid in chunks]
 
-# --- Main graph update ---
+# --- Main graph and stability update ---
 @app.callback(
-    Output('recovery-graph', 'figure'),
+    [Output('recovery-graph', 'figure'),
+     Output('stability-status', 'children')],
     [Input('chunk-select', 'value'),
      Input('decay-slider', 'value'),
      Input('refresh-interval', 'n_intervals')]
 )
 def update_graph(chunk_id, decay_rate, _):
     if not chunk_id:
-        return go.Figure()
-    
+        return go.Figure(), "Select a chunk to monitor."
+
     df = load_scheduler_data()
     df_chunk = df[df['chunk_id'] == chunk_id].sort_values('timestamp')
 
     if df_chunk.empty:
-        return go.Figure()
+        return go.Figure(), "Awaiting live data..."
 
-    # Normalize timestamps
     t = np.linspace(0, len(df_chunk), len(df_chunk))
     theoretical = compute_pi_star_recovery(t, decay_rate)
 
+    actual = df_chunk['score'].values
+    actual = actual[:len(theoretical)]  # sync lengths
+    deviation = np.mean(np.abs(actual - theoretical))
+    stability_state = classify_stability(deviation)
+
     fig = go.Figure()
 
-    # Plot theoretical π*-recovery curve
     fig.add_trace(go.Scatter(
-        x=t, y=theoretical, mode='lines',
-        name='π*-Damped Recovery (Model)', line=dict(width=3, dash='dash')
+        x=t, y=theoretical, mode='lines', name='π*-Damped Model',
+        line=dict(width=3, dash='dash', color='lightblue')
     ))
 
-    # Plot actual recovery data
     fig.add_trace(go.Scatter(
-        x=t, y=df_chunk['score'], mode='lines+markers',
-        name='Live Scheduler Data', line=dict(width=2)
+        x=t, y=actual, mode='lines+markers', name='Live Data',
+        line=dict(width=2, color='orange')
     ))
 
     fig.update_layout(
         template='plotly_dark',
-        title=f'Chunk {chunk_id} Recovery Dynamics',
+        title=f'Chunk {chunk_id} | Stability: {stability_state}',
         xaxis_title='Time Steps',
         yaxis_title='Priority Score',
-        yaxis=dict(range=[0, 1.1])
+        yaxis=dict(range=[0, 1.1]),
+        margin=dict(l=40, r=40, t=80, b=40)
     )
 
-    return fig
+    return fig, f"Current Stability: {stability_state} (Deviation = {deviation:.3f})"
 
 
 if __name__ == '__main__':
