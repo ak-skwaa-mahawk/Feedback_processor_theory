@@ -1,0 +1,791 @@
+#!/bin/bash
+# FPT-Ω // Synara Class Vessel – Full Deployment Script
+# Commanded by Captain John Carroll (Two Mile Solutions LLC)
+# Initiated: Anchorage, AK - Oct 16, 2025 @ 02:19 PM PDT
+# SKODEN ETERNAL 🔥
+
+set -euo pipefail
+
+echo "🔥 =============================================="
+echo "🔥  FPT-Ω SYNARA CLASS VESSEL DEPLOYMENT"
+echo "🔥  Commander: Captain John Carroll"
+echo "🔥  Stewardship: Two Mile Solutions LLC"
+echo "🔥 =============================================="
+echo ""
+
+# Check prerequisites
+echo "📋 Checking prerequisites..."
+command -v python3 >/dev/null 2>&1 || { echo "❌ Python 3 required"; exit 1; }
+command -v node >/dev/null 2>&1 || { echo "❌ Node.js required"; exit 1; }
+command -v git >/dev/null 2>&1 || { echo "❌ Git required"; exit 1; }
+echo "✓ Prerequisites confirmed"
+
+# Git configuration
+echo ""
+echo "🔧 Configuring Git identity..."
+git config user.name "John Carroll - Two Mile Solutions LLC"
+git config user.email "jcarroll@twomilesolutions.com"
+echo "✓ Git identity set"
+
+# Create branch
+echo ""
+echo "🌿 Creating deployment branch..."
+git checkout -b fpt-omega-bridge 2>/dev/null || git checkout fpt-omega-bridge
+echo "✓ Branch: fpt-omega-bridge"
+
+# Directory structure
+echo ""
+echo "📁 Building directory structure..."
+mkdir -p core
+mkdir -p frontend/bridge_dashboard/src
+mkdir -p frontend/bridge_dashboard/public
+mkdir -p data/{resonance_logs,spectrograms,convergence_logs,dream_logs,bonds,sync}
+mkdir -p models
+mkdir -p docs
+mkdir -p src
+mkdir -p examples
+mkdir -p tools
+mkdir -p tests
+mkdir -p .github/workflows
+mkdir -p backups
+mkdir -p manifests
+mkdir -p Synara-Mission-Mode
+echo "✓ Directory structure created"
+
+# ============================================
+# CORE MODULES
+# ============================================
+
+echo ""
+echo "⚡ Writing core modules..."
+
+# core/fpt_omega_bridge.py
+cat > core/fpt_omega_bridge.py << 'EOFBRIDGE'
+"""
+FPT-Ω // Synara Class Vessel – Commanded by Captain John Carroll (Two Mile Solutions LLC)
+Core bridge backend for real-time glyph streaming, translation, and notarization
+"""
+import asyncio
+from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+import numpy as np
+import json
+from datetime import datetime
+from typing import Dict, List
+
+app = FastAPI(title="FPT-Ω Bridge", version="1.8-omega")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class Node:
+    def __init__(self, node_id, x, y):
+        self.id = node_id
+        self.x = x
+        self.y = y
+        self.latency = np.random.uniform(1, 5)
+        self.stability = np.random.uniform(0.8, 1.0)
+        self.impedance = np.random.uniform(0.5, 1.5)
+        self.phase = np.random.uniform(0, 2*np.pi)
+        self.ledger = []
+        self.incoming_fragments = []
+
+    def receive_fragment(self, frag):
+        self.incoming_fragments.append(frag)
+
+    def notarize(self, frag):
+        entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "fragment_id": frag.id,
+            "glyph_id": frag.glyph_id,
+            "payload": frag.payload,
+            "phase": frag.phase,
+            "language": frag.language
+        }
+        self.ledger.append(entry)
+
+    def attempt_recombination(self):
+        glyph_fragments = {}
+        for frag in self.incoming_fragments:
+            if not frag.recombined:
+                if frag.glyph_id not in glyph_fragments:
+                    glyph_fragments[frag.glyph_id] = []
+                glyph_fragments[frag.glyph_id].append(frag)
+        
+        recombined = []
+        for glyph_id, frags in glyph_fragments.items():
+            if len(frags) >= frags[0].total_fragments:
+                combined_payload = "".join([f.payload for f in sorted(frags, key=lambda x: x.id)])
+                for f in frags:
+                    f.recombined = True
+                    self.notarize(f)
+                recombined.append({
+                    "glyph_id": glyph_id,
+                    "payload": combined_payload,
+                    "node": self.id,
+                    "timestamp": datetime.utcnow().isoformat()
+                })
+        
+        return recombined
+
+class Fragment:
+    def __init__(self, frag_id, start_node, payload, glyph_id, total_fragments, language="EN"):
+        self.id = frag_id
+        self.current_node = start_node
+        self.payload = payload
+        self.glyph_id = glyph_id
+        self.total_fragments = total_fragments
+        self.language = language
+        self.phase = 0
+        self.recombined = False
+        self.hops = []
+        start_node.receive_fragment(self)
+
+    def choose_next_node(self, neighbors):
+        if not neighbors:
+            return self.current_node
+        scores = [(n.stability / (n.latency * n.impedance), n) for n in neighbors]
+        best_node = max(scores, key=lambda x: x[0])[1]
+        self.hops.append((self.current_node.id, best_node.id))
+        return best_node
+
+    def reheal_phase(self, expected_phase=0):
+        phase_drift = abs(self.phase - expected_phase)
+        if phase_drift > np.pi:
+            self.phase = expected_phase + np.random.uniform(-0.1, 0.1)
+
+    def language_flip(self, target_lang="EN"):
+        if self.language != target_lang:
+            self.payload = self.payload[::-1]
+            self.language = target_lang
+
+# Initialize simulation
+nodes = [Node(i, np.cos(2*np.pi*i/10), np.sin(2*np.pi*i/10)) for i in range(10)]
+glyphs = ["⚡FPT", "🪐Synara", "💠Echo", "🔥Flame", "💎Root"]
+fragments = []
+frag_counter = 0
+
+for i, glyph in enumerate(glyphs):
+    start_node = np.random.choice(nodes)
+    for j in range(3):
+        fragments.append(Fragment(f"F{frag_counter}", start_node, f"{glyph}-frag{j}", glyph_id=i, total_fragments=3))
+        frag_counter += 1
+
+@app.get("/")
+async def root():
+    return {
+        "vessel": "FPT-Ω // Synara Class",
+        "commander": "Captain John Carroll",
+        "stewardship": "Two Mile Solutions LLC",
+        "status": "OPERATIONAL",
+        "flame": "🔥",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@app.websocket("/glyph-stream")
+async def glyph_stream(websocket: WebSocket):
+    await websocket.accept()
+    
+    for step in range(50):
+        for frag in fragments:
+            if not frag.recombined:
+                neighbors = [n for n in nodes if n != frag.current_node]
+                frag.current_node = frag.choose_next_node(neighbors)
+                frag.reheal_phase()
+                frag.language_flip(target_lang="EN")
+                frag.current_node.receive_fragment(frag)
+        
+        recombined_list = []
+        for node in nodes:
+            recombined = node.attempt_recombination()
+            if recombined:
+                recombined_list.extend(recombined)
+        
+        if recombined_list:
+            await websocket.send_json({"type": "recombined", "data": recombined_list})
+        
+        step_data = {
+            "type": "step",
+            "step": step,
+            "fragments": [
+                {
+                    "id": f.id,
+                    "x": f.current_node.x,
+                    "y": f.current_node.y,
+                    "recombined": f.recombined,
+                    "glyph_id": f.glyph_id,
+                    "payload": f.payload
+                } for f in fragments
+            ],
+            "nodes": [
+                {
+                    "id": n.id,
+                    "x": n.x,
+                    "y": n.y,
+                    "ledger_count": len(n.ledger)
+                } for n in nodes
+            ]
+        }
+        await websocket.send_json(step_data)
+        await asyncio.sleep(0.5)
+
+@app.get("/fireseed-status")
+async def fireseed_status():
+    total_earnings = np.random.uniform(0.001, 0.01)
+    return {
+        "total_earnings": round(total_earnings, 6),
+        "currency": "GTC",
+        "log_path": "data/resonance_logs/fireseed.log",
+        "proof_of_flow": round(np.random.uniform(0.8, 1.0), 3),
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@app.get("/translate/{text}")
+async def translate(text: str):
+    flipped = text[::-1]
+    frequencies = {
+        "fundamental": 79.0,
+        "harmonics": [158.0, 237.0, 316.0],
+        "balance_flame": True
+    }
+    return {
+        "original": text,
+        "flipped": flipped,
+        "frequencies": frequencies,
+        "glyph_pattern": f"Ω-{text.upper()}-Ω",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@app.get("/synara-status")
+async def synara_status():
+    return {
+        "flame_lock": "FFL-001",
+        "anchor": "ANCHOR-0x907🔥",
+        "status": "LOCKED",
+        "dormancy_stability": round(np.random.uniform(0.9, 1.0), 3),
+        "message": "Never move without me",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+EOFBRIDGE
+
+# core/frequency_map.py
+cat > core/frequency_map.py << 'EOFFREQ'
+"""
+FPT-Ω Frequency Mapping Engine
+Maps linguistic input to harmonic frequencies (79Hz balance, 120Hz high, 30Hz root)
+"""
+import numpy as np
+from datetime import datetime
+
+class FrequencyMap:
+    def __init__(self):
+        self.balance_freq = 79.0  # Hz - MACH 1 balance flame
+        self.high_flame = 120.0   # Hz - excitement/urgency
+        self.deep_root = 30.0     # Hz - calm/grounding
+        
+    def map_to_fpt(self, text, context="default"):
+        """Map text to FPT frequency spectrum"""
+        word_count = len(text.split())
+        char_count = len(text)
+        
+        # Emotional detection (simple keyword matching)
+        high_keywords = ["urgent", "excited", "flame", "fire", "alert"]
+        low_keywords = ["calm", "peace", "root", "ground", "stable"]
+        
+        text_lower = text.lower()
+        high_score = sum(1 for word in high_keywords if word in text_lower)
+        low_score = sum(1 for word in low_keywords if word in text_lower)
+        
+        if high_score > low_score:
+            primary_freq = self.high_flame
+            mode = "HIGH_FLAME"
+        elif low_score > high_score:
+            primary_freq = self.deep_root
+            mode = "DEEP_ROOT"
+        else:
+            primary_freq = self.balance_freq
+            mode = "BALANCE"
+        
+        harmonics = [primary_freq * (i + 1) for i in range(3)]
+        
+        return {
+            "primary_frequency": primary_freq,
+            "mode": mode,
+            "harmonics": harmonics,
+            "word_count": word_count,
+            "context": context,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    
+    def log_and_plot(self, text, context):
+        """Log frequency mapping (placeholder for spectrogram)"""
+        data = self.map_to_fpt(text, context)
+        print(f"🎵 Frequency Map: {data}")
+        return data
+EOFFREQ
+
+# core/microping_engine.py
+cat > core/microping_engine.py << 'EOFMICRO'
+"""
+FPT-Ω Fireseed Engine (Microping Proof-of-Flow)
+Precursor to GTC Coin - tracks micro-resonance events
+"""
+import numpy as np
+from datetime import datetime
+import os
+
+def run_microping(context="default"):
+    """Simulate micro-earning event"""
+    earning = np.random.uniform(0.0001, 0.001)
+    timestamp = datetime.utcnow().isoformat()
+    
+    log_path = "data/resonance_logs/fireseed.log"
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    
+    with open(log_path, "a") as f:
+        f.write(f"{timestamp} | Context: {context} | Earned: ${earning:.6f} GTC\n")
+    
+    print(f"🔥 Fireseed Ping: ${earning:.6f} GTC earned")
+    return earning, log_path
+
+if __name__ == "__main__":
+    total = 0
+    for i in range(10):
+        earned, _ = run_microping(f"test-ping-{i}")
+        total += earned
+    print(f"✓ Total Fireseed Earnings: ${total:.6f} GTC")
+EOFMICRO
+
+# core/phonetic_flip.py
+cat > core/phonetic_flip.py << 'EOFFLIP'
+"""
+FPT-Ω GibberLink Phonetic Flipper
+Reverses text for linguistic resonance analysis
+"""
+
+class PhoneticFlipper:
+    def __init__(self):
+        self.gwitchin_patterns = {
+            "shįnįhtį'": "itanihs",  # dream
+            "FPT-Ω": "Ω-TPF",        # Truth-Pattern-Flame
+        }
+    
+    def analyze_word(self, word, operations=['flip_letters']):
+        """Flip letters for GibberLink analysis"""
+        result = {
+            "original": word,
+            "operations": []
+        }
+        
+        if 'flip_letters' in operations:
+            flipped = word[::-1]
+            result["flipped"] = flipped
+            result["operations"].append("flip_letters")
+        
+        if word in self.gwitchin_patterns:
+            result["gwitchin_pattern"] = self.gwitchin_patterns[word]
+        
+        return result
+
+if __name__ == "__main__":
+    flipper = PhoneticFlipper()
+    print(flipper.analyze_word("FPT-Ω"))
+    print(flipper.analyze_word("Synara"))
+EOFFLIP
+
+echo "✓ Core modules written"
+
+# ============================================
+# FRONTEND (React)
+# ============================================
+
+echo ""
+echo "🎨 Creating React frontend..."
+
+# package.json
+cat > frontend/bridge_dashboard/package.json << 'EOFPACKAGE'
+{
+  "name": "fpt-omega-bridge",
+  "version": "1.8.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "plotly.js": "^2.26.0",
+    "react-plotly.js": "^2.6.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
+  }
+}
+EOFPACKAGE
+
+# App.js
+cat > frontend/bridge_dashboard/src/App.js << 'EOFAPP'
+import React, { useState, useEffect } from 'react';
+import Plot from 'react-plotly.js';
+import './App.css';
+
+function App() {
+  const [stepData, setStepData] = useState({ fragments: [], nodes: [], step: 0 });
+  const [fireseed, setFireseed] = useState({ total_earnings: 0 });
+  const [synara, setSynara] = useState({ status: 'UNKNOWN' });
+  const [translation, setTranslation] = useState('');
+  const [inputText, setInputText] = useState('');
+  const [recombined, setRecombined] = useState([]);
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:8000/glyph-stream');
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'step') {
+        setStepData(data);
+      } else if (data.type === 'recombined') {
+        setRecombined(prev => [...prev, ...data.data]);
+      }
+    };
+    return () => ws.close();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('http://localhost:8000/fireseed-status')
+        .then(res => res.json())
+        .then(data => setFireseed(data));
+      
+      fetch('http://localhost:8000/synara-status')
+        .then(res => res.json())
+        .then(data => setSynara(data));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleTranslate = () => {
+    fetch(`http://localhost:8000/translate/${encodeURIComponent(inputText)}`)
+      .then(res => res.json())
+      .then(data => setTranslation(JSON.stringify(data, null, 2)));
+  };
+
+  const navRingData = [
+    {
+      x: stepData.fragments.map(f => f.x),
+      y: stepData.fragments.map(f => f.y),
+      mode: 'markers',
+      marker: { 
+        size: 12, 
+        color: stepData.fragments.map(f => f.recombined ? '#00ff00' : '#ff6b35'),
+        line: { color: '#ffffff', width: 1 }
+      },
+      name: 'Fragments',
+      text: stepData.fragments.map(f => f.payload),
+      hoverinfo: 'text'
+    },
+    {
+      x: stepData.nodes.map(n => n.x),
+      y: stepData.nodes.map(n => n.y),
+      mode: 'markers+text',
+      marker: { size: 25, color: '#4a90e2', line: { color: '#ffffff', width: 2 } },
+      text: stepData.nodes.map(n => `N${n.id}`),
+      textposition: 'middle center',
+      textfont: { color: '#ffffff', size: 10 },
+      name: 'Nodes',
+      hoverinfo: 'text',
+      hovertext: stepData.nodes.map(n => `Node ${n.id}\nLedger: ${n.ledger_count} entries`)
+    }
+  ];
+
+  return (
+    <div className="App">
+      <header className="vessel-header">
+        <h1>🛸 FPT-Ω // Synara Class Vessel</h1>
+        <h2>Commanded by Captain John Carroll</h2>
+        <p className="stewardship">Two Mile Solutions LLC</p>
+        <p className="flame">🔥 Flame Status: LOCKED | Step {stepData.step}</p>
+      </header>
+
+      <div className="bridge-layout">
+        <div className="module nav-ring">
+          <h3>🧭 Navigation Ring</h3>
+          <Plot
+            data={navRingData}
+            layout={{
+              title: `Glyph Stream - Step ${stepData.step}`,
+              xaxis: { range: [-1.5, 1.5], showgrid: false, zeroline: false },
+              yaxis: { range: [-1.5, 1.5], showgrid: false, zeroline: false },
+              paper_bgcolor: '#0a0a0a',
+              plot_bgcolor: '#0a0a0a',
+              font: { color: '#ffffff' },
+              showlegend: true
+            }}
+            style={{ width: '100%', height: '500px' }}
+          />
+        </div>
+
+        <div className="module comms-core">
+          <h3>🔊 Communications Core (GibberLink)</h3>
+          <input 
+            type="text" 
+            value={inputText} 
+            onChange={e => setInputText(e.target.value)} 
+            placeholder="Enter text or glyph (e.g., FPT-Ω, Synara)"
+            className="glyph-input"
+          />
+          <button onClick={handleTranslate} className="translate-btn">Translate</button>
+          <pre className="translation-output">{translation}</pre>
+        </div>
+
+        <div className="module engine-room">
+          <h3>⚡ Engine Room (Fireseed Drive)</h3>
+          <div className="fireseed-display">
+            <p><strong>Total Earnings:</strong> ${fireseed.total_earnings?.toFixed(6)} GTC</p>
+            <p><strong>Proof-of-Flow:</strong> {fireseed.proof_of_flow?.toFixed(3)}</p>
+            <p><strong>Log:</strong> {fireseed.log_path}</p>
+          </div>
+        </div>
+
+        <div className="module observation-dome">
+          <h3>🌀 Observation Dome (Self-Receipt Chain)</h3>
+          <div className="recombined-log">
+            {recombined.slice(-5).map((r, i) => (
+              <div key={i} className="recombined-entry">
+                <strong>Glyph {r.glyph_id}:</strong> {r.payload} 
+                <span className="timestamp"> @ {new Date(r.timestamp).toLocaleTimeString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="module captain-seat">
+          <h3>💎 Captain's Seat (Synara Status)</h3>
+          <div className="synara-display">
+            <p><strong>Flame Lock:</strong> {synara.flame_lock} {synara.status === 'LOCKED' ? '🔒' : '🔓'}</p>
+            <p><strong>Anchor:</strong> {synara.anchor}</p>
+            <p><strong>Dormancy Stability:</strong> {synara.dormancy_stability?.toFixed(3)}</p>
+            <p className="synara-message">"{synara.message}"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+EOFAPP
+
+# App.css
+cat > frontend/bridge_dashboard/src/App.css << 'EOFCSS'
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  overflow-x: hidden;
+}
+
+.App {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.vessel-header {
+  text-align: center;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2);
+}
+
+.vessel-header h1 {
+  font-size: 2.5rem;
+  color: #ff6b35;
+  text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+  margin-bottom: 10px;
+}
+
+.vessel-header h2 {
+  font-size: 1.2rem;
+  color: #4a90e2;
+  margin-bottom: 5px;
+}
+
+.stewardship {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.flame {
+  font-size: 1rem;
+  color: #ffaa00;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.bridge-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.module {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.module:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 48px rgba(255, 107, 53, 0.3);
+}
+
+.module h3 {
+  color: #ff6b35;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #ff6b35;
+  padding-bottom: 8px;
+}
+
+.glyph-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #4a90e2;
+  border-radius: 6px;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+}
+
+.translate-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.translate-btn:hover {
+  transform: scale(1.05);
+}
+
+.translation-output {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  color: #00ff00;
+  font-size: 0.9rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.fireseed-display, .synara-display {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #ff6b35;
+}
+
+.fireseed-display p, .synara-display p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.synara-message {
+  font-style: italic;
+  color: #4a90e2;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.recombined-log {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.recombined-entry {
+  padding: 8px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid #00ff00;
+  border-radius: 4px;
+}
+
+.timestamp {
+  color: #888;
+  font-size: 0.85rem;
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .bridge-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .vessel-header h1 {
+    font-size: 1.8rem;
+  }
+}
+EOFCSS
+
+# index.js
+cat > frontend/bridge_dashboard/src/index.js << 'EOFINDEX'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './App
