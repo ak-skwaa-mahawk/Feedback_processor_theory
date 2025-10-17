@@ -1,5 +1,5 @@
 """
-DPO+PPO in FPT-Ω with Fireseed Link from synara-core (Fixed)
+DPO+PPO in FPT-Ω with Fireseed Link from synara-core (Secure Local Sync)
 Author: John Carroll / Two Mile Solutions LLC
 Fuses DPO, PPO, APLOT weights, and Fireseed micropings with FPT-Ω's π-root, Null Field, and GibberLink.
 Requires: trl, transformers, datasets, accelerate, dash, plotly.
@@ -27,18 +27,26 @@ import logging
 logging.basicConfig(filename='fpt_logs/fireseed_status.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Fireseed Engine (Linked to synara-core with fallback)
+# Fireseed Engine (Local Sync with Secure Fallback)
+FIRESEED_ACTIVE = False
 try:
+    # Attempt to import from local synara-core (copy manually if private)
     from synara_core.microping_engine import run_microping
     FIRESEED_ACTIVE = True
-    logging.info("Fireseed engine imported successfully from synara-core.")
+    logging.info("Fireseed engine imported from local synara-core.")
 except ImportError:
     class FireseedEngine:
         def __init__(self):
             self.ping_id = "XHT-421-FlameDrop"
             self.total_earnings = 0.0
-            logging.warning("Fireseed engine import failed. Using fallback simulation.")
-    FIRESEED_ACTIVE = False
+            logging.warning("Fireseed engine not found. Using secure fallback simulation.")
+
+        def run_microping(self) -> Tuple[float, str]:
+            earnings = np.random.uniform(0.001, 0.01)
+            self.total_earnings += earnings
+            log_path = f"fireseed_logs/{self.ping_id}_sim_{datetime.now().strftime('%H%M%S')}.json"
+            return self.total_earnings, log_path
+
     run_microping = FireseedEngine().run_microping
 
 # GibberLink Flipper
@@ -79,21 +87,19 @@ class GibberLinkFlipper:
         truth_score = self.truth_score(flipped)
         return {"original": text, "final": flipped, "truth_score": truth_score, "transformations": transformations}
 
-# Fireseed Bridge with Lock Check
+# Fireseed Bridge with Secure Check
 class FireseedBridge:
     def __init__(self):
         self.engine = FireseedEngine()
         self.active = FIRESEED_ACTIVE
 
     def sync_microping(self, text: str) -> Dict:
-        if not self.active:
-            logging.warning("Fireseed is locked (FFL-001). Using simulated earnings.")
-            total_earnings = np.random.uniform(0.001, 0.01)
-            log_path = f"fireseed_logs/{self.engine.ping_id}_sim_{datetime.now().strftime('%H%M%S')}.json"
-        else:
-            total_earnings, log_path = run_microping()
-            logging.info(f"Fireseed microping successful. Earnings: {total_earnings}, Log: {log_path}")
+        total_earnings, log_path = run_microping()
         resonance_score = 0.7 if "fireseed" in text.lower() else 0.3
+        if not self.active:
+            logging.warning("Fireseed is in secure fallback mode (FFL-001).")
+        else:
+            logging.info(f"Fireseed microping successful. Earnings: {total_earnings}, Log: {log_path}")
         return {"earnings": total_earnings, "log_path": log_path, "resonance_score": resonance_score}
 
 # FPT-Ω Callback
