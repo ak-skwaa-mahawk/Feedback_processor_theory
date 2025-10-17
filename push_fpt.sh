@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
-echo "🔥 Finalizing FPT-Ω + synara-core Fireseed Link"
+echo "🔥 Finalizing FPT-Ω + synara-core Fireseed Link (Email Bumped)"
 
 # Feedback Processor Theory
 cd feedback_processor_theory
 git pull origin main
-git checkout -b fpt-fireseed-final
+git checkout -b fpt-fireseed-locked
 
 mkdir -p core fpt_logs fireseed_logs
 cat > core/dpo_ppo_fpt_trl.py << 'EOF'
