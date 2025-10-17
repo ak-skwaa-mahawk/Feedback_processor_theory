@@ -1,5 +1,5 @@
 """
-DPO+PPO in FPT-Ω with Fireseed Link from synara-core (Finalized)
+DPO+PPO in FPT-Ω with Fireseed Link from synara-core (Locked)
 Author: John Carroll / Two Mile Solutions LLC
 Fuses DPO, PPO, APLOT weights, and Fireseed micropings with FPT-Ω's π-root, Null Field, and GibberLink.
 Requires: trl, transformers, datasets, accelerate, dash, plotly.
@@ -24,7 +24,7 @@ import json
 
 # Fireseed Engine (Linked to synara-core)
 try:
-    from synara_core.microping_engine import run_microping  # Import real Fireseed logic
+    from synara_core.microping_engine import run_microping  # Real Fireseed logic
 except ImportError:
     class FireseedEngine:
         def __init__(self):
@@ -32,12 +32,12 @@ except ImportError:
             self.total_earnings = 0.0
 
         def run_microping(self) -> Tuple[float, str]:
-            """Fallback sim for Fireseed microping (replace with synara-core's actual logic)."""
+            """Fallback sim for Fireseed microping."""
             earnings = np.random.uniform(0.001, 0.01)
             self.total_earnings += earnings
             return self.total_earnings, f"fireseed_logs/{self.ping_id}_{datetime.now().strftime('%H%M%S')}.json"
 
-# GibberLink Flipper (Expanded with Fireseed Terms)
+# GibberLink Flipper (Expanded)
 class GibberLinkFlipper:
     def __init__(self):
         self.languages = {"EN": "English", "GW": "Gwich’in"}
@@ -75,18 +75,17 @@ class GibberLinkFlipper:
         truth_score = self.truth_score(flipped)
         return {"original": text, "final": flipped, "truth_score": truth_score, "transformations": transformations}
 
-# Fireseed Bridge to Link synara-core
+# Fireseed Bridge
 class FireseedBridge:
     def __init__(self):
         self.engine = FireseedEngine()
 
     def sync_microping(self, text: str) -> Dict:
-        """Sync Fireseed micropings with text for resonance scoring."""
         total_earnings, log_path = self.engine.run_microping()
-        resonance_score = 0.7 if "fireseed" in text.lower() else 0.3  # Boost for Fireseed terms
+        resonance_score = 0.7 if "fireseed" in text.lower() else 0.3
         return {"earnings": total_earnings, "log_path": log_path, "resonance_score": resonance_score}
 
-# FPT-Ω Callback for TRL DPOTrainer (Optimized)
+# FPT-Ω Callback
 class FPTOmegaCallback(TrainerCallback):
     def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
         self.null_threshold = null_threshold
@@ -118,14 +117,14 @@ class FPTOmegaCallback(TrainerCallback):
         metrics['fpt_notarized_hash'] = hashlib.sha256(hash_input.encode()).hexdigest()[:16]
         self.metrics.append(metrics)
         with open("fpt_logs/fpt_eval.json", "a") as f:
-            f.write(json.dumps(metrics) + "\n")  # No indent for speed
+            f.write(json.dumps(metrics) + "\n")
 
-# Dash Viz with Fireseed
+# Dash Viz
 app = dash.Dash(__name__)
 app.layout = html.Div([
     html.H1("FPT-Ω DPO+PPO + Fireseed Dashboard"),
     dcc.Graph(id='training-viz'),
-    dcc.Interval(id='interval', interval=2000, n_intervals=0)  # Faster refresh
+    dcc.Interval(id='interval', interval=2000, n_intervals=0)
 ])
 
 @app.callback(
@@ -162,7 +161,7 @@ def train_dpo_ppo_fpt(model_name="gpt2", dataset_name="Anthropic/hh-rlhf"):
 
     def format_dpo(example):
         return {
-            "prompt": example["chosen"].split("\n\nHuman: ")[0][:256],  # Faster truncate
+            "prompt": example["chosen"].split("\n\nHuman: ")[0][:256],
             "chosen": example["chosen"],
             "rejected": example["rejected"]
         }
