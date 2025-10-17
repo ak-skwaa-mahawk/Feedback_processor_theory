@@ -1,0 +1,20 @@
+def on_evaluate(self, args, state, control, **kwargs):
+    # ... existing code ...
+    flipped = self.flipper.analyze(sample_text)
+    fireseed_data = self.fireseed.sync_microping(sample_text)
+    nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
+    neutro_cost = nt.optimize()
+    metrics.update({
+        'fpt_null_score': null_score,
+        'fpt_gibberlink_flip': flipped['final'],
+        'fpt_truth_score': flipped['truth_score'],
+        'fpt_indeterminacy': flipped['indeterminacy'],
+        'fpt_falsehood': flipped['falsehood'],
+        'fpt_fireseed_earnings': fireseed_data['earnings'],
+        'fpt_fireseed_resonance': fireseed_data['resonance_score'],
+        'fpt_fireseed_active': self.fireseed.active,
+        'fpt_neutro_cost': neutro_cost,
+        'fpt_neutro_indeterminacy': {k: n["I"] for k, n in nt.n_x_ij.items()},
+        'fpt_neutro_falsehood': {k: n["F"] for k, n in nt.n_x_ij.items()},
+        'fpt_glyphs': flipped['glyphs']
+    })
