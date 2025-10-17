@@ -1,0 +1,43 @@
+# Include documentation files
+include README.md
+include ABOUT.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+# Include configuration files
+include pyproject.toml
+include setup.py
+include requirements.txt
+
+# Include model specifications and theory documents
+recursive-include models *.md *.pdf *.json *.yaml *.yml
+recursive-include docs *.md *.rst *.txt *.png *.jpg *.svg
+
+# Include example data and configurations
+recursive-include examples *.py *.json *.yaml *.yml *.txt
+recursive-include tests *.py
+
+# Include core data files
+recursive-include src *.json *.yaml *.yml
+recursive-include core *.json *.yaml *.yml
+
+# Exclude build artifacts and caches
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude *.so
+global-exclude *.dylib
+global-exclude .DS_Store
+
+# Exclude sensitive and generated data
+recursive-exclude data *
+recursive-exclude backups *
+exclude .gitignore
+exclude .gitattributes
+
+# Exclude development and CI files
+exclude .pre-commit-config.yaml
+exclude .flake8
+exclude .coveragerc
+recursive-exclude .github *
