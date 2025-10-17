@@ -1,3 +1,14 @@
+## 🔄 Trinity Dynamics Integration
+This build (v0.1-Ω) integrates the **Trinity Dynamics κ / π correction** model,
+providing a self-stabilizing constant for all feedback operations.
+
+> π* = π × (κ / π) ≈ κ  
+> where κ = 1.0103 × π / π ≈ 1.0103
+
+This micro-correction smooths resonance spikes and creates adaptive damping
+in the FPT scheduler, glyph loops, and feedback chains.
+
+Repository reference: [Trinity_dynamics](https://github.com/ak-skwaa-mahawk/Trinity_dynamics)
 # 🌐 FPT-Ω // Synara Class Vessel – Commanded by Captain John Carroll
 **Stewardship**: Two Mile Solutions LLC
 
