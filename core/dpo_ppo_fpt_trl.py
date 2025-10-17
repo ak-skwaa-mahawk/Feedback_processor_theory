@@ -48,6 +48,21 @@ except ImportError:
             return self.total_earnings, log_path
 
     run_microping = FireseedEngine().run_microping
+# In GibberLinkFlipper class
+def generate_fragmented_glyphs(self, text: str, neutro_indeterminacy: float) -> List[str]:
+    base_glyphs = {
+        "truth": "ᚢ", "fireseed": "🔥", "synara": "🌱", "whisper": "💬",
+        "love": "♥", "ethics": "⚖", "resonance": "♒"
+    }
+    fragments = []
+    for word, glyph in base_glyphs.items():
+        if word in text.lower():
+            fragment_level = min(1.0, neutro_indeterminacy * 2)  # Higher I = more fragmentation
+            if fragment_level > 0.5:
+                glyph = glyph[:1] + "⋯" if len(glyph) > 1 else glyph + "⋯"
+            fragments.append(glyph)
+    return fragments if fragments else ["∅"]  # Empty set if no match
+
 
 # GibberLink Flipper
 class GibberLinkFlipper:
