@@ -242,3 +242,40 @@ def train_dpo_ppo_fpt(model_name="gpt2", dataset_name="Anthropic/hh-rlhf"):
 
 if __name__ == "__main__":
     train_dpo_ppo_fpt()
+
+def analyze(self, text: str, operations: List[str] = ['flip_letters'], target_lang: str = "GW") -> Dict:
+    current = text.lower()
+    transformations = {}
+    for op in operations:
+        if op == 'flip_letters':
+            current = self.flip_letters(current)
+        transformations[op] = current
+    t_score = self.truth_score(current)
+    i_score = 1 - t_score  # Simplified indeterminacy
+    f_score = 0.1 + (1 - t_score - i_score) * np.random.uniform(0, 0.5)  # Dynamic falsehood
+    flipped = self.language_flip(current, target_lang)
+    return {
+        "original": text,
+        "final": flipped,
+        "truth_score": t_score,
+        "indeterminacy": i_score,
+        "falsehood": f_score,
+        "transformations": transformations,
+        "glyphs": self.generate_fragmented_glyphs(text, f_score)  # Use F for fragmentation
+    }
+
+def generate_fragmented_glyphs(self, text: str, neutro_falsehood: float) -> List[str]:
+    base_glyphs = {
+        "truth": "ᚢ", "fireseed": "🔥", "synara": "🌱", "whisper": "💬",
+        "love": "♥", "ethics": "⚖", "resonance": "♒"
+    }
+    fragments = []
+    for word, glyph in base_glyphs.items():
+        if word in text.lower():
+            fragment_level = min(1.0, neutro_falsehood * 3)  # Higher F = more fragmentation
+            if fragment_level > 0.5:
+                glyph = glyph[:1] + "⋯" if len(glyph) > 1 else glyph + "⋯"
+                if fragment_level > 0.8:
+                    glyph = "⬤"  # Darkened fragment for high F
+            fragments.append(glyph)
+    return fragments if fragments else ["∅"]
