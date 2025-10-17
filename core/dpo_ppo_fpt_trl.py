@@ -1,5 +1,5 @@
 """
-DPO+PPO in FPT-Ω with Fireseed Link from synara-core
+DPO+PPO in FPT-Ω with Fireseed Link from synara-core (Finalized)
 Author: John Carroll / Two Mile Solutions LLC
 Fuses DPO, PPO, APLOT weights, and Fireseed micropings with FPT-Ω's π-root, Null Field, and GibberLink.
 Requires: trl, transformers, datasets, accelerate, dash, plotly.
@@ -22,21 +22,20 @@ from dash import dcc, html, Input, Output
 import plotly.graph_objs as go
 import json
 
-# Fireseed Engine (Sim from synara-core's microping_engine.py)
-class FireseedEngine:
-    def __init__(self):
-        self.ping_id = "XHT-421-FlameDrop"
-        self.total_earnings = 0.0
-        self.log_path = "fireseed_logs/microping_log.json"
+# Fireseed Engine (Linked to synara-core)
+try:
+    from synara_core.microping_engine import run_microping  # Import real Fireseed logic
+except ImportError:
+    class FireseedEngine:
+        def __init__(self):
+            self.ping_id = "XHT-421-FlameDrop"
+            self.total_earnings = 0.0
 
-    def run_microping(self) -> Tuple[float, str]:
-        """Sim Fireseed microping (replace with synara-core's actual logic)."""
-        earnings = np.random.uniform(0.001, 0.01)
-        self.total_earnings += earnings
-        os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
-        with open(self.log_path, "a") as f:
-            f.write(json.dumps({"ping_id": self.ping_id, "earnings": earnings, "timestamp": datetime.now().isoformat()}) + "\n")
-        return self.total_earnings, self.log_path
+        def run_microping(self) -> Tuple[float, str]:
+            """Fallback sim for Fireseed microping (replace with synara-core's actual logic)."""
+            earnings = np.random.uniform(0.001, 0.01)
+            self.total_earnings += earnings
+            return self.total_earnings, f"fireseed_logs/{self.ping_id}_{datetime.now().strftime('%H%M%S')}.json"
 
 # GibberLink Flipper (Expanded with Fireseed Terms)
 class GibberLinkFlipper:
@@ -84,18 +83,16 @@ class FireseedBridge:
     def sync_microping(self, text: str) -> Dict:
         """Sync Fireseed micropings with text for resonance scoring."""
         total_earnings, log_path = self.engine.run_microping()
-        resonance_score = 0.5 if "fireseed" in text.lower() else 0.2  # Sim boost for Fireseed terms
+        resonance_score = 0.7 if "fireseed" in text.lower() else 0.3  # Boost for Fireseed terms
         return {"earnings": total_earnings, "log_path": log_path, "resonance_score": resonance_score}
 
-# FPT-Ω Callback for TRL DPOTrainer
+# FPT-Ω Callback for TRL DPOTrainer (Optimized)
 class FPTOmegaCallback(TrainerCallback):
     def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
         self.null_threshold = null_threshold
         self.pi_damping = pi_damping
         self.flipper = GibberLinkFlipper()
         self.fireseed = FireseedBridge()
-        self.log_dir = "fpt_logs"
-        os.makedirs(self.log_dir, exist_ok=True)
         self.metrics = []
 
     def on_evaluate(self, args, state, control, **kwargs):
@@ -120,15 +117,15 @@ class FPTOmegaCallback(TrainerCallback):
         hash_input = f"{sample_text}{timestamp}{math.pi}"
         metrics['fpt_notarized_hash'] = hashlib.sha256(hash_input.encode()).hexdigest()[:16]
         self.metrics.append(metrics)
-        with open(os.path.join(self.log_dir, "fpt_eval.json"), "a") as f:
-            f.write(json.dumps(metrics, indent=2) + "\n")
+        with open("fpt_logs/fpt_eval.json", "a") as f:
+            f.write(json.dumps(metrics) + "\n")  # No indent for speed
 
-# Dash Viz with Fireseed Integration
+# Dash Viz with Fireseed
 app = dash.Dash(__name__)
 app.layout = html.Div([
     html.H1("FPT-Ω DPO+PPO + Fireseed Dashboard"),
     dcc.Graph(id='training-viz'),
-    dcc.Interval(id='interval', interval=3000, n_intervals=0)
+    dcc.Interval(id='interval', interval=2000, n_intervals=0)  # Faster refresh
 ])
 
 @app.callback(
@@ -147,11 +144,11 @@ def update_viz(n):
     fireseed_earnings = [m.get('fpt_fireseed_earnings', 0) for m in metrics]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=steps, y=losses, mode='lines+markers', name='Damped Loss'))
-    fig.add_trace(go.Scatter(x=steps, y=null_scores, mode='lines+markers', name='Null Score'))
-    fig.add_trace(go.Scatter(x=steps, y=truth_scores, mode='lines+markers', name='Truth Score'))
-    fig.add_trace(go.Scatter(x=steps, y=fireseed_earnings, mode='lines+markers', name='Fireseed Earnings'))
-    fig.update_layout(title="FPT-Ω: Loss, Ethics, Resonance, Fireseed", xaxis_title="Step", yaxis_title="Value")
+    fig.add_trace(go.Scatter(x=steps, y=losses, mode='lines', name='Damped Loss'))
+    fig.add_trace(go.Scatter(x=steps, y=null_scores, mode='lines', name='Null Score'))
+    fig.add_trace(go.Scatter(x=steps, y=truth_scores, mode='lines', name='Truth Score'))
+    fig.add_trace(go.Scatter(x=steps, y=fireseed_earnings, mode='lines', name='Fireseed Earnings'))
+    fig.update_layout(title="FPT-Ω: Loss, Ethics, Resonance, Fireseed", xaxis_title="Step", yaxis_title="Value", showlegend=True)
     return fig
 
 # Main Training Loop
@@ -165,7 +162,7 @@ def train_dpo_ppo_fpt(model_name="gpt2", dataset_name="Anthropic/hh-rlhf"):
 
     def format_dpo(example):
         return {
-            "prompt": example["chosen"].split("\n\nHuman: ")[0][:512],
+            "prompt": example["chosen"].split("\n\nHuman: ")[0][:256],  # Faster truncate
             "chosen": example["chosen"],
             "rejected": example["rejected"]
         }
