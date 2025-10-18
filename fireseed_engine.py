@@ -1,4 +1,38 @@
+def compute_neutrosophic_mcdm(self, alternatives, criteria_weights):
+    scores = {}
+    for alt in alternatives:
+        s = {"T": 0, "I": 0, "F": 0}
+        for i, key in enumerate(self.n_x_ij.keys()):
+            rating = self.compute_neutrosophic_prob(key)  # Mock rating
+            w = criteria_weights[i % len(criteria_weights)]
+            s["T"] += rating["T"] * w["T"]
+            s["I"] += rating["I"] * w["I"]
+            s["F"] += rating["F"] * w["F"]
+        score = s["T"] - s["F"] + 0.5 * (1 - s["I"])
+        scores[alt] = score
+    return max(scores, key=scores.get)
 
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    alternatives = list(self.n_x_ij.keys())
+    criteria_weights = [{"T": 0.4, "I": 0.3, "F": 0.3}, {"T": 0.3, "I": 0.4, "F": 0.3}, {"T": 0.3, "I": 0.2, "F": 0.5}]
+    best_alt = self.compute_neutrosophic_mcdm(alternatives, criteria_weights)
+
+    for key, n_x in self.n_x_ij.items():
+        if key == best_alt:
+            prob = self.compute_neutrosophic_prob(key)
+            i_ac = prob["I"] * sin(2 * pi * 1.5e9 * self.t)
+            f_ac = prob["F"] * sin(2 * pi * 2e9 * self.t)
+            noise = 0.1 * (1.5e9 * self.t % 1)
+            base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+            adjusted_cost = base_cost * n_x["x"] * (prob["T"] / (prob["T"] + prob["I"] + prob["F"]))
+            cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
 def compute_neutrosophic_utility(self, action, state):
     # Mock utilities based on action and state
     if action == "increase" and state == "success":
