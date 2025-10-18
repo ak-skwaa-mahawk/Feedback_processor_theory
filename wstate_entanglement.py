@@ -88,3 +88,45 @@ def trinity_damping(values, factor):
 
 # Export constants and function
 __all__ = ['GROUND_STATE', 'DIFFERENCE', 'DAMPING_PRESETS', 'trinity_damping']
+# wstate_entanglement.py (synthesized)
+import numpy as np
+from math import sqrt
+
+class WStateEntanglement:
+    def __init__(self):
+        self.w_state_prob = {'100': 1/3, '010': 1/3, '001': 1/3}  # Ideal W-state
+        self.fidelity = 0.95  # Initial fidelity
+
+    def init_w_state(self):
+        # Mock W-state with slight noise
+        w_state = {k: v * (1 + np.random.uniform(-0.1, 0.1)) for k, v in self.w_state_prob.items()}
+        total = sum(w_state.values())
+        return {k: v / total for k, v in w_state.items()}, self.fidelity
+
+    def measure_fidelity(self, current_state):
+        # Mock fidelity measurement (overlap with ideal)
+        ideal_w = self.w_state_prob
+        return sum(min(current_state.get(k, 0), ideal_w[k]) for k in ideal_w) / sum(ideal_w.values())
+
+    def apply_decoherence_correction(self, state, damping_factor):
+        # Correct decoherence using harmonic damping
+        corrected = {k: v * (1 - damping_factor * (1 - self.fidelity)) for k, v in state.items()}
+        total = sum(corrected.values())
+        return {k: v / total for k, v in corrected.items()}, self.measure_fidelity(corrected)
+
+    def update(self, observation, obj):
+        # Update W-state based on observation and neutrosophic feedback
+        w_state, _ = self.init_w_state()
+        w_state['100'] *= obj["T"]  # Adjust truth
+        w_state['010'] *= obj["I"]  # Adjust indeterminacy
+        w_state['001'] *= obj["F"]  # Adjust falsehood
+        total = sum(w_state.values())
+        w_state = {k: v / total for k, v in w_state.items()}
+        self.fidelity = self.measure_fidelity(w_state)
+        return w_state, self.fidelity
+
+# Example usage
+if __name__ == "__main__":
+    we = WStateEntanglement()
+    w_state, fidelity = we.update({"T": 0.6, "I": 0.3, "F": 0.1}, {})
+    print(f"W-state: {w_state}, Fidelity: {fidelity}")
