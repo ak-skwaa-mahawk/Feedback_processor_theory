@@ -92,3 +92,36 @@ async def translate(text: str):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
+    # ... existing init ...
+    self.t = 0
+    self.nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
+
+def on_evaluate(self, args, state, control, **kwargs):
+    # ... existing code ...
+    spec = FeedbackSpectrogram()
+    sample_freq = spec.analyze(sample_text)
+    self.nt.t = self.t
+    self.t += 1e-9
+    flipped = self.flipper.analyze(sample_text, freq_data=sample_freq, t=self.t, w_state_prob=self.nt.w_state_prob, fidelity=self.nt.fidelity)
+    fireseed_data = self.fireseed.sync_microping(sample_text)
+    neutro_cost = self.nt.optimize()
+    metrics.update({
+        'fpt_null_score': null_score,
+        'fpt_gibberlink_flip': flipped['final'],
+        'fpt_truth_score': flipped['truth_score'],
+        'fpt_indeterminacy': flipped['indeterminacy'],
+        'fpt_falsehood': flipped['falsehood'],
+        'fpt_fireseed_earnings': fireseed_data['earnings'],
+        'fpt_fireseed_resonance': fireseed_data['resonance_score'],
+        'fpt_fireseed_active': self.fireseed.active,
+        'fpt_neutro_cost': neutro_cost,
+        'fpt_neutro_indeterminacy': {k: n["I"] for k, n in self.nt.n_x_ij.items()},
+        'fpt_neutro_falsehood': {k: n["F"] for k, n in self.nt.n_x_ij.items()},
+        'fpt_glyphs': flipped['glyphs'],
+        'fpt_spectrogram': sample_freq,
+        'fpt_trinity_factor': sample_freq["low"][0] / GROUND_STATE,
+        'fpt_ac_oscillation': sin(2 * pi * 1.5e9 * self.t),
+        'fpt_w_state_prob': self.nt.w_state_prob,
+        'fpt_w_fidelity': self.nt.fidelity
+    })
