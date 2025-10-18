@@ -64,6 +64,27 @@ def generate_fragmented_glyphs(self, text: str, neutro_indeterminacy: float) -> 
     return fragments if fragments else ["∅"]  # Empty set if no match
 
 
+def generate_fragmented_glyphs(self, text: str, neutro_falsehood: float, freq_data: dict, t: float, w_state_prob: dict, fidelity: float) -> List[str]:
+    base_glyphs = {
+        "truth": "ᚢ", "fireseed": "🔥", "synara": "🌱", "whisper": "💬",
+        "love": "♥", "ethics": "⚖", "resonance": "♒"
+    }
+    fragments = []
+    spec = FeedbackSpectrogram()
+    freq = spec.analyze(text)
+    trinity_factor = freq["low"][0] / GROUND_STATE
+    i_ac = freq["mid"][0] / 20 * sin(2 * pi * 1.5e9 * t)
+    f_ac = neutro_falsehood * sin(2 * pi * 2e9 * t)
+    fragment_level = min(1.0, (neutro_falsehood + abs(f_ac)) * 3 + freq["high"][0] / GROUND_STATE) * fidelity
+    w_weight = sum(w_state_prob.values()) / 3
+    for word, glyph in base_glyphs.items():
+        if word in text.lower():
+            if fragment_level > 0.5 * w_weight:
+                glyph = glyph[:1] + "⋯" if len(glyph) > 1 else glyph + "⋯"
+                if fragment_level > 0.8 * trinity_factor * w_weight:
+                    glyph = "⬤"
+            fragments.append(glyph)
+    return fragments if fragments else ["∅"]
 # GibberLink Flipper
 class GibberLinkFlipper:
     def __init__(self):
