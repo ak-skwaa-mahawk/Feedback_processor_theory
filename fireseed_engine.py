@@ -1,3 +1,26 @@
+def optimize(self):
+    self.t += 1e-9  # Increment time
+    total_cost = 0
+    learning_rate = 0.01  # Gradient step size
+    cost_array = []
+    for key, n_x in self.n_x_ij.items():
+        i_ac = n_x["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = n_x["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        i_adjusted = n_x["I"] * (1 - (pi / GROUND_STATE) * abs(i_ac))
+        f_adjusted = n_x["F"] * (1 - (pi / GROUND_STATE) * abs(f_ac))
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+
+        gradient = 0.2 * base_cost
+        n_x["x"] -= learning_rate * gradient
+        n_x["x"] = max(0, n_x["x"])
+
+        adjusted_cost = base_cost * n_x["x"]
+        total_cost += adjusted_cost
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array)).sum()
+    return damped_cost
 from trinity_harmonics import GROUND_STATE, trinity_damping
 from gibberlink_processor import GibberLink  # For glyph sync
 import numpy as np
