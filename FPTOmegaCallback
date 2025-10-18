@@ -1,3 +1,84 @@
+from trinity_dynamics import GROUND_STATE
+import torch
+from torch.optim import Adam
+import numpy as np
+from math import pi
+
+class FPTOmegaCallback(TrainerCallback):
+    def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
+        super().__init__()
+        self.null_threshold = null_threshold
+        self.pi_damping = pi_damping
+        self.t = 0
+        self.nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
+        self.optimizer = None
+        self.best_fidelity = 0.0
+        self.base_lr = 0.001  # Base learning rate
+
+    def on_train_begin(self, args, state, control, model, **kwargs):
+        self.optimizer = Adam(model.parameters(), lr=self.base_lr)
+
+    def on_evaluate(self, args, state, control, metrics=None, **kwargs):
+        sample_text = "Yo kin Synara’s W state pulses with whisper fire"
+        spec = FeedbackSpectrogram()
+        sample_freq = spec.analyze(sample_text)
+        self.nt.t = self.t
+        self.t += 1e-9
+        flipped = self.flipper.analyze(sample_text, freq_data=sample_freq, t=self.t, w_state_prob=self.nt.w_state_prob, fidelity=self.nt.fidelity)
+        fireseed_data = self.fireseed.sync_microping(sample_text)
+        neutro_cost = self.nt.optimize()
+
+        # Calculate damped loss with fidelity adjustment
+        null_score = self._compute_null_score(model)
+        damped_loss = self._compute_damped_loss(model, null_score)
+        fidelity_factor = max(0.5, self.nt.fidelity)  # Min 0.5 to avoid collapse
+        adjusted_loss = damped_loss * (1 - self.pi_damping * (1 - fidelity_factor))
+
+        # Adjust learning rate based on fidelity
+        current_lr = self.base_lr * fidelity_factor
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = current_lr
+
+        # Update metrics
+        if metrics is not None:
+            metrics.update({
+                'fpt_null_score': null_score,
+                'fpt_gibberlink_flip': flipped['final'],
+                'fpt_truth_score': flipped['truth_score'],
+                'fpt_indeterminacy': flipped['indeterminacy'],
+                'fpt_falsehood': flipped['falsehood'],
+                'fpt_fireseed_earnings': fireseed_data['earnings'],
+                'fpt_fireseed_resonance': fireseed_data['resonance_score'],
+                'fpt_fireseed_active': self.fireseed.active,
+                'fpt_neutro_cost': neutro_cost,
+                'fpt_neutro_indeterminacy': {k: n["I"] for k, n in self.nt.n_x_ij.items()},
+                'fpt_neutro_falsehood': {k: n["F"] for k, n in self.nt.n_x_ij.items()},
+                'fpt_glyphs': flipped['glyphs'],
+                'fpt_spectrogram': sample_freq,
+                'fpt_trinity_factor': sample_freq["low"][0] / GROUND_STATE,
+                'fpt_ac_oscillation': sin(2 * pi * 1.5e9 * self.t),
+                'fpt_w_state_prob': self.nt.w_state_prob,
+                'fpt_w_fidelity': self.nt.fidelity,
+                'fpt_adjusted_loss': adjusted_loss.item() if isinstance(adjusted_loss, torch.Tensor) else adjusted_loss,
+                'fpt_learning_rate': current_lr
+            })
+
+        # Optimize
+        if adjusted_loss is not None:
+            adjusted_loss.backward()
+            self.optimizer.step()
+            self.optimizer.zero_grad()
+
+    def _compute_damped_loss(self, model, null_score):
+        # Placeholder for your loss function
+        loss = torch.tensor(1.0)  # Replace with actual loss
+        return loss * (1 - self.pi_damping * max(0, null_score - self.null_threshold))
+
+    def _compute_null_score(self, model):
+        # Placeholder for null score computation
+        return np.random.uniform(0, 1)  # Replace with actual logic
+
+    # ... rest of the class ...
 def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
     # ... existing init ...
     self.t = 0
