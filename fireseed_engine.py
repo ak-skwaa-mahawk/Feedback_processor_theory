@@ -1,6 +1,6 @@
 from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE, DAMPING_PRESETS, CUSTOM_PRESETS
 import numpy as np
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt
 
 class NeutrosophicTransport:
     def __init__(self, sources, destinations):
@@ -9,52 +9,69 @@ class NeutrosophicTransport:
         self.n_x_ij = {}  # Units and neutrosophic vals
         self.costs = {f"{i}{j}": np.random.uniform(0.5, 1.5) for i in sources for j in destinations}  # Base costs
         self.t = 0  # Time tracker
+        self.w_state_prob, self.fidelity = self._init_w_state()  # Simplified W state and fidelity
         self._init_n_x_ij()  # Init units
 
+    def _init_w_state(self):
+        # Mock W-state probabilities (ideal |W> = 1/sqrt(3) each for |100>, |010>, |001>)
+        ideal_w = {'100': 1/3, '010': 1/3, '001': 1/3}
+        # Simulate slight imperfections (random noise)
+        w_state_prob = {k: v * (1 + np.random.uniform(-0.1, 0.1)) for k, v in ideal_w.items()}
+        total_prob = sum(w_state_prob.values())
+        w_state_prob = {k: v / total_prob for k, v in w_state_prob.items()}  # Normalize
+        # Mock fidelity (assume high but not perfect)
+        fidelity = 0.95  # Simplified, could vary with noise
+        return w_state_prob, fidelity
+
     def _init_n_x_ij(self):
-        # Mock initialization with neutrosophic values
+        # Initialize with simplified W-state influenced neutrosophic values
         for i in self.sources:
             for j in self.destinations:
-                self.n_x_ij[f"{i}{j}"] = {"x": 0.5, "T": 0.6, "I": 0.3, "F": 0.1}  # Initial values
+                x_ij = 0.5  # Initial units
+                t_ij = self.fidelity * (self.w_state_prob.get('100', 0) / sqrt(3))  # Truth
+                i_ij = self.fidelity * (self.w_state_prob.get('010', 0) / sqrt(3))  # Indeterminacy
+                f_ij = self.fidelity * (self.w_state_prob.get('001', 0) / sqrt(3))  # Falsehood
+                self.n_x_ij[f"{i}{j}"] = {"x": x_ij, "T": t_ij, "I": i_ij, "F": f_ij}
 
     def compute_qaoa_energy(self, theta):
-        # VRP Hamiltonian with capacity constraints
+        # VRP Hamiltonian with capacity constraints, adjusted by fidelity
         gamma, beta = theta
         energy = 0
         n_nodes = 5  # Depot (0) + 4 customers (1-4)
         n_vehicles = 2
         n_steps = 2  # Per vehicle
         capacity = 2  # Max customers per vehicle
+        fidelity_factor = self.fidelity  # Scale energy with fidelity
         for v in range(n_vehicles):
             for k in range(n_steps - 1):
                 for i in range(n_nodes):
                     for j in range(n_nodes):
                         if i != j:
-                            energy += DISTANCE_MATRIX[i, j] * (1 - np.cos(gamma) * np.sin(beta))  # Distance
+                            energy += DISTANCE_MATRIX[i, j] * (1 - np.cos(gamma) * np.sin(beta)) * fidelity_factor
             # Step constraint (mock penalty for one node per step)
-            energy += 2 * (1 - np.cos(gamma) * np.cos(beta))
+            energy += 2 * (1 - np.cos(gamma) * np.cos(beta)) * fidelity_factor
             # Capacity constraint (mock count)
             customer_count = sum(1 for i in range(1, n_nodes) for k in range(n_steps) if i == k % n_nodes)
-            energy += 3 * (customer_count - capacity) ** 2
+            energy += 3 * (customer_count - capacity) ** 2 * fidelity_factor
         # Customer visit constraint
         for i in range(1, n_nodes):  # Skip depot
             visit_count = sum(1 for v in range(n_vehicles) for k in range(n_steps) if i == k % n_nodes)
-            energy += 2 * (visit_count - 1) ** 2
+            energy += 2 * (visit_count - 1) ** 2 * fidelity_factor
         return energy  # Energy to minimize
 
     def compute_quantum_neutrosophic_objective(self, theta):
-        # Evaluate based on energy relative to VRP (min ~10, max ~30)
+        # Evaluate with W-state fidelity influence
         energy = self.compute_qaoa_energy(theta)
-        max_energy = 30.0  # Approximate max route length
-        min_energy = 10.0  # Approximate min route length
-        t = 1 - np.abs(energy - min_energy) / (max_energy - min_energy)  # Accuracy
-        i = 0.2 + 0.1 * (2 * 2) + 0.1  # Uncertainty, 2 vehicles × 2 steps + capacity
-        f = np.abs(energy - min_energy) / (max_energy - min_energy)  # Deviation
+        max_energy = 30.0 * self.fidelity  # Scale max with fidelity
+        min_energy = 10.0 * self.fidelity  # Scale min with fidelity
+        t = (1 - np.abs(energy - min_energy) / (max_energy - min_energy)) * self.fidelity  # Accuracy
+        i = (0.2 + 0.1 * (2 * 2) + 0.1) * (1 - self.fidelity)  # Uncertainty reduced by fidelity
+        f = np.abs(energy - min_energy) / (max_energy - min_energy) * (1 - self.fidelity)  # Deviation
         return {"T": t, "I": i, "F": f}
 
     def compute_quantum_gradient(self, theta):
         # Parameter shift for energy gradient with p=1
-        shift = np.pi / 2
+        shift = pi / 2
         grads = []
         for i in range(len(theta)):
             theta_plus = theta.copy()
@@ -91,7 +108,7 @@ class NeutrosophicTransport:
             damp_effect = (DIFFERENCE / GROUND_STATE) * np.abs(update) * damp_factor
             adjusted_update = update * (1 - damp_effect)
             theta_new = theta - adjusted_update
-            theta = np.clip(theta_new, 0, np.pi)  # Bound theta
+            theta = np.clip(theta_new, 0, pi)  # Bound theta
         final_obj = self.compute_quantum_neutrosophic_objective(theta)
         return theta, final_obj
 
