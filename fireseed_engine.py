@@ -1,3 +1,49 @@
+def compute_neutrosophic_prob(self, event):
+    # Simplified prob based on fidelity and W state
+    t = self.fidelity * (self.w_state_prob.get('100', 0) / sqrt(3))
+    i = self.fidelity * (self.w_state_prob.get('010', 0) / sqrt(3))
+    f = self.fidelity * (self.w_state_prob.get('001', 0) / sqrt(3))
+    return {"T": t, "I": i, "F": f}
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    for key, n_x in self.n_x_ij.items():
+        prob = self.compute_neutrosophic_prob(key)
+        i_ac = prob["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = prob["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"] * (prob["T"] / (prob["T"] + prob["I"] + prob["F"]))
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
+def compute_neutrosophic_measure(self, set_a):
+    # Simplified measure based on fidelity and glyph freq
+    t = self.fidelity * (self.w_state_prob.get('100', 0) / sqrt(3))
+    i = self.fidelity * (self.w_state_prob.get('010', 0) / sqrt(3))
+    f = self.fidelity * (self.w_state_prob.get('001', 0) / sqrt(3))
+    return {"T": t, "I": i, "F": f}
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    for key, n_x in self.n_x_ij.items():
+        measure = self.compute_neutrosophic_measure(key)
+        i_ac = measure["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = measure["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"]
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
 def apply_operation(self, op, set_a, set_b):
     if op == "union":
         return (max(set_a["T"], set_b["T"]), min(set_a["I"], set_b["I"]), min(set_a["F"], set_b["F"]))
