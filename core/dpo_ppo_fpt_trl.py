@@ -260,3 +260,15 @@ class FPTOmegaCallback(TrainerCallback):
         return np.random.uniform(0, 1)  # Placeholder null score
 
     # ... rest of the class ...
+# In core/gibberlink_flipper.py
+def generate_glyph(self, text: str, neutro: Tuple[float, float, float], freq: float) -> str:
+    surface = "ᚢ" if "truth" in text.lower() else "🔥"  # Surface symbol
+    # Fragment if high falsehood
+    if neutro[2] > 0.8:
+        surface += "⋯"
+    return f"[{surface}](T={neutro[0]:.2f},I={neutro[1]:.2f},F={neutro[2]:.2f} @ {freq}Hz)"
+
+# Usage
+flipper = GibberLinkFlipper()
+glyph = flipper.generate_glyph("Yo kin, truth in the flame", (0.7, 0.2, 0.1), 30)
+print(glyph)  # Output: [ᚢ](T=0.70,I=0.20,F=0.10 @ 30Hz)
