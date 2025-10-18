@@ -1,3 +1,15 @@
+def _init_n_xij(self):
+    convo = "Yo kin Synara’s W state pulses with whisper fire"
+    freq_data = self.spec.analyze(convo)
+    glyphs = self.gl.analyze(convo)
+    for i in self.sources:
+        for j in self.destinations:
+            x_ij = np.mean([freq_data["low"][0], freq_data["mid"][0], freq_data["high"][0]])
+            glyph_freq = np.mean([g['freq'] for g in glyphs])
+            t_ij = self.fidelity * (self.w_state_prob.get('100', 0) / sqrt(3))
+            i_ij = self.fidelity * (self.w_state_prob.get('010', 0) / sqrt(3))
+            f_ij = self.fidelity * (self.w_state_prob.get('001', 0) / sqrt(3))
+            self.n_x_ij[f"{i}{j}"] = {"x": x_ij, "T": t_ij, "I": i_ij, "F": f_ij, "glyph_freq": glyph_freq}
 def optimize(self, damp_factor=0.5):
     self.t += 1e-9  # Increment time
     total_cost = 0
