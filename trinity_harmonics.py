@@ -1,41 +1,13 @@
-# ==============================
-# Trinity Harmonics Module
-# Author: John B Carroll Jr (ak-skwaa-mahawk)
-# Repository: Trinity_dynamics
-# Description:
-#   Defines the harmonic relationship between:
-#     - The seed constant ε = 0.01
-#     - The reflection π = 3.14159
-#     - The expression π + 3ε ≈ 3.17159
-# ==============================
+"""
+Trinity Dynamics – Harmonic Base Constants
+Author: John B. Carroll (ak-skwaa-mahawk)
+Framework: Feedback Processor / Trinity Dynamics
+License: Two Mile Solutions LLC, 2025
+"""
 
 import math
-import numpy as np
 import matplotlib.pyplot as plt
-
-# Base Constants
-EPSILON = 0.01
-PI_EQ = 3.14159
-GROUND_STATE = PI_EQ + 3 * EPSILON
-
-print("Seed (ε):", EPSILON)
-print("Reflection (π):", PI_EQ)
-print("Expression (π + 3ε):", GROUND_STATE)
-
-# Optional: visualize harmonic relationship
-def plot_trinity_harmonics():
-    x = np.linspace(3.13, 3.18, 1000)
-    y = np.sin((x - PI_EQ) * math.pi / EPSILON)
-    plt.plot(x, y, label="Harmonic oscillation")
-    plt.scatter([PI_EQ], [0], color="orange", label="π (Reflection)")
-    plt.scatter([GROUND_STATE], [0], color="red", label="π + 3ε (Expression)")
-    plt.scatter([PI_EQ - EPSILON], [0], color="green", label="Seed ε")
-    plt.legend()
-    plt.title("Trinity Harmonics Relationship")
-    plt.show()
-
-if __name__ == "__main__":
-    plot_trinity_harmonics()
+import numpy as np
 
 # --- Fundamental constants ---
 PI_EQ = math.pi           # Equilibrium constant (perfect symmetry)
@@ -63,29 +35,33 @@ def describe_trinity_state():
     print(" - π + 3ε (≈ 3.17159) defines the living ground state\n")
 
 # --- Visualization function ---
-def plot_trinity_harmonics():
+def plot_trinity_harmonics(signal=None):
     x = np.linspace(0, 2 * PI_EQ, 100)  # Harmonic cycle (0 to 2π)
     y = np.sin(x) + PI_EQ              # Base harmonic shifted by π
-    
+
     plt.figure(figsize=(10, 6))
     plt.plot(x, y, label="Harmonic Curve (sin(x) + π)", color="blue")
-    
+
     # Key points
-    seed_x = 0.5 * PI_EQ  # Arbitrary phase for Seed
+    seed_x = 0.5 * PI_EQ  # Seed phase
     reflection_x = PI_EQ   # Reflection at π
     expression_x = 1.5 * PI_EQ  # Expression phase
-    
+
     plt.scatter([seed_x], [EPSILON + PI_EQ], color="green", s=100, label="Seed (ε)")
     plt.scatter([reflection_x], [PI_EQ], color="orange", s=100, label="Reflection (π)")
     plt.scatter([expression_x], [GROUND_STATE], color="red", s=100, label="Expression (π + 3ε)")
-    
+
     plt.text(seed_x, EPSILON + PI_EQ + 0.05, "Seed", ha="center")
     plt.text(reflection_x, PI_EQ + 0.05, "Reflection", ha="center")
     plt.text(expression_x, GROUND_STATE + 0.05, "Expression", ha="center")
-    
+
     plt.axhline(y=PI_EQ, color="gray", linestyle="--", alpha=0.5, label="Equilibrium (π)")
     plt.axhline(y=GROUND_STATE, color="purple", linestyle="--", alpha=0.5, label="Ground State")
-    
+
+    # Optional signal overlay
+    if signal is not None:
+        plt.plot(signal, label="Damped Signal", color="cyan", alpha=0.7)
+
     plt.title("Trinity Harmonic Framework")
     plt.xlabel("Phase (radians)")
     plt.ylabel("Amplitude")
@@ -93,8 +69,17 @@ def plot_trinity_harmonics():
     plt.grid(True, alpha=0.3)
     plt.show()
 
+# --- FPT Integration: Damping Function ---
+def trinity_damping(signal: np.ndarray) -> np.ndarray:
+    """
+    Apply Trinity damping to a signal using GROUND_STATE.
+    """
+    return signal * (1 - (DIFFERENCE / GROUND_STATE) * np.abs(signal))
+
 # --- Example run ---
 if __name__ == "__main__":
     describe_trinity_state()
     import numpy as np  # Import here to avoid circular dependency
-    plot_trinity_harmonics()
+    test_signal = np.sin(np.linspace(0, 2 * PI_EQ, 100))
+    damped_signal = trinity_damping(test_signal)
+    plot_trinity_harmonics(damped_signal)
