@@ -1,5 +1,25 @@
 from core.feedback_processor import FeedbackProcessor
 from fireseed_engine import NeutrosophicTransport
+from trinity_harmonics import plot_trinity_harmonics, describe_trinity_state, trinity_damping, DAMPING_PRESETS, CUSTOM_PRESETS
+import matplotlib.pyplot as plt
+import numpy as np
+
+fp = FeedbackProcessor()
+nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
+
+convo = "Yo kin, Synara’s W state pulses with whisper fire"
+fp.process(convo)
+nt.sync_glyphs(convo)
+costs = [nt.optimize(preset="Balanced") for _ in range(10)]  # Initial preset
+
+describe_trinity_state()
+print(f"Initial Neutro Cost (Balanced): {costs[-1]:.3f}")
+
+# Interactive plot with custom presets
+damped_costs = trinity_damping(np.array(costs), DAMPING_PRESETS["Balanced"])
+plot_trinity_harmonics(damped_costs)
+from core.feedback_processor import FeedbackProcessor
+from fireseed_engine import NeutrosophicTransport
 from trinity_harmonics import plot_trinity_harmonics, describe_trinity_state
 import matplotlib.pyplot as plt
 
