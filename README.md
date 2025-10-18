@@ -70,6 +70,12 @@ print(f"Harmonic alignment: {resonance.alignment_score:.2f}")
 print(f"Emotional tone: {resonance.dominant_frequency}")
 ```
 
+## GibberLink Integration
+Linguistic pattern detection module for harmonic text analysis. See `gibberlink_processor.py`.
+Example:
+```bash
+python examples/demo_conversation.py
+
 ### Run the Demo
 
 ```bash
