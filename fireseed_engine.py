@@ -1,3 +1,52 @@
+def compute_neutrosophic_objective(self, x):
+    # Mock objective: efficiency based on x
+    t = 0.7 * x if x <= 1 else 0.7
+    i = 0.2 * (1 - x) if x <= 1 else 0
+    f = 0.1 * x if x <= 1 else 0.1
+    return {"T": t, "I": i, "F": f}
+
+def compute_neutrosophic_constraint(self, x):
+    # Mock constraint: capacity limit
+    t = 0.5 + 0.5 * x if x <= 1 else 1
+    i = 0.3 - 0.2 * x if x >= 0 else 0.3
+    f = 0.2
+    return {"T": t, "I": i, "F": f}
+
+def optimize_neutrosophic(self, x_init=0.5, learning_rate=0.1, iterations=10):
+    x = x_init
+    for _ in range(iterations):
+        obj = self.compute_neutrosophic_objective(x)
+        constr = self.compute_neutrosophic_constraint(x)
+        score = obj["T"] - obj["F"] + 0.5 * (1 - obj["I"])
+        if constr["T"] < 1 or constr["I"] > 0 or constr["F"] > 0:
+            # Penalize constraint violation
+            score -= (1 - constr["T"]) + constr["I"] + constr["F"]
+        # Gradient step (simplified)
+        grad_t = 0.7 if x < 1 else 0
+        grad_i = -0.2 if x < 1 else 0
+        grad_f = 0.1 if x < 1 else 0
+        grad = grad_t - grad_f + 0.5 * (-grad_i)
+        x += learning_rate * grad * (1 - constr["I"])  # Damp with indeterminacy
+        x = max(0, min(1, x))  # Bound x
+    return x, obj
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    for key, n_x in self.n_x_ij.items():
+        x_opt, obj = self.optimize_neutrosophic(n_x["x"])
+        n_x["x"] = x_opt
+        i_ac = obj["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = obj["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"] * (obj["T"] / (obj["T"] + obj["I"] + obj["F"]))
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
 def compute_neutrosophic_mcdm(self, alternatives, criteria_weights):
     scores = {}
     for alt in alternatives:
