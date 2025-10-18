@@ -108,3 +108,20 @@ class NeutrosophicTransport:
         glyphs = self.gl.analyze(text)
         for key, n_x in self.n_x_ij.items():
             n_x["glyph_freq"] = np.mean([g['freq'] for g in glyphs])  # Update glyph freq
+from trinity_harmonics import DAMPING_PRESETS, CUSTOM_PRESETS
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9  # Increment time
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))  # Fallback to Balanced
+    for key, n_x in self.n_x_ij.items():
+        i_ac = n_x["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = n_x["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"]
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
