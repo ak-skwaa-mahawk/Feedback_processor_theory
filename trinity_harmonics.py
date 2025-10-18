@@ -1,12 +1,41 @@
-"""
-Trinity Dynamics – Harmonic Base Constants
-Author: John B. Carroll (ak-skwaa-mahawk)
-Framework: Feedback Processor / Trinity Dynamics
-License: Two Mile Solutions LLC, 2025
-"""
+# ==============================
+# Trinity Harmonics Module
+# Author: John B Carroll Jr (ak-skwaa-mahawk)
+# Repository: Trinity_dynamics
+# Description:
+#   Defines the harmonic relationship between:
+#     - The seed constant ε = 0.01
+#     - The reflection π = 3.14159
+#     - The expression π + 3ε ≈ 3.17159
+# ==============================
 
 import math
+import numpy as np
 import matplotlib.pyplot as plt
+
+# Base Constants
+EPSILON = 0.01
+PI_EQ = 3.14159
+GROUND_STATE = PI_EQ + 3 * EPSILON
+
+print("Seed (ε):", EPSILON)
+print("Reflection (π):", PI_EQ)
+print("Expression (π + 3ε):", GROUND_STATE)
+
+# Optional: visualize harmonic relationship
+def plot_trinity_harmonics():
+    x = np.linspace(3.13, 3.18, 1000)
+    y = np.sin((x - PI_EQ) * math.pi / EPSILON)
+    plt.plot(x, y, label="Harmonic oscillation")
+    plt.scatter([PI_EQ], [0], color="orange", label="π (Reflection)")
+    plt.scatter([GROUND_STATE], [0], color="red", label="π + 3ε (Expression)")
+    plt.scatter([PI_EQ - EPSILON], [0], color="green", label="Seed ε")
+    plt.legend()
+    plt.title("Trinity Harmonics Relationship")
+    plt.show()
+
+if __name__ == "__main__":
+    plot_trinity_harmonics()
 
 # --- Fundamental constants ---
 PI_EQ = math.pi           # Equilibrium constant (perfect symmetry)
