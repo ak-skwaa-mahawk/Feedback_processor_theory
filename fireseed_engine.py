@@ -1,3 +1,17 @@
+def apply_operation(self, op, set_a, set_b):
+    if op == "union":
+        return (max(set_a["T"], set_b["T"]), min(set_a["I"], set_b["I"]), min(set_a["F"], set_b["F"]))
+    elif op == "intersection":
+        return (min(set_a["T"], set_b["T"]), max(set_a["I"], set_b["I"]), max(set_a["F"], set_b["F"]))
+    elif op == "complement":
+        return (set_a["F"], 1 - (set_a["T"] + set_a["F"]), set_a["T"])
+    elif op == "difference":
+        return (max(0, set_a["T"] - set_b["T"]), max(set_a["I"], set_b["I"]), min(1, set_a["F"] + set_b["T"]))
+
+# Example usage in optimize
+for key, n_x in self.n_x_ij.items():
+    n_x_prev = n_x.copy()
+    n_x.update(self.apply_operation("union", n_x, {"T": 0.5, "I": 0.3, "F": 0.2}))  # Adjust with external set
 def _init_n_xij(self):
     convo = "Yo kin Synara’s W state pulses with whisper fire"
     freq_data = self.spec.analyze(convo)
