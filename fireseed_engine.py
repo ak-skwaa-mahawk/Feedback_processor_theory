@@ -2,6 +2,99 @@ from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE
 import numpy as np
 from math import sin, cos
 
+# Distance matrix for 5 cities (arbitrary units)
+DISTANCE_MATRIX = np.array([
+    [0, 2, 5, 3, 4],
+    [2, 0, 4, 6, 1],
+    [5, 4, 0, 2, 3],
+    [3, 6, 2, 0, 5],
+    [4, 1, 3, 5, 0]
+])
+
+def compute_qaoa_energy(self, theta):
+    # Simplified TSP Hamiltonian: Minimize total distance with pairwise terms
+    gamma, beta = theta
+    energy = 0
+    n_cities = 5
+    for i in range(n_cities):
+        for j in range(i + 1, n_cities):
+            energy += DISTANCE_MATRIX[i, j] * (1 - np.cos(gamma) * np.sin(beta))  # Pairwise penalty
+    return energy  # Energy to minimize
+
+def compute_quantum_neutrosophic_objective(self, theta):
+    # Evaluate based on energy relative to TSP (min distance ~10, max ~20)
+    energy = self.compute_qaoa_energy(theta)
+    max_energy = 20.0  # Approximate max tour length
+    min_energy = 10.0  # Approximate min tour length
+    t = 1 - np.abs(energy - min_energy) / (max_energy - min_energy)  # Accuracy
+    i = 0.2 + 0.1 * 2  # Uncertainty, simplified model
+    f = np.abs(energy - min_energy) / (max_energy - min_energy)  # Deviation
+    return {"T": t, "I": i, "F": f}
+
+def compute_quantum_gradient(self, theta):
+    # Parameter shift for energy gradient with p=1
+    shift = np.pi / 2
+    grads = []
+    for i in range(len(theta)):
+        theta_plus = theta.copy()
+        theta_minus = theta.copy()
+        theta_plus[i] += shift
+        theta_minus[i] -= shift
+        e_plus = self.compute_qaoa_energy(theta_plus)
+        e_minus = self.compute_qaoa_energy(theta_minus)
+        grad = 0.5 * (e_plus - e_minus)
+        grads.append(grad)
+    # Convert to score gradient
+    obj = self.compute_quantum_neutrosophic_objective(theta)
+    score_grad = [g * (1 - obj["F"]) - g * obj["I"] for g in grads]
+    return [-g for g in score_grad]  # Negative for maximization
+
+def compute_quantum_fisher_info(self, theta):
+    # Simplified QFI approximation (diagonal) for p=1, 5 qubits
+    grad = self.compute_quantum_gradient(theta)
+    return np.diag([4 * g ** 2 for g in grad])  # Mock F_ii
+
+def optimize_qaoa(self, theta_init=[0.5, 0.5], learning_rate=0.001, iterations=10, damp_factor=0.5):
+    theta = np.array(theta_init)
+    for _ in range(iterations):
+        grad = self.compute_quantum_gradient(theta)
+        obj = self.compute_quantum_neutrosophic_objective(theta)
+        fisher = self.compute_quantum_fisher_info(theta)
+        # Natural gradient
+        natural_grad = np.linalg.inv(fisher + 1e-8 * np.eye(len(theta))) @ grad
+        # Adjust learning rate with indeterminacy
+        eta_adjusted = learning_rate * (1 - obj["I"])
+        # Compute update
+        update = eta_adjusted * natural_grad
+        # Damp with Trinity Harmonics
+        damp_effect = (DIFFERENCE / GROUND_STATE) * np.abs(update) * damp_factor
+        adjusted_update = update * (1 - damp_effect)
+        theta_new = theta - adjusted_update
+        theta = np.clip(theta_new, 0, np.pi)  # Bound theta
+    final_obj = self.compute_quantum_neutrosophic_objective(theta)
+    return theta, final_obj
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    for key, n_x in self.n_x_ij.items():
+        theta_opt, obj = self.optimize_qaoa(n_x["x"], damp_factor=damp_factor)
+        n_x["x"] = theta_opt[0]  # Map first theta to x (simplified)
+        i_ac = obj["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = obj["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"] * (obj["T"] / (obj["T"] + obj["I"] + obj["F"]))
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
+from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE
+import numpy as np
+from math import sin, cos
+
 def compute_qaoa_energy(self, theta):
     # Real Hamiltonian for max-cut on 5-node graph: edges (0,1), (1,2), (2,3), (3,4), (0,4)
     gamma1, beta1, gamma2, beta2 = theta
