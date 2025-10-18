@@ -1,3 +1,85 @@
+
+def compute_neutrosophic_utility(self, action, state):
+    # Mock utilities based on action and state
+    if action == "increase" and state == "success":
+        return {"T": 0.9, "I": 0.1, "F": 0.0}
+    elif action == "increase" and state == "failure":
+        return {"T": 0.1, "I": 0.2, "F": 0.7}
+    return {"T": 0.5, "I": 0.3, "F": 0.2}  # Default
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    states = ["success", "failure"]
+    probs = [self.compute_neutrosophic_prob(s) for s in states]
+    actions = ["increase", "hold"]
+    best_action = "hold"
+    best_score = float('-inf')
+
+    for action in actions:
+        t_eu = 0
+        i_eu = 0
+        f_eu = 0
+        for i, state in enumerate(states):
+            prob = probs[i]
+            utility = self.compute_neutrosophic_utility(action, state)
+            t_eu += prob["T"] * utility["T"]
+            i_eu += prob["I"] * utility["I"] + min(prob["I"], utility["I"])
+            f_eu += prob["F"] * utility["F"] + min(prob["F"], utility["F"])
+        score = t_eu - 0.5 * i_eu - f_eu
+        if score > best_score:
+            best_score = score
+            best_action = action
+
+    for key, n_x in self.n_x_ij.items():
+        if best_action == "increase":
+            n_x["x"] += 0.1
+        i_ac = n_x["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = n_x["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"]
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
+def compute_neutrosophic_bayes(self, prior, likelihood, evidence):
+    t_a, i_a, f_a = prior["T"], prior["I"], prior["F"]
+    t_ba, i_ba, f_ba = likelihood["T"], likelihood["I"], likelihood["F"]
+    t_b, i_b, f_b = evidence["T"], evidence["I"], evidence["F"]
+    total_evidence = t_b + i_b + f_b
+
+    t_ab = (t_ba * t_a) / total_evidence
+    i_ab = (i_ba * i_a) / total_evidence + min(i_ba, i_a)
+    f_ab = (f_ba * f_a) / total_evidence + min(f_ba, f_a)
+
+    # Normalize if sum > 1 (optional in Neutrosophic)
+    total = t_ab + i_ab + f_ab
+    if total > 1:
+        t_ab, i_ab, f_ab = t_ab / total, i_ab / total, f_ab / total
+    return {"T": t_ab, "I": i_ab, "F": f_ab}
+
+def optimize(self, preset="Balanced"):
+    self.t += 1e-9
+    total_cost = 0
+    cost_array = []
+    damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
+    for key, n_x in self.n_x_ij.items():
+        prior = self.compute_neutrosophic_prob(key)  # Prior belief
+        likelihood = {"T": 0.9, "I": 0.05, "F": 0.05}  # Mock likelihood
+        evidence = {"T": 0.6, "I": 0.3, "F": 0.2}  # Mock evidence
+        prob = self.compute_neutrosophic_bayes(prior, likelihood, evidence)
+        i_ac = prob["I"] * sin(2 * pi * 1.5e9 * self.t)
+        f_ac = prob["F"] * sin(2 * pi * 2e9 * self.t)
+        noise = 0.1 * (1.5e9 * self.t % 1)
+        base_cost = self.costs[key] * (1 + 0.2 * n_x["x"] + 0.3 * abs(i_ac) + 0.3 * abs(f_ac)) * (1 + noise)
+        adjusted_cost = base_cost * n_x["x"] * (prob["T"] / (prob["T"] + prob["I"] + prob["F"]))
+        cost_array.append(adjusted_cost)
+
+    damped_cost = trinity_damping(np.array(cost_array), damp_factor).sum()
+    return damped_cost
 def compute_neutrosophic_prob(self, event):
     # Simplified prob based on fidelity and W state
     t = self.fidelity * (self.w_state_prob.get('100', 0) / sqrt(3))
