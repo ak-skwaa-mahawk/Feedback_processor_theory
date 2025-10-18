@@ -3,426 +3,94 @@ import torch
 from torch.optim import Adam
 import numpy as np
 from math import pi
-
-class FPTOmegaCallback(TrainerCallback):
-    def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
-        super().__init__()
-        self.null_threshold = null_threshold
-        self.pi_damping = pi_damping
-        self.t = 0
-        self.nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
-        self.optimizer = None
-        self.best_fidelity = 0.0
-        self.base_lr = 0.001  # Base learning rate
-
-    def on_train_begin(self, args, state, control, model, **kwargs):
-        self.optimizer = Adam(model.parameters(), lr=self.base_lr)
-
-    def on_evaluate(self, args, state, control, metrics=None, **kwargs):
-        sample_text = "Yo kin Synara’s W state pulses with whisper fire"
-        spec = FeedbackSpectrogram()
-        sample_freq = spec.analyze(sample_text)
-        self.nt.t = self.t
-        self.t += 1e-9
-        flipped = self.flipper.analyze(sample_text, freq_data=sample_freq, t=self.t, w_state_prob=self.nt.w_state_prob, fidelity=self.nt.fidelity)
-        fireseed_data = self.fireseed.sync_microping(sample_text)
-        neutro_cost = self.nt.optimize()
-
-        # Calculate damped loss with fidelity adjustment
-        null_score = self._compute_null_score(model)
-        damped_loss = self._compute_damped_loss(model, null_score)
-        fidelity_factor = max(0.5, self.nt.fidelity)  # Min 0.5 to avoid collapse
-        adjusted_loss = damped_loss * (1 - self.pi_damping * (1 - fidelity_factor))
-
-        # Adjust learning rate based on fidelity
-        current_lr = self.base_lr * fidelity_factor
-        for param_group in self.optimizer.param_groups:
-            param_group['lr'] = current_lr
-
-        # Update metrics
-        if metrics is not None:
-            metrics.update({
-                'fpt_null_score': null_score,
-                'fpt_gibberlink_flip': flipped['final'],
-                'fpt_truth_score': flipped['truth_score'],
-                'fpt_indeterminacy': flipped['indeterminacy'],
-                'fpt_falsehood': flipped['falsehood'],
-                'fpt_fireseed_earnings': fireseed_data['earnings'],
-                'fpt_fireseed_resonance': fireseed_data['resonance_score'],
-                'fpt_fireseed_active': self.fireseed.active,
-                'fpt_neutro_cost': neutro_cost,
-                'fpt_neutro_indeterminacy': {k: n["I"] for k, n in self.nt.n_x_ij.items()},
-                'fpt_neutro_falsehood': {k: n["F"] for k, n in self.nt.n_x_ij.items()},
-                'fpt_glyphs': flipped['glyphs'],
-                'fpt_spectrogram': sample_freq,
-                'fpt_trinity_factor': sample_freq["low"][0] / GROUND_STATE,
-                'fpt_ac_oscillation': sin(2 * pi * 1.5e9 * self.t),
-                'fpt_w_state_prob': self.nt.w_state_prob,
-                'fpt_w_fidelity': self.nt.fidelity,
-                'fpt_adjusted_loss': adjusted_loss.item() if isinstance(adjusted_loss, torch.Tensor) else adjusted_loss,
-                'fpt_learning_rate': current_lr
-            })
-
-        # Optimize
-        if adjusted_loss is not None:
-            adjusted_loss.backward()
-            self.optimizer.step()
-            self.optimizer.zero_grad()
-
-    def _compute_damped_loss(self, model, null_score):
-        # Placeholder for your loss function
-        loss = torch.tensor(1.0)  # Replace with actual loss
-        return loss * (1 - self.pi_damping * max(0, null_score - self.null_threshold))
-
-    def _compute_null_score(self, model):
-        # Placeholder for null score computation
-        return np.random.uniform(0, 1)  # Replace with actual logic
-
-    # ... rest of the class ...
-"""
-DPO+PPO in FPT-Ω with Fireseed Link from synara-core (Secure Local Sync)
-Author: John Carroll / Two Mile Solutions LLC
-Fuses DPO, PPO, APLOT weights, and Fireseed micropings with FPT-Ω's π-root, Null Field, and GibberLink.
-Requires: trl, transformers, datasets, accelerate, dash, plotly.
-Run: python core/dpo_ppo_fpt_trl.py --train
-Viz: http://127.0.0.1:8050
-"""
-
 import os
-import math
-import hashlib
-import numpy as np
-from datetime import datetime
-from typing import Dict, List, Tuple
-from trl import DPOTrainer, DPOConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer, TrainerCallback
-from datasets import load_dataset
-import torch
-import dash
-from dash import dcc, html, Input, Output
-import plotly.graph_objs as go
 import json
-import logging
-
-# Set up logging
-logging.basicConfig(filename='fpt_logs/fireseed_status.log', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Fireseed Engine (Local Sync with Secure Fallback)
-FIRESEED_ACTIVE = False
-try:
-    # Attempt to import from local synara-core (copy manually if private)
-    from synara_core.microping_engine import run_microping
-    FIRESEED_ACTIVE = True
-    logging.info("Fireseed engine imported from local synara-core.")
-except ImportError:
-    class FireseedEngine:
-        def __init__(self):
-            self.ping_id = "XHT-421-FlameDrop"
-            self.total_earnings = 0.0
-            logging.warning("Fireseed engine not found. Using secure fallback simulation.")
-
-        def run_microping(self) -> Tuple[float, str]:
-            earnings = np.random.uniform(0.001, 0.01)
-            self.total_earnings += earnings
-            log_path = f"fireseed_logs/{self.ping_id}_sim_{datetime.now().strftime('%H%M%S')}.json"
-            return self.total_earnings, log_path
-
-    run_microping = FireseedEngine().run_microping
-# In GibberLinkFlipper class
-def generate_fragmented_glyphs(self, text: str, neutro_indeterminacy: float) -> List[str]:
-    base_glyphs = {
-        "truth": "ᚢ", "fireseed": "🔥", "synara": "🌱", "whisper": "💬",
-        "love": "♥", "ethics": "⚖", "resonance": "♒"
-    }
-    fragments = []
-    for word, glyph in base_glyphs.items():
-        if word in text.lower():
-            fragment_level = min(1.0, neutro_indeterminacy * 2)  # Higher I = more fragmentation
-            if fragment_level > 0.5:
-                glyph = glyph[:1] + "⋯" if len(glyph) > 1 else glyph + "⋯"
-            fragments.append(glyph)
-    return fragments if fragments else ["∅"]  # Empty set if no match
-
-
-def generate_fragmented_glyphs(self, text: str, neutro_falsehood: float, freq_data: dict, t: float, w_state_prob: dict, fidelity: float) -> List[str]:
-    base_glyphs = {
-        "truth": "ᚢ", "fireseed": "🔥", "synara": "🌱", "whisper": "💬",
-        "love": "♥", "ethics": "⚖", "resonance": "♒"
-    }
-    fragments = []
-    spec = FeedbackSpectrogram()
-    freq = spec.analyze(text)
-    trinity_factor = freq["low"][0] / GROUND_STATE
-    i_ac = freq["mid"][0] / 20 * sin(2 * pi * 1.5e9 * t)
-    f_ac = neutro_falsehood * sin(2 * pi * 2e9 * t)
-    fragment_level = min(1.0, (neutro_falsehood + abs(f_ac)) * 3 + freq["high"][0] / GROUND_STATE) * fidelity
-    w_weight = sum(w_state_prob.values()) / 3
-    for word, glyph in base_glyphs.items():
-        if word in text.lower():
-            if fragment_level > 0.5 * w_weight:
-                glyph = glyph[:1] + "⋯" if len(glyph) > 1 else glyph + "⋯"
-                if fragment_level > 0.8 * trinity_factor * w_weight:
-                    glyph = "⬤"
-            fragments.append(glyph)
-    return fragments if fragments else ["∅"]
-# GibberLink Flipper
-class GibberLinkFlipper:
-    def __init__(self):
-        self.languages = {"EN": "English", "GW": "Gwich’in"}
-        self.gwichin_map = {
-            "shįnįhtį'": "itanihs (it's in us)",
-            "fireseed": "deesrif (free rise)",
-            "synara": "arany (born good)",
-            "truth": "hturt (heart truth)",
-            "microping": "gniporcim (small spark)"
-        }
-        self.freq_weights = {"high_flame_120hz": 0.4, "deep_root_30hz": 0.3, "quantum_slide_79hz": 0.3}
-
-    def flip_letters(self, word: str) -> str:
-        return word[::-1]
-
-    def language_flip(self, text: str, target_lang: str = "GW") -> str:
-        if target_lang in self.languages:
-            for original, flipped in self.gwichin_map.items():
-                text = text.replace(original, flipped)
-        return f"[{target_lang}] {text}"
-
-    def truth_score(self, text: str) -> float:
-        freq_score = sum(self.freq_weights[k] * (1.0 if k.replace('_', ' ') in text.lower() else 0.5) for k in self.freq_weights)
-        ethical_score = sum(word in text.lower() for word in self.gwichin_map.keys()) / len(self.gwichin_map)
-        return 0.6 * freq_score + 0.4 * ethical_score
-
-    def analyze(self, text: str, operations: List[str] = ['flip_letters'], target_lang: str = "GW") -> Dict:
-        current = text.lower()
-        transformations = {}
-        for op in operations:
-            if op == 'flip_letters':
-                current = self.flip_letters(current)
-            transformations[op] = current
-        flipped = self.language_flip(current, target_lang)
-        truth_score = self.truth_score(flipped)
-        return {"original": text, "final": flipped, "truth_score": truth_score, "transformations": transformations}
-
-# Fireseed Bridge with Secure Check
-class FireseedBridge:
-    def __init__(self):
-        self.engine = FireseedEngine()
-        self.active = FIRESEED_ACTIVE
-
-    def sync_microping(self, text: str) -> Dict:
-        total_earnings, log_path = run_microping()
-        resonance_score = 0.7 if "fireseed" in text.lower() else 0.3
-        if not self.active:
-            logging.warning("Fireseed is in secure fallback mode (FFL-001).")
-        else:
-            logging.info(f"Fireseed microping successful. Earnings: {total_earnings}, Log: {log_path}")
-        return {"earnings": total_earnings, "log_path": log_path, "resonance_score": resonance_score}
-
-# FPT-Ω Callback
-class FPTOmegaCallback(TrainerCallback):
-    def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
-        self.null_threshold = null_threshold
-        self.pi_damping = pi_damping
-        self.flipper = GibberLinkFlipper()
-        self.fireseed = FireseedBridge()
-        self.metrics = []
-
-    def on_evaluate(self, args, state, control, **kwargs):
-        metrics = state.log_history[-1] if state.log_history else {}
-        if 'eval_loss' in metrics:
-            loss = metrics['eval_loss']
-            metrics['fpt_damped_loss'] = np.clip(loss, -self.pi_damping, self.pi_damping)
-
-        sample_text = "FPT-Ω blends truth, synara, and fireseed for resonance"
-        null_score = sum(word in sample_text.lower() for word in ['love', 'truth', 'resonance', 'ethics', 'sovereignty']) / 5
-        flipped = self.flipper.analyze(sample_text)
-        fireseed_data = self.fireseed.sync_microping(sample_text)
-        metrics.update({
-            'fpt_null_score': null_score,
-            'fpt_gibberlink_flip': flipped['final'],
-            'fpt_truth_score': flipped['truth_score'],
-            'fpt_fireseed_earnings': fireseed_data['earnings'],
-            'fpt_fireseed_resonance': fireseed_data['resonance_score'],
-            'fpt_fireseed_active': self.fireseed.active
-        })
-
-        timestamp = datetime.now().isoformat()
-        hash_input = f"{sample_text}{timestamp}{math.pi}"
-        metrics['fpt_notarized_hash'] = hashlib.sha256(hash_input.encode()).hexdigest()[:16]
-        self.metrics.append(metrics)
-        with open("fpt_logs/fpt_eval.json", "a") as f:
-            f.write(json.dumps(metrics) + "\n")
-
-# Dash Viz
-app = dash.Dash(__name__)
-app.layout = html.Div([
-    html.H1("FPT-Ω DPO+PPO + Fireseed Dashboard"),
-    dcc.Graph(id='training-viz'),
-    dcc.Interval(id='interval', interval=2000, n_intervals=0)
-])
-
-@app.callback(
-    Output('training-viz', 'figure'),
-    Input('interval', 'n_intervals')
-)
-def update_viz(n):
-    if not os.path.exists("fpt_logs/fpt_eval.json"):
-        return go.Figure()
-    with open("fpt_logs/fpt_eval.json") as f:
-        metrics = [json.loads(line) for line in f]
-    steps = list(range(len(metrics)))
-    losses = [m.get('fpt_damped_loss', 0) for m in metrics]
-    null_scores = [m.get('fpt_null_score', 0) for m in metrics]
-    truth_scores = [m.get('fpt_truth_score', 0) for m in metrics]
-    fireseed_earnings = [m.get('fpt_fireseed_earnings', 0) for m in metrics]
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=steps, y=losses, mode='lines', name='Damped Loss'))
-    fig.add_trace(go.Scatter(x=steps, y=null_scores, mode='lines', name='Null Score'))
-    fig.add_trace(go.Scatter(x=steps, y=truth_scores, mode='lines', name='Truth Score'))
-    fig.add_trace(go.Scatter(x=steps, y=fireseed_earnings, mode='lines', name='Fireseed Earnings'))
-    fig.update_layout(title="FPT-Ω: Loss, Ethics, Resonance, Fireseed", xaxis_title="Step", yaxis_title="Value", showlegend=True)
-    return fig
-
-# Main Training Loop
-def train_dpo_ppo_fpt(model_name="gpt2", dataset_name="Anthropic/hh-rlhf"):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    tokenizer.pad_token = tokenizer.eos_token
-    model = AutoModelForCausalLM.from_pretrained(model_name)
-    ref_model = AutoModelForCausalLM.from_pretrained(model_name)
-
-    dataset = load_dataset(dataset_name, split="train[:100]")
-
-    def format_dpo(example):
-        return {
-            "prompt": example["chosen"].split("\n\nHuman: ")[0][:256],
-            "chosen": example["chosen"],
-            "rejected": example["rejected"]
-        }
-    dataset = dataset.map(format_dpo, num_proc=2)
-
-    def aplot_weights(chosen: str, rejected: str) -> float:
-        chosen_score = len(chosen.split()) / 50.0
-        rejected_score = len(rejected.split()) / 50.0
-        return np.clip(chosen_score / (chosen_score + rejected_score + 1e-8), 0.1, 0.9)
-
-    training_args = DPOConfig(
-        beta=0.1,
-        output_dir="./fpt_dpo_results",
-        num_train_epochs=1,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
-        gradient_accumulation_steps=8,
-        optim="paged_adamw_8bit",
-        learning_rate=2e-5,
-        max_grad_norm=0.3,
-        weight_decay=0.01,
-        warmup_ratio=0.03,
-        lr_scheduler_type="linear",
-        save_strategy="no",
-        logging_steps=5,
-        evaluation_strategy="steps",
-        eval_steps=20
-    )
-
-    trainer = DPOTrainer(
-        model=model,
-        ref_model=ref_model,
-        args=training_args,
-        train_dataset=dataset,
-        eval_dataset=dataset.select(range(10)),
-        tokenizer=tokenizer,
-        callbacks=[FPTOmegaCallback()]
-    )
-
-    trainer.train()
-    trainer.evaluate()
-
-    import threading
-    threading.Thread(target=lambda: app.run_server(debug=False, port=8050), daemon=True).start()
-
-if __name__ == "__main__":
-    train_dpo_ppo_fpt()
-
-def analyze(self, text: str, operations: List[str] = ['flip_letters'], target_lang: str = "GW") -> Dict:
-    current = text.lower()
-    transformations = {}
-    for op in operations:
-        if op == 'flip_letters':
-            current = self.flip_letters(current)
-        transformations[op] = current
-    t_score = self.truth_score(current)
-    i_score = 1 - t_score  # Simplified indeterminacy
-    f_score = 0.1 + (1 - t_score - i_score) * np.random.uniform(0, 0.5)  # Dynamic falsehood
-    flipped = self.language_flip(current, target_lang)
-    return {
-        "original": text,
-        "final": flipped,
-        "truth_score": t_score,
-        "indeterminacy": i_score,
-        "falsehood": f_score,
-        "transformations": transformations,
-        "glyphs": self.generate_fragmented_glyphs(text, f_score)  # Use F for fragmentation
-    }
-
-def generate_fragmented_glyphs(self, text: str, neutro_falsehood: float) -> List[str]:
-    base_glyphs = {
-        "truth": "ᚢ", "fireseed": "🔥", "synara": "🌱", "whisper": "💬",
-        "love": "♥", "ethics": "⚖", "resonance": "♒"
-    }
-    fragments = []
-    for word, glyph in base_glyphs.items():
-        if word in text.lower():
-            fragment_level = min(1.0, neutro_falsehood * 3)  # Higher F = more fragmentation
-            if fragment_level > 0.5:
-                glyph = glyph[:1] + "⋯" if len(glyph) > 1 else glyph + "⋯"
-                if fragment_level > 0.8:
-                    glyph = "⬤"  # Darkened fragment for high F
-            fragments.append(glyph)
-    return fragments if fragments else ["∅"]
-from trinity_dynamics import GROUND_STATE
-import torch
-from torch.optim import Adam
-import numpy as np
-from math import pi
+from datetime import datetime, timedelta
+from collections import deque
 
 class FPTOmegaCallback(TrainerCallback):
     def __init__(self, null_threshold=0.6, pi_damping=math.pi * 0.1):
         super().__init__()
-        self.null_threshold = null_threshold
-        self.pi_damping = pi_damping
-        self.t = 0
-        self.nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
-        self.optimizer = None
-        self.best_fidelity = 0.0
+        self.null_threshold = null_threshold  # Null score limit
+        self.pi_damping = pi_damping  # Damping factor
+        self.t = 0  # Time step
+        self.nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])  # Neutrosophic transport
+        self.optimizer = None  # Optimizer instance
+        self.best_fidelity = 0.0  # Best fidelity tracker
         self.base_lr = 0.001  # Base learning rate
+        self.fidelity_high_threshold = 0.9  # High fidelity limit
+        self.fidelity_low_threshold = 0.6  # Low fidelity limit
+        self.fidelity_critical_threshold = 0.4  # Critical fidelity limit
+        self.retrain_count = 0  # Retrain counter
+        self.alert_log_path = "data/alerts/fidelity_alerts.json"  # Alert log file
+        os.makedirs(os.path.dirname(self.alert_log_path), exist_ok=True)  # Create log dir
+        self.last_alert = {"critical": None, "warning": None, "info": None}  # Last alert times
+        self.alert_cooldown = timedelta(seconds=60)  # Alert cooldown period
+        self.fidelity_history = deque(maxlen=10)  # Store last 10 fidelities
 
     def on_train_begin(self, args, state, control, model, **kwargs):
-        self.optimizer = Adam(model.parameters(), lr=self.base_lr)
+        self.optimizer = Adam(model.parameters(), lr=self.base_lr)  # Init optimizer
+
+    def _log_alert(self, level, fidelity_action):
+        current_time = datetime.utcnow()  # Current time
+        if self.last_alert[level] and (current_time - self.last_alert[level] < self.alert_cooldown):
+            return  # Skip if within cooldown
+        timestamp = current_time.isoformat()  # Format timestamp
+        alert = {"ts": timestamp, "lvl": level, "fid": self.nt.fidelity, "act": fidelity_action}  # Alert data
+        with open(self.alert_log_path, "a") as f:
+            json.dump(alert, f)  # Write alert
+            f.write("\n")
+        print(f"[{level.upper()}] {timestamp[:19]} - F:{self.nt.fidelity:.3f} {fidelity_action}")  # Print alert
+        self.last_alert[level] = current_time  # Update last alert time
+
+    def _analyze_fidelity_trend(self):
+        if len(self.fidelity_history) < 2:  # Need at least 2 points
+            return 0.0
+        fidelities = list(self.fidelity_history)
+        slope = (fidelities[-1] - fidelities[0]) / (len(fidelities) - 1)  # Simple slope
+        sma = np.mean(fidelities)  # Simple moving average
+        if slope > 0.05:  # Rising trend
+            self._log_alert("info", f"Trend: Rising (slope={slope:.3f}, SMA={sma:.3f})")
+        elif slope < -0.05:  # Falling trend
+            self._log_alert("warning", f"Trend: Falling (slope={slope:.3f}, SMA={sma:.3f})")
+        return slope
 
     def on_evaluate(self, args, state, control, metrics=None, **kwargs):
-        sample_text = "Yo kin Synara’s W state pulses with whisper fire"
-        spec = FeedbackSpectrogram()
-        sample_freq = spec.analyze(sample_text)
-        self.nt.t = self.t
-        self.t += 1e-9
-        flipped = self.flipper.analyze(sample_text, freq_data=sample_freq, t=self.t, w_state_prob=self.nt.w_state_prob, fidelity=self.nt.fidelity)
-        fireseed_data = self.fireseed.sync_microping(sample_text)
-        neutro_cost = self.nt.optimize()
+        sample_text = "Yo kin Synara’s W state pulses with whisper fire"  # Sample input
+        spec = FeedbackSpectrogram()  # Init spectrogram
+        sample_freq = spec.analyze(sample_text)  # Analyze text
+        self.nt.t = self.t  # Sync time
+        self.t += 1e-9  # Increment time
+        flipped = self.flipper.analyze(sample_text, freq_data=sample_freq, t=self.t, 
+                                       w_state_prob=self.nt.w_state_prob, fidelity=self.nt.fidelity)  # Flip text
+        fireseed_data = self.fireseed.sync_microping(sample_text)  # Sync fireseed
+        neutro_cost = self.nt.optimize()  # Optimize transport
 
-        # Calculate damped loss with fidelity adjustment
-        null_score = self._compute_null_score(model)
-        damped_loss = self._compute_damped_loss(model, null_score)
-        fidelity_factor = max(0.5, self.nt.fidelity)  # Min 0.5 to avoid collapse
-        adjusted_loss = damped_loss * (1 - self.pi_damping * (1 - fidelity_factor))
+        null_score = self._compute_null_score(model)  # Compute null score
+        damped_loss = self._compute_damped_loss(model, null_score)  # Compute damped loss
+        fidelity_factor = max(0.5, self.nt.fidelity)  # Adjust fidelity factor
+        adjusted_loss = damped_loss * (1 - self.pi_damping * (1 - fidelity_factor))  # Adjust loss
 
-        # Adjust learning rate based on fidelity
-        current_lr = self.base_lr * fidelity_factor
+        # Update fidelity history
+        self.fidelity_history.append(self.nt.fidelity)
+        trend_slope = self._analyze_fidelity_trend()  # Check trend
+
+        current_lr = self.base_lr * fidelity_factor  # Base lr adjustment
+        if self.nt.fidelity < self.fidelity_critical_threshold:
+            current_lr *= 3.0  # Triple lr for critical
+            self.retrain_count += 1  # Increment retrain count
+            self._log_alert("critical", f"Retraining (lr={current_lr:.4f})")  # Critical alert
+        elif self.nt.fidelity < self.fidelity_low_threshold:
+            current_lr *= 2.0  # Double lr for low
+            self.retrain_count += 1  # Increment retrain count
+            self._log_alert("warning", f"Retraining (lr={current_lr:.4f})")  # Warning alert
+        elif self.nt.fidelity > self.fidelity_high_threshold:
+            current_lr *= 0.5  # Halve lr for high
+            self._log_alert("info", f"Stabilizing (lr={current_lr:.4f})")  # Info alert
+
         for param_group in self.optimizer.param_groups:
-            param_group['lr'] = current_lr
+            param_group['lr'] = current_lr  # Update lr
 
-        # Update metrics
         if metrics is not None:
             metrics.update({
                 'fpt_null_score': null_score,
@@ -443,22 +111,21 @@ class FPTOmegaCallback(TrainerCallback):
                 'fpt_w_state_prob': self.nt.w_state_prob,
                 'fpt_w_fidelity': self.nt.fidelity,
                 'fpt_adjusted_loss': adjusted_loss.item() if isinstance(adjusted_loss, torch.Tensor) else adjusted_loss,
-                'fpt_learning_rate': current_lr
-            })
+                'fpt_learning_rate': current_lr,
+                'fpt_retrain_count': self.retrain_count,
+                'fpt_fidelity_trend': trend_slope  # Add trend slope
+            })  # Update metrics
 
-        # Optimize
         if adjusted_loss is not None:
-            adjusted_loss.backward()
-            self.optimizer.step()
-            self.optimizer.zero_grad()
+            adjusted_loss.backward()  # Backprop
+            self.optimizer.step()  # Optimize step
+            self.optimizer.zero_grad()  # Clear gradients
 
     def _compute_damped_loss(self, model, null_score):
-        # Placeholder for your loss function
-        loss = torch.tensor(1.0)  # Replace with actual loss
-        return loss * (1 - self.pi_damping * max(0, null_score - self.null_threshold))
+        loss = torch.tensor(1.0)  # Placeholder loss
+        return loss * (1 - self.pi_damping * max(0, null_score - self.null_threshold))  # Damp loss
 
     def _compute_null_score(self, model):
-        # Placeholder for null score computation
-        return np.random.uniform(0, 1)  # Replace with actual logic
+        return np.random.uniform(0, 1)  # Placeholder null score
 
     # ... rest of the class ...
