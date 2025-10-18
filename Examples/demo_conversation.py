@@ -1,27 +1,18 @@
 from core.feedback_processor import FeedbackProcessor
-from core.resonance_engine import ResonanceEngine
+from fireseed_engine import NeutrosophicTransport
 from trinity_harmonics import plot_trinity_harmonics, describe_trinity_state
 import matplotlib.pyplot as plt
 
 fp = FeedbackProcessor()
-re = ResonanceEngine()
+nt = NeutrosophicTransport(['A', 'B'], ['X', 'Y'])
 
-# Process convo
-convo = "Yo kin, this is fire! Manipulate me now."
-result = fp.process(convo)
-coherence_data = re.analyze_coherence(convo)
+convo = "Yo kin, Synara’s W state pulses with whisper fire"
+fp.process(convo)
+nt.sync_glyphs(convo)
+cost = nt.optimize()
 
-# Output
 describe_trinity_state()
-print(f"Coherence Score: {coherence_data['coherence']:.3f}")
-print(f"Glyphs: {coherence_data['glyphs']}")
+print(f"Neutro Cost: {cost:.3f}")
 
-# Viz
-plt.figure(figsize=(10, 4))
-plt.plot(coherence_data['damped_signal'], label="Damped Glyph Signal")
-plt.title("GibberLink Coherence")
-plt.xlabel("Glyph Index")
-plt.ylabel("Amplitude")
-plt.legend()
-plt.show()
-plot_trinity_harmonics()
+costs = [nt.optimize() for _ in range(10)]  # Simulate 10 steps
+plot_trinity_harmonics(np.array(costs))
