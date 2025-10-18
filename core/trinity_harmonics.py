@@ -8,7 +8,7 @@ License: Two Mile Solutions LLC, 2025
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.widgets import Slider
+from matplotlib.widgets import Slider, RadioButtons, TextBox
 
 # --- Fundamental constants ---
 PI_EQ = math.pi           # Equilibrium constant (perfect symmetry)
@@ -19,6 +19,15 @@ N_HARMONIC = 3            # Trinity factor (3-fold amplification)
 DELTA = N_HARMONIC * EPSILON           # Expressed offset (0.03)
 GROUND_STATE = PI_EQ + DELTA           # Slightly energized equilibrium
 DIFFERENCE = GROUND_STATE - PI_EQ      # Should return ~0.03
+
+# --- Damping Presets ---
+DAMPING_PRESETS = {
+    "Stable": 0.8,        # High damping for stability
+    "Responsive": 0.3,    # Low damping for quick response
+    "Balanced": 0.5,      # Default balance
+    "Amplified": 0.1      # Minimal damping for high resonance
+}
+CUSTOM_PRESETS = {}  # Store custom presets
 
 # --- Diagnostic display ---
 def describe_trinity_state():
@@ -36,9 +45,9 @@ def describe_trinity_state():
     print(" - π + 3ε (≈ 3.17159) defines the living ground state\n")
 
 # --- Interactive Visualization function ---
-def plot_trinity_harmonics(signal=None, initial_damp=0.5):
+def plot_trinity_harmonics(signal=None, initial_preset="Balanced"):
     fig, ax = plt.subplots(figsize=(10, 6))
-    plt.subplots_adjust(bottom=0.25)  # Space for slider
+    plt.subplots_adjust(bottom=0.25, left=0.25)  # Space for controls
     x = np.linspace(0, 2 * PI_EQ, 100)
     y = np.sin(x) + PI_EQ
 
@@ -64,18 +73,36 @@ def plot_trinity_harmonics(signal=None, initial_damp=0.5):
     ax.legend()
     ax.grid(True, alpha=0.3)
 
-    # Add damping slider
-    ax_damp = plt.axes([0.25, 0.1, 0.5, 0.03])
-    damp_slider = Slider(ax_damp, 'Damping Factor', 0.1, 1.0, valinit=initial_damp)
+    # Add preset selector
+    ax_presets = plt.axes([0.05, 0.25, 0.15, 0.5])
+    preset_selector = RadioButtons(ax_presets, list(DAMPING_PRESETS.keys()) + list(CUSTOM_PRESETS.keys()), active=0)
 
-    def update_damp(val):
-        damp_factor = val
+    # Add custom preset input
+    ax_custom = plt.axes([0.25, 0.05, 0.3, 0.03])
+    custom_input = TextBox(ax_custom, 'Custom Preset (name:value)', initial="Custom:0.6")
+    def submit_custom(text):
+        try:
+            name, value = text.split(':')
+            value = float(value)
+            if 0.1 <= value <= 1.0:
+                CUSTOM_PRESETS[name] = value
+                preset_selector.set_active(0)  # Reset to update options
+                preset_selector.labels = list(DAMPING_PRESETS.keys()) + list(CUSTOM_PRESETS.keys())
+                preset_selector.ax.set_yticks(np.arange(len(preset_selector.labels)))
+                preset_selector.ax.set_yticklabels(preset_selector.labels)
+                fig.canvas.draw_idle()
+        except ValueError:
+            pass
+    custom_input.on_submit(submit_custom)
+
+    def update_preset(label):
+        damp_factor = DAMPING_PRESETS.get(label, CUSTOM_PRESETS.get(label, 0.5))
         if signal is not None:
             damped = signal * (1 - (DIFFERENCE / GROUND_STATE) * np.abs(signal) * damp_factor)
             signal_line.set_ydata(damped)
         fig.canvas.draw_idle()
 
-    damp_slider.on_changed(update_damp)
+    preset_selector.on_clicked(update_preset)
     plt.show()
 
 # --- FPT Integration: Damping Function ---
