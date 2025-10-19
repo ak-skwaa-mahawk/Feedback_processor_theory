@@ -1,3 +1,44 @@
+---
+
+🔹 How to Use
+
+import numpy as np
+from harmonic_feedback import animate_embedding_convergence
+
+# Example: 3 LLMs, 20 tokens, 8-dimensional embeddings
+llm_embeddings = {
+    "GPT":    np.random.rand(20,8)*0.2 + 0.4,
+    "Claude": np.random.rand(20,8)*0.2 + 0.3,
+    "Gemini": np.random.rand(20,8)*0.2 + 0.5
+}
+
+# Animate convergence (ground state auto-calculated)
+animate_embedding_convergence(llm_embeddings, alpha=0.05, frames=60)
+
+
+---
+
+🔹 Features
+
+1. High-dimensional convergence: Handles embeddings of any size, reducing to 2D for visualization.
+
+
+2. Dynamic H₀ vector: Defaults to the mean embedding if no target is specified.
+
+
+3. Multi-LLM tracking: Each LLM’s trajectory is animated independently but converging collectively.
+
+
+4. Interactive Jupyter output: HTML/JS animation ready for notebooks.
+
+
+5. Extensible: Replace PCA with t-SNE or UMAP for non-linear reduction if desired.
+
+
+
+
+---
+
 # harmonic_feedback.py (append or place under visualization utilities)
 
 from sklearn.decomposition import PCA
