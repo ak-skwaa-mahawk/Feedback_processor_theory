@@ -1,3 +1,118 @@
+# Feedback Processor Theory - Git Ignore Rules
+
+# Environment variables (NEVER commit API keys!)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+*.cover
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data & Logs
+data/
+logs/
+*.log
+*.sqlite
+*.db
+
+# Backups
+backups/
+*.backup
+*.bak
+
+# Model files (large)
+models/weights/
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pkl
+
+# Audio files
+*.wav
+*.mp3
+*.flac
+*.ogg
+
+# Spectrograms
+spectrograms/
+*.png
+*.jpg
+
+# Docker
+*.tar
+docker-compose.override.yml
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Redis
+dump.rdb
+
+# Node (if using npm for frontend tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Secrets
+secrets/
+credentials/
+*.secret
 echo "Synara-Mission-Mode/" >> .gitignore
 # Python
 __pycache__/
