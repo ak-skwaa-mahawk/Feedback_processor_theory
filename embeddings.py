@@ -1,53 +1,40 @@
-"""
-Embeddings Module - Audio transcription and text embedding with caching
-"""
-
+# backend/embeddings.py
+# Enhanced with LRU cache + demo mode + Trinity integration
 import os
 import openai
 import numpy as np
 import hashlib
 from functools import lru_cache
 from typing import Optional
-import logging
+import io
 
-logger = logging.getLogger(__name__)
-
-# Configuration
 openai.api_key = os.getenv("OPENAI_API_KEY")
 TEXT_EMB_MODEL = os.getenv("TEXT_EMB_MODEL", "text-embedding-3-small")
 USE_CACHE = os.getenv("USE_EMBEDDING_CACHE", "true").lower() == "true"
-CACHE_MAX_SIZE = int(os.getenv("CACHE_MAX_SIZE", 10000))
 DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
+CACHE_MAX_SIZE = int(os.getenv("CACHE_MAX_SIZE", 10000))
 
 # Cache statistics
-cache_stats = {"hits": 0, "misses": 0, "total_calls": 0}
-
+cache_stats = {"hits": 0, "misses": 0, "total": 0}
 
 def _hash_text(text: str) -> str:
     """Generate hash for cache key"""
     return hashlib.md5(text.encode()).hexdigest()
 
-
 def _generate_demo_embedding(text: str, size: int = 512) -> np.ndarray:
-    """Generate deterministic demo embedding (no API call)"""
-    # Use hash as seed for reproducibility
+    """Generate deterministic demo embedding (no API cost)"""
     seed = int(hashlib.md5(text.encode()).hexdigest()[:8], 16) % (2**32)
     rng = np.random.RandomState(seed)
     vec = rng.randn(size).astype(np.float32)
     vec /= (np.linalg.norm(vec) + 1e-12)
     return vec
 
-
 @lru_cache(maxsize=CACHE_MAX_SIZE if USE_CACHE else 0)
 def _text_to_embedding_cached(text_hash: str, text: str) -> tuple:
-    """
-    Cached embedding function
-    Returns tuple for hashability (required by lru_cache)
-    """
+    """Cached embedding - returns tuple for hashability"""
     cache_stats["misses"] += 1
     
     if DEMO_MODE:
-        logger.debug(f"Demo embedding for: {text[:50]}...")
         vec = _generate_demo_embedding(text)
         return tuple(vec.tolist())
     
@@ -55,121 +42,90 @@ def _text_to_embedding_cached(text_hash: str, text: str) -> tuple:
         raise RuntimeError("OPENAI_API_KEY not set")
     
     try:
-        resp = openai.embeddings.create(
-            model=TEXT_EMB_MODEL,
-            input=text
-        )
-        vec = np.array(resp.data[0].embedding, dtype=np.float32)
+        resp = openai.embeddings.create(model=TEXT_EMB_MODEL, input=text)
+        vec = np.array(resp["data"][0]["embedding"], dtype=np.float32)
         vec /= (np.linalg.norm(vec) + 1e-12)
-        
-        logger.debug(f"OpenAI embedding generated for: {text[:50]}...")
         return tuple(vec.tolist())
-        
     except Exception as e:
-        logger.error(f"OpenAI embedding error: {e}")
-        # Fallback to demo embedding
+        print(f"OpenAI embedding error: {e}, using demo mode")
         vec = _generate_demo_embedding(text)
         return tuple(vec.tolist())
-
 
 def text_to_embedding_openai(text: str) -> np.ndarray:
     """
     Get text embedding with caching
-    Main public interface for text embeddings
+    Public API for embeddings
     """
-    cache_stats["total_calls"] += 1
-    
-    # Strip whitespace
+    cache_stats["total"] += 1
     text = text.strip()
+    
     if not text:
         return np.zeros(512, dtype=np.float32)
     
-    # Check cache
     if USE_CACHE:
         text_hash = _hash_text(text)
         embedding_tuple = _text_to_embedding_cached(text_hash, text)
         
-        # Check if it was a cache hit
+        # Check if cache hit
         cache_info = _text_to_embedding_cached.cache_info()
-        if cache_info.hits > cache_stats["hits"]:
-            cache_stats["hits"] += 1
-            logger.debug(f"Cache HIT for: {text[:50]}...")
+        current_hits = cache_info.hits
+        if current_hits > cache_stats["hits"]:
+            cache_stats["hits"] = current_hits
     else:
-        # No cache - direct call
+        # No cache
         if DEMO_MODE:
             embedding_tuple = tuple(_generate_demo_embedding(text).tolist())
         else:
             resp = openai.embeddings.create(model=TEXT_EMB_MODEL, input=text)
-            vec = np.array(resp.data[0].embedding, dtype=np.float32)
+            vec = np.array(resp["data"][0]["embedding"], dtype=np.float32)
             vec /= (np.linalg.norm(vec) + 1e-12)
             embedding_tuple = tuple(vec.tolist())
     
-    # Convert back to numpy array
     return np.array(embedding_tuple, dtype=np.float32)
 
-
-def audio_bytes_to_embedding_openai(audio_bytes: bytes, 
-                                    language: Optional[str] = None) -> np.ndarray:
+def audio_bytes_to_embedding_openai(audio_bytes: bytes) -> np.ndarray:
     """
-    Transcribe audio with Whisper and generate text embedding
-    Pipeline: audio → Whisper transcription → text embedding
+    Transcribe audio + generate embedding
+    Pipeline: audio → Whisper → text → embedding
     """
     if DEMO_MODE:
-        logger.debug("Demo mode: generating random audio embedding")
         return _generate_demo_embedding("demo_audio", size=512)
     
     if not openai.api_key:
         raise RuntimeError("OPENAI_API_KEY not set")
     
     try:
-        # Transcribe audio using Whisper
-        import io
         audio_file = io.BytesIO(audio_bytes)
-        audio_file.name = "audio.wav"  # OpenAI requires a filename
+        audio_file.name = "audio.wav"
         
-        # Attempt transcription
         try:
+            # Try modern OpenAI client
             from openai import OpenAI
             client = OpenAI(api_key=openai.api_key)
-            
             transcription = client.audio.transcriptions.create(
                 model="whisper-1",
-                file=audio_file,
-                language=language
+                file=audio_file
             )
             text = transcription.text
-            logger.info(f"Transcribed audio: {text[:100]}...")
-            
-        except AttributeError:
-            # Fallback for older openai package versions
-            transcription = openai.Audio.transcribe(
-                model="whisper-1",
-                file=audio_file,
-                language=language
-            )
-            text = transcription["text"]
-            logger.info(f"Transcribed audio (legacy): {text[:100]}...")
+        except (ImportError, AttributeError):
+            # Fallback to legacy client
+            transcription = openai.Audio.transcribe("whisper-1", audio_file)
+            text = transcription.get("text", "")
         
-        # Generate embedding from transcribed text
         if text:
-            embedding = text_to_embedding_openai(text)
-            return embedding
+            return text_to_embedding_openai(text)
         else:
-            logger.warning("Empty transcription - returning zero embedding")
             return np.zeros(512, dtype=np.float32)
     
     except Exception as e:
-        logger.error(f"Audio transcription error: {e}")
-        # Return demo embedding as fallback
+        print(f"Audio transcription error: {e}, using demo mode")
         return _generate_demo_embedding("error_audio", size=512)
-
 
 def get_cache_stats() -> dict:
     """Get cache performance statistics"""
-    total = cache_stats["total_calls"]
+    total = cache_stats["total"]
     hits = cache_stats["hits"]
     misses = cache_stats["misses"]
-    
     hit_rate = (hits / total * 100) if total > 0 else 0.0
     
     cache_info = _text_to_embedding_cached.cache_info() if USE_CACHE else None
@@ -182,5 +138,18 @@ def get_cache_stats() -> dict:
         "cache_misses": misses,
         "hit_rate_percent": hit_rate,
         "max_cache_size": CACHE_MAX_SIZE,
-        "lru_cache_info": {
-            "hits": cache_info.hits if cache_info else
+        "lru_info": {
+            "hits": cache_info.hits if cache_info else 0,
+            "misses": cache_info.misses if cache_info else 0,
+            "currsize": cache_info.currsize if cache_info else 0
+        }
+    }
+
+def clear_cache():
+    """Clear embedding cache"""
+    if USE_CACHE:
+        _text_to_embedding_cached.cache_clear()
+        cache_stats["hits"] = 0
+        cache_stats["misses"] = 0
+        cache_stats["total"] = 0
+        print("Embedding cache cleared")
