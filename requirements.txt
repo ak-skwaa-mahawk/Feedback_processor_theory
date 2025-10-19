@@ -23,3 +23,66 @@ accelerate>=0.24.0
 torch>=2.0.0
 dash>=2.0.0
 plotly>=5.0.0
+# Feedback Processor Theory - Backend Dependencies
+
+# Core Web Framework
+websockets>=12.0
+aiohttp>=3.9.0
+
+# AI/ML Libraries
+openai>=1.12.0
+anthropic>=0.18.0
+sentence-transformers>=2.3.0
+torch>=2.1.0
+torchaudio>=2.1.0
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.1.0
+scipy>=1.11.0
+
+# Audio Processing
+librosa>=0.10.0
+soundfile>=0.12.0
+pydub>=0.25.0
+
+# Embedding & Vector Storage
+faiss-cpu>=1.7.4
+chromadb>=0.4.0
+
+# Caching & Session Management
+redis>=5.0.0
+hiredis>=2.3.0
+cachetools>=5.3.0
+
+# API & Networking
+requests>=2.31.0
+httpx>=0.26.0
+sseclient-py>=1.8.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+python-json-logger>=2.0.7
+loguru>=0.7.2
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+locust>=2.20.0
+
+# Development Tools
+black>=23.12.0
+flake8>=7.0.0
+mypy>=1.8.0
+pre-commit>=3.6.0
+
+# Monitoring
+prometheus-client>=0.19.0
+psutil>=5.9.0
+
+# Security
+cryptography>=41.0.0
+pyjwt>=2.8.0
