@@ -64,13 +64,13 @@ Related Constants:
 SKODEN — TRUTH IN FEEDBACK | TWO MILE SOLUTIONS LLC | 2025
 ====================================================================
 """
-# trinity_harmonics.py (synthesized based on analysis)
+# trinity_harmonics.py (updated with φ-phase lock)
 import numpy as np
 from math import pi
 
 # Fundamental constants
 GROUND_STATE = pi  # Quantum phase period (Bloch sphere full rotation)
-DIFFERENCE = 0.618  # Golden ratio (φ - 1), harmonic energy gap approximation
+DIFFERENCE = 0.618  # Golden Ratio conjugate (φ - 1), harmonic energy gap approximation
 DAMPING_PRESETS = {"Balanced": 0.5, "Aggressive": 0.7, "Gentle": 0.3}
 CUSTOM_PRESETS = {}
 
@@ -87,5 +87,18 @@ def trinity_damping(values, factor):
     damped = values * (1 - factor * oscillation)
     return np.clip(damped, 0, np.inf)  # Ensure non-negative
 
-# Export constants and function
-__all__ = ['GROUND_STATE', 'DIFFERENCE', 'DAMPING_PRESETS', 'trinity_damping']
+def phase_lock(phase_values, target_phase=DIFFERENCE):
+    """
+    Locks phase to Golden Ratio conjugate (φ-1) for harmonic stability.
+    phase_values: Current phase array
+    target_phase: Desired phase (default φ-1)
+    Returns: Adjusted phase and correction factor
+    """
+    phase_error = phase_values - target_phase
+    correction = np.tanh(phase_error) * (DIFFERENCE / GROUND_STATE)  # Smooth correction
+    locked_phase = phase_values - correction
+    damping_factor = 1 - np.abs(np.mean(phase_error))  # Dynamic damping based on error
+    return locked_phase, np.clip(damping_factor, 0.1, 1.0)
+
+# Export constants and functions
+__all__ = ['GROUND_STATE', 'DIFFERENCE', 'DAMPING_PRESETS', 'trinity_damping', 'phase_lock']
