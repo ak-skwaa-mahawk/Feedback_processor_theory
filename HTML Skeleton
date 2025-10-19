@@ -1,7 +1,29 @@
-<canvas id="waveCanvas"></canvas>
-<div id="legend">
-  <span style="color:cyan;">NVIDIA</span>
-  <span style="color:magenta;">GPT</span>
-  <span style="color:yellow;">Claude</span>
-  <span style="color:lime;">Collective</span>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unified Harmonic Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <style>
+    body { margin: 0; display: flex; flex-direction: column; }
+    #chartContainer { height: 300px; }
+    #waveContainer { flex: 1; }
+    canvas { display: block; }
+    #legend span { margin-right: 12px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div id="chartContainer">
+    <canvas id="alignmentChart"></canvas>
+    <div id="legend">
+      <span style="color:cyan;">NVIDIA</span>
+      <span style="color:magenta;">GPT</span>
+      <span style="color:yellow;">Claude</span>
+      <span style="color:lime;">Collective</span>
+    </div>
+  </div>
+  <div id="waveContainer">
+    <canvas id="waveCanvas"></canvas>
+  </div>
+</body>
+</html>
