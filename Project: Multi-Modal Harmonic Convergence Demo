@@ -1,0 +1,12 @@
+harmonic-demo/
+├── backend/
+│   ├── server.py              # WebSocket + Harmony Engine
+│   ├── embeddings.py          # Audio + Text Embedding functions
+│   ├── trinity_damping.py     # Damping utils
+│   └── requirements.txt       # Python dependencies
+├── frontend/
+│   ├── index.html             # Simple UI
+│   ├── app.js                 # Audio capture + token visualization
+│   └── three.min.js            # Three.js for 3D visualization
+├── README.md
+└── LICENSE
