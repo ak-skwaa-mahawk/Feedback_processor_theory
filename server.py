@@ -1,3 +1,332 @@
+#!/usr/bin/env python3
+"""
+Feedback Processor Theory - WebSocket Server
+Multi-LLM streaming with resonance analysis
+"""
+
+import asyncio
+import websockets
+import json
+import os
+import logging
+from datetime import datetime
+from typing import Dict, Set
+import signal
+import base64
+import traceback
+
+from llm_clients import NVIDIAClient, GPTClient, ClaudeClient
+from embeddings import text_to_embedding_openai, audio_bytes_to_embedding_openai
+from session_manager import SessionManager
+from resonance_engine import ResonanceEngine
+
+# Configuration
+HOST = os.getenv("BACKEND_HOST", "0.0.0.0")
+PORT = int(os.getenv("BACKEND_PORT", 8765))
+ENABLE_EMBEDDINGS = os.getenv("ENABLE_EMBEDDINGS", "true").lower() == "true"
+ENABLE_AUDIO = os.getenv("ENABLE_AUDIO", "true").lower() == "true"
+DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
+MAX_SESSIONS = int(os.getenv("MAX_SESSIONS", 100))
+
+# Logging setup
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Global state
+sessions: Dict[str, SessionManager] = {}
+connected_clients: Set[websockets.WebSocketServerProtocol] = set()
+
+# Initialize LLM clients
+try:
+    nvidia_client = NVIDIAClient()
+    logger.info("✓ NVIDIA client initialized")
+except Exception as e:
+    nvidia_client = None
+    logger.warning(f"NVIDIA client unavailable: {e}")
+
+try:
+    gpt_client = GPTClient()
+    logger.info("✓ OpenAI GPT client initialized")
+except Exception as e:
+    gpt_client = None
+    logger.warning(f"GPT client unavailable: {e}")
+
+try:
+    claude_client = ClaudeClient()
+    logger.info("✓ Claude client initialized")
+except Exception as e:
+    claude_client = None
+    logger.warning(f"Claude client unavailable: {e}")
+
+# Resonance engine
+resonance_engine = ResonanceEngine()
+
+
+async def handle_prompt(websocket, session: SessionManager, data: dict):
+    """Handle text prompt with LLM streaming"""
+    prompt = data.get("text", "")
+    llm_choice = data.get("llm", "gpt").lower()
+    
+    if not prompt:
+        await websocket.send(json.dumps({
+            "type": "error",
+            "message": "Empty prompt"
+        }))
+        return
+    
+    # Select client
+    client = None
+    if llm_choice == "gpt" and gpt_client:
+        client = gpt_client
+    elif llm_choice == "nvidia" and nvidia_client:
+        client = nvidia_client
+    elif llm_choice == "claude" and claude_client:
+        client = claude_client
+    
+    if not client:
+        await websocket.send(json.dumps({
+            "type": "error",
+            "message": f"LLM '{llm_choice}' not available"
+        }))
+        return
+    
+    logger.info(f"Session {session.session_id}: Processing prompt with {llm_choice}")
+    
+    try:
+        # Stream tokens
+        full_response = ""
+        token_count = 0
+        
+        async for chunk in client.stream_response(prompt):
+            token = chunk.get("token", "")
+            if not token:
+                continue
+            
+            full_response += token
+            token_count += 1
+            
+            # Generate embedding for token (if enabled)
+            token_emb = None
+            if ENABLE_EMBEDDINGS and not DEMO_MODE:
+                try:
+                    token_emb = text_to_embedding_openai(token)
+                    session.add_token_embedding(token_emb)
+                except Exception as e:
+                    logger.warning(f"Embedding failed: {e}")
+            
+            # Calculate resonance with audio
+            resonance_score = 0.0
+            if ENABLE_AUDIO and session.latest_audio_emb is not None and token_emb is not None:
+                resonance_score = resonance_engine.calculate_resonance(
+                    token_emb, 
+                    session.latest_audio_emb
+                )
+            
+            # Send token to client
+            await websocket.send(json.dumps({
+                "type": "token",
+                "token": token,
+                "llm": llm_choice,
+                "resonance": resonance_score,
+                "timestamp": datetime.utcnow().isoformat()
+            }))
+            
+            # Small delay to prevent overwhelming client
+            await asyncio.sleep(0.001)
+        
+        # Send completion
+        session.add_message("assistant", full_response)
+        await websocket.send(json.dumps({
+            "type": "complete",
+            "llm": llm_choice,
+            "tokens": token_count,
+            "message": full_response
+        }))
+        
+        logger.info(f"Session {session.session_id}: Completed {token_count} tokens from {llm_choice}")
+        
+    except Exception as e:
+        logger.error(f"Error streaming from {llm_choice}: {e}\n{traceback.format_exc()}")
+        await websocket.send(json.dumps({
+            "type": "error",
+            "message": f"Streaming error: {str(e)}"
+        }))
+
+
+async def handle_audio_chunk(websocket, session: SessionManager, data: dict):
+    """Handle audio chunk with transcription and embedding"""
+    if not ENABLE_AUDIO:
+        return
+    
+    audio_b64 = data.get("data", "")
+    if not audio_b64:
+        return
+    
+    try:
+        # Decode audio bytes
+        audio_bytes = base64.b64decode(audio_b64)
+        
+        # Generate audio embedding (transcribe + embed)
+        if not DEMO_MODE:
+            audio_emb = audio_bytes_to_embedding_openai(audio_bytes)
+            session.latest_audio_emb = audio_emb
+            
+            # Analyze spectral properties
+            spectral_data = resonance_engine.analyze_audio_spectrum(audio_bytes)
+            
+            await websocket.send(json.dumps({
+                "type": "audio_processed",
+                "embedding_size": len(audio_emb),
+                "spectral": spectral_data,
+                "timestamp": datetime.utcnow().isoformat()
+            }))
+            
+            logger.debug(f"Session {session.session_id}: Audio chunk processed")
+        
+    except Exception as e:
+        logger.error(f"Error processing audio: {e}")
+        await websocket.send(json.dumps({
+            "type": "error",
+            "message": f"Audio processing error: {str(e)}"
+        }))
+
+
+async def handle_message(websocket, path):
+    """Main WebSocket message handler"""
+    session_id = None
+    session = None
+    
+    try:
+        # Register client
+        connected_clients.add(websocket)
+        
+        # Create session
+        session_id = f"sess_{datetime.utcnow().timestamp()}"
+        session = SessionManager(session_id)
+        sessions[session_id] = session
+        
+        logger.info(f"New connection: {session_id} (total: {len(connected_clients)})")
+        
+        # Send welcome
+        await websocket.send(json.dumps({
+            "type": "connected",
+            "session_id": session_id,
+            "features": {
+                "embeddings": ENABLE_EMBEDDINGS,
+                "audio": ENABLE_AUDIO,
+                "demo_mode": DEMO_MODE
+            },
+            "available_llms": {
+                "gpt": gpt_client is not None,
+                "nvidia": nvidia_client is not None,
+                "claude": claude_client is not None
+            }
+        }))
+        
+        # Message loop
+        async for raw_message in websocket:
+            try:
+                msg = json.loads(raw_message)
+                msg_type = msg.get("type", "")
+                
+                if msg_type == "prompt":
+                    await handle_prompt(websocket, session, msg)
+                
+                elif msg_type == "audio_chunk":
+                    await handle_audio_chunk(websocket, session, msg)
+                
+                elif msg_type == "ping":
+                    await websocket.send(json.dumps({"type": "pong"}))
+                
+                elif msg_type == "get_history":
+                    await websocket.send(json.dumps({
+                        "type": "history",
+                        "messages": session.get_history()
+                    }))
+                
+                else:
+                    logger.warning(f"Unknown message type: {msg_type}")
+            
+            except json.JSONDecodeError:
+                await websocket.send(json.dumps({
+                    "type": "error",
+                    "message": "Invalid JSON"
+                }))
+            except Exception as e:
+                logger.error(f"Error handling message: {e}\n{traceback.format_exc()}")
+                await websocket.send(json.dumps({
+                    "type": "error",
+                    "message": str(e)
+                }))
+    
+    except websockets.exceptions.ConnectionClosed:
+        logger.info(f"Connection closed: {session_id}")
+    
+    except Exception as e:
+        logger.error(f"Connection error: {e}\n{traceback.format_exc()}")
+    
+    finally:
+        # Cleanup
+        connected_clients.discard(websocket)
+        if session_id and session_id in sessions:
+            del sessions[session_id]
+        logger.info(f"Disconnected: {session_id} (remaining: {len(connected_clients)})")
+
+
+async def health_check(websocket, path):
+    """Health check endpoint"""
+    await websocket.send(json.dumps({
+        "status": "healthy",
+        "sessions": len(sessions),
+        "clients": len(connected_clients),
+        "timestamp": datetime.utcnow().isoformat()
+    }))
+    await websocket.close()
+
+
+async def shutdown(signal, loop):
+    """Graceful shutdown"""
+    logger.info(f"Received exit signal {signal.name}...")
+    
+    # Close all connections
+    tasks = []
+    for ws in connected_clients:
+        tasks.append(ws.close(1001, "Server shutting down"))
+    
+    if tasks:
+        await asyncio.gather(*tasks, return_exceptions=True)
+    
+    # Clear sessions
+    sessions.clear()
+    
+    logger.info("Shutdown complete")
+    loop.stop()
+
+
+async def main():
+    """Start WebSocket server"""
+    logger.info(f"Starting Harmonic Demo server on {HOST}:{PORT}")
+    logger.info(f"Embeddings: {ENABLE_EMBEDDINGS} | Audio: {ENABLE_AUDIO} | Demo: {DEMO_MODE}")
+    
+    # Setup signal handlers
+    loop = asyncio.get_running_loop()
+    signals = (signal.SIGTERM, signal.SIGINT)
+    for s in signals:
+        loop.add_signal_handler(
+            s, lambda s=s: asyncio.create_task(shutdown(s, loop))
+        )
+    
+    # Start server
+    async with websockets.serve(handle_message, HOST, PORT):
+        logger.info(f"✓ Server ready at ws://{HOST}:{PORT}")
+        await asyncio.Future()  # Run forever
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
 # backend/server.py
 # WebSocket server: launches LLM streams concurrently and broadcasts per-token messages
 import os
