@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trinity Harmonics Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Trinity Harmonics Convergence</h1>
+<input type="text" id="prompt" placeholder="Enter initial prompt" size="60">
+<button id="startBtn">Start Conversation</button>
+
+<canvas id="similarityChart" width="800" height="400"></canvas>
+
+<div id="logs"></div>
+
+<script src="main.js"></script>
+</body>
+</html>
