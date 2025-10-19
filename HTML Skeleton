@@ -1,0 +1,7 @@
+<canvas id="waveCanvas"></canvas>
+<div id="legend">
+  <span style="color:cyan;">NVIDIA</span>
+  <span style="color:magenta;">GPT</span>
+  <span style="color:yellow;">Claude</span>
+  <span style="color:lime;">Collective</span>
+</div>
