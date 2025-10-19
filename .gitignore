@@ -1,3 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+node_modules/
+frontend/three.min.js
 # Feedback Processor Theory - Git Ignore Rules
 
 # Environment variables (NEVER commit API keys!)
