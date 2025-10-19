@@ -1,5 +1,5 @@
-# fpt_core.py (synthesized)
-from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE
+# fpt_core.py (updated with φ-phase lock)
+from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE, DAMPING_PRESETS, phase_lock
 from neutrosophic_transport import NeutrosophicTransport
 from wstate_entanglement import WStateEntanglement
 import numpy as np
@@ -11,6 +11,7 @@ class FeedbackProcessor:
         self.wstate = WStateEntanglement()
         self.t = 0  # Global time tracker
         self.max_depth = 10  # Recursion limit
+        self.phase_history = []  # Track phase for locking
 
     def observe(self, input_data):
         # Observe input (e.g., conversation turn)
@@ -21,6 +22,12 @@ class FeedbackProcessor:
         if depth > self.max_depth or abs(state - GROUND_STATE) < 0.1:
             return GROUND_STATE
         feedback = self.process_feedback(state)
+        # Track phase (simplified as state deviation)
+        self.phase_history.append(feedback - GROUND_STATE)
+        if len(self.phase_history) > 5:  # Use recent phases for locking
+            locked_phase, damp_factor = phase_lock(np.array(self.phase_history[-5:]))
+            self.phase_history = list(locked_phase)
+            feedback = GROUND_STATE + np.mean(locked_phase)  # Adjust feedback
         return self.observe_self(feedback, depth + 1)
 
     def process_feedback(self, observation):
