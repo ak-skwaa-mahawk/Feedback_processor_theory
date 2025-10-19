@@ -42,3 +42,36 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+// Example websocket streaming token-level data
+const ws = new WebSocket('wss://your-streaming-endpoint');
+
+ws.onmessage = (event)=>{
+  const data = JSON.parse(event.data); 
+  const {tokenIndex, harmony, llm} = data;
+
+  // === Update 2D chart ===
+  chartData.datasets.find(ds=>ds.label===llm).data[tokenIndex] = harmony;
+  alignmentChart.update('none');
+
+  // === Update 3D waveform ===
+  const phase = (Math.random() * 2*Math.PI); // replace with embedding phase
+  const y = harmony * 10;  
+  const z = Math.sin(phase) * 5;
+  const lineData = lines[llm];
+  const idx = tokenIndex*3;
+  lineData.positions[idx] = tokenIndex - 50; // x
+  lineData.positions[idx+1] = y;             // y
+  lineData.positions[idx+2] = z;             // z
+  lineData.geometry.attributes.position.needsUpdate = true;
+
+  // Collective average
+  if(llm!=='Collective'){
+    const collective = lines['Collective'];
+    if(!collective.collectiveBuffer[tokenIndex]) collective.collectiveBuffer[tokenIndex] = [];
+    collective.collectiveBuffer[tokenIndex].push(y);
+    const meanY = collective.collectiveBuffer[tokenIndex].reduce((a,b)=>a+b,0)/collective.collectiveBuffer[tokenIndex].length;
+    collective.positions[idx+1] = meanY;
+    collective.positions[idx+2] = 0;
+    collective.geometry.attributes.position.needsUpdate = true;
+  }
+};
