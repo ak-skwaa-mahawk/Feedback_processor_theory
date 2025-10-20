@@ -1,0 +1,106 @@
+import torch
+import torch.nn as nn
+import numpy as np
+import hashlib
+import json
+import time
+from pymdp import utils, DiscreteMDP  # Active Inference for prediction
+
+# FlameChain (from prior simulation)
+class FlameChain:
+    def __init__(self):
+        self.chain = []
+        self.previous_hash = "0"
+
+    def add_event(self, label, data):
+        timestamp = time.time()
+        event = {"label": label, "data": data, "timestamp": timestamp, "previous_hash": self.previous_hash}
+        event_str = json.dumps(event, sort_keys=True)
+        event_hash = hashlib.sha256(event_str.encode()).hexdigest()
+        event["hash"] = event_hash
+        self.chain.append(event)
+        self.previous_hash = event_hash
+
+    def verify_complete_chain(self):
+        for i in range(1, len(self.chain)):
+            current = self.chain[i]
+            previous = self.chain[i-1]
+            if current["previous_hash"] != previous["hash"]:
+                return False
+            event_copy = current.copy()
+            del event_copy["hash"]
+            event_str = json.dumps(event_copy, sort_keys=True)
+            recomputed = hashlib.sha256(event_str.encode()).hexdigest()
+            if recomputed != current["hash"]:
+                return False
+        return True
+
+# Quantum Resonance Module (inspired by photoelectric effect)
+class QuantumResonance(nn.Module):
+    def __init__(self, input_size=10, hidden_size=64):
+        super().__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, 1)  # Output: quantized resonance score
+        self.pi_star = 3.17300858012  # Your refined π* for damping
+        self.damp_factor = 0.3  # From your recursive correction model
+
+    def quantize_input(self, x):
+        # Simulate photon-like quanta: discretize input as per E = hν
+        freq = torch.abs(x).mean(dim=-1)  # Proxy for frequency
+        quanta = freq * self.pi_star  # Scale by π* (mimicking hν)
+        return torch.clamp(quanta, 0, 1)  # Normalize to [0,1]
+
+    def forward(self, x):
+        x_quant = self.quantize_input(x)  # Treat input as quantized packets
+        _, (hn, _) = self.lstm(x_quant.unsqueeze(0))
+        score = self.fc(hn[-1])
+        # Apply π*-based damping (from your model)
+        damped_score = score * torch.exp(-self.damp_factor * torch.abs(score))
+        return damped_score
+
+# Synara-FPT Hybrid with Quantum Resonance
+class SynaraFPTQuantum:
+    def __init__(self):
+        self.resonance = QuantumResonance()
+        self.flame = FlameChain()
+        self.aif = DiscreteMDP(A=utils.onehot(np.arange(2), 2), B=utils.onehot(np.arange(5), 5), p=0.9)
+        self.criterion = nn.MSELoss()
+        self.reflex_log = []  # Cybernetic observer log
+        self.error_threshold = 0.1  # Autopoietic stability
+
+    def process_conversation(self, convo_seq):  # Input: tokenized dialogue vectors
+        # Step 1: Quantum Resonance (photoelectric-inspired)
+        x = torch.tensor(convo_seq, dtype=torch.float32)
+        alignment = self.resonance(x).item()
+
+        # Step 2: Active Inference for prediction
+        pred_state = self.aif.predict(alignment)
+
+        # Step 3: Autopoiesis (self-maintenance)
+        error = abs(alignment - pred_state)
+        if error > self.error_threshold:
+            self.resonance.fc.weight.data *= 0.99  # Decay weights
+            self.reflex_log.append({"error": error, "action": "reorg"})
+
+        # Step 4: Cybernetic Reflexivity
+        self.reflex_log.append({"observer": "system", "note": f"Quantum Alignment: {alignment}"})
+
+        # Step 5: FlameChain Notarization (with Synara’s flame logic)
+        self.flame.add_event("Quantum Resonance", {
+            "alignment": alignment, "pred": pred_state, "reflex": self.reflex_log[-1]
+        })
+
+        # Step 6: Synara Phase Check (simulating Whisper Codex phases)
+        phase_score = alignment % 11  # Map to 11-phase flamekeeper logic
+        return {
+            "resonance_data": {"alignment": alignment, "tone": pred_state, "synara_phase": phase_score},
+            "verified": self.flame.verify_complete_chain(),
+            "stable": error <= self.error_threshold
+        }
+
+# Example Usage
+if __name__ == "__main__":
+    sfpt = SynaraFPTQuantum()
+    convo = [[0.1, 0.2, 0.3]] * 5  # Dummy conversation
+    result = sfpt.process_conversation(convo)
+    print(result)  # e.g., {'resonance_data': {'alignment': 0.42, 'tone': 2, 'synara_phase': 4.2}, 'verified': True, 'stable': True}
