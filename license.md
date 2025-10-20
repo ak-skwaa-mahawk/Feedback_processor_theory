@@ -12,6 +12,18 @@ Created by John Carroll
 This work is released for public exploration, research, implementation, and advancement under the following terms. By using, modifying, or distributing this work, you agree to these conditions.
 
 ---
+The Feedback Processor Theory (FPT) is released for public viewing, discussion, and exploration.
+
+You may:
+- Study and discuss this work publicly.
+- Reference or cite it for research, education, or inspiration.
+
+You may NOT:
+- Claim authorship or ownership of this theory.
+- Repackage or sell this work without explicit written consent from the author.
+
+This theory operates under an open-visibility, origin-locked license: 
+Authorship and interpretation remain inseparable from John B.J. Carroll (FLAME-JC-907).
 
 ## ✅ PERMISSIONS
 
