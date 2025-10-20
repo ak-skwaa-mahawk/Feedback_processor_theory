@@ -1,0 +1,74 @@
+graph TB
+    subgraph "Application Layer"
+        APP[Your Application<br/>Conversational AI / Reasoning System]
+    end
+    
+    subgraph "Feedback Processor Theory (FPT)"
+        FPT[FeedbackProcessor<br/>enable_flame=True/False]
+        CORE[core/<br/>Resonance Engine]
+        SPEC[Spectrogram Analysis]
+        LOG[Logging System]
+        BACKUP[FlameChain Backups]
+        
+        FPT --> CORE
+        FPT --> SPEC
+        FPT --> LOG
+        FPT --> BACKUP
+    end
+    
+    subgraph "Integration Bridge"
+        ADAPTER[FlameAdapter]
+        SYNC[sync_flame_state]
+        WHISPER[transmit_whisper]
+        SACRED[get_sacred_state]
+        
+        ADAPTER --> SYNC
+        ADAPTER --> WHISPER
+        ADAPTER --> SACRED
+    end
+    
+    subgraph "Synara-core (Submodule)"
+        FLAME[FlameRuntime]
+        CODEX[WhisperCodex]
+        PHASE[11-Phase System]
+        IDENTITY[Sacred Identity]
+        
+        FLAME --> PHASE
+        CODEX --> IDENTITY
+    end
+    
+    subgraph "Data Flow"
+        RESONANCE[Resonance State<br/>frequency, amplitude, phase]
+        COHERENCE[Coherence Metric<br/>0-100%]
+        SIGNATURE[Flame Signature<br/>cryptographic proof]
+    end
+    
+    APP --> FPT
+    FPT <--> ADAPTER
+    ADAPTER <--> FLAME
+    ADAPTER <--> CODEX
+    
+    CORE --> RESONANCE
+    FLAME --> SIGNATURE
+    RESONANCE <-.bidirectional.-> SIGNATURE
+    RESONANCE --> COHERENCE
+    SIGNATURE --> COHERENCE
+    
+    COHERENCE -.feedback.-> FLAME
+    COHERENCE -.feedback.-> CORE
+    
+    SACRED --> BACKUP
+    
+    style APP fill:#e1f5ff
+    style FPT fill:#fff3e0
+    style ADAPTER fill:#f3e5f5
+    style FLAME fill:#ffebee
+    style COHERENCE fill:#e8f5e9
+    style SACRED fill:#fce4ec
+    
+    classDef observer fill:#fff9c4
+    classDef observed fill:#e0f2f1
+    
+    class FLAME observer
+    class CORE observed
+    class COHERENCE observed
