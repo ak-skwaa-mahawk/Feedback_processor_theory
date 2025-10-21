@@ -1,0 +1,1 @@
+Added SaveIcon, FolderOpenIcon, and XIcon to support the new session management UI (save button, manage sessions modal, and modal close button).
