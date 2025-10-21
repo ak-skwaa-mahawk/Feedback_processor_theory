@@ -1,0 +1,40 @@
+Feedback_processor_theory/
+├── src/                    # Core FPT base classes
+│   └── fpt.py             # Main FeedbackProcessor class
+├── core/                  # Resonance engine and processors
+│   ├── resonance_engine.py
+│   ├── spectrogram.py
+│   └── analysis.py
+├── models/                # Theory documents and specifications
+├── docs/                  # Comprehensive documentation
+│   ├── index.md          # Documentation hub
+│   ├── concepts/         # Core concept deep-dives
+│   ├── guides/           # How-to guides
+│   └── technical/        # Technical references
+├── examples/              # Demonstrations and tutorials
+│   └── demo_conversation.py
+├── tools/                 # Utility scripts
+│   └── verify_backups.py
+├── tests/                 # Test suite
+├── backups/              # FlameChain archives (gitignored)
+├── data/                 # Output data (gitignored)
+├── pyproject.toml        # Modern Python packaging
+├── setup.py              # Package configuration
+├── MANIFEST.in           # Package data inclusion
+├── requirements.txt      # Dependencies
+├── README.md            # This file
+├── ABOUT.md             # Comprehensive theory and philosophy
+├── CONTRIBUTING.md       # How to contribute
+├── CHANGELOG.md         # Version history
+└── LICENSE              # License file
+
+from src.fpt import FeedbackProcessor
+
+processor = FeedbackProcessor()
+result = processor.analyze_conversation("Hello, how are you? I'm feeling resonant today.")
+print(result.spectrogram)  # Outputs alignment score, emotional tone, etc.
+
+from core.resonance_engine import ResonanceMonitor
+
+monitor = ResonanceMonitor()
+monitor.stream_conversation()  # Processes live input
