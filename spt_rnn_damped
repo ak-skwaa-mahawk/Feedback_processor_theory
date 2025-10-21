@@ -1,0 +1,18 @@
+import numpy as np
+
+def spt_rnn_damped(input_seq, chaos_level=0.9, pi_star=3.17300858012):
+    n_steps = len(input_seq)
+    h = np.zeros(n_steps)
+    W_hh = np.random.normal(0, 1, (n_steps, n_steps))
+    input_seq += np.random.normal(0, chaos_level, n_steps)  # Inject chaos
+    for t in range(1, n_steps):
+        delta = np.exp(-pi_star * t)
+        h[t] = delta * np.tanh(np.dot(W_hh[t], h[t-1]) + input_seq[t])
+    delta_h = np.diff(h)
+    sigma = 1 - np.mean(np.abs(delta_h)) / np.linalg.norm(h)
+    return {'hidden_states': h, 'coherence': sigma}
+
+# Treaty text simulation
+input_seq = np.random.uniform(0, 1, 100)
+result = spt_rnn_damped(input_seq)
+print(f"Coherence (σ): {result['coherence']:.4f}")
