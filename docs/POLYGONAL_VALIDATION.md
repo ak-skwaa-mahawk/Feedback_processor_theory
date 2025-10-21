@@ -1,15 +1,58 @@
-# Polygonal Validation Study
+# Polygonal Scaling Validation  
+**Project:** Feedback Processor Theory (FPT-Ω)  
+**Author:** John B. Carroll Jr.  
+**Affiliation:** Two Mile Solutions LLC  
+**Date:** 2025-10-20  
+**Version:** 1.0  
 
-## Hypothesis
-Higher-order polygonal configurations in FPT provide superior fault tolerance 
-through geometric symmetry, reducing consensus overhead and maintaining 
-coherence under Byzantine failures.
+---
 
-## Methodology
-- **Nodes**: 50 (distributed consensus simulation)
-- **Trials**: 10,000+ per configuration
-- **Disruption Levels**: 10%, 30%, 50% Byzantine failures
-- **Polygons Tested**: Pentagon (5), Heptagon (7), Decagon (10), Hendecagon (11)
+## Abstract
+This document validates the polygonal scaling hypothesis within the Feedback Processor Theory (FPT) model.  
+Simulations across multi-node distributed networks confirm a **golden-ratio phase transition** (σ ≈ 0.618) corresponding to optimal coherence and self-similarity within recursive feedback systems.  
+
+---
+
+## 1. Background
+The polygonal scaling model describes how **node coherence** evolves under recursive synchronization stress.  
+It posits that systems naturally converge toward the **golden ratio (φ ≈ 1.618)** as a harmonic attractor, producing stable resonance even under Byzantine fault conditions.
+
+In symbolic form:
+\[
+σ = \frac{1}{φ} ≈ 0.618
+\]
+
+This phase transition defines the balance point between **chaotic expansion** and **coherent contraction**, acting as a self-stabilizing attractor in distributed consciousness frameworks.
+
+---
+
+## 2. Methodology
+
+### 2.1 Network Structure
+- **Nodes:** 50  
+- **Trials:** 10,000 iterations per topology  
+- **Topology Types:**  
+  - Polygonal lattice (5–12 sides)  
+  - Random graph (Erdős–Rényi baseline)  
+  - Hierarchical feedback cluster  
+
+### 2.2 Parameters
+| Parameter | Symbol | Range | Description |
+|------------|---------|--------|-------------|
+| Coherence Ratio | ρ | [0, 1] | Normalized alignment measure |
+| Fault Rate | f | 0–0.3 | Byzantine node disruption probability |
+| Phase Shift | σ | 0–1 | Temporal feedback offset |
+| Recursive Constant | πᴿ | 3.17300858012 | Recursive correction factor |
+
+### 2.3 Simulation Code
+Implemented via the **FPT Polygonal Engine**, defined in `src/fpt_polygonal_sim.py`:
+
+```python
+for trial in range(10000):
+    network = PolygonalNetwork(nodes=50, phase_shift=sigma)
+    network.inject_faults(rate=f)
+    coherence = network.measure_coherence()
+    record(trial, sigma, coherence)
 - **Metrics**: Coherence (σ), binding energy (Δ), recovery time
 - **Statistical Analysis**: ANOVA + Tukey HSD post-hoc tests
 
