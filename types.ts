@@ -1,1 +1,2 @@
+Added new TypeScript types, SessionData and SavedSession, to define the structure for storing and managing user sessions in local storage.
 Add the Survey, SurveyQuestion, and QuestionType types to support the new AI-powered survey generation feature.
