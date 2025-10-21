@@ -1,3 +1,12 @@
+## Recent Findings
+
+### Polygonal Scaling Validation
+Simulation of 10,000+ trials across 50-node networks demonstrates:
+- **17-41% coherence improvement** under Byzantine failures
+- **Golden ratio phase transition** at σ ≈ 0.618
+- **Statistically significant** results (p < 1e-6)
+
+See [POLYGONAL_VALIDATION.md](docs/POLYGONAL_VALIDATION.md) for details.
 # Feedback Processor Theory (FPT)
 ## Quantum-Inspired Distributed Consciousness Architecture
 
