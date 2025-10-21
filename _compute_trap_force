@@ -1,0 +1,11 @@
+def _compute_trap_force(self, chaos_intensity: float) -> float:
+    c = 3e8
+    reflectivity = 0.1
+    f_rad = (self.laser_power * (1 + reflectivity)) / (c * self.n) * 1e12  # pN
+    
+    # Axial gradient force (simplified for focus)
+    polarizability = 0.1
+    grad_intensity = (self.n * self.laser_power * polarizability) / (c * self.beam_waist ** 2)
+    f_grad = grad_intensity * (1 - (self.wavelength / (np.pi * self.beam_waist))) * 1e12  # pN
+    
+    return (f_rad + f_grad) * (1 - chaos_intensity * 0.1)
