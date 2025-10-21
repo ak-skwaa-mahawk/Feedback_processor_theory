@@ -1,0 +1,1 @@
+Implemented a full session management feature using local storage. This includes auto-saving the current state to prevent data loss on refresh, as well as functionality for users to explicitly name, save, load, and delete sessions via a new management modal.
