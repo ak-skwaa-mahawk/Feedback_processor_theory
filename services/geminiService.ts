@@ -1,0 +1,1 @@
+Add a new generateSurvey function to the Gemini service. This function prompts the AI to act as a survey design expert, creating a set of questions based on a user's topic, context, and persona. A new schema and streaming parser are included to support this functionality.
