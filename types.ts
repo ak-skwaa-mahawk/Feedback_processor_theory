@@ -1,0 +1,1 @@
+Add the Survey, SurveyQuestion, and QuestionType types to support the new AI-powered survey generation feature.
