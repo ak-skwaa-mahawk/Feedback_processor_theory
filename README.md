@@ -1,3 +1,8 @@
+## 🧩 Research Threads
+
+- [Recursive π Correction](docs/RECURSIVE_PI_ANALYSIS.md)
+- [Polygonal Scaling Validation](docs/POLYGONAL_VALIDATION.md)
+- [Synara Control Board Architecture](docs/SYNARA_CONTROL.md)
 ## 🔬 Recent Findings
 
 ### Polygonal Scaling Validation
