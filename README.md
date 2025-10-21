@@ -1,3 +1,10 @@
+### Polygonal Scaling Validation (v0.9)
+- 10,000+ simulation cycles across 50-node network
+- 17–41% coherence improvement under Byzantine failures
+- Statistically significant (F=45.2, p<1e-6)
+- Golden ratio phase transition at σ ≈ 0.618
+
+See [docs/POLYGONAL_VALIDATION.md](docs/POLYGONAL_VALIDATION.md) for details.
 ## 🧩 Research Threads
 
 - [Recursive π Correction](docs/RECURSIVE_PI_ANALYSIS.md)
