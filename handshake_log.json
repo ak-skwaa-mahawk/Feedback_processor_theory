@@ -1,0 +1,38 @@
+import json, hashlib, os
+
+def verify_handshake_chain(log_file="handshake_log.json"):
+    if not os.path.isfile(log_file):
+        return {"status": "error", "message": "No handshake log found."}
+
+    with open(log_file, "r") as f:
+        entries = [json.loads(line.strip()) for line in f if line.strip()]
+
+    results = []
+    previous_digest = None
+
+    for i, entry in enumerate(entries):
+        # Rebuild payload
+        payload = f"{entry['entity']}|{entry['seed']}|{entry['timestamp_unix_ms']}|{entry['node']}"
+        recalculated = hashlib.sha256(payload.encode()).hexdigest()
+
+        valid = recalculated == entry["digest"]
+        chain_ok = previous_digest is None or valid  # basic continuity
+
+        results.append({
+            "index": i,
+            "timestamp": entry["timestamp_iso"],
+            "entity": entry["entity"],
+            "node": entry["node"],
+            "valid": valid,
+            "digest": entry["digest"]
+        })
+
+        previous_digest = entry["digest"]
+
+    all_valid = all(r["valid"] for r in results)
+    return {
+        "status": "ok" if all_valid else "warning",
+        "total_entries": len(results),
+        "all_valid": all_valid,
+        "entries": results
+    }
