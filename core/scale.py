@@ -105,3 +105,20 @@ def annotate_resonance(resonance_score: float, top_bands: int = DEFAULT_TOP_BAND
             "top_bands": int(top_bands),
         },
     }
+# core/scale.py (append)
+from typing import Dict
+
+def table(n0: int = 0, n1: int = DEFAULT_TOP_BANDS, sig: int = 4) -> List[Dict]:
+    """
+    Build a table of bands with raw meters and humanized units.
+    """
+    rows: List[Dict] = []
+    for n, L in series(n0, n1):
+        val, unit = humanize_meters(L, sig=sig)
+        rows.append({
+            "band": int(n),
+            "length_m": str(L),                 # high-precision string
+            "length_human": {"value": val, "unit": unit},
+        })
+    return rows
+
