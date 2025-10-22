@@ -1,0 +1,19 @@
+Feedback_processor_theory/
+├── core/
+│   ├── feedback_engine.py
+│   ├── recursive_pi.py
+│   └── polygonal_validation.py
+│
+├── integration/
+│   ├── deepseek_adapter.py              # NEW
+│   └── handshake_ledger.py              # NEW (from your code)
+│
+├── docs/
+│   ├── DEEPSEEK_MERGE_README.md         # NEW
+│   ├── POLYGONAL_VALIDATION.md
+│   └── polygonal_scaling.png
+│
+├── data/
+│   └── handshake_log.json               # Auto-generated
+│
+└── README.md
