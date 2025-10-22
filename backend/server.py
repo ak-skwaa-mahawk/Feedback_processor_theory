@@ -57,3 +57,49 @@ def scale_annotate(
     """
     payload = annotate_resonance(resonance_score, top_bands=top_bands)
     return JSONResponse(payload)
+# backend/server.py (additions)
+from fastapi import FastAPI, Query
+from fastapi.responses import JSONResponse, StreamingResponse
+import io, csv
+
+from core.scale import annotate_resonance, table
+from core.constants import DEFAULT_TOP_BANDS
+
+app = FastAPI(title="FPT API")
+
+# ... existing /scale/annotate route ...
+
+@app.get("/scale/table")
+def scale_table(
+    n0: int = Query(0, ge=0, description="start band (inclusive)"),
+    n1: int = Query(DEFAULT_TOP_BANDS, ge=0, le=200, description="end band (inclusive)"),
+    sig: int = Query(4, ge=1, le=10, description="significant digits for humanized values"),
+    as_csv: bool = Query(False, description="return CSV instead of JSON"),
+):
+    """
+    Return a table of bands with Planck-anchored lengths.
+    JSON by default; set as_csv=true for CSV download.
+    """
+    rows = table(n0=n0, n1=n1, sig=sig)
+
+    if not as_csv:
+        return JSONResponse({"n0": n0, "n1": n1, "sig": sig, "rows": rows})
+
+    # CSV stream
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["band", "length_m", "value", "unit"])
+    for r in rows:
+        writer.writerow([
+            r["band"],
+            r["length_m"],
+            r["length_human"]["value"],
+            r["length_human"]["unit"],
+        ])
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.read()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="scale_ladder_{n0}_{n1}.csv"'},
+    )
+
