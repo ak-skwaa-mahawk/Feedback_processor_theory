@@ -1,0 +1,25 @@
+import time, socket, hashlib, json, os
+
+def handshake_message(seed: str, entity: str = "TwoMileSolutionsLLC", version: str = "1.1", log_file="data/handshake_log.json"):
+    """Generate a verifiable handshake receipt for entity binding and timestamping."""
+    ts_unix = str(int(time.time() * 1000))
+    ts_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    hostname = socket.gethostname()
+    payload = f"{entity}|{seed.strip()}|{ts_unix}|{hostname}"
+    digest = hashlib.sha256(payload.encode()).hexdigest()
+    receipt = {
+        "entity": entity,
+        "version": version,
+        "timestamp_unix_ms": ts_unix,
+        "timestamp_iso": ts_iso,
+        "seed": seed.strip(),
+        "digest": digest,
+        "node": hostname
+    }
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    log_exists = os.path.isfile(log_file)
+    with open(log_file, "a" if log_exists else "w") as f:
+        if log_exists:
+            f.write("\n")
+        f.write(json.dumps(receipt))
+    return receipt
