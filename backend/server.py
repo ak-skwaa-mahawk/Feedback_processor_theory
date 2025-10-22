@@ -37,3 +37,23 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+# backend/server.py (additions)
+from fastapi import FastAPI, Query
+from fastapi.responses import JSONResponse
+
+from core.scale import annotate_resonance
+from core.constants import DEFAULT_TOP_BANDS
+
+app = FastAPI(title="FPT API")
+
+@app.get("/scale/annotate")
+def scale_annotate(
+    resonance_score: float = Query(..., ge=-1.0, le=1.0, description="r ∈ [-1, 1]"),
+    top_bands: int = Query(DEFAULT_TOP_BANDS, ge=1, le=200, description="symbolic top band"),
+):
+    """
+    Annotate a resonance score with Planck-anchored scale markers.
+    NOTE: '−ℓ_p' is a symbolic top marker (not a physical negative length).
+    """
+    payload = annotate_resonance(resonance_score, top_bands=top_bands)
+    return JSONResponse(payload)
