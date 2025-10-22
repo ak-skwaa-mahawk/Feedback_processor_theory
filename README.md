@@ -1,3 +1,4 @@
+[![FPT Verified Commit](https://img.shields.io/badge/FPT_Integration-Verified_Commit_🧬-blueviolet?style=for-the-badge&logo=github)](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/commits/main)
 ### Polygonal Scaling Validation (v0.9)
 - 10,000+ simulation cycles across 50-node network
 - 17–41% coherence improvement under Byzantine failures
