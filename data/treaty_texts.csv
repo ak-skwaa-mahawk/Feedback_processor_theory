@@ -1,0 +1,7 @@
+import pandas as pd
+import numpy as np
+data = pd.DataFrame({"node_i": np.random.randint(0, 5, 25),
+                     "node_j": np.random.randint(0, 5, 25),
+                     "value": np.random.uniform(0, 1, 25)})
+data = data[data.node_i != data.node_j]
+data.to_csv("data/treaty_texts.csv", index=False)
