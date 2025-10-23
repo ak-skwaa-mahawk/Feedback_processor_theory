@@ -1,3 +1,24 @@
+def optimize_treaty_leap(self, treaty_data):
+    bqm = self.build_otoc_qubo(n_nodes=5, k=2)
+    # Add treaty-specific correlation terms
+    for i in range(len(treaty_data)):
+        bqm.add_linear(f"x_{i%5}_{i//5}", treaty_data[i] * self.fidelity)
+    
+    sampler = LeapHybridSampler()
+    sampleset = sampler.sample(bqm, time_limit=5)
+    best_sample = sampleset.first.sample
+    best_energy = sampleset.first.energy
+    
+    obj = self.compute_quantum_neutrosophic_objective([0.5, 0.5], best_energy)
+    return best_energy, obj, best_sample
+
+# Mock treaty data
+treaty_data = np.random.uniform(0, 1, 25)  # 5x5 grid
+nt = NeutrosophicTransport([0], [1, 2, 3, 4])
+energy, obj, sample = nt.optimize_treaty_leap(treaty_data)
+print(f"Treaty optimized energy: {energy}")
+print(f"Neutrosophic scores: T={obj['T']:.4f}, I={obj['I']:.4f}, F={obj['F']:.4f}")
+print(f"Best sample: {sample}")
 from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE, DAMPING_PRESETS, phase_lock
 import numpy as np
 from math import sin, cos, pi, sqrt
