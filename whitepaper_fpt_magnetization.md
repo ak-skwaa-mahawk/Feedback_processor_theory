@@ -1,3 +1,4 @@
+
 # Feedback Propulsion Theory Ω — Resonant Casimir Lift and Magnetized Vacuum Flight Dynamics
 
 **John B. Carroll Jr.**  
