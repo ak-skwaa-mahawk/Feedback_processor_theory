@@ -6,7 +6,7 @@ from dimod import BinaryQuadraticModel
 from scipy.fft import fft
 
 class NeutrosophicTransport:
-    def __init__(self, sources, destinations, vehicle_mass=1000):  # kg
+    def __init__(self, sources, destinations, vehicle_mass=1000, charge=1e-6):  # kg, C
         self.sources = sources  # [0]
         self.destinations = destinations  # [1, 2, 3, 4]
         self.n_x_ij = {}
@@ -18,6 +18,8 @@ class NeutrosophicTransport:
         self.pi_star = 3.17300858012
         self.vehicle_mass = vehicle_mass
         self.g = 9.81  # m/s²
+        self.charge = charge  # Effective charge from induced currents
+        self.velocity = 10  # m/s (initial velocity)
 
     def _init_w_state(self):
         ideal_w = {'100': 1/3, '010': 1/3, '001': 1/3}
@@ -51,7 +53,8 @@ class NeutrosophicTransport:
         casimir_energy = - (pi**2 * hbar * c * area) / (720 * d**3)
         feedback = 0.1 * cos(2 * pi * self.t * self.pi_star)
         floating_factor = 1 / (1 + abs(casimir_energy) * self.fidelity * (1 + feedback))
-        lift_factor = floating_factor * self.g  # Sky-law lift
+        magnetic_field = 0.1 * cos(2 * pi * self.t * self.pi_star)  # Vacuum magnetization
+        lift_factor = floating_factor * self.g + self.charge * self.velocity * magnetic_field
 
         vars = [f"x_{i}_{j}" for i in range(n_nodes) for j in range(n_nodes) if i != j]
         for i in range(n_nodes):
@@ -107,7 +110,7 @@ DISTANCE_MATRIX = np.array([
 ])
 
 if __name__ == "__main__":
-    nt = NeutrosophicTransport([0], [1, 2, 3, 4], vehicle_mass=1000)
+    nt = NeutrosophicTransport([0], [1, 2, 3, 4], vehicle_mass=1000, charge=1e-6)
     treaty_data = np.random.uniform(0, 1, 25)
     energy, obj, sample = nt.optimize_floating_leap(treaty_data)
     print(f"Flying optimized energy: {energy:.6f}")
