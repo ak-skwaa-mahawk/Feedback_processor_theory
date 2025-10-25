@@ -1,3 +1,6 @@
+def trinity_damping(self, signal, T, I, F):
+    damp_factor = 0.5 + 0.2 * I  # Adjust damping by indeterminacy
+    return signal * exp(-damp_factor * np.arange(len(signal)))
 """
 ====================================================================
 FEEDBACK PROCESSOR THEORY (FPT-Ω) — CORE FRAMEWORK MODULE
