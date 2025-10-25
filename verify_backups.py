@@ -1,3 +1,17 @@
+def _compute_resonance(self, data_hash, treaty_data=None):
+    if data_hash in self.phase_cache:
+        phase_history = self.phase_cache[data_hash]
+    else:
+        chunks = [data_hash[i:i+8] for i in range(0, len(data_hash), 8)]
+        phase_history = np.array([float.from_hex(chunk) % pi for chunk in chunks[:5]])
+        self.phase_cache[data_hash] = phase_history
+    locked_phase, damp_factor = phase_lock_recursive(phase_history)
+    time_phase = self.t % 1
+    weights = dynamic_weights(time_phase)
+    if treaty_data is not None:
+        treaty_freq = treaty_harmonic_nodes(treaty_data)
+        locked_phase *= weights["T"] * treaty_freq.real  # Use real part, simplify
+    return locked_phase * (DIFFERENCE / GROUND_STATE) * 3.17300858012
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
