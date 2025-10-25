@@ -1,12 +1,16 @@
 from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE, DAMPING_PRESETS, phase_lock
 import numpy as np
 from math import pi, sqrt, cos, sin
-import json
 import time
-from paho.mqtt import client as mqtt  # Mock MQTT library
+from rclpy.node import Node
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+from geometry_msgs.msg import Point
+from std_msgs.msg import Float64, Time
+from custom_msgs.msg import VehicleTelemetry  # Custom message (to be defined)
 
-class NeutrosophicTransport:
+class NeutrosophicTransport(Node):
     def __init__(self, sources, destinations, num_vehicles=2, capacity=100):
+        super().__init__('neutrosophic_transport_node')
         self.sources = sources  # [0]
         self.destinations = destinations  # [1, 2, 3, 4]
         self.n_x_ij = {}
@@ -21,7 +25,18 @@ class NeutrosophicTransport:
         self.demand = {0: 0, 1: 30, 2: 40, 3: 25, 4: 35}  # Real demand (units)
         self.time_windows = {1: [0, 10], 2: [5, 15], 3: [10, 20], 4: [15, 25]}  # Real scaled windows
         self.telemetry = {}  # {vehicle_id: {pos, vel, load, time}}
-        self.mqtt_client = self._setup_mqtt()
+
+        # ROS2 Subscriber
+        qos = QoSProfile(depth=10, reliability=QoSReliabilityPolicy.RELIABLE, history=QoSHistoryPolicy.KEEP_LAST)
+        self.subscription = self.create_subscription(
+            VehicleTelemetry,
+            'vehicle_telemetry',
+            self.telemetry_callback,
+            qos)
+        self.subscription  # Prevent unused variable warning
+
+        # ROS2 Publisher (for simulation)
+        self.publisher_ = self.create_publisher(VehicleTelemetry, 'vehicle_telemetry', qos)
 
     def _init_w_state(self):
         ideal_w = {'100': 1/3, '010': 1/3, '001': 1/3}
@@ -40,27 +55,9 @@ class NeutrosophicTransport:
                 f_ij = self.fidelity * (self.w_state_prob.get('001', 0) / sqrt(3))
                 self.n_x_ij[f"{i}{j}"] = {"x": x_ij, "T": t_ij, "I": i_ij, "F": f_ij}
 
-    def _setup_mqtt(self):
-        def on_connect(client, userdata, flags, rc):
-            print("Connected to MQTT broker")
-            for vid in range(self.num_vehicles):
-                client.subscribe(f"vehicle/{vid}/telemetry")
-
-        def on_message(client, userdata, msg):
-            payload = json.loads(msg.payload.decode())
-            vehicle_id = int(msg.topic.split('/')[1])
-            self.update_telemetry(vehicle_id, payload['pos'], payload['vel'], payload['load'], payload['time'])
-
-        client = mqtt.Client()
-        client.on_connect = on_connect
-        client.on_message = on_message
-        client.connect("localhost", 1883)  # Mock broker
-        client.loop_start()
-        return client
-
-    def _publish_telemetry(self, vehicle_id, pos, vel, load, time):
-        payload = json.dumps({"pos": pos.tolist(), "vel": vel, "load": load, "time": time})
-        self.mqtt_client.publish(f"vehicle/{vehicle_id}/telemetry", payload)
+    def telemetry_callback(self, msg):
+        vehicle_id = int(msg.header.frame_id.split('_')[-1])  # e.g., vehicle_0
+        self.update_telemetry(vehicle_id, [msg.pos.x, msg.pos.y], msg.vel, msg.load, msg.time.sec + msg.time.nanosec * 1e-9)
 
     def update_telemetry(self, vehicle_id, pos, vel, load, time):
         self.telemetry[vehicle_id] = {"pos": pos, "vel": vel, "load": load, "time": time}
@@ -70,6 +67,15 @@ class NeutrosophicTransport:
                 self.costs[f"{i}{j}"] += 0.1 * (vel / 10)  # Velocity impact
                 if load > self.capacity * 0.8:
                     self.costs[f"{i}{j}"] += 5  # Overload penalty
+
+    def publish_telemetry(self, vehicle_id):
+        msg = VehicleTelemetry()
+        msg.header.frame_id = f"vehicle_{vehicle_id}"
+        msg.pos = Point(x=np.random.uniform(0, 500), y=np.random.uniform(0, 500), z=0.0)
+        msg.vel = Float64(data=np.random.uniform(5, 15))
+        msg.load = Float64(data=sum(self.demand[j] for j in range(1, 5)) / self.num_vehicles)
+        msg.time = Time(sec=int(self.t), nanosec=int((self.t % 1) * 1e9))
+        self.publisher_.publish(msg)
 
     def compute_qaoa_energy(self, theta, vehicle_idx):
         gamma, beta = theta
@@ -175,12 +181,9 @@ class NeutrosophicTransport:
         cost_array = []
         damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
 
-        # Simulate real telemetry
+        # Simulate real telemetry with ROS2
         for vehicle_idx in range(self.num_vehicles):
-            pos = np.random.uniform(0, 500, 2)  # x, y in meters
-            vel = np.random.uniform(5, 15)  # m/s
-            load = sum(self.demand[j] for j in range(1, 5)) / self.num_vehicles  # Split demand
-            self._publish_telemetry(vehicle_idx, pos, vel, load, self.t)
+            self.publish_telemetry(vehicle_idx)
             time.sleep(1)  # 1 Hz update
 
         # Evolutionary optimization with telemetry
@@ -208,10 +211,24 @@ DISTANCE_MATRIX = np.array([
     [21, 17, 25, 14, 0]
 ])
 
-# Example usage
-if __name__ == "__main__":
+# Custom message definition (to be created in a .msg file)
+# File: custom_msgs/msg/VehicleTelemetry.msg
+# geometry_msgs/Point pos
+# float64 vel
+# float64 load
+# builtin_interfaces/Time time
+
+# Example usage (requires ROS2 environment)
+import rclpy
+def main(args=None):
+    rclpy.init(args=args)
     nt = NeutrosophicTransport([0], [1, 2, 3, 4], num_vehicles=2, capacity=100)
     cost = nt.optimize()
-    print(f"Evolved VRP cost with real telemetry: {cost}")
+    print(f"Evolved VRP cost with ROS2 telemetry: {cost}")
     for vid, data in nt.telemetry.items():
         print(f"Vehicle {vid} Telemetry: pos={data['pos']}, vel={data['vel']}, load={data['load']}, time={data['time']}")
+    nt.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
