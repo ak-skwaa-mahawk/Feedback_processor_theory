@@ -1,4 +1,3 @@
-
 def optimize_flow(self, source, sink):
     # ... (existing Dijkstra)
     damped_score = trinity_damping(np.array([scores[sink]]), self.damp_factor)[0]
