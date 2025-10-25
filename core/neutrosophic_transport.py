@@ -1,3 +1,13 @@
+def neutrosophic_spectrogram(self, freq_data):
+    T = np.max(freq_data, axis=0) / np.sum(freq_data)  # Truth per band
+    I = np.std(freq_data, axis=0) / (np.mean(freq_data, axis=0) + 1e-6)  # Indeterminacy
+    F = 1 - np.correlate(freq_data[:, :-1], freq_data[:, 1:], mode='valid') / len(freq_data)
+    return np.array([T, I, F]).T
+def compute_neutrosophic_resonance(self, signal):
+    T = np.max(signal) / (np.mean(signal) + 1e-6)  # Truth as peak strength
+    I = np.var(signal) / (np.std(signal) + 1e-6)   # Indeterminacy as variance
+    F = 1 - np.corrcoef(signal[:len(signal)//2], signal[len(signal)//2:])[0, 1] if len(signal) > 2 else 0
+    return {"T": min(T, 1.0), "I": min(I, 1.0), "F": min(F, 1.0)}
 # core/neutrosophic_transport.py (partial update)
 def intuitionistic_score(self, mu, nu):
     """Compute score with hesitation adjustment."""
