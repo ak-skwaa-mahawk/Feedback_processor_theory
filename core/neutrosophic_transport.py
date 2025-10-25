@@ -1,3 +1,4 @@
+
 def intuitionistic_score(self, T, I, F):
     return T - F + 0.5 * I  # Simplified Neutrosophic score
 def neutrosophic_spectrogram(self, freq_data):
