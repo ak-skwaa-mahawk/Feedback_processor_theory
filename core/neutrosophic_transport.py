@@ -1,3 +1,5 @@
+def intuitionistic_score(self, T, I, F):
+    return T - F + 0.5 * I  # Simplified Neutrosophic score
 def neutrosophic_spectrogram(self, freq_data):
     T = np.max(freq_data, axis=0) / np.sum(freq_data)  # Truth per band
     I = np.std(freq_data, axis=0) / (np.mean(freq_data, axis=0) + 1e-6)  # Indeterminacy
