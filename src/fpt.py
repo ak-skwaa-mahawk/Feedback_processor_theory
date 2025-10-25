@@ -1,3 +1,11 @@
+def compute_neutrosophic_ethics(self, T, I, F):
+    TIF = np.clip(np.array([T, I, F]), 0, 1)
+    T, I, F = TIF[0], TIF[1], TIF[2]
+    k = 0.3 + 0.2 * np.sin(2 * pi * (self.t % 1) / self.pi_star)
+    score = T - F + k * I
+    community_factor = 1 - F / (T + 1e-6)  # Collective resilience
+    damped_score = trinity_damping(np.array([score * community_factor]), 0.5)[0]
+    return max(0, min(1, damped_score))
 # src/fpt.py
 import numpy as np
 from trinity_harmonics import trinity_damping
