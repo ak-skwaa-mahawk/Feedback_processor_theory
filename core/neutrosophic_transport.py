@@ -1,4 +1,6 @@
-
+git add fpt_core/trinity_harmonics.py core/resonance_engine.py src/fpt.py core/neutrosophic_transport.py
+git commit -m "Integrate Gwich’in sky-law principles into FPT components"
+git push origin main
 def intuitionistic_score(self, T, I, F):
     return T - F + 0.5 * I  # Simplified Neutrosophic score
 def neutrosophic_spectrogram(self, freq_data):
