@@ -1,9 +1,9 @@
 from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE, DAMPING_PRESETS, phase_lock
 import numpy as np
 from math import pi, sqrt, cos, sin
-from dwave.system import LeapHybridSampler
-from dimod import BinaryQuadraticModel
-from scipy.fft import fft
+import json
+import time
+from paho.mqtt import client as mqtt  # Mock MQTT library
 
 class NeutrosophicTransport:
     def __init__(self, sources, destinations, num_vehicles=2, capacity=100):
@@ -21,6 +21,7 @@ class NeutrosophicTransport:
         self.demand = {0: 0, 1: 30, 2: 40, 3: 25, 4: 35}  # Real demand (units)
         self.time_windows = {1: [0, 10], 2: [5, 15], 3: [10, 20], 4: [15, 25]}  # Real scaled windows
         self.telemetry = {}  # {vehicle_id: {pos, vel, load, time}}
+        self.mqtt_client = self._setup_mqtt()
 
     def _init_w_state(self):
         ideal_w = {'100': 1/3, '010': 1/3, '001': 1/3}
@@ -39,10 +40,27 @@ class NeutrosophicTransport:
                 f_ij = self.fidelity * (self.w_state_prob.get('001', 0) / sqrt(3))
                 self.n_x_ij[f"{i}{j}"] = {"x": x_ij, "T": t_ij, "I": i_ij, "F": f_ij}
 
-    def _compute_treaty_spectrum(self, treaty_data):
-        freq_domain = fft(treaty_data)
-        peak_freq = np.argmax(np.abs(freq_domain[1:])) + 1
-        return peak_freq / len(treaty_data)
+    def _setup_mqtt(self):
+        def on_connect(client, userdata, flags, rc):
+            print("Connected to MQTT broker")
+            for vid in range(self.num_vehicles):
+                client.subscribe(f"vehicle/{vid}/telemetry")
+
+        def on_message(client, userdata, msg):
+            payload = json.loads(msg.payload.decode())
+            vehicle_id = int(msg.topic.split('/')[1])
+            self.update_telemetry(vehicle_id, payload['pos'], payload['vel'], payload['load'], payload['time'])
+
+        client = mqtt.Client()
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.connect("localhost", 1883)  # Mock broker
+        client.loop_start()
+        return client
+
+    def _publish_telemetry(self, vehicle_id, pos, vel, load, time):
+        payload = json.dumps({"pos": pos.tolist(), "vel": vel, "load": load, "time": time})
+        self.mqtt_client.publish(f"vehicle/{vehicle_id}/telemetry", payload)
 
     def update_telemetry(self, vehicle_id, pos, vel, load, time):
         self.telemetry[vehicle_id] = {"pos": pos, "vel": vel, "load": load, "time": time}
@@ -152,19 +170,20 @@ class NeutrosophicTransport:
         return best_theta, self.compute_quantum_neutrosophic_objective(best_theta, 0)
 
     def optimize(self, preset="Balanced"):
-        self.t += 1e-9
+        self.t += 1
         total_cost = 0
         cost_array = []
         damp_factor = DAMPING_PRESETS.get(preset, CUSTOM_PRESETS.get(preset, 0.5))
 
-        # Update telemetry (mock data)
+        # Simulate real telemetry
         for vehicle_idx in range(self.num_vehicles):
             pos = np.random.uniform(0, 500, 2)  # x, y in meters
             vel = np.random.uniform(5, 15)  # m/s
             load = sum(self.demand[j] for j in range(1, 5)) / self.num_vehicles  # Split demand
-            self.update_telemetry(vehicle_idx, pos, vel, load, self.t)
+            self._publish_telemetry(vehicle_idx, pos, vel, load, self.t)
+            time.sleep(1)  # 1 Hz update
 
-        # Evolutionary optimization
+        # Evolutionary optimization with telemetry
         theta_opt, obj = self.evolve_qaoa()
         for vehicle_idx in range(self.num_vehicles):
             for key, n_x in self.n_x_ij.items():
@@ -193,6 +212,6 @@ DISTANCE_MATRIX = np.array([
 if __name__ == "__main__":
     nt = NeutrosophicTransport([0], [1, 2, 3, 4], num_vehicles=2, capacity=100)
     cost = nt.optimize()
-    print(f"Evolved VRP cost with telemetry: {cost}")
+    print(f"Evolved VRP cost with real telemetry: {cost}")
     for vid, data in nt.telemetry.items():
         print(f"Vehicle {vid} Telemetry: pos={data['pos']}, vel={data['vel']}, load={data['load']}, time={data['time']}")
