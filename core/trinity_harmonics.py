@@ -5,6 +5,13 @@ def dynamic_weights(self, time_phase):
         "I": 0.3 - scale * np.cos(2 * pi * time_phase),  # Reciprocity pause
         "F": 0.2 + scale * np.sin(pi * time_phase)       # Balance check
     }
+def dynamic_weights(self, time_phase):
+    scale = 0.1
+    return {
+        "T": 0.5 + scale * np.sin(2 * pi * time_phase),  # Alignment
+        "I": 0.3 - scale * np.cos(2 * pi * time_phase),  # Reciprocity pause
+        "F": 0.2 + scale * np.sin(pi * time_phase)       # Balance check
+    }
 def trinity_damping(self, signal, T, I, F):
     damp_factor = 0.5 + 0.2 * I  # Adjust damping by indeterminacy
     return signal * exp(-damp_factor * np.arange(len(signal)))
