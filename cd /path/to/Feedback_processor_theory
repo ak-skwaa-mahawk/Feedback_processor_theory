@@ -1,0 +1,16 @@
+cd /path/to/Feedback_processor_theory
+
+# Create directories
+mkdir -p docs/whitepapers
+
+# Add whitepapers
+echo "<Markdown content here>" > docs/whitepapers/fpt_omega.md
+echo "<LaTeX content here>" > docs/whitepapers/fpt_omega.tex
+
+# Update index.md
+sed -i '/## Documentation/a ## Whitepapers\n- [FPT-Ω: Resonant Casimir Lift and Magnetized Vacuum Flight Dynamics](whitepapers/fpt_omega.md)' docs/index.md
+
+# Add, commit, and push
+git add docs/whitepapers/fpt_omega.md docs/whitepapers/fpt_omega.tex docs/index.md
+git commit -m "Add FPT-Ω whitepapers and update documentation"
+git push origin main
