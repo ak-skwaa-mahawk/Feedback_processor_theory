@@ -1,3 +1,7 @@
+def optimize_flow(self, source, sink):
+    # ... (existing Dijkstra)
+    damped_score = trinity_damping(np.array([scores[sink]]), self.damp_factor)[0]
+    return {"mu": mu, "nu": nu, "pi": 1 - mu - nu, "score": damped_score, "path": path[sink] + [sink]}
 git add fpt_core/trinity_harmonics.py core/resonance_engine.py src/fpt.py core/neutrosophic_transport.py
 git commit -m "Integrate Gwich’in sky-law principles into FPT components"
 git push origin main
