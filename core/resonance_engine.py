@@ -1,3 +1,11 @@
+def compute_neutrosophic_resonance(self, signal):
+    mean_sig = np.mean(signal)
+    std_sig = np.std(signal)
+    T = np.max(signal) / (mean_sig + 1e-6)
+    I = np.var(signal) / (std_sig + 1e-6) + 0.1 * std_sig  # Adaptive observation
+    F = 1 - np.corrcoef(signal[:len(signal)//2], signal[len(signal)//2:])[0, 1] if len(signal) > 2 else 0
+    F = min(F, 1.0)
+    return {"T": T, "I": I, "F": F}
 def dynamic_weights(self, time_phase):
     lunar_cycle = 29.53  # Days, approximate
     scale = 0.1
