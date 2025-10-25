@@ -1,104 +1,42 @@
-"""
-====================================================================
-FEEDBACK PROCESSOR THEORY (FPT-Ω) — CORE FRAMEWORK MODULE
-====================================================================
-
-File:            trinity_harmonics.py
-Project:         Feedback Processor Theory (FPT)
-Author:          John B. Carroll Jr. (ak-skwaa-mahawk)
-Organization:    Two Mile Solutions LLC
-License:         Open Research License — 2025
-GitHub:          https://github.com/ak-skwaa-mahawk/Feedback_processor_theory
-Date Created:    2025-10-18
-Version:         1.0.0
-====================================================================
-DESCRIPTION:
---------------------------------------------------------------------
-Defines the Trinity Harmonic Framework — the core harmonic stabilizer
-for Feedback Processor Theory (FPT). Anchors quantum-inspired systems
-in stable harmonic phase space using π (equilibrium) and φ-1 (0.618)
-as fundamental constants.
-
-Implements:
- - Harmonic base constants (π equilibrium, φ-1 resonance)
- - Ground-state formulation: π + n·ε
- - Trinity damping operator for phase stabilization
- - Visualization of triadic resonance states
-
-Mathematical Interpretation:
---------------------------------------------------------------------
-GROUND_STATE = π                     → Phase equilibrium (Bloch sphere)
-DIFFERENCE   = φ - 1 ≈ 0.618         → Golden conjugate (self-similarity)
-RATIO        = DIFFERENCE / π ≈ 0.197 → Fifth-harmonic stability constant
-
-Damping Equation:
---------------------------------------------------------------------
-    D(v, f) = v * (1 - f * sin(2π·phase) * (φ - 1)/π)
-
-where:
- - v      = system values (vector)
- - f      = damping factor (0.0–1.0)
- - phase  = position in harmonic cycle (0–2π)
- - output = stabilized harmonic state
-
-Physical/Computational Correlations:
---------------------------------------------------------------------
- - Quantum phase coherence → π-based normalization
- - Decoherence mitigation  → sin-phase damping
- - Self-similar scaling    → φ resonance control
- - Lyapunov stability      → 0.618 periodic anchor
-
-Cross-Link:
---------------------------------------------------------------------
-Used by:
- - fpt_core.py (main harmonics integration)
- - neutrosophic_transport.py (semantic routing)
- - wstate_entanglement.py (quantum coherence tests)
-
-Related Constants:
- - EPSILON (seed impulse) = 0.01
- - DELTA (triadic offset) = 3ε = 0.03
- - FACTOR (damping coefficient) ∈ [0, 1]
-
-====================================================================
-SKODEN — TRUTH IN FEEDBACK | TWO MILE SOLUTIONS LLC | 2025
-====================================================================
-"""
-# trinity_harmonics.py (updated with φ-phase lock)
 import numpy as np
-from math import pi
+from math import pi, exp, tan
 
-# Fundamental constants
-GROUND_STATE = pi  # Quantum phase period (Bloch sphere full rotation)
-DIFFERENCE = 0.618  # Golden Ratio conjugate (φ - 1), harmonic energy gap approximation
+GROUND_STATE = 0.1  # Baseline phase
+DIFFERENCE = 0.05   # Phase deviation
 DAMPING_PRESETS = {"Balanced": 0.5, "Aggressive": 0.7, "Gentle": 0.3}
 CUSTOM_PRESETS = {}
 
-def trinity_damping(values, factor):
-    """
-    Applies harmonic damping to stabilize optimization, mitigating decoherence.
-    values: Array of costs or updates
-    factor: Damping strength (0 to 1)
-    """
-    # Harmonic oscillation term
-    phase = 2 * pi * np.linspace(0, 1, len(values))
-    oscillation = np.sin(phase) * (DIFFERENCE / GROUND_STATE)
-    # Damp with factor and ground state normalization
-    damped = values * (1 - factor * oscillation)
-    return np.clip(damped, 0, np.inf)  # Ensure non-negative
+def trinity_damping(signal, damp_factor, treaty_freq=None):
+    """Apply adaptive exponential damping with treaty influence."""
+    pi_star = 3.17300858012
+    damp_base = exp(-pi_star * np.arange(len(signal)) / len(signal))
+    if treaty_freq is not None:
+        damp_mod = 1 + 0.1 * np.sin(2 * pi * treaty_freq * np.arange(len(signal)))
+        return signal * damp_base * damp_mod
+    return signal * damp_base
 
-def phase_lock(phase_values, target_phase=DIFFERENCE):
-    """
-    Locks phase to Golden Ratio conjugate (φ-1) for harmonic stability.
-    phase_values: Current phase array
-    target_phase: Desired phase (default φ-1)
-    Returns: Adjusted phase and correction factor
-    """
-    phase_error = phase_values - target_phase
-    correction = np.tanh(phase_error) * (DIFFERENCE / GROUND_STATE)  # Smooth correction
-    locked_phase = phase_values - correction
-    damping_factor = 1 - np.abs(np.mean(phase_error))  # Dynamic damping based on error
-    return locked_phase, np.clip(damping_factor, 0.1, 1.0)
+def dynamic_weights(time_phase):
+    """Dynamic T/I/F weighting based on sky-law cycles."""
+    return {
+        "T": 0.4 * (1 + np.sin(2 * pi * time_phase)),
+        "I": 0.3 * (1 - np.cos(2 * pi * time_phase)),
+        "F": 0.3 * (1 + np.tan(pi * time_phase / 2) / 10)
+    }
 
-# Export constants and functions
-__all__ = ['GROUND_STATE', 'DIFFERENCE', 'DAMPING_PRESETS', 'trinity_damping', 'phase_lock']
+def phase_lock_recursive(phase_history, alpha=0.7):
+    """Recursive phase locking with adaptive damping."""
+    locked = 0.0
+    for phi in phase_history:
+        locked = alpha * phi + (1 - alpha) * locked
+    std_dev = np.std(phase_history)
+    return locked % (2 * pi), min(0.7, max(0.3, 0.5 + std_dev))
+
+def treaty_harmonic_nodes(treaty_data):
+    """Extract harmonic nodes from treaty spectrogram."""
+    freq_domain = np.fft.fft(treaty_data)
+    peaks = np.argsort(np.abs(freq_domain))[::-1][:3]
+    return [freq_domain[p] / len(treaty_data) for p in peaks]
+
+def damp_factor_from_std(std_dev):
+    """Derive damp_factor from phase standard deviation."""
+    return min(0.7, max(0.3, 0.5 + std_dev))
