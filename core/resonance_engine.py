@@ -1,3 +1,20 @@
+def dynamic_weights(self, time_phase):
+    lunar_cycle = 29.53  # Days, approximate
+    scale = 0.1
+    return {
+        "T": 0.5 + scale * np.sin(2 * pi * time_phase / lunar_cycle),
+        "I": 0.3 - scale * np.cos(2 * pi * time_phase / lunar_cycle),
+        "F": 0.2 + scale * np.sin(pi * time_phase / lunar_cycle)
+    }
+def compute_neutrosophic_resonance(self, signal):
+    mean_sig = np.mean(signal)
+    std_sig = np.std(signal)
+    T = np.max(signal) / (mean_sig + 1e-6)
+    I = np.var(signal) / (std_sig + 1e-6) * (1 + std_sig)  # Boost I with adaptability
+    F = 1 - np.corrcoef(signal[:len(signal)//2], signal[len(signal)//2:])[0, 1] if len(signal) > 2 else 0
+    F = min(F, 1.0)
+    TIF = np.array([T, I, F])
+    return {"T": TIF[0], "I": TIF[1], "F": TIF[2]}
 # core/resonance_engine.py
 import numpy as np
 from trinity_harmonics import trinity_damping, phase_lock_recursive
