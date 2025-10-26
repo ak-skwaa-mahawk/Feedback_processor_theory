@@ -1,3 +1,11 @@
+from quantum.shor_factoring import shor_factor
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    N = int(1 / (T - F + 0.5 * I) * 100)  # Mock integer from resonance
+    p, q = shor_factor(N)  # Factorize for signal integrity
+    score = T - F + 0.5 * I if p and q else 0
+    return {"T": T, "I": I, "F": F, "score": score, "factors": (p, q)}
 from quantum.qpe_resonance import estimate_phase
 def compute_neutrosophic_resonance(self, s):
     m, std = np.mean(s), np.std(s)
