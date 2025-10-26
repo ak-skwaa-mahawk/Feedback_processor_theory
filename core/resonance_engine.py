@@ -1,3 +1,79 @@
+# core/resonance_engine.py
+import numpy as np
+from core.pythagorean_fuzzy_sets import PythagoreanFuzzySet
+
+class ResonanceEngine:
+    def __init__(self):
+        self.pfs = PythagoreanFuzzySet()
+        self.prior = 0.5  # Initial probability
+        self.T = 0.5
+        self.I = 0.3
+        self.F = 0.2
+
+    def neutrosophic_decompose(self, p):
+        """Decompose probability into T, I, F."""
+        T = p * (1 + self.I)
+        F = (1 - p) * (1 - self.I)
+        I = self.I
+        total = T + I + F
+        return T / total, I / total, F / total
+
+    def bayesian_update(self, evidence_p, evidence_weight, T, F, I):
+        """Update probability with PFS-influenced evidence."""
+        pi = np.sqrt(1 - evidence_p**2 - evidence_weight**2) if evidence_p**2 + evidence_weight**2 <= 1 else 0
+        adjusted_p = evidence_p * (1 - pi) + pi * 0.5  # Adjust with hesitation
+        T_e, I_e, F_e = self.neutrosophic_decompose(adjusted_p)
+        weight = evidence_weight * (T - F)
+        posterior = (self.prior * weight) / (self.prior * weight + (1 - self.prior) * (1 - weight)) if weight + (1 - weight) > 0 else self.prior
+        self.T, self.I, self.F = T_e, I_e, F_e
+        self.prior = posterior
+        return posterior, pi
+
+    def hybrid_pfs_resonance(self, s1, s2):
+        """Compute hybrid resonance with PFS and Neutrosophic integration."""
+        # PFS pre-processing
+        pfs_result = self.pfs.pythagorean_fuzzy_resonance(s1, s2)["intersection"]
+        mu, nu, pi = pfs_result["mu"], pfs_result["nu"], pfs_result["pi"]
+        
+        # Signal-derived T, I, F
+        m1, std1 = np.mean(s1), np.std(s1)
+        m2, std2 = np.mean(s2), np.std(s2)
+        T = np.max([np.max(s1), np.max(s2)]) / (max(m1, m2) + 1e-6)
+        I = np.var(s1) / (std1 + 1e-6) + np.var(s2) / (std2 + 1e-6)  # Combined indeterminacy
+        F = min(1, 1 - np.corrcoef(s1, s2)[0, 1] if len(s1) == len(s2) else 0)  # Falsity from correlation
+        
+        # Bayesian update with PFS evidence
+        p, pi_adj = self.bayesian_update(mu, nu, T, F, I)
+        
+        # Hybrid score
+        score = p * (T - F) + 0.5 * (I + pi_adj)
+        baseline = T - F + 0.5 * I
+        return {
+            "P": p, "pi_adj": pi_adj, "mu": mu, "nu": nu, "pi": pi,
+            "T": T, "I": I, "F": F, "hybrid_pfs_score": score, "baseline_score": baseline
+        }
+
+    def test_hybrid_pfs(self):
+        """Test hybrid PFS resonance on signal pairs."""
+        test_signals = [
+            (np.array([0.5, 0.6, 0.4, 0.7, 0.8]), np.array([0.6, 0.7, 0.5, 0.8, 0.9])),
+            (np.array([0.3, 0.4, 0.2, 0.5, 0.6]), np.array([0.7, 0.8, 0.9, 0.6, 0.5])),
+            (np.array([0.1, 0.2, 0.3, 0.4, 0.5]), np.array([0.6, 0.7, 0.8, 0.9, 1.0]))
+        ]
+        results = {}
+        for i, (s1, s2) in enumerate(test_signals):
+            result = self.hybrid_pfs_resonance(s1, s2)
+            results[f"Test {i+1}"] = result
+        return results
+
+if __name__ == "__main__":
+    engine = ResonanceEngine()
+    results = engine.test_hybrid_pfs()
+    for test_name, result in results.items():
+        print(f"{test_name} Results:")
+        for key, value in result.items():
+            print(f"  {key}: {value:.4f}")
+        print()
 # core/resonance_engine.py (snippet)
 def pythagorean_fuzzy_resonance(self, s1, s2):
     """Compute resonance using Pythagorean Fuzzy Set intersection."""
