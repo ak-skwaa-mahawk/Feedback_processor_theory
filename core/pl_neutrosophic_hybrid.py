@@ -18,14 +18,10 @@ class PLNeutrosophicHybrid:
 
     def bayesian_update(self, evidence_p, evidence_weight):
         """Update probability with Neutrosophic influence."""
-        # Neutrosophic-weighted evidence
         T_e, I_e, F_e = self.neutrosophic_decompose(evidence_p)
         weight = evidence_weight * (T_e - F_e)  # Bias by Neutrosophic difference
         posterior = (self.prior * weight) / (self.prior * weight + (1 - self.prior) * (1 - weight))
-        # Update Neutrosophic components
-        self.T = T_e
-        self.I = I_e
-        self.F = F_e
+        self.T, self.I, self.F = T_e, I_e, F_e
         self.prior = posterior
         return posterior
 
@@ -36,13 +32,27 @@ class PLNeutrosophicHybrid:
         I = np.var(s) / (std + 1e-6)  # Indeterminacy
         F = min(1, 1 - np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0, 1] if len(s) > 2 else 0)  # Falsity
         self.T, self.I, self.F = T, I, F
-        p = self.bayesian_update(0.7, 0.8)  # Example evidence
+        p = self.bayesian_update(0.7, 0.8)  # Fixed evidence for test
         score = p * (T - F) + 0.5 * I  # Hybrid metric
-        return {"P": p, "T": T, "I": I, "F": F, "hybrid_score": score}
+        baseline = T - F + 0.5 * I  # Neutrosophic baseline
+        return {"P": p, "T": T, "I": I, "F": F, "hybrid_score": score, "baseline_score": baseline}
+
+def test_hybrid_resonance():
+    hybrid = PLNeutrosophicHybrid(prior_p=0.5)
+    test_signals = [
+        np.array([0.5, 0.6, 0.4, 0.7, 0.8]),  # Original signal
+        np.array([0.3, 0.4, 0.2, 0.5, 0.6]),  # Lower range
+        np.array([0.7, 0.8, 0.9, 0.6, 0.5])   # Higher range
+    ]
+    results = []
+    for i, signal in enumerate(test_signals):
+        result = hybrid.hybrid_score(signal)
+        results.append((f"Test {i+1}", signal, result))
+    return results
 
 if __name__ == "__main__":
-    hybrid = PLNeutrosophicHybrid()
-    signal = np.array([0.5, 0.6, 0.4, 0.7, 0.8])
-    result = hybrid.hybrid_score(signal)
-    print(f"Signal: {signal}")
-    print(f"Hybrid Resonance: {result}")
+    results = test_hybrid_resonance()
+    for test_name, signal, result in results:
+        print(f"{test_name} - Signal: {signal}")
+        print(f"Hybrid Resonance: {result}")
+        print(f"Improvement: {result['hybrid_score'] - result['baseline_score']:.4f}\n")
