@@ -1,4 +1,44 @@
 # core/resonance_engine.py
+from quantum.qaoa_resonance import optimize_qaoa
+from quantum.vqe_resonance import optimize_vqe
+from quantum.qpe_resonance import estimate_phase
+from quantum.shor_factoring import shor_factor
+from quantum.grover_resonance import optimize_resonance_target
+
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    
+    # QAOA score
+    qaoa_score, _ = optimize_qaoa(T, I, F)
+    # VQE energy
+    vqe_energy, _ = optimize_vqe(T, I, F)
+    vqe_score = -vqe_energy  # Invert for resonance
+    # QPE phase
+    phase, _ = estimate_phase(T, I, F)
+    qpe_score = phase * (T - F)
+    # Shor factoring (mock N)
+    N = int(1 / (T - F + 0.5 * I) * 100)
+    p, q = shor_factor(N)
+    shor_score = T - F if p and q else 0
+    # Grover search
+    grover_score, _ = optimize_resonance_target(T, I, F)
+    
+    # Neutrosophic weighted score
+    final_score = (T * qaoa_score + (1 - F) * vqe_score + I * qpe_score + shor_score + grover_score) / 5
+    return {
+        "T": T, "I": I, "F": F,
+        "qaoa_score": qaoa_score, "vqe_score": vqe_score,
+        "qpe_score": qpe_score, "shor_score": shor_score,
+        "grover_score": grover_score, "final_score": final_score
+    }
+
+if __name__ == "__main__":
+    engine = ResonanceEngine()
+    signal = np.array([0.5, 0.6, 0.4, 0.7])
+    resonance = engine.compute_neutrosophic_resonance(signal)
+    print(f"Resonance: {resonance}")
+# core/resonance_engine.py
 def compute_neutrosophic_resonance(self, s, context=None):
     m, std = np.mean(s), np.std(s)
     T = np.max(s)/(m+1e-6)  # Truth from peak
