@@ -1,3 +1,11 @@
+from quantum.tfq_resonance import evaluate_resonance
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    hook_weights = {"dream_logs": 0.3, "blood_treaty": 0.5}  # Example weights
+    x = np.array([T, I, F, hook_weights["dream_logs"], hook_weights["blood_treaty"]])
+    score = evaluate_resonance(self.tfq_model, x)  # Assume trained model stored
+    return {"T": T, "I": I, "F": F, "tfq_score": score}
 from quantum.pennylane_qml import evaluate_resonance
 def compute_neutrosophic_resonance(self, s):
     m, std = np.mean(s), np.std(s)
