@@ -1,3 +1,13 @@
+# core/resonance_engine.py (snippet)
+def neutrosophic_ml_resonance(self, s):
+    """NML-enhanced resonance scoring."""
+    m, std = np.mean(s), np.std(s)
+    T = np.max(s) / (m + 1e-6)
+    I = np.var(s) / (std + 1e-6)
+    F = min(1, 1 - np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0, 1] if len(s) > 2 else 0)
+    # NML score: T - F + 0.5 * I
+    score = T - F + 0.5 * I
+    return {"T": T, "I": I, "F": F, "nml_score": score}
 # core/resonance_engine.py
 from quantum.qaoa_resonance import optimize_qaoa
 from quantum.vqe_resonance import optimize_vqe
