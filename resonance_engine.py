@@ -1,3 +1,9 @@
+from quantum.grover_resonance import optimize_resonance_target
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    score, _ = optimize_resonance_target(T, I, F)
+    return {"T": T, "I": I, "F": F, "grover_score": score}
 from quantum.shor_factoring import shor_factor
 def compute_neutrosophic_resonance(self, s):
     m, std = np.mean(s), np.std(s)
