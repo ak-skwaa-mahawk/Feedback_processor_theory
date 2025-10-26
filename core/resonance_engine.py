@@ -1,4 +1,23 @@
 # core/resonance_engine.py
+from quantum.qiskit_resonance import run_synara_circuit
+import numpy as np
+
+class ResonanceEngine:
+    def __init__(self):
+        self.hook_weights = {"dream_logs": 0.3, "blood_treaty": 0.5}
+
+    def compute_neutrosophic_resonance(self, s):
+        m, std = np.mean(s), np.std(s)
+        T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+        score, _ = run_synara_circuit(T, I, F, hook_weights=self.hook_weights, noisy=True)
+        return {"T": T, "I": I, "F": F, "qiskit_score": score}
+
+if __name__ == "__main__":
+    engine = ResonanceEngine()
+    signal = np.array([0.5, 0.6, 0.4, 0.7])
+    resonance = engine.compute_neutrosophic_resonance(signal)
+    print(f"Resonance: {resonance}")
+# core/resonance_engine.py
 import numpy as np
 from trinity_harmonics import trinity_damping, phase_lock_recursive, dynamic_weights
 from math import pi
