@@ -1,3 +1,9 @@
+from quantum.qaoa_resonance import optimize_qaoa
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    qaoa_score, _ = optimize_qaoa(T, I, F)
+    return {"T": T, "I": I, "F": F, "qaoa_score": qaoa_score}
 def dqi_resonance(self, signal):
     # Mock DQI preparation
     fourier = np.fft.fft(signal)
