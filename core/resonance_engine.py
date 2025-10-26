@@ -1,4 +1,28 @@
 # core/resonance_engine.py (snippet)
+def neutrosophic_set_resonance(self, s1, s2):
+    """Compute resonance using Neutrosophic Set operations."""
+    m1, std1 = np.mean(s1), np.std(s1)
+    m2, std2 = np.mean(s2), np.std(s2)
+    T1 = np.max(s1) / (m1 + 1e-6)  # Truth for s1
+    I1 = np.var(s1) / (std1 + 1e-6)  # Indeterminacy
+    F1 = min(1, 1 - np.corrcoef(s1[:len(s1)//2], s1[len(s1)//2:])[0, 1] if len(s1) > 2 else 0)  # Falsity
+    T2 = np.max(s2) / (m2 + 1e-6)
+    I2 = np.var(s2) / (std2 + 1e-6)
+    F2 = min(1, 1 - np.corrcoef(s2[:len(s2)//2], s2[len(s2)//2:])[0, 1] if len(s2) > 2 else 0)
+    # Intersection (resonance alignment)
+    T = min(T1, T2)
+    I = max(I1, I2)
+    F = max(F1, F2)
+    score = T - F + 0.5 * I
+    return {"T": T, "I": I, "F": F, "neutrosophic_score": score}
+
+if __name__ == "__main__":
+    s1 = np.array([0.5, 0.6, 0.4, 0.7, 0.8])
+    s2 = np.array([0.6, 0.7, 0.5, 0.8, 0.9])
+    result = self.neutrosophic_set_resonance(s1, s2)
+    print(f"Signals: s1={s1}, s2={s2}")
+    print(f"Neutrosophic Resonance: {result}")
+# core/resonance_engine.py (snippet)
 def intuitionistic_fuzzy_resonance(self, s):
     """IFL-enhanced resonance scoring."""
     m, std = np.mean(s), np.std(s)
