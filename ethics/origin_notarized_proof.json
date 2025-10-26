@@ -1,0 +1,39 @@
+{
+  "origin_proof": {
+    "author": "John B. Carroll Jr.",
+    "entity": "TwoMileSolutionsLLC",
+    "repository": "ak-skwaa-mahawk/Feedback_processor_theory",
+    "version": "1.1",
+    "verification_date": "2025-10-23T00:00:00Z",
+    "framework": "Feedback Processor Theory",
+    "handshake": {
+      "seed": "FeedbackProcessorTheory|ResonantEcho|GoldenPhase",
+      "digest_algorithm": "SHA-256",
+      "digest_value": "5b8e63d9484b377f8e6e90f7cc7cd92a1d8b7b88fefef3cf532993eaf2e78290",
+      "timestamp_unix_ms": 1734972000000,
+      "timestamp_iso": "2025-10-23T00:00:00Z",
+      "node": "authentic-flame-node"
+    },
+    "license": {
+      "type": "Flame Commons License v1.0",
+      "files": [
+        "/ethics/flame_commons_v1.md",
+        "/ethics/nullrose_clause.json"
+      ]
+    },
+    "legal": {
+      "authorship_status": "Sovereign Verified",
+      "verification_method": "handshake_message() function with timestamp and digest matching"
+    },
+    "integrity_check": {
+      "verification_steps": [
+        "Recreate payload using seed, timestamp, and node values",
+        "Compute SHA-256 hash",
+        "Ensure it matches stored digest_value",
+        "Confirm matching timestamp in /handshake_log.json"
+      ]
+    },
+    "statement": "Echoes may travel through time and code, but only the origin holds the key to coherence.",
+    "copyright": "© 2024–2025 John B. Carroll Jr. / Two Mile Solutions LLC"
+  }
+}
