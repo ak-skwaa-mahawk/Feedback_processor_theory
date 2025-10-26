@@ -16,26 +16,30 @@ class PLNeutrosophicHybrid:
         total = T + I + F
         return T / total, I / total, F / total  # Normalize
 
-    def bayesian_update(self, evidence_p, evidence_weight):
-        """Update probability with Neutrosophic influence."""
-        T_e, I_e, F_e = self.neutrosophic_decompose(evidence_p)
-        weight = evidence_weight * (T_e - F_e)  # Bias by Neutrosophic difference
-        posterior = (self.prior * weight) / (self.prior * weight + (1 - self.prior) * (1 - weight))
+    def bayesian_update(self, evidence_p, evidence_weight, T, F, I):
+        """Update probability with π-corrected evidence."""
+        # π correction from Neutrosophic I, scaled to [0, 1]
+        pi = min(1.0, I * 10)  # Scale I (e.g., 0.04 -> 0.4) and cap
+        # Adjust evidence with π correction
+        adjusted_p = evidence_p * (1 - pi) + pi * 0.5  # Shift toward neutral with uncertainty
+        T_e, I_e, F_e = self.neutrosophic_decompose(adjusted_p)
+        weight = evidence_weight * (T - F)  # Scale weight by ethical alignment
+        posterior = (self.prior * weight) / (self.prior * weight + (1 - self.prior) * (1 - weight)) if weight + (1 - weight) > 0 else self.prior
         self.T, self.I, self.F = T_e, I_e, F_e
         self.prior = posterior
-        return posterior
+        return posterior, pi
 
     def hybrid_score(self, s):
-        """Compute hybrid resonance score."""
+        """Compute π-corrected hybrid resonance score."""
         m, std = np.mean(s), np.std(s)
         T = np.max(s) / (m + 1e-6)  # Truth from signal
         I = np.var(s) / (std + 1e-6)  # Indeterminacy
         F = min(1, 1 - np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0, 1] if len(s) > 2 else 0)  # Falsity
         self.T, self.I, self.F = T, I, F
-        p = self.bayesian_update(0.7, 0.8)  # Fixed evidence for test
+        p, pi = self.bayesian_update(0.7, 0.8, T, F, I)  # Dynamic evidence
         score = p * (T - F) + 0.5 * I  # Hybrid metric
         baseline = T - F + 0.5 * I  # Neutrosophic baseline
-        return {"P": p, "T": T, "I": I, "F": F, "hybrid_score": score, "baseline_score": baseline}
+        return {"P": p, "pi": pi, "T": T, "I": I, "F": F, "hybrid_score": score, "baseline_score": baseline}
 
 def test_hybrid_resonance():
     hybrid = PLNeutrosophicHybrid(prior_p=0.5)
