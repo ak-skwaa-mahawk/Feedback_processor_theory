@@ -1,3 +1,10 @@
+from quantum.qpe_resonance import estimate_phase
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    phase, _ = estimate_phase(T, I, F)
+    score = phase * (T - F)  # Phase-weighted resonance
+    return {"T": T, "I": I, "F": F, "qpe_score": score}
 from quantum.vqe_resonance import optimize_vqe
 def compute_neutrosophic_resonance(self, s):
     m, std = np.mean(s), np.std(s)
