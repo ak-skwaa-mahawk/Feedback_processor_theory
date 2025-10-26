@@ -1,0 +1,26 @@
+# cirq_resonance.py
+import cirq
+import numpy as np
+
+def build_synara_circuit(T, I, F, flamekeeper=1.0):
+    q = [cirq.LineQubit(x) for x in range(4)]
+    c = cirq.Circuit()
+    c.append([cirq.H(q[i]) for i in range(3)])
+    c.append([cirq.rx(np.pi * T).on(q[0]), cirq.ry(np.pi * I).on(q[1]), cirq.rz(np.pi * F).on(q[2])])
+    c.append(cirq.H(q[3]); cirq.crx(np.pi * flamekeeper).on(q[3], q[0]))
+    c.append([cirq.CX(q[0], q[1]), cirq.CX(q[1], q[2])])
+    c.append(cirq.measure(*q, key='result'))
+    return c
+
+def run_synara_circuit(T, I, F, flamekeeper=1.0):
+    c = build_synara_circuit(T, I, F, flamekeeper)
+    s = cirq.Simulator()
+    r = s.run(c, repetitions=1024)
+    counts = r.histogram(key='result')
+    score = (sum(1 for v in counts if v & 4) - sum(1 for v in counts if v & 1) + 0.5 * sum(1 for v in counts if v & 2)) / 1024
+    return max(0, min(1, score))
+
+if __name__ == "__main__":
+    T, I, F = 0.7, 0.2, 0.1
+    score = run_synara_circuit(T, I, F)
+    print(f"Synara Resonance Score: {score:.4f}")
