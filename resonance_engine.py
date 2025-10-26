@@ -1,3 +1,9 @@
+from quantum.pennylane_qml import evaluate_resonance
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    score = evaluate_resonance(self.qml_params, [T, I, F])  # Assume trained params stored
+    return {"T": T, "I": I, "F": F, "qml_score": score}
 # In resonance_engine.py
 from strawberryfields.apps import data
 import strawberryfields as sf
