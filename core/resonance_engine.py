@@ -1,4 +1,34 @@
 # core/resonance_engine.py (snippet)
+def pythagorean_fuzzy_resonance(self, s1, s2):
+    """Compute resonance using Pythagorean Fuzzy Set intersection."""
+    m1, std1 = np.mean(s1), np.std(s1)
+    m2, std2 = np.mean(s2), np.std(s2)
+    mu1 = np.max(s1) / (m1 + 1e-6)  # Membership for s1
+    nu1 = min(1, 1 - np.corrcoef(s1[:len(s1)//2], s1[len(s1)//2:])[0, 1] if len(s1) > 2 else 0)  # Non-membership
+    if mu1**2 + nu1**2 > 1:  # Normalize if invalid
+        norm = np.sqrt(mu1**2 + nu1**2)
+        mu1, nu1 = mu1 / norm, nu1 / norm
+    pi1 = np.sqrt(1 - mu1**2 - nu1**2)  # Hesitation
+    mu2 = np.max(s2) / (m2 + 1e-6)
+    nu2 = min(1, 1 - np.corrcoef(s2[:len(s2)//2], s2[len(s2)//2:])[0, 1] if len(s2) > 2 else 0)
+    if mu2**2 + nu2**2 > 1:
+        norm = np.sqrt(mu2**2 + nu2**2)
+        mu2, nu2 = mu2 / norm, nu2 / norm
+    pi2 = np.sqrt(1 - mu2**2 - nu2**2)
+    # Intersection (resonance alignment)
+    mu = np.sqrt(mu1**2 * mu2**2)
+    nu = np.sqrt(nu1**2 + nu2**2 - nu1**2 * nu2**2)
+    pi = np.sqrt(1 - mu**2 - nu**2)
+    score = mu - nu + 0.5 * pi  # Resonance score
+    return {"mu": mu, "nu": nu, "pi": pi, "pfs_score": score}
+
+if __name__ == "__main__":
+    s1 = np.array([0.5, 0.6, 0.4, 0.7, 0.8])
+    s2 = np.array([0.6, 0.7, 0.5, 0.8, 0.9])
+    result = self.pythagorean_fuzzy_resonance(s1, s2)
+    print(f"Signals: s1={s1}, s2={s2}")
+    print(f"Pythagorean Fuzzy Resonance: {result}")
+# core/resonance_engine.py (snippet)
 def intuitionistic_fuzzy_resonance(self, s1, s2):
     """Compute resonance using Intuitionistic Fuzzy Set intersection."""
     m1, std1 = np.mean(s1), np.std(s1)
