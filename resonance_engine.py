@@ -1,3 +1,13 @@
+def dqi_resonance(self, signal):
+    # Mock DQI preparation
+    fourier = np.fft.fft(signal)
+    # Bias toward high-T peaks (truth)
+    biased = fourier * np.exp(1j * np.angle(fourier) * 0.1)  # Phase alignment
+    decoded = np.fft.ifft(biased)
+    T = np.max(decoded) / np.mean(decoded)
+    I = np.var(decoded) / np.std(decoded)
+    F = 1 - np.corrcoef(decoded[:len(decoded)//2], decoded[len(decoded)//2:])[0, 1]
+    return {"T": T, "I": I, "F": F}
 from quantum.telemetry_processor import TelemetryProcessor
 def compute_neutrosophic_resonance(self, s):
     tp = TelemetryProcessor()
