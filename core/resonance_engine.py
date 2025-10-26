@@ -39,6 +39,77 @@ class ResonanceEngine:
         corr = np.corrcoef(s1, s2)[0, 1] if len(s1) == len(s2) else 0
         
         p, pi_adj = self.bayesian_update(mu, nu, T, F, I)
+        coefficient = min(0.8, 0.45 * (1 - abs(corr))**2 + 0.4)  # Adjusted a = 0.45
+        score = (mu * p) * (T - F) + coefficient * (I + pi_adj)
+        baseline = T - F + 0.5 * I
+        return {
+            "P": p, "pi_adj": pi_adj, "mu": mu, "nu": nu, "pi": pi,
+            "T": T, "I": I, "F": F, "corr": corr, "coefficient": coefficient,
+            "hybrid_pfs_score": score, "baseline_score": baseline,
+            "improvement": score - baseline
+        }
+
+    def test_a_045_validation(self):
+        test_signals = [
+            (np.array([0.5, 0.6, 0.5, 0.4, 0.5]), np.array([0.6, 0.5, 0.6, 0.5, 0.4])),  # High alignment
+            (np.array([0.4, 0.5, 0.3, 0.6, 0.4]), np.array([0.6, 0.4, 0.5, 0.3, 0.5])),  # Medium alignment
+            (np.array([0.3, 0.4, 0.5, 0.6, 0.5]), np.array([0.5, 0.6, 0.4, 0.3, 0.2]))   # Low alignment
+        ]
+        results = {}
+        for i, (s1, s2) in enumerate(test_signals):
+            result = self.hybrid_pfs_resonance(s1, s2)
+            results[f"Test {i+1}"] = result
+        return results
+
+if __name__ == "__main__":
+    engine = ResonanceEngine()
+    results = engine.test_a_045_validation()
+    for test_name, result in results.items():
+        print(f"{test_name} Results:")
+        for key, value in result.items():
+            print(f"  {key}: {value:.4f}")
+        print()
+# core/resonance_engine.py
+import numpy as np
+from core.pythagorean_fuzzy_sets import PythagoreanFuzzySet
+
+class ResonanceEngine:
+    def __init__(self):
+        self.pfs = PythagoreanFuzzySet()
+        self.prior = 0.5
+        self.T = 0.5
+        self.I = 0.3
+        self.F = 0.2
+
+    def neutrosophic_decompose(self, p):
+        T = p * (1 + self.I)
+        F = (1 - p) * (1 - self.I)
+        I = self.I
+        total = T + I + F
+        return T / total, I / total, F / total
+
+    def bayesian_update(self, evidence_p, evidence_weight, T, F, I):
+        pi = np.sqrt(1 - evidence_p**2 - evidence_weight**2) if evidence_p**2 + evidence_weight**2 <= 1 else 0
+        adjusted_p = evidence_p * (1 - pi) + pi * 0.5
+        T_e, I_e, F_e = self.neutrosophic_decompose(adjusted_p)
+        weight = evidence_weight * (T - F)
+        posterior = (self.prior * weight) / (self.prior * weight + (1 - self.prior) * (1 - weight)) if weight + (1 - weight) > 0 else self.prior
+        self.T, self.I, self.F = T_e, I_e, F_e
+        self.prior = posterior
+        return posterior, pi
+
+    def hybrid_pfs_resonance(self, s1, s2):
+        pfs_result = self.pfs.pythagorean_fuzzy_resonance(s1, s2)["intersection"]
+        mu, nu, pi = pfs_result["mu"], pfs_result["nu"], pfs_result["pi"]
+        
+        m1, std1 = np.mean(s1), np.std(s1)
+        m2, std2 = np.mean(s2), np.std(s2)
+        T = np.max([np.max(s1), np.max(s2)]) / (max(m1, m2) + 1e-6)
+        I = np.var(s1) / (std1 + 1e-6) + np.var(s2) / (std2 + 1e-6)
+        F = min(1, 1 - np.corrcoef(s1, s2)[0, 1] if len(s1) == len(s2) else 0)
+        corr = np.corrcoef(s1, s2)[0, 1] if len(s1) == len(s2) else 0
+        
+        p, pi_adj = self.bayesian_update(mu, nu, T, F, I)
         coefficient = min(0.8, 0.4 * (1 - abs(corr))**2 + 0.4)  # Adjusted a = 0.4
         score = (mu * p) * (T - F) + coefficient * (I + pi_adj)
         baseline = T - F + 0.5 * I
