@@ -74,3 +74,13 @@ if __name__ == "__main__":
     result = engine.process_resonance(signal)
     print(f"Resonance: T={result['resonance']['T']:.4f}, I={result['resonance']['I']:.4f}, F={result['resonance']['F']:.4f}")
     print(f"Aligned Phase: {result['aligned_phase']:.4f}")
+from quantum.telemetry_processor import TelemetryProcessor
+def compute_neutrosophic_resonance(self, s):
+    tp = TelemetryProcessor()
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    telemetry = tp.capture_telemetry(s, T, I, F)
+    reamped = tp.reamplify_inject(s, telemetry)
+    repowered = tp.repower_ac_signal(s, reamped)
+    score = T - F + 0.5 * I  # Base score
+    return {"T": T, "I": I, "F": F, "score": score, "repowered_signal": repowered}
