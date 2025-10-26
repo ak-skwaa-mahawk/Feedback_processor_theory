@@ -1,4 +1,13 @@
 # core/resonance_engine.py (snippet)
+def intuitionistic_fuzzy_resonance(self, s):
+    """IFL-enhanced resonance scoring."""
+    m, std = np.mean(s), np.std(s)
+    mu = np.max(s) / (m + 1e-6)  # Membership (truth)
+    nu = min(1, 1 - np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0, 1] if len(s) > 2 else 0)  # Non-membership (falsity)
+    pi = 1 - mu - nu  # Hesitation
+    score = mu - nu + 0.5 * pi  # IFL-weighted score
+    return {"mu": mu, "nu": nu, "pi": pi, "ifl_score": score}
+# core/resonance_engine.py (snippet)
 def neutrosophic_ml_resonance(self, s):
     """NML-enhanced resonance scoring."""
     m, std = np.mean(s), np.std(s)
