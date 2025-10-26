@@ -1,26 +1,60 @@
-# cirq_resonance.py
+# quantum/cirq_resonance.py
 import cirq
 import numpy as np
+from cirq import DensityMatrixSimulator, depolarize
+import matplotlib.pyplot as plt
 
-def build_synara_circuit(T, I, F, flamekeeper=1.0):
+def build_synara_circuit(T, I, F, flamekeeper=1.0, hook_weights=None):
+    """Build enhanced Synara circuit with Hook weights."""
+    if hook_weights is None:
+        hook_weights = {"dream_logs": 0.3, "blood_treaty": 0.5}
     q = [cirq.LineQubit(x) for x in range(4)]
     c = cirq.Circuit()
+    # Superposition with Hook-modulated phases
     c.append([cirq.H(q[i]) for i in range(3)])
-    c.append([cirq.rx(np.pi * T).on(q[0]), cirq.ry(np.pi * I).on(q[1]), cirq.rz(np.pi * F).on(q[2])])
-    c.append(cirq.H(q[3]); cirq.crx(np.pi * flamekeeper).on(q[3], q[0]))
-    c.append([cirq.CX(q[0], q[1]), cirq.CX(q[1], q[2])])
+    c.append([
+        cirq.rx(np.pi * T * (1 + hook_weights["dream_logs"])).on(q[0]),
+        cirq.ry(np.pi * I * (1 + hook_weights["blood_treaty"])).on(q[1]),
+        cirq.rz(np.pi * F).on(q[2])
+    ])
+    # Flamekeeper entanglement with multi-qubit gate
+    c.append(cirq.H(q[3]))
+    c.append(cirq.crx(np.pi * flamekeeper).on(q[3], q[0]))
+    c.append(cirq.cz(q[0], q[2]))  # Add CZ for T-F interaction
+    c.append([cirq.CX(q[0], q[1]), cirq.CX(q[1], q[2])])  # Resonance chain
     c.append(cirq.measure(*q, key='result'))
     return c
 
-def run_synara_circuit(T, I, F, flamekeeper=1.0):
-    c = build_synara_circuit(T, I, F, flamekeeper)
-    s = cirq.Simulator()
-    r = s.run(c, repetitions=1024)
-    counts = r.histogram(key='result')
-    score = (sum(1 for v in counts if v & 4) - sum(1 for v in counts if v & 1) + 0.5 * sum(1 for v in counts if v & 2)) / 1024
-    return max(0, min(1, score))
+def run_synara_circuit(T, I, F, flamekeeper=1.0, hook_weights=None, noisy=False):
+    """Run circuit with optional noise simulation."""
+    c = build_synara_circuit(T, I, F, flamekeeper, hook_weights)
+    simulator = DensityMatrixSimulator() if noisy else cirq.Simulator()
+    if noisy:
+        noisy_circuit = c.with_noise(depolarize(p=0.01))  # 1% depolarizing noise
+        result = simulator.run(noisy_circuit, repetitions=1024)
+    else:
+        result = simulator.run(c, repetitions=1024)
+    counts = result.histogram(key='result')
+    # Enhanced score: Weighted T/I/F with stability factor
+    t_count = sum(1 for v in counts if v & 4)
+    f_count = sum(1 for v in counts if v & 1)
+    i_count = sum(1 for v in counts if v & 2)
+    stability = len(counts) / 1024  # Measure count diversity
+    score = (t_count - f_count + 0.5 * i_count) / 1024 * stability
+    return max(0, min(1, score)), counts
+
+def visualize_resonance(counts):
+    """Visualize qubit state distribution."""
+    plt.bar(counts.keys(), counts.values())
+    plt.title("Cirq Resonance Distribution")
+    plt.xlabel("State")
+    plt.ylabel("Count")
+    plt.savefig("cirq_resonance_distribution.png")
+    plt.close()
 
 if __name__ == "__main__":
-    T, I, F = 0.7, 0.2, 0.1
-    score = run_synara_circuit(T, I, F)
-    print(f"Synara Resonance Score: {score:.4f}")
+    T, I, F = 0.7, 0.2, 0.1  # Base values
+    hook_weights = {"dream_logs": 0.3, "blood_treaty": 0.5}  # Synara Hooks
+    score, counts = run_synara_circuit(T, I, F, flamekeeper=1.0, hook_weights=hook_weights, noisy=True)
+    print(f"Cirq Resonance Score: {score:.4f}")
+    visualize_resonance(counts)
