@@ -178,3 +178,9 @@ class ResonanceEngine:
     
     def __repr__(self):
         return f"<ResonanceEngine π={self.pi_root:.4f} null={self.null_field}>"
+from quantum.pennylane_resonance import optimize_resonance
+def compute_neutrosophic_resonance(self, s):
+    m, std = np.mean(s), np.std(s)
+    T, I, F = np.max(s)/(m+1e-6), np.var(s)/(std+1e-6), min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)
+    _, score = optimize_resonance(T, I, F)
+    return {"T": T, "I": I, "F": F, "pennylane_score": score}
