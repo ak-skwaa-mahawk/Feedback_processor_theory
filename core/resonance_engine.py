@@ -1,4 +1,28 @@
 # core/resonance_engine.py (snippet)
+def intuitionistic_fuzzy_resonance(self, s1, s2):
+    """Compute resonance using Intuitionistic Fuzzy Set intersection."""
+    m1, std1 = np.mean(s1), np.std(s1)
+    m2, std2 = np.mean(s2), np.std(s2)
+    mu1 = np.max(s1) / (m1 + 1e-6)  # Membership for s1
+    nu1 = min(1, 1 - np.corrcoef(s1[:len(s1)//2], s1[len(s1)//2:])[0, 1] if len(s1) > 2 else 0)  # Non-membership
+    pi1 = 1 - mu1 - nu1 if mu1 + nu1 <= 1 else 0  # Hesitation, normalize if invalid
+    mu2 = np.max(s2) / (m2 + 1e-6)
+    nu2 = min(1, 1 - np.corrcoef(s2[:len(s2)//2], s2[len(s2)//2:])[0, 1] if len(s2) > 2 else 0)
+    pi2 = 1 - mu2 - nu2 if mu2 + nu2 <= 1 else 0
+    # Intersection (resonance alignment)
+    mu = min(mu1, mu2)
+    nu = max(nu1, nu2)
+    pi = 1 - mu - nu if mu + nu <= 1 else 0  # Ensure validity
+    score = mu - nu + 0.5 * pi  # Resonance score
+    return {"mu": mu, "nu": nu, "pi": pi, "ifs_score": score}
+
+if __name__ == "__main__":
+    s1 = np.array([0.5, 0.6, 0.4, 0.7, 0.8])
+    s2 = np.array([0.6, 0.7, 0.5, 0.8, 0.9])
+    result = self.intuitionistic_fuzzy_resonance(s1, s2)
+    print(f"Signals: s1={s1}, s2={s2}")
+    print(f"Intuitionistic Fuzzy Resonance: {result}")
+# core/resonance_engine.py (snippet)
 def neutrosophic_set_resonance(self, s1, s2):
     """Compute resonance using Neutrosophic Set operations."""
     m1, std1 = np.mean(s1), np.std(s1)
