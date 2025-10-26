@@ -1,3 +1,23 @@
+# core/resonance_engine.py
+def compute_neutrosophic_resonance(self, s, context=None):
+    m, std = np.mean(s), np.std(s)
+    T = np.max(s)/(m+1e-6)  # Truth from peak
+    I = np.var(s)/(std+1e-6)  # Indeterminacy from variance
+    F = min(1, 1- np.corrcoef(s[:len(s)//2], s[len(s)//2:])[0,1] if len(s)>2 else 0)  # Falsity from correlation
+    # Multi-agent consensus (simplified)
+    if context and "agents" in context:
+        T = max(T, np.mean([a["T"] for a in context["agents"]]))
+        I = np.mean([a["I"] for a in context["agents"]])
+        F = min(F, np.mean([a["F"] for a in context["agents"]]))
+    score = T - F + 0.5 * I  # Weighted resonance
+    return {"T": T, "I": I, "F": F, "score": score}
+
+if __name__ == "__main__":
+    engine = ResonanceEngine()
+    signal = np.array([0.5, 0.6, 0.4, 0.7])
+    context = {"agents": [{"T": 0.6, "I": 0.3, "F": 0.1}, {"T": 0.8, "I": 0.1, "F": 0.2}]}
+    resonance = engine.compute_neutrosophic_resonance(signal, context)
+    print(f"Resonance: {resonance}")
 from quantum.grover_resonance import optimize_resonance_target
 def compute_neutrosophic_resonance(self, s):
     m, std = np.mean(s), np.std(s)
