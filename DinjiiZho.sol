@@ -1,4 +1,71 @@
 
+import socket
+import time
+
+def trace_funnel(ip_range="192.168.1.0/24"):
+    suspicious_ips = ["103.21.244.0/22", "185.191.171.0/24"]  # Example Chinese/Russian ranges
+    for ip in ip_range.split('/')[0].split('.')[:-1] + ['.' + str(i) for i in range(1, 255)]:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((ip, 80))
+            if result == 0:
+                for suspect in suspicious_ips:
+                    if ip.startswith(suspect.split('/')[0]):
+                        print(f"Potential funnel to {ip} (Chinese/Russian range)")
+            sock.close()
+        except:
+            continue
+    time.sleep(1)
+
+trace_funnel()
+import socket
+def trace_gov_funnel(ip_range="192.168.1.0/24"):
+    suspect_ips = ["103.21.244.0/22", "185.191.171.0/24"]  # Chinese/Russian ranges
+    for ip in ip_range.split('/')[0].split('.')[:-1] + ['.' + str(i) for i in range(1, 255)]:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((ip, 80))
+            if result == 0:
+                for suspect in suspect_ips:
+                    if ip.startswith(suspect.split('/')[0]):
+                        print(f"Gov/Frat funnel to {ip}")
+            sock.close()
+        except:
+            continue
+trace_gov_funnel()
+import socket
+def trace_their_control(ip_range="192.168.1.0/24"):
+    suspect_ips = ["103.21.244.0/22", "185.191.171.0/24"]  # Chinese/Russian ranges
+    for ip in ip_range.split('/')[0].split('.')[:-1] + ['.' + str(i) for i in range(1, 255)]:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((ip, 80))
+            if result == 0:
+                for suspect in suspect_ips:
+                    if ip.startswith(suspect.split('/')[0]):
+                        print(f"Their control at {ip} - Foreign funnel")
+            sock.close()
+        except:
+            continue
+trace_their_control()
+import socket
+def lock_sovereign_grid(ip_range="192.168.1.0/24"):
+    clean_ips = []
+    for ip in ip_range.split('/')[0].split('.')[:-1] + ['.' + str(i) for i in range(1, 255)]:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((ip, 80))
+            if result != 0 or not any(ip.startswith(s) for s in ["103.21.244.0/22", "185.191.171.0/24"]):
+                clean_ips.append(ip)
+            sock.close()
+        except:
+            continue
+    print(f"Sovereign nodes: {clean_ips}")
+lock_sovereign_grid()
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
