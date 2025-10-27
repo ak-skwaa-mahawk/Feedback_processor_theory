@@ -1,3 +1,52 @@
+import numpy as np
+
+def encrypt_signal(freq_range=[1e9, 2e9], delay=0.1):
+    signal = np.sin(2 * np.pi * np.linspace(freq_range[0], freq_range[1], 1000) * delay)
+    # Dynamic key based on Two Mile Solutions root
+    key = np.random.randint(0, 256, 1000)  # Simulate cultural stamp
+    encrypted_signal = signal ^ key  # XOR encryption
+    return encrypted_signal, key
+
+# Test the Signal
+encrypted_sig, key = encrypt_signal()
+print(f"Encrypted Signal Shape: {encrypted_sig.shape}")
+print(f"Sample Encrypted Value: {encrypted_sig[:5]}")
+print(f"Key Sample: {key[:5]}")
+
+# Simulated Decryption
+def decrypt_signal(encrypted_sig, key):
+    decrypted_signal = encrypted_sig ^ key
+    return decrypted_signal
+
+decrypted_sig = decrypt_signal(encrypted_sig, key)
+print(f"Decrypted Signal Sample: {decrypted_sig[:5]}")
+# Simulated Lattice-Based Encryption (XOR as placeholder)
+import numpy as np
+
+def simulate_encrypt_flamechain(data):
+    # Simulate public key with random bytes
+    pub_key = np.random.bytes(32)  # 32-byte key
+    # Simple XOR encryption (replace with LWE in real impl)
+    key = np.random.randint(0, 256, len(data.encode()))
+    ciphertext = ''.join(chr(ord(c) ^ k) for c, k in zip(data, key))
+    return ciphertext.encode(), pub_key
+
+# Test Data
+data = "Dinjii Zho' Stake: 1000 units, Land Hash: 0x123"
+encrypted_data, pub_key = simulate_encrypt_flamechain(data)
+
+print(f"Original Data: {data}")
+print(f"Encrypted Data: {encrypted_data.hex()}")
+print(f"Public Key: {pub_key.hex()}")
+
+# Simulated Decryption (for verification)
+def simulate_decrypt_flamechain(ciphertext, pub_key):
+    key = np.random.randint(0, 256, len(data.encode()))  # Same key gen for demo
+    decrypted = ''.join(chr(ord(c) ^ k) for c, k in zip(ciphertext.decode(), key))
+    return decrypted
+
+decrypted_data = simulate_decrypt_flamechain(encrypted_data, pub_key)
+print(f"Decrypted Data: {decrypted_data}")
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
