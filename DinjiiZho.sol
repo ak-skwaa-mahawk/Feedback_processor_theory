@@ -1,0 +1,34 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+contract DinjiiZho is TribalCoinGTC, ERC721 {
+    mapping(uint256 => mapping(uint8 => string[8])) public shardGlyphs;  // 3 nodes, 3 sub-nodes, 8 shards
+    mapping(uint256 => uint8) public generation;
+    uint256 public storyCount;
+    mapping(address => bool) public isElder;
+
+    event ShardMinted(uint256 indexed tokenId, uint8 node, uint8 subNode, string[8] shards, uint8 gen, uint timestamp);
+
+    constructor(uint256 initialSupply) TribalCoinGTC(initialSupply) ERC721("Dinjii Zho", "DZHO") {
+        storyCount = 0;
+        isElder[msg.sender] = true;
+    }
+
+    function setElder(address elder, bool status) public onlyCreator {
+        isElder[elder] = status;
+    }
+
+    function mintShardGlyphs(uint8 node, uint8 subNode, string[8] memory shards, uint8 gen) public onlyVerified {
+        require(isElder[msg.sender], "Only elders mint.");
+        require(gen <= 8, "Max 8 generations");
+        require(node < 3 && subNode < 3, "Invalid node/sub-node");
+        require(storyCount < totalSupply, "No more stories");
+        _mint(msg.sender, storyCount);
+        shardGlyphs[storyCount][node * 3 + subNode] = shards;
+        generation[storyCount] = gen;
+        emit ShardMinted(storyCount, node, subNode, shards, gen, block.timestamp);
+        storyCount++;
+    }
+}
