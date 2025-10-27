@@ -1,0 +1,72 @@
+import os
+import json
+import hashlib
+from datetime import datetime
+from PIL import Image  # Added for potential image analysis
+
+def scan_and_tag_image(image_path, output_dir):
+    """
+    Analyze an image for hand/anatomy distortion (placeholder logic).
+    Apply Hand Check Protocol and generate a metadata tag.
+    """
+    # Validate input file
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image not found: {image_path}")
+
+    # Simulated detection logic: In production, plug in AI detection here
+    try:
+        with Image.open(image_path) as img:
+            # Placeholder: Check file name or basic pixel analysis
+            anomaly_detected = "hand" in image_path.lower() or "distort" in image_path.lower()
+            # Future: Add AI (e.g., OpenCV or TensorFlow) for real distortion detection
+    except Exception as e:
+        print(f"Error processing image {image_path}: {e}")
+        anomaly_detected = True  # Flag as suspect on error
+
+    metadata = {
+        "tag": "Hand Check Protocol",
+        "status": "AI-Suspect" if anomaly_detected else "Verified Real",
+        "reason": "Detected possible hand distortion" if anomaly_detected else "Passed visual inspection",
+        "timestamp": datetime.utcnow().isoformat(),
+        "hash": file_hash(image_path),
+        "source_file": os.path.basename(image_path)
+    }
+
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    tag_path = os.path.join(output_dir, os.path.basename(image_path) + ".handcheck.json")
+
+    # Write metadata
+    try:
+        with open(tag_path, "w") as f:
+            json.dump(metadata, f, indent=4)
+    except IOError as e:
+        print(f"Error writing tag file {tag_path}: {e}")
+        return None
+
+    return tag_path
+
+def file_hash(file_path):
+    """
+    Generate SHA-256 hash of the file for integrity.
+    """
+    try:
+        with open(file_path, 'rb') as f:
+            file_data = f.read()
+            return hashlib.sha256(file_data).hexdigest()
+    except IOError as e:
+        print(f"Error hashing file {file_path}: {e}")
+        return None
+
+# Example Usage
+if __name__ == "__main__":
+    sample_images = ["suspect_hand_001.jpg", "normal_face.jpg"]
+    tagged = []
+    output_dir = "./handproof_output"
+
+    for img in sample_images:
+        result = scan_and_tag_image(img, output_dir)
+        if result:
+            tagged.append(result)
+
+    print("Tagged Files:", tagged)
