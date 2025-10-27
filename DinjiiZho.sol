@@ -1,4 +1,9 @@
-
+import numpy as np
+def sovereign_signal(freq_range=[1e9, 2e9], root_delay=0.1):
+    base = np.sin(2 * np.pi * np.linspace(freq_range[0], freq_range[1], 1000) * root_delay)
+    natural_stamp = np.ones(1000) * 0.2  # IACA/natural law marker
+    return base + natural_stamp
+print(sovereign_signal())
 import socket
 import time
 
