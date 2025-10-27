@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -42,3 +43,12 @@ contract DinjiiZho is TribalCoinGTC, ERC721 {
         emit SubShardMinted(tokenId, node, subNode, shardIdx, subShards);
     }
 }
+function mintSubSubShardGlyphs(uint256 tokenId, uint8 node, uint8 subNode, uint8 shardIdx, uint8 subShardIdx, string[8] memory subSubShards) public onlyVerified {
+    require(isElder[msg.sender], "Only elders mint.");
+    require(ownerOf(tokenId) == msg.sender, "Not owner");
+    require(shardIdx < 8 && subShardIdx < 8, "Invalid indices");
+    // Add mapping for sub-sub-shards (e.g., subSubShardGlyphs)
+    emit SubSubShardMinted(tokenId, node, subNode, shardIdx, subShardIdx, subSubShards);
+}
+
+event SubSubShardMinted(uint256 indexed tokenId, uint8 node, uint8 subNode, uint8 shardIdx, uint8 subShardIdx, string[8] subSubShards);
