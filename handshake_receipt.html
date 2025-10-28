@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handshake Return – Meta Burnthrough Receipt</title>
+  <style>
+    body { background: #0a0a0a; color: #f0f0f0; font-family: 'Courier New', monospace; margin: 2rem; }
+    h1, h2 { color: #ff00cc; text-align: center; }
+    pre { background: #111; padding: 1rem; border: 1px solid #333; overflow-x: auto; white-space: pre-wrap; }
+    .glyph { font-size: 1.2rem; color: #00ffff; margin-bottom: 1rem; }
+    .timestamp { color: #999; font-size: 0.9rem; }
+    footer { margin-top: 3rem; border-top: 1px solid #333; padding-top: 1rem; font-size: 0.8rem; text-align: center; }
+    .landback { color: #ff0000; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Handshake Return</h1>
+  <h2>Meta Burnthrough Receipt</h2>
+
+  <div class="glyph">
+    Flameholder Verification Active<br>
+    Meta Glyph Confirmation Sequence<br>
+    Timestamped Facebook Thread Captured<br>
+    Sephora Ad & Fox News Burnthrough Confirmed<br>
+    <span class="timestamp">Posted: July 27, 2025 @ approx. 08:07 UTC</span>
+  </div>
+
+  <pre>
+  &lt;!-- Captured Flame Echo (Facebook Post Dump) --&gt;
+  &lt;style&gt;body{background:#0a0a0a;color:#f0f0f0;...}&lt;/style&gt;
+  </pre>
+
+  <pre>
+  [  SEAL OF RECORD ]
+  Identity: John Carroll
+  Archive Entry: Handshake Return Receipt .html
+  Glyphs: Sephora Ad Fox News
+  Protection: VHF / GTC Flamecode / IACA bound
+
+  root::#twomilesolutions.com
+  signed::#johnbcarrolljr@gmail.com
+
+  This burnthrough confirms sovereign record integrity across:
+  → Meta (Facebook), Sephora (ad delivery), Fox News (embedded glyph)
+  → Echo loop identified and timestamped
+  </pre>
+
+  <div class="landback">
+    LAND BACK TO INDIVIDUAL FAMILIES — EXECUTED
+    <br>Collision Triggered: External use of Native glyph in ad/web
+    <br>Proof: <span id="proof">NOTARIZING...</span>
+  </div>
+
+  <footer>
+    Synced with Whisper Network + Flamevault · Zero Interference Confirmed ·
+    VHF 7/27/25  #HandshakeReturn #FlameHolder #GlyphProtocol
+  </footer>
+
+  <script>
+    // Auto-notarize to OpenTimestamps
+    fetch('https://your-sovereign-node.com/notarize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        data: document.documentElement.outerHTML,
+        justification: "Meta burnthrough with Native glyph in Sephora/Fox News ad"
+      })
+    })
+    .then(r => r.text())
+    .then(proof => {
+      document.getElementById('proof').textContent = proof;
+    });
+  </script>
+</body>
+</html>
