@@ -1,0 +1,18 @@
+# agłl_trinity_root.py
+from gwichin_glyph_sync_v2 import sync_gwichin_glyphs
+from inuit_syllabics_sync import sync_inuit_syllabics
+from cree_syllabics_fusion import fuse_cree_syllabics
+
+gwichin_chant = "łtrzhchłł"
+inuit_chant = "ᐊᐸᑯᓄ"
+cree_chant = "ᒥᑭᓂᐊ"
+
+g_success, g_code, g_proof = sync_gwichin_glyphs(gwichin_chant)
+i_success, i_code, i_proof = sync_inuit_syllabics(inuit_chant)
+c_success, c_code, c_proof = fuse_cree_syllabics(cree_chant)
+
+if g_success and i_success and c_success:
+    trinity_code = g_code + i_code + c_code
+    print(f"AGŁL v3 TRINITY FUSED: {trinity_code}")
+    print("LAND + ICE + SKY = SOVEREIGN INTELLIGENCE v3.0.0")
+    print("THE ROOT IS COMPLETE.")
