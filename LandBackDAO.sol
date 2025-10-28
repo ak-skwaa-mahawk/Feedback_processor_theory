@@ -1,89 +1,142 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-contract LandBackDAO {
-    address public flameholder;
-    uint256 public collisionCount;
-    
-    struct Collision {
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+contract LandBackDAO is ERC20, ERC721, Ownable {
+    using SafeMath for uint256;
+
+    struct Proposal {
         uint256 id;
-        address trigger;
-        string justification;
-        uint256 timestamp;
-        string proofHash;  // OpenTimestamps .ots hash
+        string description;
+        uint256 T_sum;
+        uint256 I_sum;
+        uint256 F_sum;
+        uint256 voteCount;
+        mapping(address => bool) voted;
+        bool executed;
+        uint256 deadline;
     }
-    
-    Collision[] public collisions;
-    
-    event CollisionTriggered(
-        uint256 indexed id,
-        address trigger,
-        string justification,
-        uint256 timestamp
-    );
-    
-    event LandBackExecuted(uint256 collisionId, string proofHash);
-    
-    constructor() {
+
+    struct Deed {
+        uint256 receiptNFTId;
+        string familyName;
+        string landDescription;
+        uint256 anscaShare;
+        string proofHash;
+    }
+
+    address public flameholder;
+    string public constant SEVENFOLD_CLAUSE = "Sevenfold Protection Clause by John B. Carroll...";
+    Proposal[] public proposals;
+    mapping(uint256 => Deed) public deeds;
+    uint256 public proposalCount;
+    uint256 public deedCount;
+    mapping(address => bool) public authorizedNodes;
+    mapping(uint256 => bytes) private encryptedStakes;
+
+    event ProposalCreated(uint256 id, string description, uint256 deadline);
+    event Voted(address indexed voter, uint256 proposalId, uint256 T, uint256 I, uint256 F);
+    event ProposalExecuted(uint256 id, bool approved);
+    event DeedIssued(uint256 indexed deedId, uint256 receiptNFTId, string familyName);
+    event StakeEncrypted(uint256 indexed tokenId, bytes data);
+
+    constructor(uint256 initialSupply) ERC20("Dinjii Zho'", "DZHO") ERC721("LandBackDAO Deeds", "LBDEED") Ownable(msg.sender) {
         flameholder = msg.sender;
+        _mint(msg.sender, initialSupply);
+        deedCount = 0;
     }
-    
+
     modifier onlyFlameholder() {
         require(msg.sender == flameholder, "Only Flameholder");
         _;
     }
-    
-    // ONE-LINE COLLISION ENGINE EMBEDDED
-    function _isCollision(string memory action) internal pure returns (bool) {
-        bytes memory a = bytes(action);
-        bool their = false; bool our = false;
-        string[6] memory theirWords = ["control", "own", "gNH", "use", "signal", "web"];
-        string[6] memory ourWords = ["glyph", "dinjii", "family", "native", "art", "land"];
-        
-        for (uint i = 0; i < 6; i++) {
-            if (_contains(a, bytes(theirWords[i]))) their = true;
-            if (_contains(a, bytes(ourWords[i]))) our = true;
+
+    modifier onlyAuthorized() {
+        require(authorizedNodes[msg.sender] || msg.sender == flameholder, "Unauthorized");
+        _;
+    }
+
+    function joinAsNode() public {
+        authorizedNodes[msg.sender] = true;
+    }
+
+    function createProposal(string memory description, uint256 votingPeriod) public onlyFlameholder {
+        Proposal storage p = proposals.push();
+        p.id = proposalCount++;
+        p.description = description;
+        p.deadline = block.timestamp + votingPeriod;
+        emit ProposalCreated(p.id, description, p.deadline);
+    }
+
+    function vote(uint256 proposalId, uint256 T, uint256 I, uint256 F) public {
+        require(proposalId < proposalCount, "Invalid proposal");
+        Proposal storage p = proposals[proposalId];
+        require(block.timestamp <= p.deadline, "Voting ended");
+        require(!p.voted[msg.sender], "Already voted");
+
+        require(T + I + F <= 300, "T/I/F must be <= 3.00 (scaled x100)");
+
+        p.T_sum += T;
+        p.I_sum += I;
+        p.F_sum += F;
+        p.voteCount++;
+        p.voted[msg.sender] = true;
+
+        emit Voted(msg.sender, proposalId, T, I, F);
+
+        if (block.timestamp >= p.deadline) {
+            _executeProposal(proposalId);
         }
-        return their && our;
     }
-    
-    function _contains(bytes memory data, bytes memory word) internal pure returns (bool) {
-        if (word.length > data.length) return false;
-        for (uint i = 0; i <= data.length - word.length; i++) {
-            bool match = true;
-            for (uint j = 0; j < word.length; j++) {
-                if (data[i + j] != word[j]) { match = false; break; }
-            }
-            if (match) return true;
+
+    function _executeProposal(uint256 proposalId) internal {
+        Proposal storage p = proposals[proposalId];
+        require(!p.executed, "Already executed");
+
+        if (p.voteCount == 0) {
+            p.executed = true;
+            emit ProposalExecuted(proposalId, false);
+            return;
         }
-        return false;
+
+        uint256 T_avg = p.T_sum / (p.voteCount * 100);
+        uint256 I_avg = p.I_sum / (p.voteCount * 100);
+        uint256 F_avg = p.F_sum / (p.voteCount * 100);
+
+        int256 score = int256(T_avg) - int256(50 * I_avg) / 100 - int256(F_avg);
+
+        bool approved = score > 30; // Threshold: +0.30
+
+        p.executed = true;
+        emit ProposalExecuted(proposalId, approved);
     }
-    
-    function triggerCollision(string memory justification) public {
-        require(_isCollision(justification), "No collision");
-        
-        collisionCount++;
-        collisions.push(Collision({
-            id: collisionCount,
-            trigger: msg.sender,
-            justification: justification,
-            timestamp: block.timestamp,
-            proofHash: ""
-        }));
-        
-        emit CollisionTriggered(collisionCount, msg.sender, justification, block.timestamp);
+
+    function issueDeed(address to, uint256 receiptNFTId, string memory familyName, string memory landDescription, uint256 anscaShare, string memory proofHash) public onlyFlameholder {
+        deedCount++;
+        _mint(to, deedCount);
+
+        deeds[deedCount] = Deed({
+            receiptNFTId: receiptNFTId,
+            familyName: familyName,
+            landDescription: landDescription,
+            anscaShare: anscaShare,
+            proofHash: proofHash
+        });
+
+        emit DeedIssued(deedCount, receiptNFTId, familyName);
     }
-    
-    function notarizeCollision(uint256 id, string memory proofHash) public onlyFlameholder {
-        require(id > 0 && id <= collisionCount, "Invalid ID");
-        require(bytes(collisions[id-1].proofHash).length == 0, "Already notarized");
-        
-        collisions[id-1].proofHash = proofHash;
-        emit LandBackExecuted(id, proofHash);
+
+    function stakeResource(uint256 tokenId, bytes memory data) public {
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
+        encryptedStakes[tokenId] = data;
+        emit StakeEncrypted(tokenId, data);
     }
-    
-    function getCollision(uint256 id) public view returns (Collision memory) {
-        require(id > 0 && id <= collisionCount, "Invalid ID");
-        return collisions[id-1];
+
+    function getSevenfold() public pure returns (string memory) {
+        return SEVENFOLD_CLAUSE;
     }
 }
