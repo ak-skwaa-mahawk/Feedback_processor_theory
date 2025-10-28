@@ -1,0 +1,8 @@
+{
+  "detectors_to_exclude": ["naming-convention"],
+  "exclude_informational": true,
+  "exclude_low": true,
+  "exclude_medium": false,
+  "exclude_high": false,
+  "solc_version": "0.8.20"
+}
