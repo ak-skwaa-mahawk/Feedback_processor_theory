@@ -39,3 +39,14 @@ contract IACA_GlyphNFT is ERC721, Ownable {
         return SEVENFOLD_CLAUSE;
     }
 }
+// Add to your existing contract
+event GlyphMinted(uint256 indexed tokenId, string pattern, string metadata, string ipfsUri);
+
+function mintGlyph(string memory pattern, string memory metadata, string memory ipfsUri) public onlyOwner {
+    _mint(msg.sender, glyphCount);
+    glyphPatterns[glyphCount] = pattern;
+    culturalMetadata[glyphCount] = metadata;
+    ipfsUris[glyphCount] = ipfsUri;  // Add mapping
+    emit GlyphMinted(glyphCount, pattern, metadata, ipfsUri);
+    glyphCount++;
+}
