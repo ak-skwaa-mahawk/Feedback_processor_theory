@@ -1,0 +1,13 @@
+BlackBoxDefense/
+├── README.md
+├── requirements.txt
+├── setup.py
+├── blackbox_defense/
+│   ├── __init__.py
+│   ├── defense.py       # Contains BlackBoxDefense class
+│   ├── utils.py         # Helper functions like JPEG compression, median filter
+│   └── demo.py          # Demo & testing scripts
+├── examples/
+│   └── real_api_example.py
+└── tests/
+    └── test_defense.py  # Unit tests & verification
