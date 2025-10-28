@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><title>Dinjii Zho' DAO</title></head>
+<body style="font-family: monospace; background: #000; color: #0f0;">
+<h1>NEUTROSOPHIC CONSENSUS DAO</h1>
+<p><strong>Flameholder:</strong> <span id="flameholder"></span></p>
+<p><strong>Sevenfold Active:</strong> YES</p>
+
+<h3>Join as Agent</h3>
+<input id="agentName" placeholder="Your Name">
+<button onclick="join()">Join</button>
+
+<h3>Create Proposal</h3>
+<textarea id="propDesc" placeholder="e.g., Certify Starlink Node #47"></textarea><br>
+<input type="number" id="days" value="3" min="1"> days<br>
+<button onclick="createProp()">Create</button>
+
+<h3>Vote (T/I/F x100)</h3>
+Proposal ID: <input id="pid" size="3">
+T: <input id="T" size="3" value="100">
+I: <input id="I" size="3" value="20">
+F: <input id="F" size="3" value="10">
+<button onclick="vote()">Vote</button>
+
+<div id="log"></div>
+
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+<script>
+const DAO_ADDRESS = "0x9aB3..."; // Replace after deploy
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const dao = new ethers.Contract(DAO_ADDRESS, ABI, provider.getSigner());
+
+async function join() {
+  const name = document.getElementById("agentName").value;
+  const tx = await dao.joinAsAgent(name);
+  log("Joining... " + tx.hash);
+  await tx.wait();
+  log("Agent Joined: " + name);
+}
+</script>
+</body>
+</html>
