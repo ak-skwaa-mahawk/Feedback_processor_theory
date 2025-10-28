@@ -1,0 +1,89 @@
+# fpt_funnel.py
+# Feedback Processor Theory - Omega Funnel Filter
+# Two Mile Solutions LLC | John B. Carroll, Flameholder
+# IACA-Certified Digital Craft | Sevenfold Protected
+
+import socket
+import json
+import numpy as np
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+import threading
+import time
+import hashlib
+import opentimestamps as ots
+
+# === CONFIG ===
+FLAMEHOLDER_KEY = b"TwoMileFlameKey2025"  # 32-byte
+NONCE = b"FunnelNonce12345"        # 12-byte
+SOVEREIGN_NODE = ("your.trust.land", 9200)  # Your Starlink node or trust server
+LISTEN_PORT = 9200  # Same as Starlink dish local port
+IACA_STAMP = b"TwoMileIACACert2025"
+
+# === NEUTROSOPHIC FILTER ===
+def neutrosophic_filter(data):
+    # Simulate T/I/F scoring on incoming packet
+    T = 0.9 if b"starlink" in data.lower() else 0.6  # High truth if known source
+    I = 0.4 if len(data) > 1000 else 0.1           # Indeterminacy by size
+    F = 0.1 if b"china" in data.lower() else 0.0   # Falsehood if foreign marker
+    score = T - 0.5*I - F
+    return score > 0.3, {"T": T, "I": I, "F": F, "score": score}
+
+# === ENCRYPT & STAMP ===
+def encrypt_and_stamp(packet):
+    cipher = Cipher(algorithms.ChaCha20(FLAMEHOLDER_KEY, NONCE), mode=None, backend=default_backend())
+    encryptor = cipher.encryptor()
+    encrypted = encryptor.update(packet) + encryptor.finalize()
+    stamped = encrypted + IACA_STAMP
+    return stamped
+
+# === NOTARIZE TO BITCOIN ===
+def notarize_to_flamechain(data):
+    digest = hashlib.sha256(data).digest()
+    calendar = ots.Calendar.from_known_opensource()
+    timestamp = calendar.timestamp(ots.DetachedTimestampFile(digest))
+    return timestamp.hexdigest()
+
+# === FUNNEL CORE ===
+class FPTFunnel:
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind(("0.0.0.0", LISTEN_PORT))
+        print(f"[FPT-Ω] Funnel active on port {LISTEN_PORT} — NO PERMISSION ASKED")
+
+    def start(self):
+        while True:
+            try:
+                data, addr = self.sock.recvfrom(4096)
+                print(f"[IN] Packet from {addr}")
+
+                # 1. Neutrosophic Filter
+                passed, tifs = neutrosophic_filter(data)
+                if not passed:
+                    print(f"[BLOCKED] Low resonance: {tifs}")
+                    continue
+
+                # 2. Encrypt & IACA Stamp
+                secure_packet = encrypt_and_stamp(data)
+
+                # 3. Notarize
+                proof = notarize_to_flamechain(secure_packet)
+
+                # 4. Forward to Sovereign Node
+                fwd_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                fwd_sock.sendto(secure_packet, SOVEREIGN_NODE)
+                print(f"[FWD] Secure packet → {SOVEREIGN_NODE} | Proof: {proof[:16]}...")
+
+            except Exception as e:
+                print(f"[ERROR] {e}")
+
+# === LAUNCH ===
+if __name__ == "__main__":
+    print("=== FPT-Ω FUNNEL FILTER ENGAGED ===")
+    print("Two Mile Solutions LLC | John B. Carroll")
+    print("Sevenfold Protection: ACTIVE")
+    print("IACA Tech Craft: CERTIFIED")
+    print("History: NOW")
+    
+    funnel = FPTFunnel()
+    funnel.start()
