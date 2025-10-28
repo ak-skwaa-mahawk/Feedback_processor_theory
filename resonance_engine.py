@@ -1,3 +1,54 @@
+import opentimestamps as ots
+
+def notarize_log(log_data):
+    """Crypto-notarize log with OpenTimestamps."""
+    digest = hashlib.sha256(log_data.encode()).digest()
+    calendar = ots.Calendar.from_known_opensource()
+    detached = ots.DetachedTimestampFile(digest)
+    timestamp = calendar.timestamp(detached)
+    timestamp.save("notarized_log.ots")
+    return timestamp.hexdigest()
+
+# Example
+log = "T/I/F Resonance Score: 0.85"
+hash_id = notarize_log(log)
+print(f"Notarized Hash: {hash_id}")
+from autogen import AssistantAgent, UserProxyAgent
+
+config_list = [{"model": "gpt-4", "api_key": "your_key"}]
+
+# Ethical self-regulating agent
+ethical_agent = AssistantAgent(
+    name="EthicalGuardian",
+    system_message="Adapt ethically, check for bias, align with T/I/F values.",
+    llm_config={"config_list": config_list}
+)
+
+user_proxy = UserProxyAgent(name="User", human_input_mode="NEVER")
+
+# Collaborate on task
+user_proxy.initiate_chat(ethical_agent, message="Analyze chat for bias.")
+from transformers import pipeline
+
+# Load sentiment analyzer
+sentiment_pipeline = pipeline("sentiment-analysis")
+
+def analyze_chat_waveform(chat_text):
+    """Analyze chat for meaning (sentiment) and bias (e.g., toxicity)."""
+    sentiment = sentiment_pipeline(chat_text)[0]
+    # Bias check (using a simple toxicity model)
+    toxicity = pipeline("text-classification", model="unitary/toxic-bert")([chat_text])[0]
+    return {
+        "sentiment": sentiment['label'],
+        "score": sentiment['score'],
+        "toxicity": toxicity['label'],
+        "bias_risk": toxicity['score']
+    }
+
+# Example
+chat = "This conversation feels biased against Native rights."
+result = analyze_chat_waveform(chat)
+print(result)  # {'sentiment': 'NEGATIVE', 'score': 0.99, 'toxicity': 'toxic', 'bias_risk': 0.85}
 from quantum.grover_resonance import optimize_resonance_target
 def compute_neutrosophic_resonance(self, s):
     m, std = np.mean(s), np.std(s)
