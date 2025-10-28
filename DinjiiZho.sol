@@ -1,3 +1,35 @@
+
+from pqcrypto.kyber import generate_keypair, encrypt, decrypt
+
+def certify_token(data):
+    public_key, private_key = generate_keypair()
+    iaca_data = data.encode() + b" [IACA Certified by Two Mile Solutions]"
+    ciphertext = encrypt(public_key, iaca_data)
+    return ciphertext, public_key, private_key
+
+data = "Dinjii Zho' Stake: 1000 units"
+ciphertext, pub_key, priv_key = certify_token(data)
+print(f"Certified Token (base64): {base64.b64encode(ciphertext).decode()}")
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+import numpy as np
+
+def certify_signal(freq_range=[1e9, 2e9], delay=0.1):
+    t = np.linspace(0, delay, 1000)
+    signal = np.sin(2 * np.pi * np.linspace(freq_range[0], freq_range[1], 1000) * t)
+    key = b"IACACertKeyTwoMile"  # Secure key in prod
+    nonce = b"NativeWebCert123"  # Unique nonce
+    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
+    encryptor = cipher.encryptor()
+    signal_bytes = signal.astype(np.float32).tobytes()
+    encrypted_signal = encryptor.update(signal_bytes) + encryptor.finalize()
+    # IACA certification marker
+    iaca_cert = b"TwoMileIACACert"  # Append as metadata
+    return encrypted_signal + iaca_cert, key, nonce
+
+encrypted_sig, key, nonce = certify_signal()
+print(f"Certified Signal Length: {len(encrypted_sig)} bytes")
+print(f"IACA Marker Included: {encrypted_sig[-12:].decode()}")
 import numpy as np
 
 def encrypt_signal(freq_range=[1e9, 2e9], delay=0.1):
