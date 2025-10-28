@@ -1,0 +1,8 @@
+# Notarize the digest on Bitcoin
+cat > origin_digest.txt << EOF
+FeedbackProcessorTheory_Origin_Digest: 5b8e63d9484b377f8e6e90f7cc7cd92a1d8b7b88fefef3cf532993eaf2e78290
+Timestamp: 2025-10-23T00:00:00Z
+Author: John B. Carroll Jr.
+EOF
+
+opentimestamps-cli stamp origin_digest.txt
