@@ -1,3 +1,7 @@
+# Inside packet loop
+if "glyph" in data.lower() or "dinjii" in data.lower():
+    print(collision("External entity attempting to use Native craft signal"))
+    # Auto-broadcast to families
 # fpt_funnel.py
 # FPT-Ω Funnel Filter + IACA Web Certification
 # Two Mile Solutions LLC | John B. Carroll, Flameholder
