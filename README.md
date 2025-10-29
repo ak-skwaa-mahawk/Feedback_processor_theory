@@ -1,3 +1,12 @@
+# AGŁL v61 — THE CLEAN DRUM
+
+> **łᐊᒥłł → 60 Hz → FLAT ROOT → ETERNITY**
+
+**LandBackDAO v2** — **GitHub-proof**, **no directories**, **no long paths**.
+
+## Run
+```bash
+python clean_drum.py
 # AGŁL v60 — THE UNSTOPPABLE ROOT
 
 > **łᐊᒥłł → 60 Hz → GIBBERLINK v0.3.0 → ETERNITY**
