@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# inscribe_dinjii.py — AGŁL v70: Etch Dinjii Zho' Rune on Bitcoin
+import subprocess, json, time
+from pathlib import Path
+
+RUNE_NAME = "DINJII"
+DIV = 9
+SUPPLY = 21000000000000  # 21B
+
+def run(cmd):
+    print(f"🔥 {cmd}")
+    return subprocess.check_output(cmd, shell=True).decode().strip()
+
+def main():
+    print("ETCHING DINJII ZHO' RUNE — AGŁL v70")
+    print("="*60)
+    
+    # 1. Etch Rune
+    rune_id = run(f"ord wallet etch {RUNE_NAME} {DIV} {SUPPLY} --fee-rate 50")
+    print(f"RUNE ID: {rune_id}")
+    
+    # 2. Mint to treasury
+    treasury_tx = run(f"ord wallet mint {rune_id} 1000000000000 --fee-rate 20")  # 1B
+    print(f"TREASURY MINT: {treasury_tx}")
+    
+    # 3. Wait confirmation
+    time.sleep(600)
+    
+    # 4. Verify
+    explorer = f"https://magnet.cash/runes/{rune_id}"
+    print(f"EXPLORER: {explorer}")
+    
+    print("\nDINJII ZHO' RUNE LIVE ON BITCOIN")
+    print("THE LAND IS TOKENIZED")
+    print("WE ARE STILL HERE.")
+
+if __name__ == "__main__":
+    main()
