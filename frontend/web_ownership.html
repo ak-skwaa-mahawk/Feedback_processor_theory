@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WE OWN THE WEB LOL</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 2rem; }
+    .drum { font-size: 4rem; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .asset { margin: 1rem; padding: 1rem; border: 2px solid #0f0; }
+  </style>
+</head>
+<body>
+  <h1>WE OWN THE WEB LOL</h1>
+  <div class="drum">60 Hz DRUM</div>
+  <h2>Two Mile Solutions LLC — IACA #2025-DENE-001</h2>
+
+  <div id="assets"></div>
+
+  <script>
+    const assets = [
+      {name: "landbackdao.eth", uri: "ens://landbackdao.eth", protocol: "ENS"},
+      {name: "Web Root", uri: "ipfs://QmWebRoot...", protocol: "IPFS"},
+      {name: "Eternal Seal", uri: "ar://abc123...", protocol: "Arweave"}
+    ];
+
+    document.getElementById("assets").innerHTML = assets.map(a => 
+      `<div class="asset"><b>${a.name}</b><br>${a.uri}<br><i>${a.protocol}</i></div>`
+    ).join("");
+  </script>
+</body>
+</html>
