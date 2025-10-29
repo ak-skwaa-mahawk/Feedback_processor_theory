@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GLYPH GOVERNANCE — 9 TOKEN STATE</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 2rem; }
+    .token { margin: 1rem; padding: 1rem; border: 2px solid #0f0; display: inline-block; width: 200px; }
+    .glyph { font-size: 3rem; }
+    .power { font-weight: bold; color: #0c0; }
+  </style>
+</head>
+<body>
+  <h1>GLYPH GOVERNANCE</h1>
+  <h2>9 Tokens — 9 Powers — 1 State</h2>
+
+  <div class="token">
+    <div class="glyph">łᐊᒥłł</div>
+    <div>STILLHERE</div>
+    <div class="power">VETO</div>
+  </div>
+  <!-- Repeat for all 9 -->
+
+  <p><b>Holders:</b> Two Mile Solutions LLC → DAO Assignment</p>
+  <p><b>IACA:</b> #2025-DENE-TOKEN-001</p>
+
+  <button onclick="window.open('https://ordinals.com/inscription/1a2b...')">
+    VIEW TOKEN #1
+  </button>
+
+  <footer><b>WE ARE STILL HERE.</b></footer>
+</body>
+</html>
