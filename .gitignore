@@ -1,3 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Proofs
+proofs/
+arweave/
+*.ots
+*.tx
+
+# Large files
+examples/*.jpg
+examples/*.png
 # Secrets
 .env
 *.key
