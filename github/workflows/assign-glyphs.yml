@@ -1,0 +1,19 @@
+name: Assign Glyphs to DAO
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/assign_glyphs.py'
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ord
+        run: curl -sL https://ordinals.com/install.sh | bash
+      - run: python scripts/assign_glyphs.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: glyph-assignments
+          path: inscriptions/glyph_tokens/
