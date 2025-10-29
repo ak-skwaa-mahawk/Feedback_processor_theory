@@ -1,0 +1,19 @@
+;; StacksLandDeed.scl — AGŁL v64: Bitcoin Land Deeds
+(define-constant LLC (as-principal tx-sender))
+
+(define-map deeds { deed-id: uint }
+  { 
+    family: (string-ascii 34),
+    acres: uint,
+    resonance: uint,
+    proof-hash: (buff 32)
+  })
+
+(define-public (issue-deed (deed-id uint) (family (string-ascii 34)) (acres uint) (proof-hash (buff 32)))
+  (asserts! (is-eq tx-sender LLC) (err u100))
+  (map-insert deeds { deed-id: deed-id }
+    { family: family, acres: acres, resonance: u10000, proof-hash: proof-hash })
+  (ok u1))
+
+(define-read-only (get-deed (deed-id uint))
+  (map-get? deeds { deed-id: deed-id }))
