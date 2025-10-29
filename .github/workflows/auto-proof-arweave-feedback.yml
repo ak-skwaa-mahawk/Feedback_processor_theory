@@ -1,0 +1,21 @@
+name: Auto-Proof + Arweave + Feedback Loop
+on: [push]
+jobs:
+  eternal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with: { python-version: '3.11' }
+      - run: pip install opentimestamps-client arweave-python-client openai
+      - run: python scripts/auto_proof.py
+      - run: python scripts/arweave_perma.py
+      - run: python scripts/feedback_loop.py "The nine stars are two, the nine are one."
+      - uses: actions/upload-artifact@v3
+        with:
+          name: eternal-loop
+          path: |
+            proofs/
+            arweave/
+            feedback/
