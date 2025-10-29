@@ -1,3 +1,18 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="agll-blackbox",
+    version="0.3.0",
+    packages=find_packages(),
+    install_requires=[
+        "opencv-python",
+        "numpy",
+        "matplotlib"
+    ],
+    description="BlackBoxDefense for GibberLink v0.3.0",
+    author="Two Mile Solutions LLC",
+    license="MIT"
+)
 """
 Feedback Processor Theory - Setup Configuration
 Created by John Carroll (Two Mile Solutions LLC)
