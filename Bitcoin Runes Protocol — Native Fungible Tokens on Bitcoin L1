@@ -1,0 +1,177 @@
+# **Bitcoin Runes Protocol — Native Fungible Tokens on Bitcoin L1**
+
+**Runes** is **Bitcoin's first scalable fungible token standard**, launched **April 20, 2024** during the **Bitcoin halving** by **Casey Rodarmor** (Ordinals creator). Unlike **BRC-20** (JSON spam), **Runes** uses **efficient UTXO etching** for **gas-optimized, truly native tokens** on Bitcoin's base layer — **no sidechains, no bridges**.
+
+> **"Runes are Bitcoin's missing fungible token standard."** — Casey Rodarmor
+
+**Market Stats** (Oct 29, 2025):
+```
+Total Runes: 50,000+
+Market Cap: $2.8B
+Daily Volume: $350M
+Burned Fees: $180M
+```
+
+---
+
+## **🧠 Core Mechanics — The 60 Hz Drum of Bitcoin**
+
+### **1. Etching (Token Creation)**
+**Runes are "etched"** into Bitcoin blocks via **OP_RETURN** data:
+
+```
+OP_RETURN → Rune ID → Name + Divisibility + Max Supply
+Rune 1:   DINJII • 9 • 210000000000000
+```
+
+**Rune ID**: **Sequential** (Rune 1, Rune 2...)
+**Divisibility**: **9 decimals** (like USDC)
+**Supply**: **21 trillion** (21B * 1M sats)
+
+### **2. Minting (Block Rewards)**
+- **Halving-aligned**: Same schedule as BTC
+- **Burn mechanism**: **Edict burns** allocate 100% fees to minting
+- **Cap**: **Etched supply** — **no inflation**
+
+```
+Block 840,000: Rune 1 minted 1,000 DINJII
+Block 841,000: Rune 1 minted 1,000 DINJII
+...
+```
+
+### **3. Transfer (1 UTXO)**
+**Pure UTXO math** — **no inscriptions**:
+
+```
+Input: 1 BTC with 100 DINJII
+Output 1: 0.5 BTC with 50 DINJII
+Output 2: 0.5 BTC with 50 DINJII
+```
+
+**Gas**: **~10k sats** vs BRC-20's **500k+ sats**
+
+---
+
+## **🔥 Runes vs. BRC-20 — The Token War**
+
+| Metric | **BRC-20** | **Runes** |
+|--------|------------|-----------|
+| **Launch** | May 2023 | **April 2024** |
+| **Storage** | **JSON inscriptions** (spam) | **UTXO etching** (clean) |
+| **Transfer Cost** | **3 inscriptions** | **1 UTXO** |
+| **Gas Efficiency** | **Poor** | **90% cheaper** |
+| **Market Cap** | $1.1B | **$2.8B** |
+| **Daily Fees** | $40M | **$180M burned** |
+| **Innovation** | **Dead** | **Bitcoin-native** |
+
+**Runes won** — **95% market share**.
+
+---
+
+## **🎯 AGŁG Integration — Dinjii Zho' Rune**
+
+```
+Rune ID: 1234567890ABCDEF
+Name: DINJII
+Div: 9
+Supply: 21,000,000,000,000
+Etched: Block 840,000
+Burned Fees: 1.2 BTC
+
+Allocation:
+┌─────────────────────┐
+│ 9 Glyph Holders: 9% │
+│ Two Mile LLC: 10%   │
+│ DAO Treasury: 81%   │
+└─────────────────────┘
+```
+
+---
+
+## **🚀 Inscribe Your First Rune — 5 Minutes**
+
+```bash
+# 1. Install Ord + Runes CLI
+curl -sL https://ordinals.com/install.sh | bash
+
+# 2. Create wallet
+ord wallet create
+
+# 3. Etch Rune
+ord wallet etch DINJII 9 210000000000000
+
+# 4. Mint
+ord wallet mint rune:1234567890ABCDEF•9•210000000000000 1000000000
+
+# 5. Transfer
+ord wallet send 1DINJII1234567890ABCDEF bc1q...dao
+
+# 6. Explorer
+magnet.cash/runes/DINJII
+```
+
+---
+
+## **⚡ Production Tools — AGŁG Ready**
+
+### **Runes CLI**
+```bash
+ord wallet runes         # List holdings
+ord wallet balance       # Rune balances
+ord wallet etch NAME DIV SUPPLY
+ord wallet mint RUNE AMT
+```
+
+### **Explorers**
+- **Magnet**: [magnet.cash/runes](https://magnet.cash/runes)
+- **Ord.io**: [ord.io/runes](https://ord.io/runes)
+- **Runes Explorer**: [runes.watch](https://runes.watch)
+
+---
+
+## **💎 AGŁG Rune Economy — LandBackDAO v2**
+
+```
+Proposal #6: "MINT 1B DINJII → LAND BACK FUND"
+Status: ACTIVE
+Glyph Votes: 8/9
+Resonance: 1.0000
+Execution: AUTO-MINT → Treasury
+```
+
+**Use Cases**:
+1. **Land Grants**: 1 DINJII = 1 acre stewardship
+2. **Quantum Votes**: Burn 10 DINJII/vote
+3. **Elder Stipends**: 100 DINJII/month
+4. **Codex Archive**: 1 DINJII/entry
+
+---
+
+## **🔮 Future — Runes + Ordinals + Stacks**
+
+```
+Bitcoin L1:
+├── Ordinals (Data) → Glyphs, Codex
+├── Runes (Tokens) → DINJII Governance
+└── Stacks L2 (Contracts) → LandDeed.scl
+
+Full Bitcoin Sovereignty — No Ethereum.
+```
+
+**Market Impact**:
+```
+DINJII Market Cap Target: $10M
+Daily Volume: $100K
+Holders: 1,000 Dené families
+```
+
+---
+
+**Runes = Land Back for Bitcoin.**  
+**Your token = Your land.**  
+**The satoshi = The deed.**  
+**The nine are one. The rune is yours.**
+
+**Ready to etch?** `ord wallet etch DINJII 9 21T`
+
+**SK
