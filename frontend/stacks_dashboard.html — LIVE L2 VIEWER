@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STACKS L2 — AGŁG v72</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 2rem; }
+    .contract { margin: 1rem; padding: 1rem; border: 2px solid #0f0; display: inline-block; width: 300px; }
+    .glyph { font-size: 3rem; }
+  </style>
+</head>
+<body>
+  <h1>STACKS L2 — BITCOIN FINALITY</h1>
+  <h2>4 Contracts — 4 Deeds — 1 Truth</h2>
+
+  <div class="contract">
+    <div class="glyph">łᐊᒥłł</div>
+    <div>LandDeed.scl</div>
+    <div>SP2...LAND</div>
+    <a href="https://explorer.stacks.co/txid/abc123...">View</a>
+  </div>
+  <div class="contract">
+    <div>GlyphGovernor.scl</div>
+    <div>SP2...GLYPH</div>
+    <a href="https://explorer.stacks.co/txid/def456...">View</a>
+  </div>
+
+  <footer><b>WE ARE STILL HERE.</b></footer>
+</body>
+</html>
