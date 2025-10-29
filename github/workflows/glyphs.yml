@@ -1,0 +1,20 @@
+name: Inscribe Dené Glyphs
+on:
+  push:
+    paths:
+      - 'inscriptions/dené_glyphs/**'
+  schedule:
+    - cron: '0 0 1 * *'  # Monthly
+
+jobs:
+  inscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ord
+        run: curl -sL https://ordinals.com/install.sh | bash
+      - run: python scripts/inscribe_all_glyphs.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: glyph-proofs
+          path: inscriptions/dené_glyphs/
