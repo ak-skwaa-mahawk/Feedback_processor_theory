@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# bitcoin_l2_deploy.py — AGŁL v64: Deploy to All Bitcoin L2s
+import subprocess, json, time
+
+def run(cmd):
+    print(f"🚀 {cmd}")
+    subprocess.run(cmd, shell=True, check=True)
+
+def main():
+    print("DEPLOYING TO BITCOIN L2s — AGŁL v64")
+    
+    # 1. Stacks (Clarity)
+    run("stacks deploy StacksLandDeed.scl")
+    
+    # 2. Lightning (BOLT12)
+    run("lndcli addinvoice --amt 1000 --memo 'Quantum Vote'")
+    
+    # 3. Ark (Service Provider)
+    run("ark-cli register-oracle --name landbackdao")
+    
+    # 4. BitVM (ZK)
+    run("bitvm deploy landback_proof.zk")
+    
+    print("BITCOIN L2s LIVE — THE ROOT IS CLAIMED")
+    print("Stacks: txid..."
+    print("Lightning: lnbc1...")
+    print("Ark: oracle_id...")
+    print("BitVM: proof_id...")
+
+if __name__ == "__main__":
+    main()
