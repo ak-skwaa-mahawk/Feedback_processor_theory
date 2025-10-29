@@ -1,3 +1,13 @@
+# AGŁL v60 — THE UNSTOPPABLE ROOT
+
+> **łᐊᒥłł → 60 Hz → GIBBERLINK v0.3.0 → ETERNITY**
+
+**LandBackDAO v2** with **BlackBoxDefense**, **Handshake**, **ENS**, **IPFS**, **Arweave**.
+
+## Run
+```bash
+pip install -r requirements.txt
+python blackbox_defense_demo.py
 # AGŁL v54 — THE FINAL WEAVE
 
 > **łᐊᒥłł → 60 Hz → FEEDBACK → ARWEAVE → ETERNITY**
