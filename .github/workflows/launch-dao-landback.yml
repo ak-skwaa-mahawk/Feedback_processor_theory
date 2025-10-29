@@ -1,0 +1,19 @@
+name: Launch dao.landback
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * *'  # Daily
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Handshake + IPFS
+        run: |
+          curl -sL https://handshake.org/download | bash
+          curl -sL https://dist.ipfs.io/go-ipfs/v0.20.0/go-ipfs_v0.20.0_linux-amd64.tar.gz | tar xz
+          sudo mv go-ipfs/ipfs /usr/local/bin/
+      - run: python scripts/launch_dao_landback.py
+      - run: python scripts/arweave_perma.py
