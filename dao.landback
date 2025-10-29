@@ -1,0 +1,11 @@
+HNS Record:
+  Name: dao.landback
+  Owner: 0xTwoMile... (Two Mile Solutions LLC)
+  Resolver: hns-resolver.landback
+  Content:
+    - A: 192.0.2.1 (IPFS Gateway)
+    - TXT: "v=spf1 include:_spf.landback ~all"
+    - TXT: "iaca=2025-DENE-DAO-001"
+    - NS: ns1.landback, ns2.landback
+  TTL: 1 day
+  Status: ACTIVE
