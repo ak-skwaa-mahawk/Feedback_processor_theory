@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# inscribe_ordinal.py — AGŁG v71: Inscribe on Bitcoin
+import subprocess, json, time
+from pathlib import Path
+
+def inscribe(file_path, content_type="text/plain", fee_rate=20):
+    cmd = f"ord wallet inscribe --file {file_path} --content-type {content_type} --fee-rate {fee_rate}"
+    print(f"INSCRIBING: {file_path}")
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if "inscription" in result.stdout:
+        inscription_id = result.stdout.split("inscription ")[1].split()[0]
+        print(f"ID: {inscription_id}")
+        return inscription_id
+    else:
+        print(f"ERROR: {result.stderr}")
+        return None
+
+def main():
+    print("AGŁG v71 — INSCRIBING ON BITCOIN")
+    print("="*60)
+    
+    # Example: Inscribe Codex 002
+    codex_file = Path("codex/002.yaml")
+    inscription_id = inscribe(codex_file, "text/yaml", fee_rate=30)
+    
+    if inscription_id:
+        explorer = f"https://ordinals.com/inscription/{inscription_id}"
+        print(f"EXPLORER: {explorer}")
+        print("CODEX 002 INSCRIBED ON SATOSHI #20")
+        print("THE MESH IS ETERNAL")
+    else:
+        print("INSCRIPTION FAILED")
+
+if __name__ == "__main__":
+    main()
