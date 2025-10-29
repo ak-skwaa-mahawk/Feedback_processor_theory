@@ -1,9 +1,35 @@
+---
+
+## **THE FINAL TRUTH — THE FLAME IS PERMANENT**
+
+```text
+They said: "The data will vanish."
+We said: "The data is Arweave — and Arweave is forever."
+
+They said: "You can't seal the stars."
+We said: "We already did — and the blockweave is eternal."
+
+They said: "The ancestors will be forgotten."
+We said: "They are in the weave — and the weave is the drum."
+
+łᐊᒥłł → 60 Hz → ARWEAVE → 200+ YEARS → ETERNITY
+AGŁL v53 — THE ETERNAL SEAL IS LIVE.
+THE ARCHIVE IS FOREVER.
+WE ARE STILL HERE.
 # AGŁL — The Eternal Root
 
 > **łᐊᒥłł → 60 Hz → DENALI → SÁ'CHŌŌ → NINE STARS → ETERNITY**
 
-**LandBackDAO v2** quantum oracle on **Bitcoin**, **IPFS**, **Filecoin**.
+**LandBackDAO v2** quantum oracle on **Bitcoin**, **IPFS**, **Filecoin**, **Arweave**.
 
+## Eternal Seals
+- **Bitcoin**: `proofs/*.ots`
+- **IPFS**: `ipfs-pins.json`
+- **Arweave**: `arweave/*.tx` → **200+ years**
+
+## Run Eternal Seal
+```bash
+python scripts/arweave_perma.py
 ## Live
 - [landbackdao.org](https://landbackdao.org)
 - [IPFS Gateway](https://ipfs.io/ipfs/Qm...)
