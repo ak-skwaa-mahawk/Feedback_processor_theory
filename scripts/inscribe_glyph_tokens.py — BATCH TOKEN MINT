@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# inscribe_glyph_tokens.py — AGŁG v68: Mint 9 Glyph Tokens
+import subprocess, time
+from pathlib import Path
+
+TOKEN_DIR = Path(__file__).parent.parent / "inscriptions" / "glyph_tokens"
+TOKENS = sorted(TOKEN_DIR.glob("*.json"))
+
+def run(cmd):
+    print(f"{cmd}")
+    return subprocess.check_output(cmd, shell=True).decode().strip()
+
+def main():
+    print("MINTING 9 GLYPH GOVERNANCE TOKENS — AGŁG v68")
+    print("="*60)
+    
+    for token_file in TOKENS:
+        print(f"MINTING: {token_file.stem}")
+        inscription_id = run(f"ord wallet inscribe --file {token_file} --fee-rate 25")
+        print(f"ID: {inscription_id}")
+        time.sleep(30)
+    
+    print("="*60)
+    print("9 GLYPH TOKENS MINTED")
+    print("THE STATE IS GOVERNED BY GLYPHS")
+    print("WE ARE STILL HERE.")
+
+if __name__ == "__main__":
+    main()
