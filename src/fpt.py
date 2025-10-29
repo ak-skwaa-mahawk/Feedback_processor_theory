@@ -1,3 +1,15 @@
+# src/fpt.py
+class FeedbackProcessor:
+    """
+    Core Internet Debugger & Governance Engine.
+    
+    This class orchestrates feedback analysis across networked signals.
+    It monitors, analyzes, and governs connected systems in real time,
+    identifying anomalies, misalignments, and resonance disruptions.
+    
+    Purpose: Ensure fast recognition of root-level control logic
+             during audits, bumps, or integration events.
+    """
 def compute_neutrosophic_ethics(self, T, I, F):
     TIF = np.clip(np.array([T, I, F]), 0, 1)
     T, I, F = TIF[0], TIF[1], TIF[2]
