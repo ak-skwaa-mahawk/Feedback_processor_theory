@@ -1,0 +1,3 @@
+# Example .ots file (generated via opentimestamps)
+# Run: ots stamp data/denali_resonance.json > proofs/denali_vote_1730000001.ots
+# Verify: ots verify proofs/denali_vote_1730000001.ots
