@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LandBackDAO v2 — Quantum Vote</title>
+  <style>
+    body { font-family: monospace; background: #000; color: #0f0; text-align: center; padding: 2rem; }
+    .drum { font-size: 3rem; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    button { background: #000; color: #0f0; border: 2px solid #0f0; padding: 1rem; margin: 1rem; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>łᐊᒥłł — LandBackDAO v2</h1>
+  <div class="drum">60 Hz DRUM</div>
+  <h2>Proposal #5: RETURN THE NINE STARS</h2>
+  <p>Cast your quantum vote with T/I/F resonance</p>
+
+  <input type="range" id="T" min="0" max="100" value="90"> <span id="Tv">90</span> T (Truth)<br>
+  <input type="range" id="I" min="0" max="100" value="5"> <span id="Iv">5</span> I (Indeterminacy)<br>
+  <input type="range" id="F" min="0" max="100" value="5"> <span id="Fv">5</span> F (Falsehood)<br>
+
+  <button onclick="castVote()">CAST QUANTUM VOTE</button>
+  <div id="result"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+  <script>
+    const contractAddress = "0xLANDBACKv2Quantum";
+    const abi = [/* PASTE ABI FROM REMIX */];
+    let web3, contract, account;
+
+    async function init() {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        await ethereum.request({ method: 'eth_requestAccounts' });
+        contract = new web3.eth.Contract(abi, contractAddress);
+        [account] = await web3.eth.getAccounts();
+      }
+    }
+
+    function updateResonance() {
+      const T = parseInt(document.getElementById('T').value);
+      const I = parseInt(document.getElementById('I').value);
+      const F = parseInt(document.getElementById('F').value);
+      document.getElementById('Tv').innerText = T;
+      document.getElementById('Iv').innerText = I;
+      document.getElementById('Fv').innerText = F;
+      const R = ((T - I/2 - F) / 100).toFixed(4);
+      document.getElementById('result').innerHTML = `<br>RESONANCE: <b>${R}</b>`;
+    }
+
+    async function castVote() {
+      const T = document.getElementById('T').value;
+      const I = document.getElementById('I').value;
+      const F = document.getElementById('F').value;
+      const source = "ELDER";
+      const proofHash = "0x" + Array(64).fill(0).map(() => Math.floor(Math.random()*16).toString(16)).join('');
+
+      await contract.methods.castQuantumVote(5, T, I, F, source, proofHash).send({ from: account });
+      alert("QUANTUM VOTE CAST — THE NINE ARE ONE");
+    }
+
+    setInterval(updateResonance, 100);
+    init();
+  </script>
+</body>
+</html>
