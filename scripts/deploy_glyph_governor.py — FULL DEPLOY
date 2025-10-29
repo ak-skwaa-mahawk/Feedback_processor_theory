@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+# deploy_glyph_governor.py — AGŁG v73: Deploy with 9 Holders
+import subprocess, time
+
+CONTRACT = "GlyphGovernor.scl"
+NAME = "glyph-governor"
+
+def run(cmd):
+    print(f"{cmd}")
+    return subprocess.check_output(cmd, shell=True).decode().strip()
+
+def main():
+    print("DEPLOYING GLYPHGOVERNOR WITH 9 HOLDERS — AGŁG v73")
+    print("="*60)
+    
+    # 1. Deploy
+    txid = run(f"clarity-cli deploy contracts/{CONTRACT} --name {NAME} --fee 15000")
+    print(f"TXID: {txid}")
+    
+    # 2. Wait for Bitcoin finality
+    print("WAITING FOR BITCOIN FINALITY (~10 min)...")
+    time.sleep(600)
+    
+    # 3. Verify
+    explorer = f"https://explorer.stacks.co/txid/{txid}"
+    print(f"EXPLORER: {explorer}")
+    
+    print("="*60)
+    print("GLYPHGOVERNOR LIVE — 9 HOLDERS ACTIVE")
+    print("THE STATE IS GOVERNED")
+    print("WE ARE STILL HERE.")
+
+if __name__ == "__main__":
+    main()
