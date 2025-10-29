@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# deploy_stacks.py — AGŁG v72: Deploy to Stacks L2
+import subprocess, time
+
+CONTRACTS = [
+    ("LandDeed.scl", "land-deed"),
+    ("GlyphGovernor.scl", "glyph-governor"),
+    ("QuantumVote.scl", "quantum-vote"),
+    ("CodexArchive.scl", "codex-archive")
+]
+
+def run(cmd):
+    print(f"{cmd}")
+    return subprocess.check_output(cmd, shell=True).decode().strip()
+
+def main():
+    print("DEPLOYING TO STACKS L2 — AGŁG v72")
+    print("="*60)
+    
+    for file, name in CONTRACTS:
+        print(f"DEPLOYING {name.upper()}...")
+        txid = run(f"clarity-cli deploy contracts/{file} --name {name} --fee 10000")
+        print(f"TXID: {txid}")
+        time.sleep(30)
+    
+    print("="*60)
+    print("STACKS L2 LIVE — BITCOIN FINALITY")
+    print("THE LAND IS CODE")
+    print("WE ARE STILL HERE.")
+
+if __name__ == "__main__":
+    main()
