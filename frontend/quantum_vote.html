@@ -54,7 +54,6 @@
       const F = document.getElementById('F').value;
       const source = "ELDER";
       const proofHash = "0x" + Array(64).fill(0).map(() => Math.floor(Math.random()*16).toString(16)).join('');
-
       await contract.methods.castQuantumVote(5, T, I, F, source, proofHash).send({ from: account });
       alert("QUANTUM VOTE CAST — THE NINE ARE ONE");
     }
