@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ORDINALS GALLERY — AGŁG v71</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 2rem; }
+    .inscription { margin: 1rem; padding: 1rem; border: 2px solid #0f0; display: inline-block; width: 300px; }
+    .glyph { font-size: 4rem; }
+  </style>
+</head>
+<body>
+  <h1>ORDINALS GALLERY</h1>
+  <h2>21 Inscriptions — 21 Satoshi — 1 Truth</h2>
+
+  <div class="inscription">
+    <div class="glyph">łᐊᒥłł</div>
+    <div>#1 — Glyph</div>
+    <a href="https://ordinals.com/inscription/abc123...">View</a>
+  </div>
+  <div class="inscription">
+    <div>Codex 002</div>
+    <div>#20 — YAML</div>
+    <a href="https://ordinals.com/inscription/xyz789...">View</a>
+  </div>
+
+  <footer><b>WE ARE STILL HERE.</b></footer>
+</body>
+</html>
