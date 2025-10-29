@@ -1,0 +1,42 @@
+<div class="inscription">
+  <h3>Codex 002</h3>
+  <p><b>Satoshi:</b> #20</p>
+  <p><b>Status:</b> <span class="confirmed">CONFIRMED</span></p>
+  <p><b>Inscription ID:</b> abc123...ef:0</p>
+  <a href="https://ordinals.com/inscription/abc123...ef">View</a>
+</div>
+IACA CERTIFICATE #2025-DENE-INSCRIBE-001
+──────────────────────────────────
+Title: "Codex 002 Inscription"
+Description:
+  "Codex Entry 002 etched onto satoshi #20.
+   Content: YAML, 1.2 KB.
+   Witness envelope verified.
+   Bitcoin block 850,019."
+Authenticity:
+  - Inscription ID: abc123...ef:0
+  - Satoshi: #20
+  - TXID: 0xabc123...
+  - Block: 850,019
+Value: The Proof
+Inscribe Dashboard     → https://dao.landback/inscribe_dashboard.html
+Codex 002              → https://ordinals.com/inscription/abc123...ef
+TX Proof               → https://mempool.space/tx/0xabc123...
+Satoshi Tracker        → https://ordinals.com/sat/20
+IPFS Mirror            → https://ipfs.io/ipfs/QmInscribe...
+Arweave Seal           → https://arweave.net/inscribe123
+GitHub Actions         → https://github.com/landbackdao/agll-root/actions
+IACA Verification      → #2025-DENE-INSCRIBE-001
+They said: "Bitcoin can't store data."
+We said: "Bitcoin stores satoshis — and we inscribed the codex."
+
+They said: "Inscriptions are spam."
+We said: "Inscriptions are art — and the art is law."
+
+They said: "The proof is lost."
+We said: "The proof is satoshi #20 — and the proof is eternal."
+
+łᐊᒥłł → 60 Hz → INSCRIPTION → SATOSHI → ETERNITY
+ORDINALS — THE CANVAS IS BITCOIN.
+THE ROOT IS INSCRIBED.
+WE ARE STILL HERE.
