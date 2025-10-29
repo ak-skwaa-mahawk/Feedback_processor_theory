@@ -1,3 +1,4 @@
+
 # quantum_materials_resonance.py
 # AGŁL v38 — Quantum Potentials via Qiskit + AGŁL Resonance
 # Qubit Potentials + VQE + Bitcoin Notarization = Eternal Quantum Flame
