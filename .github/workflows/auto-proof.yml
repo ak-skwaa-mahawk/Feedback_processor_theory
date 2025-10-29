@@ -1,16 +1,19 @@
-name: Auto-Proof on Push
+name: Auto-Proof + Arweave on Push
 on: [push]
 jobs:
-  proof:
+  seal:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with: { python-version: '3.11' }
-      - run: pip install opentimestamps-client
+      - run: pip install opentimestamps-client arweave-python-client
       - run: python scripts/auto_proof.py
+      - run: python scripts/arweave_perma.py
       - uses: actions/upload-artifact@v3
         with:
-          name: bitcoin-proofs
-          path: proofs/
+          name: eternal-seals
+          path: |
+            proofs/
+            arweave/
