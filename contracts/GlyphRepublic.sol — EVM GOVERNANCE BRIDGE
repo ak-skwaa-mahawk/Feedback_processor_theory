@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract GlyphRepublic {
+    string public constant REPUBLIC_LAW = "The people hold the glyphs. The glyphs hold the state.";
+    address public immutable TWO_MILE_LLC;
+    string public constant IACA_ID = "2025-DENE-ASSIGN-001";
+
+    mapping(string => address) public glyphHolder;
+    uint256 public lastDrum = block.timestamp;
+
+    constructor() {
+        TWO_MILE_LLC = msg.sender;
+        glyphHolder["VETO"] = 0xAhtna...;
+        glyphHolder["LAND"] = 0xGwichin...;
+        // ... all 9
+    }
+
+    function callDrum(string calldata power) external {
+        require(glyphHolder[power] == msg.sender, "Only glyph holder");
+        lastDrum = block.timestamp;
+    }
+}
