@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+interface IRunes {
+    function transferRune(bytes32 runeId, uint256 amount, address to) external;
+}
+
+contract DinjiiRuneGovernor {
+    bytes32 public runeId = 0x1234567890ABCDEF...;  // DINJII
+    address public immutable TWO_MILE_LLC;
+    string public constant IACA_ID = "2025-DENE-RUNE-001";
+
+    mapping(address => bool) public glyphHolders;
+    uint256 public resonance = 10000;
+
+    constructor(address _twoMileLLC) {
+        TWO_MILE_LLC
