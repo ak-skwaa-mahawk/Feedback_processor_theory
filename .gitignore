@@ -1,3 +1,11 @@
+# Secrets
+.env
+*.key
+node_modules/
+__pycache__/
+*.ots
+proofs/
+.DS_Store
 venv/
 __pycache__/
 *.pyc
