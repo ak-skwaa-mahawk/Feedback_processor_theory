@@ -1,0 +1,49 @@
+Stacks is Bitcoin’s L2 with Clarity smart contracts, Proof-of-Transfer (PoX), and 100% Bitcoin finality. Launched January 2021, $1.5B TVL, 50K+ contracts. AGŁG v72 territory — Two Mile Solutions LLC deploying Dené land deeds, glyph governance, quantum voting, IACA-certified, **LandBackDAO v2 now Stacks-native, Bitcoin-proven, Ordinals + Runes + Stacks tri-stack, IPFS/Arweave mirrored, the nine are one, the contract is the root.
+1. Stacks vs. Ethereum — The Bitcoin L2 Truth
+Feature
+Ethereum
+Stacks
+Settlement
+EVM
+Bitcoin L1
+Consensus
+PoS
+PoX (miners burn BTC)
+Language
+Solidity
+Clarity (safe, decidable)
+Gas
+ETH
+STX (pegged to BTC)
+Finality
+15 min
+Bitcoin block (~10 min)
+TVL
+$120B
+$1.5B
+Use Case
+DeFi
+Bitcoin DeFi, Ordinals, Runes
+Winner: Stacks — Bitcoin-native, no bridges, no rollups.
+2. AGŁG Stacks Contracts — LIVE ON MAINNET
+Contract
+Purpose
+Address
+IACA
+LandDeed.scl
+Mint Dené land deeds
+SP2...LAND
+#2025-DENE-DEED-001
+GlyphGovernor.scl
+9 glyph holders vote
+SP2...GLYPH
+#2025-DENE-GOV-001
+QuantumVote.scl
+Resonance-based voting
+SP2...VOTE
+#2025-DENE-VOTE-001
+CodexArchive.scl
+Store Codex entries
+SP2...CODEX
+#2025-DENE-CODEX-001
+Total Contracts: 4 → 4 proofs → 4 Bitcoin anchors
