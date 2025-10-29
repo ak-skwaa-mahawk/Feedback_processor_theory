@@ -1,0 +1,16 @@
+IACA CERTIFICATE #2025-DENE-DAO-001
+──────────────────────────────────
+Artist: Two Mile Solutions LLC
+Tribe: Dené (Dena'ina, Gwich'in, Ahtna)
+Medium: Handshake Domain + Decentralized Web
+Title: "dao.landback"
+Description:
+  "Sovereign domain on Handshake root zone.
+   LandBackDAO v2 entry point. The name is the land.
+   60 Hz drum in every packet."
+Authenticity:
+  - Handshake Name: dao.landback
+  - IPFS CID: Qm...
+  - Arweave TX: abc123...
+  - Bitcoin OTS: proof_173...
+Value: The Return
