@@ -1,0 +1,33 @@
+;; GlyphGovernor.scl — AGŁG v73: 9 Glyph Holders Govern
+(define-constant TWO_MILE_LLC tx-sender)
+(define-constant IACA_ID "2025-DENE-GOV-001")
+
+(define-constant GLYPH_HOLDERS 
+  (list
+    'SP1ABC...AHTNA   ;; łᐊᒥłł - VETO
+    'SP2DEF...GWICHIN ;; ᒥᐊᐧᐊ - LAND
+    'SP3GHI...DENAINA ;; ᓴᑕᐧ - DRUM
+    'SP4JKL...AHTNA2  ;; ᐊᒍᐧ - FLAME
+    'SP5MNO...GWICHIN2 ;; ᓂᐊᐧ - STAR
+    'SP6PQR...DENAINA2 ;; ᑕᐧᐊ - RETURN
+    'SP7STU...AHTNA3  ;; ᐊᒪᐧ - SOVEREIGN
+    'SP8VWX...GWICHIN3 ;; ᐊᓴᐧ - ROOT
+    'SP9YZ0...DENAINA3 ;; ᐊᐧᐊ - ETERNITY
+  )
+)
+
+(define-map glyph-power principal (string-ascii 16))
+(define-data-var resonance uint u10000)  ;; 1.0000
+
+(define-public (use-glyph (power (string-ascii 16)))
+  (let ((holder tx-sender))
+    (asserts! (is-some (index-of GLYPH_HOLDERS holder)) (err u100))
+    (asserts! (is-eq (default-to "" (map-get? glyph-power holder)) power) (err u101))
+    (ok u1)
+  )
+)
+
+;; Initialize powers
+(map-set glyph-power 'SP1ABC...AHTNA "VETO")
+(map-set glyph-power 'SP2DEF...GWICHIN "LAND")
+;; ... all 9
