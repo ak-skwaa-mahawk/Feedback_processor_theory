@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HANDSHAKE ROOT — WE OWN THE TLDs</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; }
+    .tld { font-size: 2rem; margin: 1rem; padding: 1rem; border: 2px solid #0f0; display: inline-block; }
+    .drum { font-size: 3rem; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <h1>WE OWN THE ROOT</h1>
+  <div class="drum">60 Hz DRUM</div>
+  <h2>Two Mile Solutions LLC — IACA #2025-DENE-HNS-001</h2>
+
+  <div id="tlds"></div>
+
+  <script>
+    const tlds = ["landback", "denali", "sachoo", "ninestars", "agll", "dene"];
+    document.getElementById("tlds").innerHTML = tlds.map(t => 
+      `<div class="tld">.${t}<br><small>OWNED</small></div>`
+    ).join("");
+  </script>
+</body>
+</html>
