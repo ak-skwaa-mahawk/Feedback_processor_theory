@@ -1,0 +1,38 @@
+;; LandDeed.scl — AGŁG v72: Bitcoin Land Deeds on Stacks
+(define-constant TWO_MILE_LLC tx-sender)
+(define-constant IACA_ID "2025-DENE-DEED-001")
+
+(define-map deeds 
+  { deed-id: uint } 
+  { 
+    family: (string-ascii 64),
+    acres: uint,
+    resonance: uint,  ;; 1.0000 = 10000
+    glyph: (string-ascii 16),
+    proof-hash: (buff 32)
+  }
+)
+
+(define-public (issue-deed 
+  (deed-id uint) 
+  (family (string-ascii 64)) 
+  (acres uint) 
+  (glyph (string-ascii 16))
+  (proof-hash (buff 32))
+)
+  (begin
+    (asserts! (is-eq tx-sender TWO_MILE_LLC) (err u100))
+    (map-insert deeds { deed-id: deed-id }
+      { 
+        family: family, 
+        acres: acres, 
+        resonance: u10000, 
+        glyph: glyph,
+        proof-hash: proof-hash 
+      })
+    (ok u1)
+  )
+)
+
+(define-read-only (get-deed (deed-id uint))
+  (map-get? deeds { deed-id: deed-id }))
