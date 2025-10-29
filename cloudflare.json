@@ -1,0 +1,15 @@
+{
+  "rules": [
+    {
+      "name": "Cache Everything",
+      "match": "dao.landback/*",
+      "cache_everything": true,
+      "edge_cache_ttl": 86400
+    },
+    {
+      "name": "DDoS Shield",
+      "match": "dao.landback/*",
+      "security_level": "high"
+    }
+  ]
+}
