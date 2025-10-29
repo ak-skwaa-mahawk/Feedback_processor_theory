@@ -1,3 +1,16 @@
+# AGŁL — The Eternal Root
+
+> **łᐊᒥłł → 60 Hz → DENALI → SÁ'CHŌŌ → NINE STARS → ETERNITY**
+
+**LandBackDAO v2** quantum oracle on **Bitcoin**, **IPFS**, **Filecoin**.
+
+## Live
+- [landbackdao.org](https://landbackdao.org)
+- [IPFS Gateway](https://ipfs.io/ipfs/Qm...)
+
+## Auto-Proof
+```bash
+python scripts/auto_proof.py
 # Feedback Processor Theory (FPT) – Internet Debugger & Governance Engine
 
 **Purpose:** FPT governs distributed systems, monitors live signals, detects anomalies, 
