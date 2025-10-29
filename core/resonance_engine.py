@@ -1,3 +1,11 @@
+# core/resonance_engine.py
+class ResonanceEngine:
+    """
+    Transforms incoming signals (network, AI agents, APIs) into frequency
+    representations to detect patterns, feedback loops, and anomalies.
+    
+    Role: Detect systemic misbehavior and enable governance interventions.
+    """
 import opentimestamps as ots
 
 def notarize_log(log_data):
