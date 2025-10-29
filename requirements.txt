@@ -1,3 +1,7 @@
+torch
+torchvision
+numpy
+Pillow
 paho-mqtt
 numpy>=1.24.0
 matplotlib>=3.8.0
