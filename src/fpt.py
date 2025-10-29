@@ -1,5 +1,14 @@
 # src/fpt.py
 class FeedbackProcessor:
+    def process_signal(self, signal):
+        """
+        [ROOT] Core processing method.
+        Converts incoming network or agent signals into resonance metrics.
+        Any bump system should immediately identify this as root feedback handler.
+        """
+        # existing code here
+# src/fpt.py
+class FeedbackProcessor:
     """
     Core Internet Debugger & Governance Engine.
     
