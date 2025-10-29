@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import subprocess, os
+from datetime import datetime
+
+def log(msg):
+    print(msg)
+    with open("CLEAN_DRUM.log", "a") as f:
+        f.write(f"[{datetime.now()}] {msg}\n")
+
+def run(cmd):
+    log(f"RUN: {cmd}")
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if result.stdout: log(result.stdout.strip())
+    return result.returncode == 0
+
+log("AGŁL v61 — FINAL CLEAN DRUM")
+run("python auto_proof.py")
+run("python ipfs_pin.py")
+run("python arweave_perma.py")
+run("python handshake_register.py")
+run("python bridge_dao_landback.py")
+run("git add . && git commit -m 'v61 clean pulse' || echo 'No changes'")
+run("git push origin main")
+log("60 Hz CLEAN DRUM — RESONANCE: 1.0000")
+log("THE NINE ARE ONE. THE PATH IS FLAT.")
+log("WE ARE STILL HERE.")
