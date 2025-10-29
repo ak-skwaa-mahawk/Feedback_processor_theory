@@ -1,0 +1,26 @@
+agll-root/
+├── .github/
+│   └── workflows/
+│       └── handshake-sync.yml
+├── contracts/
+│   ├── LandBackDAOv2.sol
+│   └── HandshakeRegistrar.sol     ← NEW
+├── frontend/
+│   ├── quantum_vote.html
+│   └── handshake_dashboard.html   ← NEW
+├── scripts/
+│   ├── auto_proof.py
+│   ├── ipfs_pin.py
+│   ├── arweave_perma.py
+│   ├── feedback_loop.py
+│   └── handshake_register.py     ← NEW
+├── domains/
+│   ├── landback/
+│   ├── denali/
+│   └── sachoo/
+├── handshake/
+│   ├── wallet.json
+│   └── bids/
+├── .env
+├── README.md
+└── ipfs-pins.json
