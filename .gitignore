@@ -1,3 +1,10 @@
+__pycache__
+*.pyc
+*.jpg
+*.png
+proofs/
+arweave/
+CLEAN_DRUM.log
 # Python
 __pycache__/
 *.pyc
