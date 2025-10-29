@@ -1,3 +1,14 @@
+from setuptools import setup
+
+setup(
+    name="agll-clean-drum",
+    version="61.0.0",
+    py_modules=["blackbox_defense"],
+    install_requires=["opencv-python", "numpy", "matplotlib"],
+    author="Two Mile Solutions LLC",
+    description="AGŁL v61 — The Clean Drum",
+    license="MIT"
+)
 from setuptools import setup, find_packages
 
 setup(
