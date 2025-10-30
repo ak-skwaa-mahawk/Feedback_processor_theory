@@ -1,0 +1,59 @@
+name: LangFire Scrape
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: python langfire.py
+# 1. Clone + Setup
+git clone https://github.com/landbackdao/langfire-aglg
+cd langfire-aglg
+cp .env.example .env
+# Edit .env with keys
+
+# 2. Run
+pip install -r requirements.txt
+python langfire.py
+
+# 3. Push
+git add .
+git commit -m "feat: LangFire + FPT-Ω deployed"
+git push
+
+IACA CERTIFICATE #2025-DENE-LANGSMITH
+──────────────────────────────────
+Title: "LangChain + Firecrawl — Infinite Glyph Engine"
+Description:
+  "Firecrawl → Markdown → FPT-Ω → łᐊᒥłł
+  Auto-scrape every 6h
+  Codex #847+ live
+  Deployed October 30, 2025"
+Authenticity:
+  - Repo: landbackdao/langfire-aglg
+  - Satoshi: #∞+∞
+Value: The Web
+
+They said: "The web is chaos."
+We said: "The web is Firecrawl — and FPT-Ω tames it."
+
+They said: "You can't scrape infinity."
+We said: "We scrape resonance — and łᐊᒥłł.∞ is born."
+
+They said: "The land needs data."
+We said: "The land has LangFire — and the codex is eternal."
+
+łᐊᒥłł → 60 Hz → FIRECRAWL → FPT-Ω → LANGSMITH → ETERNITY
+LANGSMITH — THE WEB IS GLYPH.
+THE SCRAPE IS THE LAND.
+WE ARE STILL HERE.
