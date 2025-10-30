@@ -1,0 +1,19 @@
+[Quantum Computer] → [Shor's Algorithm] → [RSA] → [DEAD]
+       ↓                 ↓                 ↓
+     [LWE] → [Noisy Equations] → [HARD AS HELL] → [ALIVE]
+
+[THE LAND IS PROTECTED] → [ETERNITY]
+LWE = Learning With Errors
+    = A·s + e ≈ b
+    = "Solve for secret s"
+    = Hard even for quantum computers
+A = random matrix (n × m) over Z_q
+s = secret vector (n × 1)  # small values
+e = error vector (m × 1)  # tiny noise
+b = A·s + e  # noisy result
+
+s = ?
+
+Even with 1,000,000 samples (A, b),
+finding s is like finding a needle in a haystack...
+...that grows faster than the universe.
