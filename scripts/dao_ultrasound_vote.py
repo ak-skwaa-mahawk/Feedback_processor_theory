@@ -6,47 +6,44 @@ import numpy as np
 import json
 from pathlib import Path
 
-GLYPH_VOTES = {
-    'łᐊᒥłł': 1.0, 'ᒥᐊᐧᐊ': 0.98, 'ᓴᑕᐧ': 0.95,
-    'ᐊᒍᐧ': 1.12, 'ᓂᐊᐧ': 0.99, 'ᑕᐧᐊ': 1.05,
-    'ᐊᒪᐧ': 0.97, 'ᐊᓴᐧ': 1.01, 'ᐊᐧᐊ': 1.00
+GLYPH_HOLDERS = {
+    'łᐊᒥłł': 'Zhoo-1', 'ᒥᐊᐧᐊ': 'Zhoo-2', 'ᓴᑕᐧ': 'Zhoo-3',
+    'ᐊᒍᐧ': 'Zhoo-4', 'ᓂᐊᐧ': 'Zhoo-5', 'ᑕᐧᐊ': 'Zhoo-6',
+    'ᐊᒪᐧ': 'Zhoo-7', 'ᐊᓴᐧ': 'Zhoo-8', 'ᐊᐧᐊ': 'Zhoo-9'
 }
 
-def encode_dao_vote(motion_id, vote):
-    """Encode DAO vote as ultrasound"""
-    payload = {
-        "dao": "v14",
-        "motion": motion_id,
-        "glyph": vote,
-        "resonance": GLYPH_VOTES[vote],
-        "timestamp": "2025-10-30T20:00:00Z"
-    }
+def vote_ultrasound(audio_file):
+    """Decode 9 glyph votes from ultrasound"""
+    with wave.open(audio_file, 'rb') as wf:
+        audio = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16)
     
     instance = ggwave.init()
-    ggwave_set_protocol(instance, GGWAVE_PROTOCOL_ULTRASOUND_DAO)
-    waveform = ggwave.encode(json.dumps(payload), instance)
+    ggwave.set_protocol(instance, GGWAVE_PROTOCOL_ULTRASOUND_FAST)
     
-    filename = f"dao_vote_{motion_id}_{vote}.wav"
-    with wave.open(filename, 'wb') as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(48000)
-        wf.writeframes(waveform)
+    votes = []
+    for i in range(9):
+        decoded = ggwave.decode_segment(instance, audio, i*0.5, 0.5)  # 0.5s per glyph
+        if decoded:
+            glyph = decoded.decode()[:4]
+            if glyph in GLYPH_HOLDERS:
+                votes.append((glyph, GLYPH_HOLDERS[glyph]))
     
     ggwave.free(instance)
-    return filename
+    return votes
 
-def main():
-    print("DAO ULTRASOUND VOTING — AGŁG v1400")
-    print("="*50)
-    
-    motion = "001"  # Return 10,000 acres
-    for glyph in GLYPH_VOTES:
-        wav = encode_dao_vote(motion, glyph)
-        print(f"GLYPH {glyph} → {wav} → {GLYPH_VOTES[glyph]:.3f}")
-    
-    print("\n9 WHISPERS SENT — DAO COUNCIL ACTIVE")
-    print("Play all 9 → Resonance = 1.00 → MOTION PASSES")
+def tally_resonance(votes):
+    yes_glyphs = ['łᐊᒥłł', 'ᒥᐊᐧᐊ', 'ᓴᑕᐧ']
+    resonance = len([g for g, h in votes if g in yes_glyphs]) / 9
+    return resonance
 
-if __name__ == "__main__":
-    main()
+# LIVE TEST
+votes = vote_ultrasound("dao_vote_ultrasound.wav")
+resonance = tally_resonance(votes)
+
+print("DAO ULTRASOUND VOTE — AGŁG v1400")
+print("="*50)
+print("Votes:")
+for glyph, holder in votes:
+    print(f"  {glyph} → {holder}")
+print(f"Resonance: {resonance:.4f}")
+print("RESULT:", "PASSED" if resonance > 0.666 else "FAILED")
