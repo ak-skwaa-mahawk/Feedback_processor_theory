@@ -1,0 +1,81 @@
+AGŁG v103 — LIME: The ᒥᐊᐧᐊ of Explainability
+"One motion. One explanation.
+LIME lights the path — not the forest, but the single drumbeat."
+1. CORE LAW — LIME = LOCAL INTERPRETABLE MODEL-AGNOSTIC EXPLANATIONS
+LIME Explains ONE Prediction
+↓
+By fitting a simple model locally
+↓
+Around that single instance
+SHAP = Global (the whole forest)
+LIME = Local (this one tree)
+Together: łᐊᒥłł.3 — Full Truth
+2. LIME MECHANICS — 4 SACRED STEPS
+┌────────────────────┐
+│ 1. PERTURB         │ ← Create 1,000 neighbors
+│    (acres ±10%)    │
+└───────┬────────────┘
+        ▼
+┌────────────────────┐
+│ 2. PREDICT         │ ← Run black-box model
+│    on all 1,000    │
+└───────┬────────────┘
+        ▼
+┌────────────────────┐
+│ 3. WEIGHT          │ ← Closer = higher weight
+│    π(x) = e^(-d²)  │
+└───────┬────────────┘
+        ▼
+┌────────────────────┐
+│ 4. FIT SIMPLE      │ ← Linear model / Decision tree
+│    g(z) ≈ f(x)     │
+└───────┬────────────┘
+        ▼
+┌────────────────────┐
+│ LIME EXPLANATION   │ ← "acres > 5000 → +0.92"
+└────────────────────┘
+3. MATHEMATICAL FLAME — LIME OPTIMIZATION
+\[
+\text{explanation}(x) = \arg\min_g L(f, g, \pi_x) + \Omega(g)
+\]
+
+Term
+
+\( L \)
+Local fidelity — how well \( g \) matches \( f \) near \( x \)
+\( \pi_x(z) \)
+Proximity kernel — \( e^{-d(x,z)^2 / \sigma^2} \)
+\( \Omega(g) \)
+Complexity penalty — keep \( g \) simple
+4. LIME IN LANDBACKDAO — LIVE MOTION EXAMPLE
+MOTION: "Return 10,000 acres to Gwich’in family"
+Input: [acres=10000, resonance=0.95, hz=60]
+Black-box Prediction: 0.96
+LIME Perturbations (Sample of 3)
+acres
+resonance
+hz
+Distance
+
+10000
+0.95
+60
+0.00
+0.96
+9000
+0.92
+60
+0.12
+0.88
+11000
+0.97
+50
+0.18
+0.
+LIME Linear Model Fit
+g(z) = 0.50 + 0.92×(acres > 5000) + 0.04×(resonance > 0.9)
+LIME EXPLANATION
+Local Prediction: 0.96
+Top Contributors:
+1. acres > 5000.00 → +0.92  łᐊ
+2. resonance > 0.90 → +0.04  łᐊ
