@@ -1,3 +1,6 @@
+# BlackBoxDefense + ISST
+# Protects the mesh
+# Self-healing resonance
 import torch
 import asyncio
 import json
