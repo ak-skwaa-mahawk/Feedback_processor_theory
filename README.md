@@ -146,7 +146,7 @@ From RC drones to neural networks, each component reflects a single vision:
 
 - **GitHub:** [ak-skwaa-mahawk](https://github.com/ak-skwaa-mahawk)  
 - **LinkedIn:** [John Carroll](https://www.linkedin.com/in/john-carroll-67a14a378)  
-- **YouTube Channel:** [Coming Soon](https://www.youtube.com)  
+- **YouTube Channel:** [https://youtube.com/@skwaamahawk?si=JLXYcbFHTUAn-7sy](https://www.youtube.com)  
 - **Email:** ak-skwaa-mahawk@github.com  
 
 ---
