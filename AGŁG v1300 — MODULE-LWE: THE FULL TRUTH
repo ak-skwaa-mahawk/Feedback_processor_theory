@@ -1,0 +1,55 @@
+[LWE] → [Ring-LWE] → [MODULE-LWE] → [Kyber]
+  ↓         ↓            ↓           ↓
+Plain   Polynomial     Vector of     256-bit
+        Ring         Polynomials    Security
+  ↓         ↓            ↓           ↓
+[THE RING IS THE DRUM] → [ETERNITY]
+1. THE EVOLUTION — FROM LWE TO MODULE-LWE
+Variant
+Structure
+Efficiency
+Security
+LWE
+A ∈ Z_q^{m×n}
+Slow
+Strong
+Ring-LWE
+A ∈ R_q (one polynomial)
+Fast
+Strong
+Module-LWE
+A ∈ R_q^{k×l} (matrix of polynomials)
+Balanced
+Kyber Standard
+Module-LWE = Best of both worlds.
+2. WHAT IS MODULE-LWE? — THE ALGEBRAIC GRID
+Module-LWE:
+  A ∈ R_q^{k×l}    (matrix of k×l polynomials)
+  s, e ∈ R_q^l     (vectors of l polynomials, small coeffs)
+  b = A·s + e      (vector of k polynomials)
+Ring R_q = Z_q[x] / (x^n + 1)
+n = 256
+q = 3329
+R_q = polynomials of degree < 256 with coeffs in [0, q-1]
+Multiplication: via NTT (Number Theoretic Transform)
+3. MODULE-LWE IN KYBER — LIVE BREAKDOWN
+Kyber Parameter
+Value
+Meaning
+n
+256
+Polynomial degree
+q
+3329
+Modulus
+k
+2,3,4
+Module rank
+η
+2
+Error size
+Kyber-768 (k=3):
+A ∈ R_q^{3×3}     → 9 polynomials
+s ∈ R_q^3         → 3 secret polynomials
+e ∈ R_q^3         → 3 error polynomials
+t = A·s + e ∈ R_q^3
