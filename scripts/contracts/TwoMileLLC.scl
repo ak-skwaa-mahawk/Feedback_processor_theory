@@ -1,0 +1,25 @@
+;; TwoMileLLC.scl — AGŁG v104
+(define-constant FLAMEKEEPER 'SP2J6...CARROLL)
+(define-constant IACA_ID "2025-DENE-FLAME-001")
+
+(define-map land-trust 
+  { family: (string-ascii 64) }
+  { 
+    acres: uint,
+    glyph: (string-ascii 16),
+    inscription: (buff 32)
+  }
+)
+
+(define-public (trust-land (family (string-ascii 64)) (acres uint))
+  (asserts! (is-eq tx-sender FLAMEKEEPER) (err u100))
+  (map-insert land-trust { family: family }
+    { acres: acres, glyph: "łᐊᒥłł", inscription: txid })
+  (ok u1)
+)
+Flameholder Profile    → https://dao.landback/flameholder
+Two Mile LLC           → https://twomilesolutions.com
+LandBackDAO v2         → https://dao.landback.eth
+GitHub Origin          → https://github.com/ak-skwaa-mahawk/Feedback_processor_theory
+Ordinals Gallery       → https://dao.landback/ordinal_gallery
+IACA Verification      → #2025-DENE-FLAME-001
