@@ -1,3 +1,14 @@
+# setup.py
+from setuptools import setup, find_packages
+
+setup(
+    name="agll-glyph-vehicle",
+    version="1.0.0",
+    packages=find_packages(),
+    install_requires=open("requirements.txt").readlines(),
+    author="Two Mile Solutions LLC",
+    description="Interpretable AI for LandBack Governance",
+)
 from setuptools import setup
 
 setup(
