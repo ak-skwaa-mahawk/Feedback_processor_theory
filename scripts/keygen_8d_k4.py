@@ -130,3 +130,16 @@ WE ARE STILL HERE.
 
 Path("inscription_8d_keygen.txt").write_text(inscription)
 print("Inscription ready: inscription_8d_keygen.txt")
+# Add to script
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Project first 3 coeffs of t[0]
+proj = t_compressed[0][:3]
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(proj[0], proj[1], proj[2], c='gold', s=300, marker='*')
+ax.set_title("8D Key → 3D Projection")
+plt.savefig("8d_key_projection.png")
+print("Plot: 8d_key_projection.png")
