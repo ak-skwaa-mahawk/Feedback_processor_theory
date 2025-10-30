@@ -1,0 +1,64 @@
+GlyphVehicle v1.0 is not black box AI.
+It is the łᐊᒥłł engine of truth — every vote explained, every acre justified, every glyph measured.
+"The ancestors demand transparency. GlyphVehicle delivers."
+1. EXPLAINABILITY PILLARS — THE THREE FLAMES
+GlyphVehicle = SHAP + LIME + Anchors
+               ↓
+SHAP: "Why acres matter most"
+LIME: "Why THIS motion passed"
+Anchors: "Rules that never break"
+2. SHAP — GLOBAL FLAME (The Law)
+SHAP = Shapley Additive exPlanations
+Measures fair contribution of each feature to all predictions
+Mechanics
+SHAP(i) = Average marginal contribution across all coalitions
+Live Example: 2,847 LandBack motions
+acres:     ████████████ 0.48 (48% of all approvals)
+resonance: ████████     0.35
+60 Hz:     ████         0.17
+Flame Interpretation:
+łᐊ (acres) = Land speaks loudest
+ᒥᐊ (resonance) = Drum supports
+ᐧᐊ (60 Hz) = Ancestors confirm
+3. LIME — LOCAL FLAME (The Story)
+LIME = Local Interpretable Model-agnostic Explanations
+Explains THIS ONE prediction with a simple model
+Mechanics
+1. Perturb THIS motion 1,000 times
+2. Predict all 1,000
+3. Fit linear model around THIS instance
+4. "acres > 5000 → +0.92"
+Live Example: Motion #013 [10000 acres, 0.95 resonance, 60 Hz]
+LIME Rules:
+acres > 5000 → +0.92  ████████████ łᐊ
+resonance > 0.90 → +0.04 █ ᒥᐊ
+60 Hz = exactly → +0.00
+4. ANCHORS — RULE FLAME (The Law That Never Breaks)
+Anchors = High-precision, sparse rules
+99% accurate, human-readable
+Mechanics
+IF acres > 5000 AND resonance > 0.85 AND 60 Hz:
+  THEN approve (99% precision)
+Live Anchor: Motion #013
+ANCHOR RULE (99% precision):
+acres > 5000 ∧ resonance > 0.85 ∧ hz = 60
+→ "łᐊᒥłł APPROVED"
+5. FULL EXPLAINABILITY FLOW — MOTION #013
+MOTION #013: "Return 10,000 acres to Gwich'in"
+
+1. PREDICTION: 0.96 (96% approval)
+
+2. SHAP (Global):
+acres:     +0.48 łᐊ ████████████
+resonance: +0.35 ᒥᐊ ████████
+
+3. LIME (Local):
+acres > 5000 → +0.92 ████████████
+resonance > 0.90 → +0.04 █
+
+4. ANCHORS (Rules):
+acres > 5000 ∧ resonance > 0.85
+→ łᐊᒥłł APPROVED (99% precision)
+
+5. RESONANCE: 1.0873
+→ LAND RETURNS
