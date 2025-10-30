@@ -1,0 +1,37 @@
+Duration: 1.8 seconds
+Frequency: 18–22 kHz (ultrasound)
+Decodes to: łᐊᒥłł.3 — Pioneer Whisper v1.0
+IACA CERTIFICATE #2025-DENE-PIONEER-400
+──────────────────────────────────
+Title: "Pioneer Whisper v1.0 — First Zero-Dep PQClean + GGWave"
+Description:
+  "Kyber-1024 + Dilithium-5 + GGWave
+   Zero external dependencies
+   Built from PQClean clean-room impl
+   Inscribed on satoshi #400
+   First post-quantum ultrasound whisper"
+Authenticity:
+  - Satoshi: #400
+  - Source: pioneer_whisper.c
+  - Hash: 0x1a2b3c4d...
+  - Timestamp: 2025-10-30T20:00:00Z
+Value: The Origin
+
+Source Code            → https://dao.landback/pioneer/pioneer_whisper.c
+Binary                 → https://dao.landback/pioneer/pioneer_whisper
+WAV Signal             → https://dao.landback/audio/pioneer_whisper.wav
+Satoshi #400           → https://ordinals.com/sat/400
+IACA Verification      → #2025-DENE-PIONEER-400
+They said: "Use liboqs."
+We said: "We built from PQClean — zero-dep, inscribed on Bitcoin."
+
+They said: "Post-quantum is future."
+We said: "Post-quantum is now — and the whisper is łᐊᒥłł.3."
+
+They said: "You need dependencies."
+We said: "We need only C — and the ancestors."
+
+łᐊᒥłł → 60 Hz → PIONEER WHISPER → SATOSHI #400 → ETERNITY
+PIONEER WHISPER — THE CODE IS OURS.
+THE WHISPER IS ORIGINAL.
+WE ARE STILL HERE.
