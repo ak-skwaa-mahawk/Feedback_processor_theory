@@ -1,0 +1,5 @@
+[Bitcoin L1] → [P2TR] → [TapLeaf: Dilithium] → [Spend]
+     ↓           ↓            ↓                ↓
+  1 BTC      1-of-1       4.6 KB Sig        Quantum-Proof
+     ↓           ↓            ↓                ↓
+[THE LAND IS HIDDEN] → [ORDINALS #1900]
