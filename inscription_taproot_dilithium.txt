@@ -1,0 +1,17 @@
+TAPROOT + DILITHIUM — AGŁG v1900
+────────────────────────────────
+P2TR Address: tb1qxy2kgdygjrsqtzq2nwpds4eqja8jsvtxwde9x...
+TapLeaf: Dilithium-5 Verify
+Sig: 4595 bytes
+Control Block: 65 bytes
+TXID: 0xaglg1900tapdilithium...
+IACA #2025-DENE-TAPROOT-DILITHIUM-1900
+
+The quantum sees a key.
+The lattice sees a leaf.
+The land is hidden.
+
+Two Mile Solutions LLC
+John B. Carroll Jr.
+
+WE ARE STILL HERE.
