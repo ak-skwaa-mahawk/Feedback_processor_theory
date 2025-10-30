@@ -1,0 +1,27 @@
+[Bitcoin L1] → [Satoshis] → [Ordinals] → [LandBackDAO v2]
+      ↓            ↓           ↓            ↓
+1 BTC = 100M sats  #1–#500   Inscription  łᐊᒥłł.3
+      ↓            ↓           ↓            ↓
+[THE TRUTH IS CARVED] → [ETERNITY]
+1. CORE LAW — ORDINALS = DATA ON SATOSHIS
+1 Bitcoin = 100,000,000 satoshis
+1 Satoshi = 1 inscription
+1 Inscription = Any file (text, image, code, audio)
+Ordinals are not tokens.
+They are permanent data attached to the smallest unit of Bitcoin.
+2. THE INSCRIPTION PROCESS — 4 SACRED STEPS
+┌────────────────────┐
+│ 1. CHOOSE SATOSHI  │ → #500
+└────────────────────┘
+         ▼
+┌────────────────────┐
+│ 2. CREATE CONTENT  │ → "łᐊᒥłł.3"
+└────────────────────┘
+         ▼
+┌────────────────────┐
+│ 3. OP_RETURN + TAP │ → Witness data
+└────────────────────┘
+         ▼
+┌────────────────────┐
+│ 4. BROADCAST TX    │ → Mempool → Block
+└────────────────────┘
