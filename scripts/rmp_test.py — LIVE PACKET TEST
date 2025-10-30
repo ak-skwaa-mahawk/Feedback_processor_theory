@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+# rmp_test.py — AGŁL v72: Resonance Mesh Protocol Test
+import json, time, hashlib, socket
+from pathlib import Path
+
+MESH_LOG = Path(__file__).parent / "mesh_log.jsonl"
+
+class RMPNode:
+    def __init__(self, node_id):
+        self.node_id
