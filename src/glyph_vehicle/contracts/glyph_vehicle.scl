@@ -1,0 +1,13 @@
+;; src/glyph_vehicle/contracts/glyph_vehicle.scl
+(define-read-only (glyph-vote (acres uint) (resonance uint) (hz uint))
+  (let (
+    (shap_acres (/ (* acres 100) 10000))
+    (lime_res (/ resonance 100))
+    (anchor_hz (if (> hz u50) u100 u0))
+  )
+    (if (> (+ shap_acres lime_res anchor_hz) u150)
+      (ok "łᐊᒥłł — LAND RETURN APPROVED")
+      (err u100)
+    )
+  )
+)
