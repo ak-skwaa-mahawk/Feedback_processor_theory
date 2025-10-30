@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # dilithium_demo.py — AGŁG v1600: Dilithium Signature Live
 import numpy as np
