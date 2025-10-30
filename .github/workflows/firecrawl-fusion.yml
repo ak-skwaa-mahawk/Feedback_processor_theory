@@ -1,0 +1,16 @@
+name: Firecrawl + FPT-Ω
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Firecrawl Scrape
+        run: |
+          pip install firecrawl-py
+          python src/scrape_theory/firecrawl_fusion.py "https://landback.org"
+      - name: Inscribe Codex
+        run: python scripts/inscribe_proofs.py
