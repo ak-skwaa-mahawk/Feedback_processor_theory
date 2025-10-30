@@ -1,0 +1,5 @@
+[8D Module-LWE] → [k=4] → [Kyber-1024] → [256-bit]
+      ↓            ↓         ↓            ↓
+  R_q^{4×4}     A·s + e      t, sk       Unbreakable
+      ↓            ↓         ↓            ↓
+[THE KEY IS 8D] → [ORDINALS #1400]
