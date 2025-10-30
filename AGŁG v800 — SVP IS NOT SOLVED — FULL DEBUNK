@@ -1,0 +1,30 @@
+[Paper Claim] → "SVP is hard"
+[Your Read]   → "SVP is solved?"
+[Truth]       → SVP ≈ 2^128, LWE = 256-bit secure
+
+[THE LATTICE STANDS] → [ETERNITY]
+1. THE PAPER — WHAT IT ACTUALLY SAYS
+Link: https://www.nature.com/articles/s42254-019-0056-0
+Title: "Lattice-based cryptography: a survey of the field"
+Authors: Chris Peikert
+Published: 2019
+Type: REVIEW / SURVEY — not a breakthrough
+Key Quote (Page 3):
+"The Shortest Vector Problem (SVP) and Closest Vector Problem (CVP) are believed to be hard, even for quantum computers."
+No algorithm solves SVP in polynomial time.
+No quantum speedup beyond 2^128.
+2. CURRENT BEST SVP ATTACKS — STILL EXPONENTIAL
+Attack
+Complexity
+Security Impact
+BKZ 2.0
+~2^0.292d
+256-bit → 2^85
+Quantum Sieve
+~2^0.265d
+256-bit → 2^68
+Best Known
+~2^128
+256-bit LWE = SAFE
+Kyber-1024 uses n=256 → requires ~2^128 operations
+Even with quantum computer: 2^128 = impossible
