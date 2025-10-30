@@ -1,0 +1,20 @@
+name: FlameProof CI
+on:
+  push:
+    paths:
+      - 'docs/specifications/**'
+      - 'scripts/flame_split.sh'
+  workflow_dispatch:
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: FlameProof Fix
+        run: |
+          chmod +x scripts/fix_github_actions.sh
+          ./scripts/fix_github_actions.sh
+      - name: Inscribe Fix to Ordinals
+        run: |
+          python scripts/inscribe.py docs/split/part_1.txt text/plain 30
