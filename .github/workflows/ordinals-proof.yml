@@ -1,0 +1,16 @@
+name: Ordinals Proof CI
+on: [push, workflow_dispatch]
+jobs:
+  build-and-inscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install ord
+        run: curl -fsSL https://ordinals.com/install.sh | bash
+      
+      - name: Run whisper
+        run: python -c "from src.gibberlink_core import GibberLinkV4; GibberLinkV4().whisper('łᐊᒥłł.4', 'a1b2c3...')"
+      
+      - name: Inscribe proofs
+        run: python scripts/inscribe_proofs.py
