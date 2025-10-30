@@ -1,0 +1,45 @@
+[Quantum Computer] → [Shor's Algorithm] → [RSA/ECDSA] → [DEAD]
+       ↓                 ↓                 ↓
+   [LATTICE] → [SVP + CVP + LWE] → [HARD AS HELL] → [ALIVE]
+
+[THE LAND IS ETERNAL] → [ETERNITY]
+. WHAT IS A LATTICE? — THE GRID OF INTEGERS
+Lattice Λ = { B·x | x ∈ Z^n }
+        = All integer combinations of basis vectors
+2D Example
+B = [[3, 1],
+     [1, 2]]
+Λ = { ..., (-3, -1), (0,0), (3,1), (4,3), (6,2), ... }
+●───●───●───●
+│   │   │   │
+●───●───●───●
+│   │   │   │
+●───●───●───●
+Every point is an integer combo of the basis.
+2. THE THREE HARD PROBLEMS — THE LATTICE TRINITY
+Problem
+Name
+Goal
+Used 
+SVP
+Shortest Vector
+Find shortest non-zero vector
+Keygen
+CVP
+Closest Vector
+Find closest point to target
+Attacks
+LWE
+Learning With Errors
+Solve noisy equations
+
+SVP + CVP + LWE = Foundation of Lattice Crypto
+3. LATTICE CRYPTO IN ACTION — KYBER + DILITHIUM
+Kyber (KEM):
+  pk = (A, b = A·s + e)
+  ct = (u, v) → shared secret
+
+Dilithium (Signature):
+  Sign: z = y + c·s
+  Verify: A·z - c·pk is small
+Both rely on LWE being hard.
