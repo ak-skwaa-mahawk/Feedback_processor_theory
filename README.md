@@ -1,3 +1,93 @@
+<!-- PROJECT BANNER -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ak-skwaa-mahawk/Feedback_processor_theory/main/assets/banner_fpt.png" alt="Feedback Processor Theory Banner" width="100%" />
+</p>
+
+<h1 align="center">🧠 Feedback Processor Theory (FPT)</h1>
+
+<p align="center">
+  <b>AI Research • 3D Printed Robotics • Adversarial Defense • Information Physics</b>  
+</p>
+
+<p align="center">
+  <a href="https://www.linkedin.com/in/john-carroll-67a14a378"><img src="https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin" /></a>
+  <a href="https://github.com/ak-skwaa-mahawk"><img src="https://img.shields.io/badge/GitHub-ak--skwaa--mahawk-black?style=flat-square&logo=github" /></a>
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python" />
+  <img src="https://img.shields.io/badge/3D_Printing-Active-orange?style=flat-square&logo=3d" />
+  <img src="https://img.shields.io/badge/AI_Research-Live-green?style=flat-square&logo=ai" />
+</p>
+
+---
+
+## 📜 Overview
+
+The **Feedback Processor Theory (FPT)** project explores how intelligence, defense, and resonance emerge through physical and informational feedback.  
+At its core, this repository fuses **AI research**, **3D-printed robotics**, and **adversarial defense systems** into a unified experimental platform.
+
+---
+
+## ⚙️ What You’ll Find
+
+### 🚁 RC & Drone Engineering
+Custom flight controllers, sensor arrays, and **3D-printed airframes** that bring feedback control systems to life.  
+Each build models energy loops and adaptive response in physical form.
+
+### 🔌 Electronics & Embedded Systems
+Circuit designs, signal filters, and Python-based control loops demonstrating real-world feedback principles — bridging theory and motion.
+
+### 🧩 Adversarial Defense Systems
+Experimental PyTorch layers for **black-box AI defense**, including:
+- **BlackBoxDefense/**
+- **ISSTDefense/**
+
+These modules simulate self-protective feedback in digital form.
+
+### 🧬 Information Physics
+Mathematical research unifying **signal decay, entropy, and coherence** into measurable laws of communication, awareness, and self-regulation.
+
+### 🎛 Visualization & Resonance Tools
+Symbolic glyphs and real-time dashboards that translate feedback signals into **dynamic resonance patterns** — art meeting physics.
+
+---
+
+## 🔭 Vision
+
+This isn’t just theory — it’s a **living testbed** showing how energy, data, and defense interconnect.  
+From **RC drones to neural nets**, every circuit and function echoes one goal:
+
+> **To prove that intelligence, when modeled as feedback, can learn to protect itself.**
+
+---
+
+## 📦 Current Modules
+| Module | Description |
+|---------|--------------|
+| `BlackBoxDefense/` | Core adversarial defense against unknown model attacks |
+| `ISSTDefense/` | Internal state symmetry training defense |
+| `physics/` | Information physics models for resonance, entropy, and self-organization |
+| `drone/` | 3D-printed RC flight platform using feedback loop controllers |
+| `electronics/` | Microcontroller + sensor systems for energy-to-signal conversion |
+
+---
+
+## 🧰 Tools & Tech
+- Python / PyTorch / NumPy  
+- 3D Printing (FDM / SLA)  
+- RC & UAV Systems  
+- Embedded Microcontrollers (Arduino, STM32)  
+- AI Signal Processing  
+
+---
+
+## 🔗 Connect
+- **GitHub:** [ak-skwaa-mahawk](https://github.com/ak-skwaa-mahawk)  
+- **LinkedIn:** [John Carroll](https://www.linkedin.com/in/john-carroll-67a14a378)  
+- **YouTube:** [Coming Soon — Build Logs & Theory Walkthroughs](#)
+
+---
+
+### 💬 Quote
+> “Feedback is life — intelligence is how well it listens.”
 # ⚡ Feedback Processor Theory (FPT)
 ### _by John B. Carroll Jr — ak-skwaa-mahawk_
 
