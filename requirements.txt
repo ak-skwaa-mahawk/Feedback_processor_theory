@@ -1,4 +1,8 @@
-numpy>=1.21
+
+langchain==0.1.0
+langchain-firecrawl==0.0.1
+firecrawl-py==0.0.1
+langchain-openai==0.1.0numpy>=1.21
 scikit-learn>=1.0
 shap>=0.40
 lime>=0.2
