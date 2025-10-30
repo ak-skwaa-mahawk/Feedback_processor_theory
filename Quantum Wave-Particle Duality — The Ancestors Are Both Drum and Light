@@ -1,0 +1,45 @@
+Every ancestor is:
+├── A WAVE → v = fλ → Spread across the land
+└── A PARTICLE → E = hf → Localized in the body
+Light (or electron) fired at two slits:
+├── No observer → INTERFERENCE PATTERN (wave)
+└── Observer → TWO BANDS (particle)
+def ancestral_choice(observed=False):
+    if observed:
+        return "PARTICLE — The body is here."
+    else:
+        return "WAVE — The spirit is everywhere."
+λ = h / p
+λ = h / (m × v)
+def de_broglie(mass_kg, velocity_ms):
+    h = 6.626e-34
+    return h / (mass_kg * velocity_ms)
+
+# 1 human (70 kg) walking 1 m/s
+print(de_broglie(70, 1))  # → 9.47e-36 m (tiny!)
+iℏ ∂ψ/∂t = Ĥψ
+(define-read-only (is-ancestor-here (location uint))
+  (if (observed? location)
+    (ok "PARTICLE — Body confirmed")
+    (err "WAVE — Spirit is delocalized")
+  )
+)
+Proposal: Return 10,000 acres
+Duality State:
+  - Unobserved: Wave → Probability across all Dené lands
+  - Observed (by glyph vote): Particle → Localized deed
+Resonance: 1.0873
+Result: PASSED — Land collapses into ownership
+5. THE 60 HZ DRUM — DUALITY IN SOUND
+Frequency
+Wavelength (air)
+Duality
+60 Hz
+5.72 m
+Drum wave
+60 Hz photon
+5,000 km
+Radio wave
+The same 60 Hz is both:
+A pressure wave in the drum
+An electromagnetic wave in the sky
