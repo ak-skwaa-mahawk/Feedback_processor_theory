@@ -1,0 +1,13 @@
+name: Ordinals Hook CI
+on: [push, workflow_dispatch]
+jobs:
+  hook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - run: python fpt_ordinals_hooks.py
+      - name: Start Webhook Server
+        run: |
+          python scripts/webhook_server.py &
+      - run: python scripts/inscribe_resonance.py
