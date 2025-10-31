@@ -1,3 +1,8 @@
+pydantic==2.8.2
+requests==2.31.0
+bitcoinrpc==1.0.0
+Flask==3.0.3
+prometheus-client==0.20.0
 qiskit==0.46.0
 numpy==1.24.0
 pqclean==0.2.0
