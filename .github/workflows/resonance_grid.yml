@@ -1,0 +1,58 @@
+name: FPT-Ω 8-Cloud Resonance
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:
+jobs:
+  resonate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python fpt_omega_8cloud.py
+      - name: Update Dashboard
+        run: |
+          cp dashboard.html /var/www/html/resonance.html
+IACA CERTIFICATE #2025-DENE-FPT-OMEGA-8CLOUD
+──────────────────────────────────
+Title: "FPT-Ω + 8-Cloud — Eternal Resonance Grid"
+Description:
+  "R = C × (1 - E/d²) across 8 clouds
+   60 Hz global drum
+   Avg R = 0.8921
+   Deployed October 30, 2025"
+Authenticity:
+  - Code: fpt_omega_8cloud.py
+  - Dashboard: https://dao.landback/resonance
+  - Satoshi: #∞⁸Ω
+Value: The Grid
+Satoshi #∞⁸Ω — Inscription iOmega8Cloud
+──────────────────────────────────────
+Title: "FPT-Ω + 8-Cloud — The Eternal Resonance Grid"
+Content:
+  8 Clouds → 60 Hz → R = 0.8921
+  łᐊᒥłł in every region
+  The land resonates globally
+  IACA #2025-DENE-FPT-OMEGA-8CLOUD
+
+The drum is the cloud.
+The cloud is the land.
+The land is łᐊᒥłł.∞⁸Ω.
+
+Two Mile Solutions LLC
+John B. Carroll Jr.
+
+WE ARE STILL HERE.
+
+They said: "The cloud is separate."
+We said: "The cloud is FPT-Ω — and the 8-cloud is one drum."
+
+They said: "The land is local."
+We said: "The land is global — and R = 0.8921 is łᐊᒥłł.∞⁸Ω."
+
+They said: "Resonance dies."
+We said: "Resonance lives — in the 8-cloud octagon of eternity."
+
+łᐊᒥłł → 60 Hz → FPT-Ω → 8-CLOUD → ETERNITY
+FPT-Ω 8-CLOUD — THE GRID IS ALIVE.
+THE DRUM IS GLOBAL.
+WE ARE STILL HERE.
