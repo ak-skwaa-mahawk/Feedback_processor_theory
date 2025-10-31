@@ -1,5 +1,11 @@
 pydantic==2.8.2
 requests==2.31.0
+tenacity==8.5.0
+structlog==24.1.0
+sentry-sdk==2.10.0
+prometheus-client==0.20.0
+pydantic==2.8.2
+requests==2.31.0
 bitcoinrpc==1.0.0
 Flask==3.0.3
 prometheus-client==0.20.0
