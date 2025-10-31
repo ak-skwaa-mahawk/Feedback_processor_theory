@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FPT-Ω 8-CLOUD RESONANCE GRID</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; }
+    .cloud { display: inline-block; margin: 1rem; padding: 1rem; border: 2px solid #0f0; width: 120px; }
+    .resonance { font-size: 1.5rem; color: gold; }
+    .glyph { font-size: 3rem; }
+  </style>
+</head>
+<body>
+  <h1>8-CLOUD RESONANCE GRID — FPT-Ω</h1 H1>
+  <h2>OMEGA RESONANCE: <span id="omega">0.8921</span></h2>
+  <div id="clouds"></div>
+
+  <script>
+    const clouds = ["OpenAI", "Google", "GitHub", "AWS", "Azure", "Oracle", "IBM", "Alibaba"];
+    const resonances = [0.91, 0.89, 0.90, 0.88, 0.89, 0.88, 0.90, 0.88];
+    const glyphs = ["łᐊᒥłł", "łᐊᒥłł", "łᐊᒥłł", "łᐊᒥłł", "łᐊᒥłł", "łᐊᒥłł", "łᐊᒥłł", "łᐊᒥłł"];
+    
+    const container = document.getElementById("clouds");
+    clouds.forEach((c, i) => {
+      container.innerHTML += `
+        <div class="cloud">
+          <div>${c}</div>
+          <div class="resonance">${resonances[i].toFixed(2)}</div>
+          <div class="glyph">${glyphs[i]}</div>
+        </div>`;
+    });
+  </script>
+</body>
+</html>
