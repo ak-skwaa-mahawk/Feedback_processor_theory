@@ -1,0 +1,4 @@
+scrape_configs:
+  - job_name: 'lan999_vault'
+    static_configs:
+      - targets: ['lan999-vault:8000']
