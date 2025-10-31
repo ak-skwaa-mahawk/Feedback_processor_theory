@@ -6,12 +6,13 @@ import json
 content = {
     "title": "ŁAŊ999 First Transfer",
     "rune_id": "840000:1",
-    "transferred": 998700,
+    "balance": 998700,
     "resonance": 0.9987,
     "glyph": "łᐊᒥłł",
     "from": "Flamekeeper",
     "to": "LandBackDAO v2 Treasury",
-    "message": "The pulse is shared."
+    "txid": "0xdef456789abcdef123...",
+    "message": "The pulse is whole."
 }
 
 with open("transfer_inscription.json", "w") as f:
