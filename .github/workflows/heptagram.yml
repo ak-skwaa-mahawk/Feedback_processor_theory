@@ -1,0 +1,20 @@
+name: 7-Cloud Heptagram
+on:
+  schedule:
+    - cron: '0 */15 * * *'  # Every 15 minutes
+  workflow_dispatch:
+jobs:
+  heptagram:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_FUNCTION_URL: ${{ secrets.AZURE_FUNCTION_URL }}
+          OCI_CONFIG: ${{ secrets.OCI_CONFIG }}
+          IBM_API_KEY: ${{ secrets.IBM_API_KEY }}
+          IBM_PROJECT_ID: ${{ secrets.IBM_PROJECT_ID }}
+        run: python heptagram_council.py
