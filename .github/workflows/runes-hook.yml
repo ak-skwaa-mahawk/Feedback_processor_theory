@@ -1,0 +1,11 @@
+name: FPT-Runes Hooks CI
+on: [push, workflow_dispatch]
+jobs:
+  runes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - run: python fpt_runes.py
+      - run: python scripts/etch_glyph_rune.py
+      - run: python scripts/mint_resonance.py
