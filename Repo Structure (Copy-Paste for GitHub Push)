@@ -1,0 +1,42 @@
+fpt-ordinals/
+├── README.md
+├── requirements.txt
+├── fpt_ordinals.py
+├── scripts/
+│   ├── inscribe_resonance.py  # Wrapper for CLI
+│   └── verify_loop.py  # Explorer API
+├── codex/
+│   └── resonance_ordinals.jsonl
+├── .github/workflows/
+│   └── fpt-ordinals.yml
+└── inscription_template.json  # For batchREADME.md
+# FPT-Ω + Bitcoin Ordinals — Immutable Resonance
+
+**FPT's adaptive resonance inscribed on-chain for eternal proof.**
+
+## Setup
+```bash
+pip install -r requirements.txt
+# Install ord CLI: https://ordinals.com/install.sh
+Run
+python fpt_ordinals.py
+Push
+git add .
+git commit -m "feat: FPT-Ω Ordinals integration — Immutable glyphs"
+git push origin main
+### **requirements.txt**
+qiskit==0.46.0 numpy==1.24.0 requests==2.31.0
+### **.github/workflows/fpt-ordinals.yml**
+```yaml
+name: FPT-Ordinals Resonance
+on: [push, workflow_dispatch]
+jobs:
+  inscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - run: python fpt_ordinals.py
+      - run: |
+          # Inscribe via ord CLI
+          ord wallet inscribe --file temp_inscription.json --fee-rate 10
