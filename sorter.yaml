@@ -1,42 +1,188 @@
 root: .
-ignore_dirs:
-  - .git
-  - __pycache__
-  - .venv
-  - .mypy_cache
-  - .github
+ignore_dirs: [ .git, __pycache__, .venv, .mypy_cache, .github, backups, node_modules, dist, build ]
 follow_symlinks: false
 concurrent_workers: 8
 stage_after_move: true
-commit_message: chore(sort): repo sort + normalize
+commit_message: chore(sort): normalize repo layout (docs/assets/notebooks/specs)
 dry_run: false
 
 rules:
-  - name: PDFs to /docs/papers
+  # --- Preserve domain-specific collections (keep them in place or gather strays) ---
+  - name: Keep CODEx hierarchy
+    patterns: ["**/codex/**/*", "**/*codex*/*.md"]
+    dest: codex
+    move: true
+    git_mv: true
+    ignore_patterns: ["codex/**"]
+
+  - name: Keep RUNES hierarchy
+    patterns: ["**/runes/**/*", "**/*rune*/*.md"]
+    dest: runes
+    move: true
+    git_mv: true
+    ignore_patterns: ["runes/**"]
+
+  - name: Keep INSCRIPTIONS hierarchy
+    patterns: ["**/inscriptions/**/*", "**/*inscription*/*.md"]
+    dest: inscriptions
+    move: true
+    git_mv: true
+    ignore_patterns: ["inscriptions/**"]
+
+  - name: Keep CONSTITUTION hierarchy
+    patterns: ["**/constitution/**/*"]
+    dest: constitution
+    move: true
+    git_mv: true
+    ignore_patterns: ["constitution/**"]
+
+  - name: Keep FLAMECHAIN hierarchy
+    patterns: ["**/flamechain/**/*"]
+    dest: flamechain
+    move: true
+    git_mv: true
+    ignore_patterns: ["flamechain/**"]
+
+  - name: Keep IACA hierarchy
+    patterns: ["**/iaca/**/*"]
+    dest: iaca
+    move: true
+    git_mv: true
+    ignore_patterns: ["iaca/**"]
+
+  - name: Keep QUANTUM hierarchy
+    patterns: ["**/quantum/**/*"]
+    dest: quantum
+    move: true
+    git_mv: true
+    ignore_patterns: ["quantum/**"]
+
+  - name: Keep PROOFS hierarchy
+    patterns: ["**/proofs/**/*"]
+    dest: proofs
+    move: true
+    git_mv: true
+    ignore_patterns: ["proofs/**"]
+
+  # --- Documentation & specs ---
+  - name: Technical docs → docs/technical
+    patterns: ["**/technical/**/*.md", "**/*technical*.md"]
+    dest: docs/technical
+    move: true
+    git_mv: true
+
+  - name: Concept essays → docs/concepts
+    patterns: ["**/concepts/**/*.md", "**/*concept*/*.md", "**/*concept*.md"]
+    dest: docs/concepts
+    move: true
+    git_mv: true
+
+  - name: Guides → docs/guides
+    patterns: ["**/guides/**/*.md", "**/*guide*.md"]
+    dest: docs/guides
+    move: true
+    git_mv: true
+
+  - name: PDFs → docs/papers
     patterns: ["**/*.pdf"]
     dest: docs/papers
     move: true
     git_mv: true
-    rename_slug: true
-    preserve_ext: true
-    lowercase_ext: true
-    ignore_patterns: ["docs/**"]
+    ignore_patterns: ["docs/papers/**"]
 
-  - name: Images to /assets/images
-    patterns: ["**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.gif"]
-    dest: assets/images
+  - name: Specs & models → models/specs
+    patterns: ["**/models/**/*.md", "**/models/**/*.yaml", "**/models/**/*.yml", "**/*spec*.md", "**/*spec*.yaml", "**/*spec*.yml"]
+    dest: models/specs
     move: true
     git_mv: true
 
-  - name: Notebooks to /notebooks
+  # --- Code & notebooks ---
+  - name: Python source (non-src) → src/
+    patterns: ["*.py", "**/*.py"]
+    dest: src
+    move: true
+    git_mv: true
+    ignore_patterns: ["src/**", "tests/**", "tools/**", "backend/**", "services/**", "adapters/**", "components/**", "synara_core/**", "synara_integration/**", "fpt_core/**", "core/**", "feature/**"]
+
+  - name: Notebooks → notebooks/
     patterns: ["**/*.ipynb"]
     dest: notebooks
     move: true
     git_mv: true
 
-  - name: Markdown to /docs
+  - name: Data files → data/
+    patterns: ["**/*.csv", "**/*.parquet", "**/*.feather", "**/*.jsonl"]
+    dest: data
+    move: true
+    git_mv: true
+    ignore_patterns: ["data/**"]
+
+  - name: Experiments → experiments/
+    patterns: ["**/exp*/*.py", "**/experiments/**/*.py", "**/experiments/**/*.ipynb"]
+    dest: experiments
+    move: true
+    git_mv: true
+
+  - name: Tests → tests/
+    patterns: ["**/test_*.py", "**/*_test.py", "**/tests/**/*.py"]
+    dest: tests
+    move: true
+    git_mv: true
+
+  # --- Frontend & dashboards ---
+  - name: Frontend assets → frontend/public/assets
+    patterns: ["**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.gif", "**/*.svg"]
+    dest: frontend/public/assets
+    move: true
+    git_mv: true
+
+  - name: Dashboard configs → dashboards/
+    patterns: ["**/dashboard/**/*.json", "**/dashboards/**/*.json", "**/dashboards/**/*.yaml", "**/dashboards/**/*.yml"]
+    dest: dashboards
+    move: true
+    git_mv: true
+
+  # --- Legal/ethics/docs buckets ---
+  - name: Ethics → ethics/
+    patterns: ["**/ethics/**/*.md", "**/*ethic*.md"]
+    dest: ethics
+    move: true
+    git_mv: true
+
+  - name: Contracts → contracts/
+    patterns: ["**/contracts/**/*.md", "**/*contract*.md", "**/contracts/**/*.pdf"]
+    dest: contracts
+    move: true
+    git_mv: true
+
+  - name: DAO → dao/
+    patterns: ["**/dao/**/*.md", "**/*dao*.md"]
+    dest: dao
+    move: true
+    git_mv: true
+
+  # --- Misc catch-alls ---
+  - name: Markdown general → docs/
     patterns: ["**/*.md"]
     dest: docs
     move: true
     git_mv: true
-    ignore_patterns: ["README.md", "docs/**"]
+    ignore_patterns: ["README.md", "docs/**", "codex/**", "runes/**", "inscriptions/**", "constitution/**", "flamechain/**", "iaca/**", "quantum/**", "proofs/**"]
+
+  - name: Scripts → tools/
+    patterns: ["**/scripts/**/*.py", "**/scripts/**/*.sh", "**/*.sh"]
+    dest: tools
+    move: true
+    git_mv: true
+
+  - name: Ignore backups/
+    patterns: ["backups/**", "**/backups/**"]
+    dest: backups
+    move: false
+    git_mv: false
+
+  - name: Public site files → public/
+    patterns: ["**/public/**/*"]
+    dest: public
+    move: true
+    git_mv: true
