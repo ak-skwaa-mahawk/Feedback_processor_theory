@@ -152,3 +152,25 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docsorter"
+version = "0.1.0"
+description = "Git-aware document sorter and file watchers with multi-agent workers"
+readme = "README.md"
+authors = [{name = "You"}]
+requires-python = ">=3.9"
+dependencies = [
+  "watchdog>=4.0.0",
+  "GitPython>=3.1.40",
+  "pydantic>=2.7.0",
+  "PyYAML>=6.0.1",
+  "typer>=0.12.4",
+  "rich>=13.7.0",
+]
+
+[project.scripts]
+docsort = "sorter.cli:app"
