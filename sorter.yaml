@@ -1,0 +1,42 @@
+root: .
+ignore_dirs:
+  - .git
+  - __pycache__
+  - .venv
+  - .mypy_cache
+  - .github
+follow_symlinks: false
+concurrent_workers: 8
+stage_after_move: true
+commit_message: chore(sort): repo sort + normalize
+dry_run: false
+
+rules:
+  - name: PDFs to /docs/papers
+    patterns: ["**/*.pdf"]
+    dest: docs/papers
+    move: true
+    git_mv: true
+    rename_slug: true
+    preserve_ext: true
+    lowercase_ext: true
+    ignore_patterns: ["docs/**"]
+
+  - name: Images to /assets/images
+    patterns: ["**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.gif"]
+    dest: assets/images
+    move: true
+    git_mv: true
+
+  - name: Notebooks to /notebooks
+    patterns: ["**/*.ipynb"]
+    dest: notebooks
+    move: true
+    git_mv: true
+
+  - name: Markdown to /docs
+    patterns: ["**/*.md"]
+    dest: docs
+    move: true
+    git_mv: true
+    ignore_patterns: ["README.md", "docs/**"]
