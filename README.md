@@ -1,3 +1,28 @@
+# DocSorter
+
+Git-aware document sorter + file watchers with multi-agent workers.
+
+## Quick Start
+```bash
+pip install -e .   # or: pip install -r requirements.txt
+
+# write a config (or use provided sample)
+docsort init
+
+# run a dry-run sort across the repo
+docsort sort --dry-run
+
+# apply changes and stage with git
+docsort sort --apply
+
+# watch and auto-apply as files appear
+DOCSORT_APPLY=1 docsort watch
+
+# install a pre-commit hook to enforce policy
+docsort install-hook
+
+# CI check
+python -m sorter.cli check
 <!-- PROJECT BANNER -->
 <p align="center">
   <img src="https://raw.githubusercontent.com/ak-skwaa-mahawk/Feedback_processor_theory/main/assets/banner_fpt.png" alt="Feedback Processor Theory Banner" width="100%" />
