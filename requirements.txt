@@ -1,3 +1,10 @@
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+jsonschema>=4.19.0
+locust>=2.15.0
+pyyaml>=6.0
+requests>=2.31.0
 networkx
 numpy
 watchdog>=4.0.0
