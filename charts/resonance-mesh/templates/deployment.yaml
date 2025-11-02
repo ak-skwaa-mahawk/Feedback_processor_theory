@@ -1,3 +1,32 @@
+env:
+            - name: CAP_REDIS_URL
+              value: {{ ternary "redis://resonance-mesh-redis-master:6379/0" (default "" .Values.env.CAP_REDIS_URL) .Values.redis.enabled | quote }}
+            - name: RESONANCE_POLICY_PATH
+              value: {{ .Values.env.RESONANCE_POLICY_PATH | quote }}
+            - name: EMBED_DIR
+              value: {{ .Values.embeddings.mountPath | quote }}
+          volumeMounts:
+            - name: policy
+              mountPath: /app/resonance
+              readOnly: true
+            - name: embeds
+              mountPath: {{ .Values.embeddings.mountPath }}
+{{- if .Values.embeddings.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "resonance-mesh.fullname" . }}-embeds
+  labels:
+    {{- include "resonance-mesh.labels" . | nindent 4 }}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  {{- if .Values.embeddings.storageClassName }}
+  storageClassName: {{ .Values.embeddings.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.embeddings.size }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,3 +92,10 @@ spec:
         {{- toYaml .Values.tolerations | nindent 8 }}
       affinity:
         {{- toYaml .Values.affinity | nindent 8 }}
+- name: embeds
+          {{- if .Values.embeddings.enabled }}
+          persistentVolumeClaim:
+            name: {{ include "resonance-mesh.fullname" . }}-embeds
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
