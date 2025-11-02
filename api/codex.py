@@ -1,3 +1,75 @@
+# --- Policy Dry Run (evaluate expressions safely) ---
+from pydantic import BaseModel, Field
+from typing import Optional, Dict, Any, List
+from synara_core.modules.boolean_resonance import evaluate as _eval_expr
+
+class PolicyDryRunBody(BaseModel):
+    expression: str = Field(..., description="Boolean/arith expression to evaluate")
+    context: Dict[str, Any] = Field(default_factory=dict, description="Variables for evaluation")
+    coerce_fuzzy_to_bool: bool = Field(
+        default=True,
+        description="If the result is a float (fuzzy), treat >= 0.5 as True"
+    )
+
+@router.post("/policy/dry_run")
+def policy_dry_run(body: PolicyDryRunBody):
+    """
+    Safely evaluate a policy expression against a provided context.
+    - Supports classical boolean ops: and/or/not
+    - Supports fuzzy funcs: AND, OR, NOT, XOR, XNOR (on [0,1])
+    - Supports numeric ops and comparisons
+    """
+    try:
+        value = _eval_expr(body.expression, body.context or {})
+        if isinstance(value, (int, float)):
+            boolean = bool(float(value) >= 0.5) if body.coerce_fuzzy_to_bool else None
+        else:
+            boolean = bool(value)
+
+        return {
+            "status": "ok",
+            "expression": body.expression,
+            "context": body.context,
+            "value": value,
+            "boolean": boolean,
+            "coerce_fuzzy_to_bool": body.coerce_fuzzy_to_bool,
+        }
+    except Exception as e:
+        # Fail closed, but return error so admins can fix expressions quickly
+        return {
+            "status": "error",
+            "error": str(e),
+            "expression": body.expression,
+            "context": body.context,
+        }
+
+@router.get("/policy/dry_run/allowed")
+def policy_dry_run_allowed():
+    """
+    List allowed functions and operators for the expression evaluator.
+    Useful for building admin UIs with autocomplete/tooltips.
+    """
+    return {
+        "status": "ok",
+        "allowed_functions": [
+            "AND(a,b)  # fuzzy min(a,b) on [0,1]",
+            "OR(a,b)   # fuzzy max(a,b) on [0,1]",
+            "NOT(a)    # 1-a on [0,1]",
+            "XOR(a,b)  # abs(a-b)",
+            "XNOR(a,b) # 1-abs(a-b)",
+            "min(a,b,...)",
+            "max(a,b,...)",
+            "abs(x)", "round(x)", "floor(x)", "ceil(x)", "sqrt(x)",
+            "clamp(x, lo, hi)",
+        ],
+        "boolean_ops": ["and", "or", "not"],
+        "comparisons": ["<", "<=", ">", ">=", "==", "!="],
+        "notes": [
+            "Expression must be a single expression (no statements).",
+            "Names must come from 'context'.",
+            "If result is a float and coerce_fuzzy_to_bool=true, >=0.5 → True.",
+        ],
+    }
 """
 Resonance Policy & Whisper Receipt System
 Two Mile Solutions LLC - John Carroll II
