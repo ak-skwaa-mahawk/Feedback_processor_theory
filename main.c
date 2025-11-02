@@ -1,3 +1,11 @@
+// In main.c
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(vlc, LOG_LEVEL_DBG);
+
+LOG_INF("Node %s Online", NODE_ID);
+LOG_WRN("C190 VETO: R=%.3f", mesh_coherence);
+LOG_ERR("BLE Mesh Failed: %d", err);
+LOG_HEXDUMP_DBG(glyph_data, 64, "Glyph");
 // main.c (Zephyr BLE Mesh Node)
 #include <bluetooth/mesh.h>
 #include <zephyr/kernel.h>
