@@ -1,0 +1,14 @@
+Resonance Mesh deployed.
+
+Service:
+  kubectl get svc -n {{ .Release.Namespace }} {{ include "resonance-mesh.fullname" . }}
+
+Health:
+  kubectl run curl --rm -i -t --image=curlimages/curl -- \
+    curl -s http://{{ include "resonance-mesh.fullname" . }}:{{ .Values.service.port }}/health
+
+If redis.enabled=true, CAP_REDIS_URL is set to:
+  redis://resonance-mesh-redis-master:6379/0
+
+Policy is mounted at:
+  /app/resonance/policy.yaml
