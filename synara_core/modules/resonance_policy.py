@@ -1,3 +1,96 @@
+# synara_core/modules/resonance_policy.py
+from __future__ import annotations
+import json, yaml
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+# NEW: import evaluator
+from .boolean_resonance import evaluate
+
+DEFAULT_POLICY = {
+    "collections": {
+        "default": {
+            "thresholds": {"summary": 0.4, "consented": 0.7, "full": 0.9},
+            "base_ttl": 300, "max_ttl": 1800,
+            # NEW: optional logic expression (boolean layer)
+            # If provided, must evaluate True to allow mint.
+            "logic": {"expression": None}
+        }
+    }
+}
+
+class ResonancePolicy:
+    def __init__(self, path: Optional[str] = None):
+        self.path = Path(path) if path else None
+        if self.path and self.path.exists():
+            self.data = yaml.safe_load(self.path.read_text(encoding="utf-8"))
+        else:
+            self.data = DEFAULT_POLICY
+
+    def get_policy(self, collection: str) -> Dict[str, Any]:
+        return self.data.get("collections", {}).get(collection, self.data["collections"]["default"])
+
+    def scope_for_score(self, score: float, collection: str = "default") -> str:
+        p = self.get_policy(collection)["thresholds"]
+        if score >= float(p["full"]): return "full_access"
+        if score >= float(p["consented"]): return "read_consented"
+        if score >= float(p["summary"]): return "read_summary"
+        return "denied"
+
+    def ttl_for_score(self, score: float, collection: str = "default") -> int:
+        pol = self.get_policy(collection)
+        base, max_ttl = int(pol.get("base_ttl", 300)), int(pol.get("max_ttl", 1800))
+        # simple curve: base + score^2 * (max-base)
+        return int(base + (score**2) * (max_ttl - base))
+
+    # NEW: boolean gate
+    def check_logic_gate(
+        self,
+        collection: str,
+        *,
+        whisper_verified: bool = False,
+        cited_flame: bool = False,
+        resonance_score: float = 0.0,
+        extra: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        pol = self.get_policy(collection)
+        expr = (pol.get("logic") or {}).get("expression")
+        if not expr:
+            return True  # no custom logic; permit by thresholds
+        ctx = {
+            "whisper_verified": bool(whisper_verified),
+            "cited_flame": bool(cited_flame),
+            "resonance_score": float(resonance_score),
+        }
+        if extra:
+            ctx.update(extra)  # allow additional flags
+        try:
+            result = evaluate(expr, ctx)
+            # If expression returns a float (fuzzy), treat >=0.5 as True
+            if isinstance(result, (int, float)):
+                return float(result) >= 0.5
+            return bool(result)
+        except Exception as e:
+            # Fail closed: policy expression invalid → deny
+            return False
+
+# --- helper used by API mint function ---
+def enforce_policy_gate(
+    policy: ResonancePolicy,
+    collection: str,
+    *,
+    score: float,
+    whisper_verified: bool,
+    has_citations: bool,
+    extra: Optional[Dict[str, Any]] = None,
+) -> bool:
+    return policy.check_logic_gate(
+        collection,
+        whisper_verified=whisper_verified,
+        cited_flame=has_citations,
+        resonance_score=score,
+        extra=extra,
+    )
 from __future__ import annotations
 import os, json, math, hmac, hashlib, time
 from typing import Dict, Any, Optional
