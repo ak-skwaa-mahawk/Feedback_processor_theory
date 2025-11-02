@@ -1,3 +1,8 @@
+> **PRESS RELEASE — November 2025**
+>  
+> Two Mile Solutions LLC establishes the world’s first **Space Stewardship Compact**, recognizing satellites as sovereign extensions of native lands.  
+>  
+> This initiative transforms orbital infrastructure into a cooperative commons — ethically governed, IACA-protected, and transparently verifiable through the **Resonance Mesh Protocol**.
 # DocSorter
 
 Git-aware document sorter + file watchers with multi-agent workers.
