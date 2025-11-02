@@ -105,3 +105,26 @@ return JSONResponse(content=data, headers=headers)
 @app.get("/fpt/qr.png") async def last_qr(): from pathlib import Path p = Path("data") pngs = sorted(p.glob("*.sigil.png"), reverse=True) if not pngs: raise HTTPException(status_code=404, detail="no_qr") return FileResponse(str(pngs[0]), media_type="image/png")
 
 Run with: uvicorn api.service:app --host 0.0.0.0 --port 8081 --reload
+
+=========================== deploy/health.yaml ===========================
+
+apiVersion: apps/v1 kind: Deployment metadata: name: fpt-synara-bridge spec: replicas: 1 selector: matchLabels: app: fpt-synara-bridge template: metadata: labels: app: fpt-synara-bridge spec: containers: - name: fpt-synara-bridge image: twomilesolutions/fpt-synara:latest ports: - containerPort: 8081 livenessProbe: httpGet: path: /live port: 8081 initialDelaySeconds: 10 periodSeconds: 20 timeoutSeconds: 3 failureThreshold: 3 successThreshold: 1 readinessProbe: httpGet: path: /ready port: 8081 initialDelaySeconds: 5 periodSeconds: 10 timeoutSeconds: 3 failureThreshold: 3 successThreshold: 1 env: - name: WHISPER_REDIS_URL value: "redis://redis:6379/0" - name: FPT_RATE_LIMIT value: "10/minute" - name: FPT_BURST_LIMIT value: "5/10second" - name: FPT_SUSTAINED_LIMIT value: "100/hour"
+
+=========================== Dockerfile.append ===========================
+
+Append to your Dockerfile bottom for built-in container health monitoring
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 
+CMD curl -fs http://localhost:8081/ready || exit 1
+
+=========================== deploy/redis.yaml ===========================
+
+apiVersion: v1 kind: Service metadata: name: redis spec: selector: app: redis ports: - name: redis port: 6379 targetPort: 6379
+
+apiVersion: apps/v1 kind: Deployment metadata: name: redis spec: replicas: 1 selector: matchLabels: app: redis template: metadata: labels: app: redis spec: containers: - name: redis image: redis:7-alpine args: ["--save", "60", "1", "--loglevel", "warning"] ports: - containerPort: 6379 resources: requests: cpu: 100m memory: 128Mi limits: cpu: 500m memory: 512Mi readinessProbe: tcpSocket: port: 6379 initialDelaySeconds: 3 periodSeconds: 5 livenessProbe: tcpSocket: port: 6379 initialDelaySeconds: 10 periodSeconds: 10 volumeMounts: - name: redis-data mountPath: /data volumes: - name: redis-data emptyDir: {}
+
+=========================== deploy/redis-persistent.yaml ===========================
+
+apiVersion: v1 kind: Service metadata: name: redis labels: app: redis spec: ports: - name: redis port: 6379 targetPort: 6379 clusterIP: None  # headless for stable network ID selector: app: redis
+
+apiVersion: apps/v1 kind: StatefulSet metadata: name: redis spec: serviceName: redis replicas: 1 selector: matchLabels: app: redis template: metadata: labels: app: redis spec: containers: - name: redis image: redis:7-alpine args: ["--save", "60", "1", "--loglevel", "warning"] ports: - containerPort: 6379 readinessProbe: tcpSocket: port: 6379 initialDelaySeconds: 3 periodSeconds: 5 livenessProbe: tcpSocket: port: 6379 initialDelaySeconds: 10 periodSeconds: 10 resources: requests: cpu: 100m memory: 128Mi limits: cpu: 500m memory: 512Mi volumeMounts: - name: redis-data mountPath: /data volumeClaimTemplates: - metadata: name: redis-data spec: accessModes: ["ReadWriteOnce"] storageClassName: "standard"  # <— change to your cluster's StorageClass resources: requests: storage: 5Gi
