@@ -1,0 +1,8 @@
+# Start J-Link GDB Server
+JLinkGDBServer -device nRF52840_xxAA -if SWD -speed 4000
+
+# In another terminal: GDB
+arm-none-eabi-gdb build/zephyr/zephyr.elf
+(gdb) target remote localhost:2331
+(gdb) break vlc_msg_handler
+(gdb) continue
