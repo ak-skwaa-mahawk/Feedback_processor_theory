@@ -1,0 +1,12 @@
+apiVersion: v2
+name: resonance-mesh
+description: Synara Resonance Mesh (FastAPI) with capability tokens + policy engine
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: redis
+    version: "18.x.x"
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    condition: redis.enabled
