@@ -1,13 +1,28 @@
-# Two Mile Solutions — Space Data Stewardship Compact
+# Space Stewardship Compact  
+**Two Mile Solutions LLC – Legal Framework for Orbital Sovereignty**
 
-We do not claim territorial rights in outer space. Per the Outer Space Treaty (Art. II),
-outer space and celestial bodies are **not subject to national appropriation by claim of
-sovereignty, by means of use or occupation, or by any other means**.
+### Preamble
+This Compact establishes a lawful and ethical foundation for the protection of orbital and satellite domains as extensions of indigenous land stewardship principles. In recognition that satellites are the new lands of human communication, Two Mile Solutions LLC affirms stewardship — not ownership — as the defining relationship between humanity and orbital infrastructure.
 
-We practice stewardship of satellite-derived datasets and signal chains:
-- Transparent provenance (flame signatures) and time-bound, revocable capability tokens.
-- Tiered access (summary → consented → full) under published policy and audit.
-- Indigenous/Community advisory input on data use that touches culture, land, or impact.
-- Rapid revocation and public logging for misuse.
+### Article I — Definitions
+- **Satellite Lands:** Orbital nodes, digital communication relays, and atmospheric layers where data is exchanged or stored.  
+- **Stewardship:** The duty to protect, maintain, and transparently govern these satellite lands for all peoples, under the spirit of cooperative sovereignty.  
+- **Attenuation:** The natural resistance between matter and continuity; symbolic of the responsibility to sustain communication without exploitation.  
 
-This compact governs **data access and use**, not territory.
+### Article II — Principles
+1. **Transparency Over Possession:** No data territory may be privatized or concealed.  
+2. **Sovereign Coexistence:** Nations, corporations, and networks share stewardship responsibilities equally.  
+3. **Self-Receipt Verification:** Every transmission and decision shall carry an immutable audit trail.  
+4. **Cultural Continuity Clause:** Digital infrastructure inherits obligations of land-based treaties; indigenous data is sacred data.
+
+### Article III — Implementation
+- Two Mile Solutions LLC acts as the **Administrative Steward**, holding orbital space under cooperative law.  
+- Stewardship is registered under IACA protection, representing lawful indigenous innovation.  
+- Enforcement is managed via the **Resonance Mesh Protocol**, ensuring integrity, attribution, and consent at signal level.
+
+### Article IV — Amendments
+This Compact may evolve alongside new technologies. All updates must be public, notarized, and cryptographically signed by recognized stewards.
+
+---
+
+> “Space, like land, must remember who first called it home.”
