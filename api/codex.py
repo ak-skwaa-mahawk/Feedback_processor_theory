@@ -1,3 +1,38 @@
+# services/api/codex.py
+from synara_core.modules.self_embed import bump_codex_entry as _bump
+from pathlib import Path
+import json
+
+# ... inside /codex/share AFTER you mint and before return:
+try:
+    p = Path(path)
+    entry = json.loads(p.read_text(encoding="utf-8"))
+    _bump(entry=entry, file_path=str(p), reason="share", actor=sub if 'sub' in locals() else "anon", scope=scope)
+except Exception:
+    pass
+
+# ... inside /codex/verify_token AFTER a successful verify:
+try:
+    # you already know file path ‘path’ (or include it in ‘extra’ when minting)
+    p = Path(path) if 'path' in locals() else Path(entry_path_from_payload)
+    entry = json.loads(p.read_text(encoding="utf-8"))
+    _bump(entry=entry, file_path=str(p), reason="verify", actor="verifier", scope="verify")
+except Exception:
+    pass
+
+# ... inside /codex/delegate AFTER success:
+try:
+    p = Path(parent_file_path)  # same file used to mint parent
+    entry = json.loads(p.read_text(encoding="utf-8"))
+    _bump(entry=entry, file_path=str(p), reason="delegate", actor=body.delegate_to, scope=new_scope)
+except Exception:
+    pass
+
+# ... inside /codex/resonance_share/v2 AFTER success (you already have 'p' and 'result["scope"]'):
+try:
+    _bump(entry=entry, file_path=str(p), reason="resonance_grant", actor=body.requester, scope=result["scope"])
+except Exception:
+    pass
 @router.post("/webhook/github-lite")
 def gh_webhook(payload: Dict[str, Any]):
     """
