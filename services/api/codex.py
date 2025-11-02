@@ -71,3 +71,78 @@ def codex_delegate(body: DelegateBody):
         "expires_in": ttl,
         "chain": [parent.get("sub"), body.delegate_to]
     }
+# Still in services/api/codex.py
+from pathlib import Path
+from synara_core.modules.resonance_policy import (
+    ResonancePolicy, WhisperReceipt, mint_resonance_capability_v2
+)
+from pydantic import BaseModel
+
+POLICY_PATH = os.getenv("RESONANCE_POLICY_PATH", "resonance/policy.yaml")
+_resonance_policy = ResonancePolicy(POLICY_PATH if Path(POLICY_PATH).exists() else None)
+
+class ResonanceShareV2Body(BaseModel):
+    path: str
+    requester: str
+    collection: str = "codex"
+    score: float | None = None
+    cited_flames: list[str] = []
+    whisper_receipt: dict | None = None
+    context: dict | None = None
+    override_base_ttl: int | None = None
+    override_max_ttl: int | None = None
+
+@router.post("/resonance_share/v2")
+def codex_resonance_share_v2(body: ResonanceShareV2Body):
+    p = Path(body.path)
+    if not p.exists():
+        candidates = [Path("flamevault/codex")/p.name, Path("codex")/p.name, p]
+        p = next((c for c in candidates if c.exists()), None)
+    if not p or not p.exists():
+        raise HTTPException(404, "entry_not_found")
+
+    entry = json.loads(p.read_text(encoding="utf-8"))
+    digest_anchor = entry.get("flame_signature") or entry.get("seals", {}).get("self_hash") or "0x"
+
+    score = float(body.score if body.score is not None else 0.5)  # plug in your scorer if desired
+
+    try:
+        result = mint_resonance_capability_v2(
+            requester=body.requester,
+            digest=digest_anchor,
+            collection=body.collection,
+            score=score,
+            policy=_resonance_policy,
+            file_name=p.name,
+            whisper_receipt=body.whisper_receipt,
+            cited_flames=body.cited_flames if body.cited_flames else None,
+            extra={"source_path": str(p)}
+        )
+    except ValueError as e:
+        raise HTTPException(403, str(e))
+
+    # minimal preview: you already have _redact_codex; keep using it if present
+    preview = entry if result["scope"] == "full_access" else {"title": entry.get("title"), "flame_signature": digest_anchor}
+    result["preview"] = preview
+    return {"status": "ok", **result}
+
+@router.post("/whisper/generate")
+def generate_whisper_receipt(requester: str):
+    import secrets, time
+    timestamp = int(time.time())
+    nonce = secrets.token_hex(16)
+    signature = WhisperReceipt.generate(requester, timestamp, nonce)
+    return {"requester": requester, "timestamp": timestamp, "nonce": nonce, "signature": signature, "expires_in": 300}
+
+@router.get("/policy/inspect")
+def inspect_policy(collection: str = "default"):
+    pol = _resonance_policy.get_policy(collection)
+    return {
+        "collection": collection,
+        "policy": pol,
+        "example_scores": {
+            0.3: {"scope": _resonance_policy.scope_for_score(0.3, collection), "ttl": _resonance_policy.ttl_for_score(0.3, collection)},
+            0.6: {"scope": _resonance_policy.scope_for_score(0.6, collection), "ttl": _resonance_policy.ttl_for_score(0.6, collection)},
+            0.9: {"scope": _resonance_policy.scope_for_score(0.9, collection), "ttl": _resonance_policy.ttl_for_score(0.9, collection)}
+        }
+    }
