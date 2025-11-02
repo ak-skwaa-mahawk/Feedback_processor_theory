@@ -1,27 +1,12 @@
 collections:
   default:
-    thresholds: { summary: 0.40, consented: 0.70, full: 0.90 }
-    base_ttl: 300
-    max_ttl: 1800
-    logic:
-      # Allow if:
-      # - (Whisper + citation) OR
-      # - very high understanding
-      expression: "(whisper_verified and cited_flame) or (resonance_score >= 0.92)"
-
+    thresholds: {read_summary: 0.30, read_consented: 0.60, full_access: 0.90}
+    ttls: {base: 300, max: 1800}
   unpublished:
-    thresholds: { summary: 0.55, consented: 0.80, full: 0.95 }
-    base_ttl: 120
-    max_ttl: 1200
-    logic:
-      # Strict: require whisper & citation OR combine fuzzy resonance operators:
-      # Treat resonance as signal in [0,1], demand strong AND of two evidences
-      expression: "(whisper_verified and cited_flame) or AND(resonance_score, 0.0) >= 0.95"
-
+    require_whisper: true
+    require_citations: 1
+    thresholds: {read_summary: 0.60, read_consented: 0.80, full_access: 0.95}
+    ttls: {base: 300, max: 900}
   archive:
-    thresholds: { summary: 0.30, consented: 0.50, full: 0.75 }
-    base_ttl: 600
-    max_ttl: 3600
-    logic:
-      # Lenient: threshold-only (omit expression) or simple boolean:
-      expression: "resonance_score >= 0.35"
+    thresholds: {read_summary: 0.30, read_consented: 0.50, full_access: 0.80}
+    ttls: {base: 600, max: 3600}
