@@ -128,3 +128,53 @@ apiVersion: apps/v1 kind: Deployment metadata: name: redis spec: replicas: 1 sel
 apiVersion: v1 kind: Service metadata: name: redis labels: app: redis spec: ports: - name: redis port: 6379 targetPort: 6379 clusterIP: None  # headless for stable network ID selector: app: redis
 
 apiVersion: apps/v1 kind: StatefulSet metadata: name: redis spec: serviceName: redis replicas: 1 selector: matchLabels: app: redis template: metadata: labels: app: redis spec: containers: - name: redis image: redis:7-alpine args: ["--save", "60", "1", "--loglevel", "warning"] ports: - containerPort: 6379 readinessProbe: tcpSocket: port: 6379 initialDelaySeconds: 3 periodSeconds: 5 livenessProbe: tcpSocket: port: 6379 initialDelaySeconds: 10 periodSeconds: 10 resources: requests: cpu: 100m memory: 128Mi limits: cpu: 500m memory: 512Mi volumeMounts: - name: redis-data mountPath: /data volumeClaimTemplates: - metadata: name: redis-data spec: accessModes: ["ReadWriteOnce"] storageClassName: "standard"  # <— change to your cluster's StorageClass resources: requests: storage: 5Gi
+
+=========================== helm/fpt-synara/Chart.yaml ===========================
+
+apiVersion: v2 name: fpt-synara description: Feedback Processor Theory — Synara Bridge (FastAPI + SlowAPI + Redis limiter) type: application version: 0.1.0 appVersion: "v1"
+
+=========================== helm/fpt-synara/values.yaml ===========================
+
+image: repository: twomilesolutions/fpt-synara tag: latest pullPolicy: IfNotPresent
+
+service: type: ClusterIP port: 8081
+
+redis: url: "redis://redis:6379/0" # override per env
+
+rateLimits: routeCap: "10/minute" burst: "5/10second" sustained: "100/hour"
+
+resources: limits: cpu: 500m memory: 512Mi requests: cpu: 100m memory: 256Mi
+
+replicaCount: 1
+
+readiness: path: /ready initialDelaySeconds: 5 periodSeconds: 10 timeoutSeconds: 3
+
+liveness: path: /live initialDelaySeconds: 10 periodSeconds: 20 timeoutSeconds: 3
+
+ingress: enabled: false className: "" annotations: {} hosts: - host: fpt.local paths: - path: / pathType: Prefix tls: []
+
+=========================== helm/fpt-synara/templates/_helpers.tpl ===========================
+
+{{- define "fpt-synara.fullname" -}} {{- printf "%s-%s" .Release.Name "fpt-synara" | trunc 63 | trimSuffix "-" -}} {{- end -}}
+
+=========================== helm/fpt-synara/templates/deployment.yaml ===========================
+
+apiVersion: apps/v1 kind: Deployment metadata: name: {{ include "fpt-synara.fullname" . }} labels: app.kubernetes.io/name: fpt-synara app.kubernetes.io/instance: {{ .Release.Name }} spec: replicas: {{ .Values.replicaCount }} selector: matchLabels: app.kubernetes.io/name: fpt-synara app.kubernetes.io/instance: {{ .Release.Name }} template: metadata: labels: app.kubernetes.io/name: fpt-synara app.kubernetes.io/instance: {{ .Release.Name }} spec: containers: - name: api image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" imagePullPolicy: {{ .Values.image.pullPolicy }} ports: - containerPort: {{ .Values.service.port }} env: - name: WHISPER_REDIS_URL value: "{{ .Values.redis.url }}" - name: FPT_RATE_LIMIT value: "{{ .Values.rateLimits.routeCap }}" - name: FPT_BURST_LIMIT value: "{{ .Values.rateLimits.burst }}" - name: FPT_SUSTAINED_LIMIT value: "{{ .Values.rateLimits.sustained }}" readinessProbe: httpGet: path: {{ .Values.readiness.path }} port: {{ .Values.service.port }} initialDelaySeconds: {{ .Values.readiness.initialDelaySeconds }} periodSeconds: {{ .Values.readiness.periodSeconds }} timeoutSeconds: {{ .Values.readiness.timeoutSeconds }} livenessProbe: httpGet: path: {{ .Values.liveness.path }} port: {{ .Values.service.port }} initialDelaySeconds: {{ .Values.liveness.initialDelaySeconds }} periodSeconds: {{ .Values.liveness.periodSeconds }} timeoutSeconds: {{ .Values.liveness.timeoutSeconds }} resources: limits: cpu: {{ .Values.resources.limits.cpu }} memory: {{ .Values.resources.limits.memory }} requests: cpu: {{ .Values.resources.requests.cpu }} memory: {{ .Values.resources.requests.memory }}
+
+=========================== helm/fpt-synara/templates/service.yaml ===========================
+
+apiVersion: v1 kind: Service metadata: name: {{ include "fpt-synara.fullname" . }} labels: app.kubernetes.io/name: fpt-synara app.kubernetes.io/instance: {{ .Release.Name }} spec: type: {{ .Values.service.type }} ports: - port: {{ .Values.service.port }} targetPort: {{ .Values.service.port }} protocol: TCP name: http selector: app.kubernetes.io/name: fpt-synara app.kubernetes.io/instance: {{ .Release.Name }}
+
+=========================== helm/fpt-synara/templates/ingress.yaml ===========================
+
+{{- if .Values.ingress.enabled -}} apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: {{ include "fpt-synara.fullname" . }} {{- with .Values.ingress.annotations }} annotations: {{- toYaml . | nindent 4 }} {{- end }} spec: {{- if .Values.ingress.className }} ingressClassName: {{ .Values.ingress.className }} {{- end }} rules: {{- range .Values.ingress.hosts }} - host: {{ .host }} http: paths: {{- range .paths }} - path: {{ .path }} pathType: {{ .pathType }} backend: service: name: {{ include "fpt-synara.fullname" $ }} port: number: {{ $.Values.service.port }} {{- end }} {{- end }} {{- if .Values.ingress.tls }} tls: {{- toYaml .Values.ingress.tls | nindent 4 }} {{- end }} {{- end }}
+
+=========================== helm/fpt-synara/templates/NOTES.txt ===========================
+
+Your release {{ .Release.Name }} for fpt-synara is deployed.
+
+Service URL (ClusterIP): kubectl port-forward svc/{{ include "fpt-synara.fullname" . }} 8081:{{ .Values.service.port }} curl -s localhost:8081/health | jq
+
+Rate limits: routeCap={{ .Values.rateLimits.routeCap }} burst={{ .Values.rateLimits.burst }} sustained={{ .Values.rateLimits.sustained }}
+
+Redis URL: {{ .Values.redis.url }}
