@@ -1,3 +1,35 @@
+from synara_core.modules.resonance_caps import mint_resonance_capability
+
+class ResonanceShareBody(BaseModel):
+    path: str                     # sealed or source file (same behavior as /codex/share)
+    requester: str                # who is asking (becomes token 'sub')
+    score: float | None = None    # optional: provide score directly (0..1); otherwise server calls RES_ENDPOINT
+    base_ttl: int = 300
+    max_ttl: int = 1800
+    # Optional free-form context for scoring models
+    context: dict | None = None
+
+@router.post("/resonance_share")
+def codex_resonance_share(body: ResonanceShareBody):
+    p = Path(body.path)
+    if not p.exists():
+        raise HTTPException(404, "entry_not_found")
+
+    entry = json.loads(p.read_text(encoding="utf-8"))
+    digest_anchor = entry.get("flame_signature") or entry.get("seals", {}).get("self_hash") or "0x"
+
+    minted = mint_resonance_capability(
+        requester=body.requester,
+        digest=digest_anchor,
+        file_name=p.name,
+        score=body.score,
+        context=body.context,
+        base_s=int(body.base_ttl),
+        max_s=int(body.max_ttl),
+    )
+    # Return minimal preview (same redactor as /codex/share)
+    preview = _redact_codex(entry, "read_summary" if minted["scope"] == "read_summary" else "read_consented")
+    return {"status": "ok", **minted, "preview": preview}
 """
 Resonance-Gated Capability System
 Two Mile Solutions LLC - John Carroll II
