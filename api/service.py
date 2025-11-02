@@ -388,5 +388,77 @@ ENV REQUIRED FOR HOOKS
 - SLACK_SIGNING_SECRET
 
 - GITHUB_WEBHOOK_SECRET
-from api.kagome_endpoint import router as kagome_router
-app.include_router(kagome_router)
+
+=========================== synara_core/modules/capability_token.py ===========================
+
+from future import annotations import os, json, hmac, hashlib, base64, time from typing import Dict, Any
+
+ALG = "HS256" CAP_TOKEN_SECRET = os.getenv("CAP_TOKEN_SECRET", "change-me")
+
+class CapTokenError(Exception): pass
+
+def _b64e(b: bytes) -> str: return base64.urlsafe_b64encode(b).decode().rstrip("=")
+
+def _b64d(s: str) -> bytes: s += "=" * (-len(s) % 4) return base64.urlsafe_b64decode(s.encode())
+
+Minimal JWT-like token: header.payload.sig (urlsafe base64), with exp ts
+
+def mint_capability(sub: str, scope: str, digest: str, ttl_s: int = 600, extra: Dict[str, Any] | None = None) -> str: if not CAP_TOKEN_SECRET: raise CapTokenError("cap_token_secret_not_set") now = int(time.time()) hdr = {"alg": ALG, "typ": "CAP"} pl = {"sub": sub, "scope": scope, "digest": digest, "iat": now, "exp": now + ttl_s} if extra: pl.update(extra) h = _b64e(json.dumps(hdr, separators=(",", ":")).encode()) p = _b64e(json.dumps(pl, separators=(",", ":")).encode()) sig = hmac.new(CAP_TOKEN_SECRET.encode(), f"{h}.{p}".encode(), hashlib.sha256).digest() s = _b64e(sig) return f"{h}.{p}.{s}"
+
+def verify_capability(token: str) -> Dict[str, Any]: if not CAP_TOKEN_SECRET: raise CapTokenError("cap_token_secret_not_set") try: h, p, s = token.split(".") sig = _b64d(s) mac = hmac.new(CAP_TOKEN_SECRET.encode(), f"{h}.{p}".encode(), hashlib.sha256).digest() if not hmac.compare_digest(sig, mac): raise CapTokenError("invalid_signature") payload = json.loads(_b64d(p)) if int(time.time()) > int(payload.get("exp", 0)): raise CapTokenError("expired") return payload except ValueError: raise CapTokenError("malformed")
+
+=========================== api/narrative.py (share + verify) ===========================
+
+from fastapi import APIRouter, HTTPException, Query from typing import List, Dict, Any from pathlib import Path import json, os, requests
+
+from synara_core.modules.narrative_inversion import ( make_record, seal_record, add_external_claim, set_claim_status, export ) from synara_core.modules.capability_token import mint_capability, verify_capability, CapTokenError
+
+... existing routes above ...
+
+class ShareBody(BaseModel): digest: str scope: str = "read_summary"  # e.g., read_summary | read_consented ttl_seconds: int = 600
+
+def load_record_by_digest_prefix(digest: str) -> tuple[dict, Path]: vault = Path("flamevault/narrative") cand = list(vault.glob(f"nar_inv{digest[:12]}*.json")) if not cand: raise HTTPException(404, "record_not_found") p = cand[0] return json.loads(p.read_text()), p
+
+def _redact_for_scope(rec: Dict[str, Any], scope: str) -> Dict[str, Any]: r = json.loads(json.dumps(rec))  # deep copy # Always hide raw receipt and challenge in shared views r.get("provenance", {}).pop("receipt", None) r.get("provenance", {}).pop("challenge", None)
+
+if scope == "read_summary":
+    # Keep only minimal self_record and seals
+    r["self_record"]["evidence"] = ["sha256:…"] if r["self_record"].get("evidence") else []
+    r["external_claims"] = []
+    r["privacy"]["sharing"] = []
+elif scope == "read_consented":
+    # Respect minimization policy
+    if r["privacy"].get("minimization") == "self":
+        r["self_record"]["evidence"] = []
+    # else: leave as-is
+else:
+    # Unknown scope, default to summary
+    r["self_record"]["evidence"] = ["sha256:…"] if r["self_record"].get("evidence") else []
+    r["external_claims"] = []
+return r
+
+@router.post("/share") def share(body: ShareBody): rec, path = _load_record_by_digest_prefix(body.digest) redacted = _redact_for_scope(rec, body.scope) token = mint_capability( sub=rec["subject"]["entity"], scope=body.scope, digest=rec["seals"]["self_hash"], ttl_s=int(body.ttl_seconds), extra={"file": path.name} ) return {"status": "ok", "token": token, "preview": redacted}
+
+@router.get("/verify") def verify_cap(token: str = Query(..., description="Capability token from /narrative/share")): try: cap = verify_capability(token) except CapTokenError as e: raise HTTPException(status_code=401, detail=str(e))
+
+# Load record referenced by digest prefix from filename in token (optional)
+vault = Path("flamevault/narrative")
+file = cap.get("file")
+path = vault / file if file else None
+rec = None
+if path and path.exists():
+    rec = json.loads(path.read_text())
+
+return {
+    "status": "ok",
+    "capability": cap,
+    "record": _redact_for_scope(rec, cap.get("scope", "read_summary")) if rec else None
+}
+
+Notes:
+
+- Set CAP_TOKEN_SECRET in your environment.
+
+- /narrative/share returns a redacted preview + a time-limited token.
+
+- Third parties call /narrative/verify?token=... to view the redacted record per scope.
