@@ -6,17 +6,31 @@ from synara_integration.flame_adapter import FlameAdapter from synara_integratio
 
 --- Rate limiting (SlowAPI + Redis) ---
 
-from slowapi import Limiter, _rate_limit_exceeded_handler from slowapi.util import get_remote_address from slowapi.errors import RateLimitExceeded from slowapi.middleware import SlowAPIMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler  # rate limiting from slowapi.util import get_remote_address from slowapi.errors import RateLimitExceeded from slowapi.middleware import SlowAPIMiddleware
 
-REDIS_URL = os.getenv("WHISPER_REDIS_URL", "redis://localhost:6379/0") RATE_LIMIT = os.getenv("FPT_RATE_LIMIT", "10/minute")  # configurable
+REDIS_URL = os.getenv("WHISPER_REDIS_URL", "redis://localhost:6379/0") RATE_LIMIT = os.getenv("FPT_RATE_LIMIT", "10/minute")  # legacy single-limit (kept) BURST_LIMIT = os.getenv("FPT_BURST_LIMIT", "5/10second")  # e.g., 5 req / 10 seconds SUSTAINED_LIMIT = os.getenv("FPT_SUSTAINED_LIMIT", "100/hour")  # e.g., 100 req / hour GLOBAL_DEFAULTS = [BURST_LIMIT, SUSTAINED_LIMIT]
 
 Prefer per-user key via receipt.key_id; fallback to client IP
 
 async def key_func(request: Request) -> str: try: body = await request.json() rid = body.get("receipt", {}).get("key_id") if rid: return f"kid:{rid}" except Exception: pass return f"ip:{get_remote_address(request)}"
 
-limiter = Limiter(key_func=key_func, storage_uri=REDIS_URL)
+limiter = Limiter(key_func=key_func, storage_uri=REDIS_URL, default_limits=GLOBAL_DEFAULTS)
 
-app = FastAPI(title="Feedback Processor Theory — Synara Bridge", version="v1") app.state.limiter = limiter app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler) app.add_middleware(SlowAPIMiddleware)
+Shared limiters for /fpt/analyze so burst + sustained are enforced per key
+
+burst_limit = limiter.shared_limit(BURST_LIMIT, scope="analyze-burst") sustained_limit = limiter.shared_limit(SUSTAINED_LIMIT, scope="analyze-sustained")
+
+app = FastAPI(title="Feedback Processor Theory — Synara Bridge", version="v1") app.state.limiter = limiter
+
+Replace default handler with a telemetry-rich JSON 429
+
+import time from fastapi import Request from fastapi.responses import JSONResponse
+
+@app.exception_handler(RateLimitExceeded) async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded): state = getattr(request, "state", None) lim = getattr(state, "limiter", None) limit_str = RATE_LIMIT remaining = None reset_time = None retry_after = None if lim is not None: try: limit_obj = getattr(lim, "current_limit", None) if limit_obj is not None and getattr(limit_obj, "limit", None) is not None: limit_str = str(limit_obj.limit) remaining = getattr(lim, "remaining", None) reset_time = getattr(lim, "reset_time", None) if reset_time is not None: retry_after = max(0, int(reset_time - time.time())) except Exception: pass headers = { "Retry-After": str(retry_after or 0), "X-RateLimit-Limit": str(limit_str), "X-RateLimit-Remaining": str(remaining if remaining is not None else 0), "X-RateLimit-Reset": str(reset_time or 0), } body = { "status": "error", "detail": "rate_limit_exceeded", "retry_after": retry_after or 0, "rate_limit": str(limit_str), "remaining": remaining if remaining is not None else 0, "reset_time": reset_time or 0, } return JSONResponse(status_code=429, content=body, headers=headers)
+
+Keep SlowAPI middleware active
+
+app.add_middleware(SlowAPIMiddleware)
 
 adapter = FlameAdapter() handshake = HandshakeGate()
 
@@ -24,9 +38,31 @@ class AnalyzeBody(BaseModel): conversation: str receipt: Dict[str, Any] expected
 
 @app.get("/health") def health(): return {"ok": True, "service": app.title, "version": app.version}
 
-@app.get("/limits") async def limits(request: Request): """Debug endpoint showing limiter configuration and computed key.""" try: computed_key = await key_func(request) except Exception: computed_key = f"ip:{get_remote_address(request)}" return { "rate_limit": RATE_LIMIT, "storage_uri": REDIS_URL, "computed_key": computed_key, }
+@app.get("/live") async def live(): """Liveness probe: app process is running and can serve HTTP.""" return {"status": "live", "service": app.title, "version": app.version}
 
-@app.post("/fpt/analyze") @limiter.limit(RATE_LIMIT) async def analyze(request: Request, body: AnalyzeBody): ok, reason, ctx = handshake.verify(body.receipt, expected_challenge=body.expected_challenge) if not ok: raise HTTPException(status_code=401, detail=f"handshake_failed:{reason}")
+@app.get("/ready") async def ready(): """Readiness probe: verifies Redis availability for rate limiting.""" redis_ok = False try: import redis  # type: ignore r = redis.Redis.from_url(REDIS_URL) redis_ok = bool(r.ping()) except Exception: redis_ok = False if not redis_ok: # still return 503 so load balancers keep probing until ready from fastapi import status return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content={ "status": "not_ready", "redis": {"url": REDIS_URL, "reachable": False} }) return {"status": "ready", "redis": {"url": REDIS_URL, "reachable": True}}
+
+@app.get("/limits") async def limits(request: Request): """Debug endpoint showing limiter configuration and computed key.""" try: computed_key = await key_func(request) except Exception: computed_key = f"ip:{get_remote_address(request)}" return { "rate_limit": RATE_LIMIT, "burst_limit": BURST_LIMIT, "sustained_limit": SUSTAINED_LIMIT, "global_defaults": GLOBAL_DEFAULTS, "storage_uri": REDIS_URL, "computed_key": computed_key, }
+
+@app.get("/config") async def config(): """Operational config & Redis reachability (safe to expose).""" # Try Redis ping without crashing the app if unavailable redis_ok = False redis_info = None try: import redis  # type: ignore r = redis.Redis.from_url(REDIS_URL) redis_ok = bool(r.ping()) # keep meta minimal redis_info = {"client_name": str(r.client_info().get("name", "")) if hasattr(r, "client_info") else None} except Exception as e: redis_info = {"error": str(e.class.name)}
+
+return {
+    "service": app.title,
+    "version": app.version,
+    "rate_limits": {
+        "burst_limit": BURST_LIMIT,
+        "sustained_limit": SUSTAINED_LIMIT,
+        "route_cap": RATE_LIMIT,
+        "global_defaults": GLOBAL_DEFAULTS,
+    },
+    "redis": {
+        "url": REDIS_URL,
+        "reachable": redis_ok,
+        "info": redis_info,
+    },
+}
+
+@app.post("/fpt/analyze") @burst_limit @sustained_limit @limiter.limit(RATE_LIMIT) async def analyze(request: Request, body: AnalyzeBody): ok, reason, ctx = handshake.verify(body.receipt, expected_challenge=body.expected_challenge) if not ok: raise HTTPException(status_code=401, detail=f"handshake_failed:{reason}")
 
 # 1) compute metrics
 metrics = adapter.analyze_resonance(body.conversation)
