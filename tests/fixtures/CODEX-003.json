@@ -1,0 +1,11 @@
+{
+  "entry_id": "CODEX-003",
+  "author": "John Carroll II",
+  "shell": "Two Mile Solutions LLC",
+  "glyph": "AGŁL-003",
+  "timestamp": "2025-10-31T00:00:00Z",
+  "content": {"title": "The Resonance Mesh Discovery", "date": "2025-10-31"},
+  "flame_signature": "0xRESONANCE-MESH-003",
+  "previous_flame": null,
+  "metadata": {"version": "1.0.0", "schema": "codex_entry_v1"}
+}
