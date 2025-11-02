@@ -2,12 +2,10 @@ from __future__ import annotations
 import os, json, hmac, hashlib, base64, time, secrets
 from typing import Dict, Any, Optional
 
-# ---------- config ----------
 ALG = "HS256"
 CAP_TOKEN_SECRET = os.getenv("CAP_TOKEN_SECRET", "change-me")
 CAP_REDIS_URL = os.getenv("CAP_REDIS_URL", "redis://localhost:6379/0")
 
-# ---------- redis (optional) ----------
 _USE_REDIS = False
 _active: dict[str, str] = {}
 _revoked: dict[str, str] = {}
@@ -38,9 +36,11 @@ def _tokhash(token: str) -> str:
 
 def _store_active(token: str, payload: Dict[str, Any], ttl: int):
     key = f"active:{_tokhash(token)}"
-    val = json.dumps({"jti": payload.get("jti"), "sub": payload.get("sub"),
-                      "scope": payload.get("scope"), "digest": payload.get("digest"),
-                      "exp": payload.get("exp"), "extra": payload.get("extra", {})})
+    val = json.dumps({
+        "jti": payload.get("jti"), "sub": payload.get("sub"),
+        "scope": payload.get("scope"), "digest": payload.get("digest"),
+        "exp": payload.get("exp"), "extra": payload.get("extra", {})
+    })
     if _USE_REDIS:
         _r.setex(key, ttl, val)
     else:
@@ -73,15 +73,13 @@ def _is_revoked(token: str) -> bool:
         return bool(_r.get(key))
     return key in _revoked
 
-# ---------- mint / verify / revoke ----------
-
 def mint_capability(
     sub: str,
     scope: str,
     digest: str,
     ttl_s: int = 600,
     extra: Optional[Dict[str, Any]] = None,
-    parent: Optional[str] = None,    # parent token hash (delegation)
+    parent: Optional[str] = None,  # parent token hash prefix if delegated
 ) -> str:
     if not CAP_TOKEN_SECRET:
         raise CapTokenError("cap_token_secret_not_set")
@@ -98,7 +96,7 @@ def mint_capability(
         "extra": extra or {},
     }
     if parent:
-        pl["parent"] = parent  # parent token hash prefix
+        pl["parent"] = parent
 
     h = _b64e(json.dumps(hdr, separators=(",", ":")).encode())
     p = _b64e(json.dumps(pl, separators=(",", ":")).encode())
@@ -106,7 +104,6 @@ def mint_capability(
     s = _b64e(mac)
     token = f"{h}.{p}.{s}"
 
-    # index as active for audit
     _store_active(token, pl, ttl_s)
     return token
 
@@ -115,7 +112,6 @@ def verify_capability(token: str) -> Dict[str, Any]:
         raise CapTokenError("cap_token_secret_not_set")
     if _is_revoked(token):
         raise CapTokenError("token_revoked")
-
     try:
         h, p, s = token.split(".")
         sig = _b64d(s)
@@ -131,7 +127,6 @@ def verify_capability(token: str) -> Dict[str, Any]:
         raise CapTokenError("malformed")
 
 def revoke_capability(token: str, reason: str = "revoked_by_issuer") -> Dict[str, Any]:
-    # decode without signature verification to read exp safely (non-fatal if it fails)
     exp = None
     try:
         _, p, _ = token.split(".")
@@ -145,5 +140,4 @@ def revoke_capability(token: str, reason: str = "revoked_by_issuer") -> Dict[str
     return {"status": "revoked", "token_hash": _tokhash(token), "reason": reason, "ttl": ttl}
 
 def list_active_capabilities() -> list[dict]:
-    """For audit/admin: metadata only; no tokens."""
     return _list_active()
