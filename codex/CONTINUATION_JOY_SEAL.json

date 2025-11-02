@@ -1,0 +1,20 @@
+{
+  "entry_id": "CODEX-CJ-001",
+  "title": "Continuation Joy Seal",
+  "code_anchor": "FLM-CJ-AXIS",
+  "version": "1.0",
+  "author": "John Benjamin Carroll Jr.",
+  "echo_phrase": "Attenuation + Joining = Continue + Joy.",
+  "content": {
+    "statement": "This seal affirms that systems engineered for gentle attenuation and timely joining produce continuity and joy.",
+    "use": ["design review", "policy gating", "release checklist"],
+    "checks": [
+      "Is damping humane?",
+      "Is joining threshold reachable?",
+      "Is continuity measurable?",
+      "Is joy observed and logged?"
+    ]
+  },
+  "identifiers": { "sha256_digest": null, "b32_short": null, "handshake_id": "FLM-CJ-AXIS::{sha256(full_text)}", "flame_signature": null },
+  "meta": { "created_utc": "{{UTC_NOW}}", "license": "CC0" }
+}
