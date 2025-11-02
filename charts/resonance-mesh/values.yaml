@@ -1,3 +1,9 @@
+# --- embeddings persistence ---
+embeddings:
+  enabled: true
+  mountPath: /data/embeds
+  storageClassName: ""     # set to your SC if needed
+  size: 5Gi
 # --- image ---
 image:
   repository: ghcr.io/ak-skwaa-mahawk/feedback_processor_theory
