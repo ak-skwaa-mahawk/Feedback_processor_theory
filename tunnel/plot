@@ -1,0 +1,125 @@
+class PlotRequest(BaseModel):
+    model: str = Field(..., description="One of: qm, ftir, waveguide")
+    # sweep variable is the distance-like parameter:
+    #   qm: barrier_width_nm
+    #   ftir: gap_nm
+    #   waveguide: length_mm
+    d_min: float = Field(..., gt=0, description="Start of sweep (distance units depend on model)")
+    d_max: float = Field(..., gt=0, description="End of sweep")
+    points: int = Field(200, gt=1, le=5000)
+    # Model params
+    # QM
+    barrier_height_eV: float | None = None
+    particle_energy_eV: float | None = None
+    mass_kg: float | None = None
+    # FTIR
+    n1: float | None = None
+    n2: float | None = None
+    theta_deg: float | None = None
+    wavelength_nm: float | None = None
+    # WAVEGUIDE
+    n: float | None = None
+    a_mm: float | None = None
+    wavelength_nm_wg: float | None = None
+    # ARC blend (optional)
+    R_free: float = 0.0
+    A: float = 0.0
+    C: float = 0.15
+    alpha: float = 1.0
+    # output format
+    fmt: str = Field("png", pattern="^(png|svg)$")
+
+@router.post("/plot")
+def tunnel_plot(body: PlotRequest):
+    model = body.model.lower()
+    if body.d_max <= body.d_min:
+        raise HTTPException(400, "d_max must be > d_min")
+
+    import numpy as np
+    ds = np.linspace(body.d_min, body.d_max, body.points)
+    Ts = []
+
+    if model == "qm":
+        # validate
+        if any(v is None for v in [body.barrier_height_eV, body.particle_energy_eV]):
+            raise HTTPException(400, "QM requires barrier_height_eV and particle_energy_eV")
+        m = body.mass_kg if body.mass_kg else M_ELECTRON
+        V0 = eV_to_J(body.barrier_height_eV)
+        E = eV_to_J(body.particle_energy_eV)
+        for d_nm in ds:
+            d_m = d_nm * 1e-9
+            if E >= V0:
+                T = 1.0
+            else:
+                T = qm_T_rectangular(m, V0, E, d_m)
+            Ts.append(T)
+
+        x_label = "Barrier width d (nm)"
+
+    elif model == "ftir":
+        required = [body.n1, body.n2, body.theta_deg, body.wavelength_nm]
+        if any(v is None for v in required):
+            raise HTTPException(400, "FTIR requires n1, n2, theta_deg, wavelength_nm")
+        theta = deg_to_rad(body.theta_deg)
+        lam = nm_to_m(body.wavelength_nm)
+        for gap_nm in ds:
+            gap_m = gap_nm * 1e-9
+            T = ftir_T(body.n1, body.n2, theta, lam, gap_m)
+            Ts.append(T)
+
+        x_label = "Gap d (nm)"
+
+    elif model == "waveguide":
+        required = [body.n, body.a_mm, body.wavelength_nm_wg]
+        if any(v is None for v in required):
+            raise HTTPException(400, "waveguide requires n, a_mm, wavelength_nm_wg")
+        a_m = body.a_mm * 1e-3
+        lam0 = nm_to_m(body.wavelength_nm_wg)
+        for L_mm in ds:
+            L_m = L_mm * 1e-3
+            T = waveguide_T_te10(body.n, a_m, lam0, L_m)
+            Ts.append(T)
+
+        x_label = "Below-cutoff length L (mm)"
+
+    else:
+        raise HTTPException(400, "model must be one of: qm, ftir, waveguide")
+
+    Ts = np.asarray(Ts)
+
+    # optional ARC blending just for overlay (R' = R_free + alpha T)
+    Rprime = body.R_free + body.alpha * Ts
+    passes = (Rprime - body.A) >= body.C
+
+    # render figure
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(ds, Ts, lw=2, label="Tunneling T(d)")
+    ax.plot(ds, Rprime, lw=1.5, linestyle="--", label="R' = R_free + α T")
+    # show pass region
+    try:
+        # horizontal line at A + C
+        ax.axhline(body.A + body.C, color="gray", lw=1, linestyle=":")
+        # shade where passes == True (visual cue)
+        import numpy as np
+        mask = passes.astype(float)
+        # (optional: no shade to keep clean)
+    except Exception:
+        pass
+
+    ax.set_xlabel(x_label)
+    ax.set_ylabel("Transmission / Return (unitless)")
+    ax.set_title(f"Tunneling sweep — {model.upper()}")
+    ax.set_ylim(0, 1.05)
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+
+    buf = BytesIO()
+    if body.fmt == "svg":
+        fig.savefig(buf, format="svg", bbox_inches="tight")
+        media = "image/svg+xml"
+    else:
+        fig.savefig(buf, format="png", dpi=160, bbox_inches="tight")
+        media = "image/png"
+    plt.close(fig)
+    buf.seek(0)
+    return Response(content=buf.getvalue(), media_type=media)
