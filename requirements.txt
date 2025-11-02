@@ -1,3 +1,5 @@
+networkx
+numpy
 watchdog>=4.0.0
 GitPython>=3.1.40
 pydantic>=2.7.0
