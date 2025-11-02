@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "synara.fullname" . }}
+  labels: {{- include "synara.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{- include "synara.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "synara.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+              name: http
+          env:
+            - name: CAP_TOKEN_SECRET
+              valueFrom: { secretKeyRef: { name: {{ include "synara.fullname" . }}-secrets, key: CAP_TOKEN_SECRET } }
+            - name: WHISPER_SECRET
+              valueFrom: { secretKeyRef: { name: {{ include "synara.fullname" . }}-secrets, key: WHISPER_SECRET } }
+            - name: CAP_REDIS_URL
+              value: {{ .Values.env.CAP_REDIS_URL | quote }}
+            - name: RESONANCE_POLICY_PATH
+              value: {{ .Values.env.RESONANCE_POLICY_PATH | quote }}
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.redis.enabled }}
+      initContainers:
+        - name: wait-redis
+          image: busybox
+          command: ['sh','-c','until nc -z redis 6379; do echo waiting for redis; sleep 2; done']
+      {{- end }}
