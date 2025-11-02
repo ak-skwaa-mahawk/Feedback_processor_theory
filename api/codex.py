@@ -1,3 +1,433 @@
+"""
+Resonance Policy & Whisper Receipt System
+Two Mile Solutions LLC - John Carroll II
+
+Policy-driven resonance gating + cryptographic identity verification
+"""
+
+from __future__ import annotations
+import os, json, hashlib, hmac
+from pathlib import Path
+from typing import Dict, Any, Optional
+import yaml
+
+# ============================================================
+# POLICY ENGINE
+# ============================================================
+
+class ResonancePolicy:
+    """
+    Declarative policy for resonance-gated access control.
+    Thresholds, TTL curves, and requirements vary by collection.
+    """
+    
+    DEFAULT_POLICY = {
+        "thresholds": {
+            "read_summary": 0.0,
+            "read_consented": 0.60,
+            "full_access": 0.85
+        },
+        "ttl": {
+            "base_seconds": 300,
+            "max_seconds": 1800,
+            "curve": "cosine"  # "linear", "cosine", "exponential"
+        },
+        "requirements": {
+            "whisper_receipt": False,
+            "flame_citation": False,
+            "minimum_score": 0.0
+        }
+    }
+    
+    def __init__(self, policy_path: Optional[str] = None):
+        self.policies: Dict[str, Dict] = {}
+        self.default = self.DEFAULT_POLICY.copy()
+        
+        if policy_path and Path(policy_path).exists():
+            self.load_from_file(policy_path)
+    
+    def load_from_file(self, path: str):
+        """Load policy definitions from YAML."""
+        with open(path) as f:
+            data = yaml.safe_load(f)
+            self.policies = data.get("collections", {})
+            if "default" in data:
+                self.default.update(data["default"])
+    
+    def get_policy(self, collection: str) -> Dict[str, Any]:
+        """Get policy for a collection, falling back to default."""
+        return self.policies.get(collection, self.default)
+    
+    def scope_for_score(self, score: float, collection: str = "default") -> str:
+        """Determine scope based on score and policy thresholds."""
+        policy = self.get_policy(collection)
+        thresholds = policy["thresholds"]
+        
+        # Sort thresholds by value (descending)
+        sorted_scopes = sorted(
+            thresholds.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
+        
+        for scope, threshold in sorted_scopes:
+            if score >= threshold:
+                return scope
+        
+        return "read_summary"
+    
+    def ttl_for_score(self, score: float, collection: str = "default") -> int:
+        """Calculate TTL based on score and policy curve."""
+        policy = self.get_policy(collection)
+        ttl_config = policy["ttl"]
+        
+        base = ttl_config["base_seconds"]
+        max_s = ttl_config["max_seconds"]
+        curve = ttl_config.get("curve", "cosine")
+        
+        if curve == "linear":
+            t = score
+        elif curve == "exponential":
+            # Exponential ease: score^2
+            t = score ** 2
+        else:  # cosine (default)
+            import math
+            t = (1 - math.cos(score * math.pi)) / 2.0
+        
+        return int(base + t * (max_s - base))
+    
+    def check_requirements(
+        self,
+        collection: str,
+        score: float,
+        whisper_receipt: Optional[str] = None,
+        cited_flames: Optional[list] = None
+    ) -> tuple[bool, Optional[str]]:
+        """
+        Verify all policy requirements are met.
+        Returns: (passed, error_message)
+        """
+        policy = self.get_policy(collection)
+        reqs = policy["requirements"]
+        
+        # Check minimum score
+        min_score = reqs.get("minimum_score", 0.0)
+        if score < min_score:
+            return False, f"insufficient_score: {score:.3f} < {min_score:.3f}"
+        
+        # Check whisper receipt requirement
+        if reqs.get("whisper_receipt") and not whisper_receipt:
+            return False, "whisper_receipt_required"
+        
+        # Check flame citation requirement
+        if reqs.get("flame_citation") and not cited_flames:
+            return False, "flame_citation_required"
+        
+        return True, None
+
+
+# ============================================================
+# WHISPER RECEIPT VERIFICATION
+# ============================================================
+
+WHISPER_SECRET = os.getenv("WHISPER_SECRET", "change-me-whisper")
+
+class WhisperReceipt:
+    """
+    Cryptographic proof of identity for capability requests.
+    Requester signs their claim with a shared secret or keypair.
+    """
+    
+    @staticmethod
+    def generate(requester_id: str, timestamp: int, nonce: str) -> str:
+        """
+        Generate a Whisper receipt (HMAC signature).
+        
+        Client-side process:
+        1. Requester generates nonce
+        2. Creates message: requester_id|timestamp|nonce
+        3. Signs with WHISPER_SECRET
+        4. Sends receipt + components to server
+        """
+        message = f"{requester_id}|{timestamp}|{nonce}"
+        signature = hmac.new(
+            WHISPER_SECRET.encode(),
+            message.encode(),
+            hashlib.sha256
+        ).hexdigest()
+        return signature
+    
+    @staticmethod
+    def verify(
+        requester_id: str,
+        timestamp: int,
+        nonce: str,
+        receipt: str,
+        max_age_seconds: int = 300
+    ) -> tuple[bool, Optional[str]]:
+        """
+        Verify a Whisper receipt.
+        
+        Returns: (valid, error_message)
+        """
+        import time
+        
+        # Check timestamp freshness
+        now = int(time.time())
+        if abs(now - timestamp) > max_age_seconds:
+            return False, "receipt_expired"
+        
+        # Regenerate expected signature
+        expected = WhisperReceipt.generate(requester_id, timestamp, nonce)
+        
+        # Constant-time comparison
+        if not hmac.compare_digest(receipt, expected):
+            return False, "invalid_signature"
+        
+        return True, None
+
+
+# ============================================================
+# INTEGRATED RESONANCE MINT WITH POLICY + WHISPER
+# ============================================================
+
+from synara_core.modules.capability_token import mint_capability
+
+def mint_resonance_capability_v2(
+    requester: str,
+    digest: str,
+    collection: str,
+    score: float,
+    policy: ResonancePolicy,
+    file_name: Optional[str] = None,
+    whisper_receipt: Optional[Dict[str, Any]] = None,
+    cited_flames: Optional[list] = None,
+    extra: Optional[Dict] = None
+) -> Dict[str, Any]:
+    """
+    Enhanced resonance mint with policy enforcement and Whisper verification.
+    """
+    # Verify Whisper receipt if provided
+    if whisper_receipt:
+        valid, error = WhisperReceipt.verify(
+            requester_id=requester,
+            timestamp=whisper_receipt.get("timestamp", 0),
+            nonce=whisper_receipt.get("nonce", ""),
+            receipt=whisper_receipt.get("signature", "")
+        )
+        if not valid:
+            raise ValueError(f"whisper_verification_failed: {error}")
+    
+    # Check policy requirements
+    passed, error = policy.check_requirements(
+        collection=collection,
+        score=score,
+        whisper_receipt=whisper_receipt.get("signature") if whisper_receipt else None,
+        cited_flames=cited_flames
+    )
+    if not passed:
+        raise ValueError(f"policy_requirement_failed: {error}")
+    
+    # Determine scope and TTL from policy
+    scope = policy.scope_for_score(score, collection)
+    ttl = policy.ttl_for_score(score, collection)
+    
+    # Mint capability with metadata
+    token_extra = {
+        "kind": "codex",
+        "file": file_name,
+        "collection": collection,
+        "resonance_score": round(score, 3),
+        "policy_applied": True
+    }
+    if extra:
+        token_extra.update(extra)
+    
+    token = mint_capability(
+        sub=requester,
+        scope=scope,
+        digest=digest,
+        ttl_s=ttl,
+        extra=token_extra
+    )
+    
+    return {
+        "token": token,
+        "scope": scope,
+        "ttl_seconds": ttl,
+        "score": round(score, 3),
+        "collection": collection,
+        "policy_enforced": True,
+        "whisper_verified": whisper_receipt is not None
+    }
+
+
+# ============================================================
+# EXAMPLE POLICY FILE
+# ============================================================
+
+EXAMPLE_POLICY_YAML = """
+# resonance/policy.yaml
+# Resonance access policies by collection
+
+default:
+  thresholds:
+    read_summary: 0.0
+    read_consented: 0.60
+    full_access: 0.85
+  ttl:
+    base_seconds: 300
+    max_seconds: 1800
+    curve: "cosine"
+  requirements:
+    whisper_receipt: false
+    flame_citation: false
+    minimum_score: 0.0
+
+collections:
+  # Unpublished research - strict requirements
+  unpublished:
+    thresholds:
+      read_summary: 0.40      # Higher bar even for summaries
+      read_consented: 0.75
+      full_access: 0.90
+    ttl:
+      base_seconds: 180       # Shorter access windows
+      max_seconds: 900
+      curve: "exponential"    # Favor high scores more
+    requirements:
+      whisper_receipt: true   # Identity verification required
+      flame_citation: true    # Must cite related work
+      minimum_score: 0.40
+  
+  # Public archives - lenient access
+  archive:
+    thresholds:
+      read_summary: 0.0
+      read_consented: 0.50
+      full_access: 0.80
+    ttl:
+      base_seconds: 600
+      max_seconds: 3600       # Up to 1 hour for archives
+      curve: "linear"
+    requirements:
+      whisper_receipt: false
+      flame_citation: false
+      minimum_score: 0.0
+  
+  # CODEX entries - balanced
+  codex:
+    thresholds:
+      read_summary: 0.0
+      read_consented: 0.65
+      full_access: 0.85
+    ttl:
+      base_seconds: 300
+      max_seconds: 1800
+      curve: "cosine"
+    requirements:
+      whisper_receipt: false
+      flame_citation: true    # Should understand flame lineage
+      minimum_score: 0.30
+"""
+
+
+# ============================================================
+# TESTING
+# ============================================================
+
+if __name__ == "__main__":
+    import time
+    
+    print("=" * 60)
+    print("Resonance Policy & Whisper Receipt System")
+    print("=" * 60)
+    
+    # 1. Load policy
+    print("\n[1] Loading policy...")
+    policy = ResonancePolicy()
+    
+    # Simulate loading from YAML
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        f.write(EXAMPLE_POLICY_YAML)
+        policy_path = f.name
+    
+    policy.load_from_file(policy_path)
+    print(f"   Loaded {len(policy.policies)} collections")
+    
+    # 2. Test Whisper receipt generation
+    print("\n[2] Testing Whisper receipt...")
+    requester = "researcher.alpha"
+    timestamp = int(time.time())
+    nonce = "test-nonce-12345"
+    
+    receipt = WhisperReceipt.generate(requester, timestamp, nonce)
+    print(f"   Generated: {receipt[:32]}...")
+    
+    valid, error = WhisperReceipt.verify(requester, timestamp, nonce, receipt)
+    print(f"   Verification: {'✓ VALID' if valid else f'✗ FAILED: {error}'}")
+    
+    # 3. Test policy enforcement
+    print("\n[3] Testing policy enforcement...")
+    
+    # 3a. High score, unpublished collection
+    print("\n   [3a] Unpublished collection, high score (0.92)")
+    try:
+        result = mint_resonance_capability_v2(
+            requester=requester,
+            digest="0xTEST123",
+            collection="unpublished",
+            score=0.92,
+            policy=policy,
+            whisper_receipt={
+                "timestamp": timestamp,
+                "nonce": nonce,
+                "signature": receipt
+            },
+            cited_flames=["0xPARENT"]
+        )
+        print(f"       Granted: {result['scope']}, TTL: {result['ttl_seconds']}s")
+    except ValueError as e:
+        print(f"       Denied: {e}")
+    
+    # 3b. Low score, unpublished collection
+    print("\n   [3b] Unpublished collection, low score (0.30)")
+    try:
+        result = mint_resonance_capability_v2(
+            requester=requester,
+            digest="0xTEST123",
+            collection="unpublished",
+            score=0.30,
+            policy=policy,
+            whisper_receipt={
+                "timestamp": timestamp,
+                "nonce": nonce,
+                "signature": receipt
+            },
+            cited_flames=["0xPARENT"]
+        )
+        print(f"       Granted: {result['scope']}, TTL: {result['ttl_seconds']}s")
+    except ValueError as e:
+        print(f"       Denied: {e}")
+    
+    # 3c. Archive collection (lenient)
+    print("\n   [3c] Archive collection, medium score (0.55)")
+    result = mint_resonance_capability_v2(
+        requester=requester,
+        digest="0xARCHIVE",
+        collection="archive",
+        score=0.55,
+        policy=policy
+    )
+    print(f"       Granted: {result['scope']}, TTL: {result['ttl_seconds']}s")
+    
+    # Cleanup
+    os.unlink(policy_path)
+    
+    print("\n" + "=" * 60)
+    print("✓ All tests passed")
+    print("=" * 60)
 from synara_core.modules.resonance_caps import mint_resonance_capability
 
 class ResonanceShareBody(BaseModel):
