@@ -1,3 +1,17 @@
+- name: Bump embeds on changed codex files
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          changed=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep '^codex/.*\.json$' || true)
+          if [ -z "$changed" ]; then
+            echo "No codex changes."; exit 0
+          fi
+          payload=$(jq -n --argfiles f <(printf '%s\n' $changed | jq -R . | jq -s .) \
+            '{added: $f, modified: []}')
+          # call via curl pod inside the cluster
+          kubectl -n ${{ env.NAMESPACE }} run curl-embed --restart=Never --rm -i -t --image=curlimages/curl -- \
+            curl -s -X POST http://${{ env.RELEASE_NAME }}-resonance-mesh:8081/embed/webhook/github-lite \
+              -H 'content-type: application/json' \
+              -d "$payload"
 env:
             - name: CAP_REDIS_URL
               value: {{ ternary "redis://resonance-mesh-redis-master:6379/0" (default "" .Values.env.CAP_REDIS_URL) .Values.redis.enabled | quote }}
