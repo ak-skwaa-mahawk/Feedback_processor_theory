@@ -1,3 +1,33 @@
+@router.post("/webhook/github-lite")
+def gh_webhook(payload: Dict[str, Any]):
+    """
+    Minimal webhook handler: if payload lists modified/added files under 'codex/',
+    re-embed them.
+    """
+    files = []
+    for key in ("added", "modified"):
+        files.extend(payload.get(key, []))
+    bumped = []
+    for f in files:
+        if f.startswith("codex/") and f.endswith(".json") and Path(f).exists():
+            entry = json.loads(Path(f).read_text(encoding="utf-8"))
+            res = _bump(entry=entry, file_path=f, reason="push", actor="github", scope="full_access")
+            bumped.append(res)
+    return {"status": "ok", "bumped": bumped, "count": len(bumped)}
+# ... after you've loaded entry json and know file path & scope ...
+from synara_core.modules.self_embed import bump_codex_entry as _bump
+
+# Example inside /codex/share AFTER successful mint:
+try:
+    # p = Path(path) ... entry = json.loads(p.read_text()) already exists in your handler
+    _bump(entry=entry,
+          file_path=str(p),
+          reason="share",
+          actor=requester if 'requester' in locals() else "anon",
+          scope=scope)
+except Exception as _e:
+    # don't fail the share if embedding fails
+    pass
 # --- Policy Dry Run (evaluate expressions safely) ---
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
