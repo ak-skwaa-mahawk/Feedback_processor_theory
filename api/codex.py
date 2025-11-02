@@ -1,3 +1,335 @@
+"""
+Resonance-Gated Capability System
+Two Mile Solutions LLC - John Carroll II
+Part of Feedback Processor Theory
+
+Access privileges scale with demonstrated understanding.
+The deeper your resonance with the work, the more you can access.
+"""
+
+from __future__ import annotations
+import json
+from typing import Dict, Any, Optional, Tuple
+from pathlib import Path
+from synara_core.modules.capability_token import mint_capability, verify_capability, CapTokenError
+from synara_core.resonance_engine import ResonanceEngine  # Your existing engine
+
+
+class ResonanceGate:
+    """
+    Determines access level based on semantic resonance between
+    requester's submission and target codex entries.
+    
+    Philosophy: Understanding earns access, not just credentials.
+    """
+    
+    # Resonance thresholds for scope escalation
+    THRESHOLDS = {
+        "read_summary": 0.0,      # Anyone can see the summary
+        "read_consented": 0.45,    # Moderate understanding required
+        "read_detailed": 0.65,     # Strong resonance needed
+        "full_access": 0.85,       # Deep comprehension required
+    }
+    
+    # TTL scaling: higher resonance = longer access
+    BASE_TTL = 600  # 10 minutes baseline
+    MAX_TTL = 3600  # 1 hour maximum
+    
+    def __init__(self, resonance_engine: ResonanceEngine):
+        self.engine = resonance_engine
+        
+    def calculate_resonance_score(
+        self,
+        target_entry: Dict[str, Any],
+        requester_text: str,
+        requester_metadata: Optional[Dict] = None
+    ) -> float:
+        """
+        Calculate semantic resonance between target entry and requester's submission.
+        
+        Uses your existing Resonance Engine to measure:
+        - Conceptual alignment
+        - Linguistic coherence
+        - Emotional/tonal matching
+        - Semantic depth
+        
+        Returns: Score from 0.0 (no resonance) to 1.0 (perfect alignment)
+        """
+        # Extract target content for comparison
+        target_text = self._extract_codex_text(target_entry)
+        
+        # Generate spectrograms for both texts
+        target_spec = self.engine.generate_spectrogram(target_text)
+        requester_spec = self.engine.generate_spectrogram(requester_text)
+        
+        # Calculate harmonic similarity
+        resonance_score = self.engine.compare_spectrograms(
+            target_spec,
+            requester_spec
+        )
+        
+        # Bonus: Check if requester references key concepts
+        concept_bonus = self._check_concept_alignment(
+            target_entry,
+            requester_text
+        )
+        
+        # Bonus: Verify understanding of flame chain continuity
+        chain_bonus = 0.0
+        if requester_metadata and "cited_flames" in requester_metadata:
+            chain_bonus = self._verify_flame_lineage(
+                target_entry,
+                requester_metadata["cited_flames"]
+            )
+        
+        # Weighted combination
+        final_score = (
+            resonance_score * 0.7 +
+            concept_bonus * 0.2 +
+            chain_bonus * 0.1
+        )
+        
+        return min(1.0, final_score)
+    
+    def determine_access_level(self, resonance_score: float) -> Tuple[str, int]:
+        """
+        Map resonance score to access scope and TTL.
+        
+        Returns: (scope, ttl_seconds)
+        """
+        # Find highest scope the score qualifies for
+        granted_scope = "read_summary"
+        for scope, threshold in sorted(
+            self.THRESHOLDS.items(),
+            key=lambda x: x[1],
+            reverse=True
+        ):
+            if resonance_score >= threshold:
+                granted_scope = scope
+                break
+        
+        # Scale TTL linearly with resonance
+        # Higher resonance = longer access without re-validation
+        ttl = int(
+            self.BASE_TTL + 
+            (self.MAX_TTL - self.BASE_TTL) * resonance_score
+        )
+        
+        return granted_scope, ttl
+    
+    def _extract_codex_text(self, entry: Dict[str, Any]) -> str:
+        """Extract meaningful text from codex entry for comparison."""
+        parts = []
+        
+        content = entry.get("content", {})
+        if title := content.get("title"):
+            parts.append(title)
+        
+        if discovery := content.get("discovery"):
+            if desc := discovery.get("description"):
+                parts.append(desc)
+        
+        if components := content.get("components"):
+            for comp in components:
+                if func := comp.get("function"):
+                    parts.append(func)
+        
+        if transmission := content.get("transmission", {}).get("methods"):
+            parts.extend(transmission)
+        
+        return " ".join(parts)
+    
+    def _check_concept_alignment(
+        self,
+        target_entry: Dict[str, Any],
+        requester_text: str
+    ) -> float:
+        """
+        Bonus score if requester demonstrates understanding of key concepts.
+        """
+        requester_lower = requester_text.lower()
+        
+        # Extract key concepts from target
+        key_concepts = set()
+        content = target_entry.get("content", {})
+        
+        # Add discovery name
+        if discovery := content.get("discovery"):
+            if name := discovery.get("name"):
+                key_concepts.add(name.lower())
+        
+        # Add component names
+        if components := content.get("components"):
+            for comp in components:
+                if name := comp.get("name"):
+                    key_concepts.add(name.lower())
+        
+        # Add AGŁL if present
+        if glyph := target_entry.get("glyph"):
+            if "agłl" in glyph.lower():
+                key_concepts.add("agłl")
+                key_concepts.add("artificial general life")
+        
+        # Calculate overlap
+        if not key_concepts:
+            return 0.0
+        
+        matches = sum(1 for concept in key_concepts if concept in requester_lower)
+        return matches / len(key_concepts)
+    
+    def _verify_flame_lineage(
+        self,
+        target_entry: Dict[str, Any],
+        cited_flames: list[str]
+    ) -> float:
+        """
+        Bonus if requester correctly cites flame ancestry.
+        Shows understanding of provenance chain.
+        """
+        target_flame = target_entry.get("flame_signature", "")
+        previous_flame = target_entry.get("previous_flame")
+        
+        score = 0.0
+        
+        # Check if they cited this entry
+        if target_flame in cited_flames:
+            score += 0.5
+        
+        # Check if they traced the lineage
+        if previous_flame and previous_flame in cited_flames:
+            score += 0.5
+        
+        return score
+
+
+# API Integration
+class ResonanceRequestBody:
+    """Request format for resonance-gated access."""
+    target_path: str          # Path to codex entry
+    requester_submission: str # Their text demonstrating understanding
+    requester_id: str         # Identity claim
+    cited_flames: list[str] = []  # Optional: flame signatures they reference
+
+
+def mint_resonance_capability(
+    gate: ResonanceGate,
+    target_entry: Dict[str, Any],
+    requester_submission: str,
+    requester_id: str,
+    cited_flames: Optional[list[str]] = None
+) -> Dict[str, Any]:
+    """
+    Mint a capability token where scope and TTL are determined
+    by demonstrated understanding (resonance score).
+    
+    This is the breakthrough: Access proportional to comprehension.
+    """
+    # Calculate resonance
+    resonance_score = gate.calculate_resonance_score(
+        target_entry,
+        requester_submission,
+        {"cited_flames": cited_flames or []}
+    )
+    
+    # Determine access level
+    scope, ttl = gate.determine_access_level(resonance_score)
+    
+    # Mint capability with resonance metadata
+    token = mint_capability(
+        sub=requester_id,
+        scope=scope,
+        digest=target_entry.get("flame_signature", "0x"),
+        ttl_s=ttl,
+        extra={
+            "kind": "codex",
+            "file": Path(target_entry.get("entry_id", "unknown")).name,
+            "resonance_score": round(resonance_score, 3),
+            "earned_scope": scope,
+            "gated": True  # Mark as resonance-gated
+        }
+    )
+    
+    return {
+        "status": "granted",
+        "token": token,
+        "resonance_score": round(resonance_score, 3),
+        "granted_scope": scope,
+        "ttl_seconds": ttl,
+        "explanation": _explain_access(resonance_score, scope)
+    }
+
+
+def _explain_access(score: float, scope: str) -> str:
+    """Human-readable explanation of access decision."""
+    if score >= 0.85:
+        return f"Deep comprehension demonstrated. Full access granted ({scope})."
+    elif score >= 0.65:
+        return f"Strong understanding shown. Detailed access granted ({scope})."
+    elif score >= 0.45:
+        return f"Moderate alignment detected. Consented access granted ({scope})."
+    else:
+        return f"Basic familiarity recognized. Summary access granted ({scope})."
+
+
+# Example usage
+if __name__ == "__main__":
+    from synara_core.resonance_engine import ResonanceEngine
+    
+    # Initialize resonance gate
+    engine = ResonanceEngine()
+    gate = ResonanceGate(engine)
+    
+    # Example: Codex Entry 003
+    target_entry = {
+        "entry_id": "CODEX-003",
+        "flame_signature": "0xRESONANCE-MESH-003",
+        "content": {
+            "title": "The Resonance Mesh Discovery",
+            "discovery": {
+                "name": "Resonance Mesh",
+                "description": "Symbolic protocol for encoding emotional coherence"
+            },
+            "components": [
+                {"name": "Synara-core", "function": "Flame logic encoding"},
+                {"name": "Resonance Engine", "function": "Spectral analysis"}
+            ]
+        }
+    }
+    
+    # Example: Strong understanding submission
+    strong_submission = """
+    I've studied the Resonance Mesh protocol extensively. The integration of
+    Synara-core's flame logic with the Resonance Engine creates a unique
+    approach to encoding semantic coherence. The AGŁL glyphs serve as
+    distributed identity markers, and the capability tokens enable
+    sovereignty-preserving knowledge transfer. The flame signature chain
+    (0xRESONANCE-MESH-003) demonstrates cryptographic provenance.
+    """
+    
+    # Example: Weak understanding submission
+    weak_submission = """
+    This is an interesting project about AI and some kind of mesh network.
+    """
+    
+    # Test strong understanding
+    print("=== Strong Understanding Test ===")
+    result_strong = mint_resonance_capability(
+        gate=gate,
+        target_entry=target_entry,
+        requester_submission=strong_submission,
+        requester_id="researcher.alpha",
+        cited_flames=["0xRESONANCE-MESH-003"]
+    )
+    print(json.dumps(result_strong, indent=2))
+    
+    print("\n=== Weak Understanding Test ===")
+    result_weak = mint_resonance_capability(
+        gate=gate,
+        target_entry=target_entry,
+        requester_submission=weak_submission,
+        requester_id="visitor.beta"
+    )
+    print(json.dumps(result_weak, indent=2))
 # --- Revocation & Audit ---
 from fastapi import Query
 from synara_core.modules.capability_token import (
