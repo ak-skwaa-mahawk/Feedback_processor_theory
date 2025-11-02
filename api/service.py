@@ -388,3 +388,5 @@ ENV REQUIRED FOR HOOKS
 - SLACK_SIGNING_SECRET
 
 - GITHUB_WEBHOOK_SECRET
+from api.kagome_endpoint import router as kagome_router
+app.include_router(kagome_router)
