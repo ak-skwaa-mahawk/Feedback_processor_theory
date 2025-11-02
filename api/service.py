@@ -178,3 +178,217 @@ Service URL (ClusterIP): kubectl port-forward svc/{{ include "fpt-synara.fullnam
 Rate limits: routeCap={{ .Values.rateLimits.routeCap }} burst={{ .Values.rateLimits.burst }} sustained={{ .Values.rateLimits.sustained }}
 
 Redis URL: {{ .Values.redis.url }}
+
+=========================== helm/fpt-synara/values-dev.yaml ===========================
+
+image: repository: twomilesolutions/fpt-synara tag: dev pullPolicy: IfNotPresent
+
+service: type: ClusterIP port: 8081
+
+redis:
+
+Dev uses ephemeral Redis (deploy/redis.yaml)
+
+url: "redis://redis:6379/0"
+
+rateLimits:
+
+Permissive for iteration
+
+routeCap: "100/minute" burst: "20/10second" sustained: "5000/hour"
+
+resources: limits: cpu: 500m memory: 512Mi requests: cpu: 100m memory: 256Mi
+
+replicaCount: 1
+
+readiness: path: /ready initialDelaySeconds: 3 periodSeconds: 5 timeoutSeconds: 3
+
+liveness: path: /live initialDelaySeconds: 5 periodSeconds: 10 timeoutSeconds: 3
+
+ingress: enabled: false
+
+=========================== helm/fpt-synara/values-prod.yaml ===========================
+
+image: repository: twomilesolutions/fpt-synara tag: stable pullPolicy: IfNotPresent
+
+service: type: ClusterIP port: 8081
+
+redis:
+
+Prod uses persistent Redis (deploy/redis-persistent.yaml)
+
+url: "redis://redis:6379/0"
+
+rateLimits:
+
+Tighter operational limits
+
+routeCap: "10/minute" burst: "3/10second" sustained: "300/hour"
+
+resources: limits: cpu: 1000m memory: 1Gi requests: cpu: 300m memory: 512Mi
+
+replicaCount: 2
+
+readiness: path: /ready initialDelaySeconds: 5 periodSeconds: 10 timeoutSeconds: 3
+
+liveness: path: /live initialDelaySeconds: 10 periodSeconds: 20 timeoutSeconds: 3
+
+ingress: enabled: false
+
+=========================== Makefile ===========================
+
+Quick dev/prod ops for FPT × Synara Bridge
+
+Requires: docker (or nerdctl), kubectl, helm, k3d (optional), jq, curl
+
+---- Config ----
+
+IMAGE ?= twomilesolutions/fpt-synara TAG ?= dev NAMESPACE ?= default RELEASE ?= fpt CHART ?= ./helm/fpt-synara APP_PORT ?= 8081 REDIS_MANIFEST ?= deploy/redis.yaml REDIS_PERSISTENT ?= deploy/redis-persistent.yaml
+
+---- K3d (optional local cluster) ----
+
+K3D_CLUSTER ?= fpt-local
+
+.PHONY: k3d-up k3d-down k3d-registry k3d-up: k3d cluster create $(K3D_CLUSTER) --agents 1 --servers 1 --port "8081:30080@server:0" || true kubectl get nodes
+
+k3d-down: k3d cluster delete $(K3D_CLUSTER) || true
+
+---- Build & Push ----
+
+.PHONY: build push build: docker build -t $(IMAGE):$(TAG) .
+
+push: docker push $(IMAGE):$(TAG)
+
+---- Redis (choose one) ----
+
+.PHONY: redis redis-persistent redis-clean redis: kubectl apply -f $(REDIS_MANIFEST)
+
+redis-persistent: kubectl apply -f $(REDIS_PERSISTENT)
+
+redis-clean: -kubectl delete -f $(REDIS_MANIFEST) -kubectl delete -f $(REDIS_PERSISTENT)
+
+---- Helm deploys ----
+
+.PHONY: dev prod uninstall
+
+Dev: permissive limits, dev tag
+
+dev: helm upgrade --install $(RELEASE) $(CHART) 
+-n $(NAMESPACE) 
+-f helm/fpt-synara/values-dev.yaml 
+--set image.repository=$(IMAGE) 
+--set image.tag=$(TAG)
+
+Prod: tighter limits, stable tag
+
+prod: helm upgrade --install $(RELEASE) $(CHART) 
+-n $(NAMESPACE) 
+-f helm/fpt-synara/values-prod.yaml 
+--set image.repository=$(IMAGE)
+
+uninstall: helm uninstall $(RELEASE) -n $(NAMESPACE) || true
+
+---- Health, logs, port-forward ----
+
+.PHONY: pf logs health pf: kubectl port-forward svc/$(RELEASE)-fpt-synara $(APP_PORT):$(APP_PORT) -n $(NAMESPACE)
+
+logs: kubectl logs -l app.kubernetes.io/name=fpt-synara -n $(NAMESPACE) --tail=200 -f
+
+health: curl -s localhost:$(APP_PORT)/health | jq . ; 
+curl -s localhost:$(APP_PORT)/config | jq . ; 
+curl -s -o /dev/null -w "HTTP %{http_code} " localhost:$(APP_PORT)/ready
+
+---- One-shot local stack (k3d + redis + dev deploy) ----
+
+.PHONY: up down up: k3d-up redis dev @echo " 👉 Port-forward: make pf  # then open http://localhost:8081/health"
+
+down: uninstall redis-clean k3d-down @echo "🧹 Stack removed."
+
+=========================== compose.yaml ===========================
+
+version: "3.9" services: redis: image: redis:7-alpine command: ["--save", "60", "1", "--loglevel", "warning"] healthcheck: test: ["CMD", "redis-cli", "ping"] interval: 5s timeout: 3s retries: 10 start_period: 5s ports: - "6379:6379"  # optional, expose if you want external access
+
+api: image: ${IMAGE:-twomilesolutions/fpt-synara}:${TAG:-dev} environment: WHISPER_REDIS_URL: ${WHISPER_REDIS_URL:-redis://redis:6379/0} FPT_RATE_LIMIT: ${FPT_RATE_LIMIT:-100/minute} FPT_BURST_LIMIT: ${FPT_BURST_LIMIT:-20/10second} FPT_SUSTAINED_LIMIT: ${FPT_SUSTAINED_LIMIT:-5000/hour} command: ["uvicorn", "api.service:app", "--host", "0.0.0.0", "--port", "8081"] depends_on: redis: condition: service_healthy ports: - "8081:8081" healthcheck: test: ["CMD", "curl", "-fs", "http://localhost:8081/ready"] interval: 10s timeout: 3s retries: 12 start_period: 10s
+
+=========================== .env.example ===========================
+
+Optional environment overrides for compose
+
+IMAGE=twomilesolutions/fpt-synara TAG=dev WHISPER_REDIS_URL=redis://redis:6379/0 FPT_RATE_LIMIT=100/minute FPT_BURST_LIMIT=20/10second FPT_SUSTAINED_LIMIT=5000/hour
+
+=========================== .github/workflows/ci.yml ===========================
+
+name: CI
+
+on: push: branches: [ main ] pull_request: branches: [ main ]
+
+jobs: build-test: runs-on: ubuntu-latest permissions: contents: read packages: write  # needed if pushing to GHCR
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/fpt-synara
+  TAG: ${{ github.sha }}
+
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - name: Set up Python
+    uses: actions/setup-python@v5
+    with:
+      python-version: '3.11'
+
+  - name: Install Python deps (if any)
+    run: |
+      python -m pip install --upgrade pip
+      pip install fastapi uvicorn slowapi redis pydantic
+
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v3
+
+  - name: Log in to GHCR
+    if: github.event_name == 'push'
+    uses: docker/login-action@v3
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+
+  - name: Build image
+    uses: docker/build-push-action@v6
+    with:
+      context: .
+      push: ${{ github.event_name == 'push' }}
+      tags: |
+        ${{ env.IMAGE }}:${{ env.TAG }}
+        ${{ env.IMAGE }}:latest
+
+  - name: Write .env for compose
+    run: |
+      echo IMAGE=${{ env.IMAGE }} >> .env
+      echo TAG=${{ env.TAG }} >> .env
+      echo WHISPER_REDIS_URL=redis://redis:6379/0 >> .env
+      echo FPT_RATE_LIMIT=10/minute >> .env
+      echo FPT_BURST_LIMIT=5/10second >> .env
+      echo FPT_SUSTAINED_LIMIT=100/hour >> .env
+
+  - name: Start stack (Compose)
+    run: docker compose up -d
+
+  - name: Wait for readiness
+    run: |
+      for i in {1..30}; do
+        code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/ready || true)
+        if [ "$code" = "200" ]; then echo "Ready"; exit 0; fi
+        sleep 2
+      done
+      echo "Service not ready"; docker compose logs api; exit 1
+
+  - name: Smoke tests
+    run: |
+      curl -s http://localhost:8081/health | jq .
+      curl -s http://localhost:8081/config | jq .
+      curl -s http://localhost:8081/limits | jq .
+
+  - name: Teardown
+    if: always()
+    run: docker compose down -v
