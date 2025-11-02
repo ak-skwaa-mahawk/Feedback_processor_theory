@@ -304,91 +304,87 @@ curl -s -o /dev/null -w "HTTP %{http_code} " localhost:$(APP_PORT)/ready
 
 down: uninstall redis-clean k3d-down @echo "🧹 Stack removed."
 
-=========================== compose.yaml ===========================
+=========================== hooks/webhooks.py ===========================
 
-version: "3.9" services: redis: image: redis:7-alpine command: ["--save", "60", "1", "--loglevel", "warning"] healthcheck: test: ["CMD", "redis-cli", "ping"] interval: 5s timeout: 3s retries: 10 start_period: 5s ports: - "6379:6379"  # optional, expose if you want external access
+from future import annotations import hmac, hashlib, time, os, json from fastapi import APIRouter, Header, HTTPException, Request
 
-api: image: ${IMAGE:-twomilesolutions/fpt-synara}:${TAG:-dev} environment: WHISPER_REDIS_URL: ${WHISPER_REDIS_URL:-redis://redis:6379/0} FPT_RATE_LIMIT: ${FPT_RATE_LIMIT:-100/minute} FPT_BURST_LIMIT: ${FPT_BURST_LIMIT:-20/10second} FPT_SUSTAINED_LIMIT: ${FPT_SUSTAINED_LIMIT:-5000/hour} command: ["uvicorn", "api.service:app", "--host", "0.0.0.0", "--port", "8081"] depends_on: redis: condition: service_healthy ports: - "8081:8081" healthcheck: test: ["CMD", "curl", "-fs", "http://localhost:8081/ready"] interval: 10s timeout: 3s retries: 12 start_period: 10s
+router = APIRouter(prefix="/hooks", tags=["hooks"])
 
-=========================== .env.example ===========================
+SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET", "") GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET", "")
 
-Optional environment overrides for compose
+--- Slack ---
 
-IMAGE=twomilesolutions/fpt-synara TAG=dev WHISPER_REDIS_URL=redis://redis:6379/0 FPT_RATE_LIMIT=100/minute FPT_BURST_LIMIT=20/10second FPT_SUSTAINED_LIMIT=5000/hour
+@router.post("/slack") async def slack_events(request: Request, x_slack_request_timestamp: str = Header(None), x_slack_signature: str = Header(None)): if not SLACK_SIGNING_SECRET: raise HTTPException(status_code=500, detail="slack_unconfigured")
 
-=========================== .github/workflows/ci.yml ===========================
+body = await request.body()
+ts = x_slack_request_timestamp or "0"
+basestring = f"v0:{ts}:{body.decode('utf-8')}"
+sig = "v0=" + hmac.new(SLACK_SIGNING_SECRET.encode(), basestring.encode(), hashlib.sha256).hexdigest()
 
-name: CI
+# basic replay guard (5 min)
+if abs(time.time() - int(ts)) > 300:
+    raise HTTPException(status_code=401, detail="slack_request_stale")
+if not hmac.compare_digest(sig, x_slack_signature or ""):
+    raise HTTPException(status_code=401, detail="slack_signature_invalid")
 
-on: push: branches: [ main ] pull_request: branches: [ main ]
+payload = json.loads(body.decode("utf-8"))
 
-jobs: build-test: runs-on: ubuntu-latest permissions: contents: read packages: write  # needed if pushing to GHCR
+# URL verification challenge
+if payload.get("type") == "url_verification":
+    return {"challenge": payload.get("challenge")}
 
-env:
-  IMAGE: ghcr.io/${{ github.repository_owner }}/fpt-synara
-  TAG: ${{ github.sha }}
+# TODO: transform payload → conversation string; call /fpt/analyze upstream
+return {"ok": True}
 
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+--- GitHub ---
 
-  - name: Set up Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: '3.11'
+@router.post("/github") async def github_events(request: Request, x_hub_signature_256: str = Header(None)): if not GITHUB_WEBHOOK_SECRET: raise HTTPException(status_code=500, detail="github_unconfigured")
 
-  - name: Install Python deps (if any)
-    run: |
-      python -m pip install --upgrade pip
-      pip install fastapi uvicorn slowapi redis pydantic
+body = await request.body()
+mac = hmac.new(GITHUB_WEBHOOK_SECRET.encode(), msg=body, digestmod=hashlib.sha256)
+want = "sha256=" + mac.hexdigest()
+if not hmac.compare_digest(want, x_hub_signature_256 or ""):
+    raise HTTPException(status_code=401, detail="github_signature_invalid")
 
-  - name: Set up Docker Buildx
-    uses: docker/setup-buildx-action@v3
+event = request.headers.get("X-GitHub-Event", "unknown")
+# TODO: map event → conversation; call /fpt/analyze
+return {"ok": True, "event": event}
 
-  - name: Log in to GHCR
-    if: github.event_name == 'push'
-    uses: docker/login-action@v3
-    with:
-      registry: ghcr.io
-      username: ${{ github.actor }}
-      password: ${{ secrets.GITHUB_TOKEN }}
+=========================== connectors/base.py ===========================
 
-  - name: Build image
-    uses: docker/build-push-action@v6
-    with:
-      context: .
-      push: ${{ github.event_name == 'push' }}
-      tags: |
-        ${{ env.IMAGE }}:${{ env.TAG }}
-        ${{ env.IMAGE }}:latest
+from future import annotations from typing import Protocol, Dict, Any
 
-  - name: Write .env for compose
-    run: |
-      echo IMAGE=${{ env.IMAGE }} >> .env
-      echo TAG=${{ env.TAG }} >> .env
-      echo WHISPER_REDIS_URL=redis://redis:6379/0 >> .env
-      echo FPT_RATE_LIMIT=10/minute >> .env
-      echo FPT_BURST_LIMIT=5/10second >> .env
-      echo FPT_SUSTAINED_LIMIT=100/hour >> .env
+class Connector(Protocol): def pull(self) -> Dict[str, Any]: ...
 
-  - name: Start stack (Compose)
-    run: docker compose up -d
+def to_conversation(self, payload: Dict[str, Any]) -> str:
+    ...
 
-  - name: Wait for readiness
-    run: |
-      for i in {1..30}; do
-        code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/ready || true)
-        if [ "$code" = "200" ]; then echo "Ready"; exit 0; fi
-        sleep 2
-      done
-      echo "Service not ready"; docker compose logs api; exit 1
+=========================== connectors/slack.py ===========================
 
-  - name: Smoke tests
-    run: |
-      curl -s http://localhost:8081/health | jq .
-      curl -s http://localhost:8081/config | jq .
-      curl -s http://localhost:8081/limits | jq .
+from future import annotations from typing import Dict, Any
 
-  - name: Teardown
-    if: always()
-    run: docker compose down -v
+class SlackConnector: def pull(self) -> Dict[str, Any]: # Placeholder: implement Slack Web API fetch if needed return {"text": "(demo) Slack message"}
+
+def to_conversation(self, payload: Dict[str, Any]) -> str:
+    return payload.get("text", "")
+
+=========================== connectors/github.py ===========================
+
+from future import annotations from typing import Dict, Any
+
+class GitHubConnector: def pull(self) -> Dict[str, Any]: # Placeholder: implement GitHub REST API fetch if needed return {"text": "(demo) GitHub event"}
+
+def to_conversation(self, payload: Dict[str, Any]) -> str:
+    return payload.get("text", "")
+
+=========================== api/service.py (append router bind) ===========================
+
+Add these lines near the bottom of service.py after app init
+
+try: from hooks.webhooks import router as hooks_router app.include_router(hooks_router) except Exception: pass
+
+ENV REQUIRED FOR HOOKS
+
+- SLACK_SIGNING_SECRET
+
+- GITHUB_WEBHOOK_SECRET
