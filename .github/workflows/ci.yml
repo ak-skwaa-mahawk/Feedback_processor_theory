@@ -1,3 +1,13 @@
+- name: Install Codecov uploader
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+
+      - name: Upload to Codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          ./codecov -f coverage.xml -F unit -n ${{ matrix.python-version }}
 ### `.github/workflows/ci.yml`
 
 ```yaml
