@@ -74,3 +74,26 @@ def nm_to_m(nm: float) -> float:
 
 def deg_to_rad(deg: float) -> float:
     return deg * math.pi / 180.0
+# --- Waveguide-below-cutoff (TE10, rectangular) --------------------------------
+# Assumptions: non-magnetic filling (μ_r ≈ 1), refractive index n, dominant TE10,
+# broad wall dimension = a, height b large (ignore higher-order terms).
+# Cutoff: λ_c ≈ 2a / n. For λ0 > λ_c (i.e., n*λ0 > 2a), propagation constant becomes imaginary.
+# Attenuation constant α_wg = sqrt( (π/a)^2 - (n*2π/λ0)^2 ), giving evanescent decay e^{-α L}.
+
+def waveguide_alpha_te10(n: float, a_m: float, lambda0_m: float) -> float:
+    """Evanescent attenuation constant α for TE10 below cutoff."""
+    if n <= 0 or a_m <= 0 or lambda0_m <= 0:
+        return 0.0
+    k_c = math.pi / a_m                 # cutoff wavenumber term (TE10)
+    k0 = 2.0 * math.pi / lambda0_m      # free-space wavenumber
+    k = n * k0
+    term = (k_c**2) - (k**2)
+    return math.sqrt(term) if term > 0 else 0.0
+
+def waveguide_T_te10(n: float, a_m: float, lambda0_m: float, length_m: float) -> float:
+    """
+    Transmission magnitude through below-cutoff section of length L (dominant TE10):
+      T ≈ exp(-2 α L), matching the same e^{-2 κ d} convention used elsewhere.
+    """
+    alpha = waveguide_alpha_te10(n, a_m, lambda0_m)
+    return math.exp(-2.0 * alpha * length_m) if alpha > 0 else (1.0 if n*lambda0_m <= 2*a_m else 0.0)
