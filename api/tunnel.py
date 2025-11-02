@@ -60,4 +60,35 @@ def ftir_tunneling(body: FTIRRequest):
     gap = nm_to_m(body.gap_nm)
     T = ftir_T(body.n1, body.n2, theta, lam, gap)
     arc = arc_with_tunneling(body.R_free, body.A, body.C, T_tun=T, alpha=body.alpha)
-    return {"T_ftir": T, "arc": arc}
+    return {"T_ftir": T, "arc": arc}from fastapi import Response
+from io import BytesIO
+import matplotlib.pyplot as plt
+
+from modules.tunneling import (
+    # existing imports…
+    waveguide_T_te10, nm_to_m
+)class WaveguideRequest(BaseModel):
+    n: float = Field(..., gt=0, description="Filling refractive index (≈1 for air)")
+    a_mm: float = Field(..., gt=0, description="Waveguide broad dimension a (mm)")
+    length_mm: float = Field(..., gt=0, description="Below-cutoff section length (mm)")
+    wavelength_nm: float = Field(..., gt=0, description="Vacuum wavelength (nm)")
+    R_free: float = 0.0
+    A: float = 0.0
+    C: float = 0.15
+    alpha: float = 1.0
+
+class WaveguideResponse(BaseModel):
+    T_wg: float
+    arc: dict
+    lambda_c_nm: float
+
+@router.post("/waveguide", response_model=WaveguideResponse)
+def waveguide_tunneling(body: WaveguideRequest):
+    a_m = body.a_mm * 1e-3
+    L_m = body.length_mm * 1e-3
+    lam0_m = nm_to_m(body.wavelength_nm)
+    T = waveguide_T_te10(body.n, a_m, lam0_m, L_m)
+    # cutoff approx: λ_c ≈ 2a / n
+    lambda_c_m = (2.0 * a_m) / body.n
+    arc = arc_with_tunneling(body.R_free, body.A, body.C, T_tun=T, alpha=body.alpha)
+    return {"T_wg": T, "arc": arc, "lambda_c_nm": lambda_c_m * 1e9}
