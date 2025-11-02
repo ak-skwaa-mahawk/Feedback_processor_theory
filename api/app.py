@@ -1,3 +1,9 @@
+# api/app.py (or your main service)
+from fastapi import FastAPI
+from api.tunnel import router as tunnel_router
+# ... existing imports/routers ...
+app = FastAPI(title="Resonance Mesh API", version="1.0")
+app.include_router(tunnel_router, prefix="/tunnel")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.arc import router as arc_router
