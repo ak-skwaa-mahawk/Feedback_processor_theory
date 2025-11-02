@@ -1,0 +1,41 @@
+image:
+  repository: ghcr.io/ak-skwaa-mahawk/feedback_processor_theory
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8081
+
+ingress:
+  enabled: false
+  className: nginx
+  hosts:
+    - host: synara.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []  # [{ secretName: synara-tls, hosts: [synara.example.com]}]
+
+env:
+  CAP_TOKEN_SECRET: ""
+  WHISPER_SECRET: ""
+  CAP_REDIS_URL: "redis://redis:6379/0"
+  RESONANCE_POLICY_PATH: "/app/resonance/policy.yaml"
+
+resources:
+  limits: { cpu: "500m", memory: "512Mi" }
+  requests: { cpu: "200m", memory: "256Mi" }
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+redis:
+  enabled: true
+  image: "redis:7-alpine"
