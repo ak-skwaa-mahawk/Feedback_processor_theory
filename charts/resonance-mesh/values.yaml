@@ -1,0 +1,86 @@
+# --- image ---
+image:
+  repository: ghcr.io/ak-skwaa-mahawk/feedback_processor_theory
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+# --- service ---
+service:
+  type: ClusterIP
+  port: 8081
+  annotations: {}
+
+# --- ingress (optional) ---
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - host: resonance.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []   # e.g. [{ hosts: ["resonance.local"], secretName: resonance-tls }]
+
+# --- resources (tune as needed) ---
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+
+# --- env / secrets ---
+env:
+  RESONANCE_POLICY_PATH: "/app/resonance/policy.yaml"
+  CAP_REDIS_URL: ""   # auto-set if redis.enabled=true
+  # You may also set extra envs here; merged into Deployment.
+
+secretEnv:
+  CAP_TOKEN_SECRET: "change-me-long-random"
+  WHISPER_SECRET: "change-me-whisper"
+
+# --- policy content mounted as ConfigMap ---
+policy:
+  enabled: true
+  filename: policy.yaml
+  contents: |
+    collections:
+      default:
+        thresholds: { summary: 0.40, consented: 0.70, full: 0.90 }
+        base_ttl: 300
+        max_ttl: 1800
+        logic:
+          expression: "(whisper_verified and cited_flame) or (resonance_score >= 0.92)"
+      unpublished:
+        thresholds: { summary: 0.55, consented: 0.80, full: 0.95 }
+        base_ttl: 120
+        max_ttl: 1200
+        logic:
+          expression: "(whisper_verified and cited_flame) and (resonance_score >= 0.80)"
+      archive:
+        thresholds: { summary: 0.30, consented: 0.50, full: 0.75 }
+        base_ttl: 600
+        max_ttl: 3600
+        logic:
+          expression: "resonance_score >= 0.35"
+
+# --- Redis subchart toggle ---
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+  image:
+    tag: "7.2-debian-12"
+
+# --- pod extras ---
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
