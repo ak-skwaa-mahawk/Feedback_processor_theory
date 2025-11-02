@@ -1,0 +1,11 @@
+{{- if .Values.policy.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "resonance-mesh.fullname" . }}-policy
+  labels:
+    {{- include "resonance-mesh.labels" . | nindent 4 }}
+data:
+  {{ .Values.policy.filename }}: |
+{{ .Values.policy.contents | indent 4 }}
+{{- end }}
