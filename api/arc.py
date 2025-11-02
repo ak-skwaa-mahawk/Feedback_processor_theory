@@ -1,3 +1,25 @@
+from slowapi import Limiter
+from fastapi import APIRouter, HTTPException, Query
+from api.ratelimit import limiter  # NEW
+
+router = APIRouter(tags=["ARC"])
+
+@router.get("/eval")
+@limiter.limit("30/minute")          # per-IP
+@limiter.limit("6/10seconds")        # short burst control
+def arc_eval(...):
+    ...
+
+@router.post("/sweep")
+@limiter.limit("10/minute")          # heavier endpoint
+@limiter.limit("3/10seconds")
+def arc_sweep(body: ArcSweepRequest):
+    ...
+
+@router.get("/presets")
+@limiter.limit("60/minute")
+def arc_presets():
+    ...
 # api/arc.py
 # FastAPI router for Attenuation–Return Criterion (ARC) evaluation
 # Depends on modules/sound_resonance.py
