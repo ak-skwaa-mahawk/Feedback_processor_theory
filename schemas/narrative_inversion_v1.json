@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "synara://schemas/narrative_inversion_v1.json",
+  "title": "NarrativeInversionRecord",
+  "type": "object",
+  "required": ["version", "subject", "self_record", "provenance", "consent", "privacy", "seals"],
+  "properties": {
+    "version": { "const": "1.0" },
+
+    "subject": {
+      "type": "object",
+      "required": ["entity", "node", "key_id"],
+      "properties": {
+        "entity": { "type": "string" },
+        "node": { "type": "string" },
+        "key_id": { "type": "string" }
+      }
+    },
+
+    "self_record": {
+      "type": "object",
+      "required": ["statement", "evidence", "timestamp"],
+      "properties": {
+        "statement": { "type": "string" },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "external_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "claim", "timestamp"],
+        "properties": {
+          "source": { "type": "string" },
+          "claim": { "type": "string" },
+          "doc_refs": { "type": "array", "items": { "type": "string" } },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "status": { "enum": ["unverified", "verified", "contested"] }
+        }
+      },
+      "default": []
+    },
+
+    "provenance": {
+      "type": "object",
+      "required": ["handshake_id", "challenge", "receipt"],
+      "properties": {
+        "handshake_id": { "type": "string" },
+        "challenge": { "type": "string" },
+        "receipt": { "type": "object" }
+      }
+    },
+
+    "consent": {
+      "type": "object",
+      "required": ["purpose", "scope", "expires"],
+      "properties": {
+        "purpose": { "type": "string" },
+        "scope": { "type": "array", "items": { "type": "string" } },
+        "expires": { "type": "string", "format": "date-time" },
+        "revocable": { "type": "boolean", "default": true }
+      }
+    },
+
+    "privacy": {
+      "type": "object",
+      "required": ["minimization", "retention", "sharing"],
+      "properties": {
+        "minimization": { "enum": ["self", "need_to_know", "public"] },
+        "retention": { "type": "string" },
+        "sharing": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "seals": {
+      "type": "object",
+      "required": ["self_hash", "self_sig", "transparency_log"],
+      "properties": {
+        "self_hash": { "type": "string" },
+        "self_sig": { "type": "string" },
+        "transparency_log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ts", "event", "actor"],
+            "properties": {
+              "ts": { "type": "string", "format": "date-time" },
+              "event": { "type": "string" },
+              "actor": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
