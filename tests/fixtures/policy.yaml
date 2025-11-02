@@ -1,0 +1,16 @@
+collections:
+  default:
+    thresholds: {read_summary: 0.0, read_consented: 0.6, full_access: 0.85}
+    ttl: {base: 300, max: 1800}
+    requires_whisper: false
+    requires_citations: 0
+  unpublished:
+    thresholds: {read_summary: 0.4, read_consented: 0.75, full_access: 0.9}
+    ttl: {base: 240, max: 1200}
+    requires_whisper: true
+    requires_citations: 1
+  archive:
+    thresholds: {read_summary: 0.0, read_consented: 0.3, full_access: 0.7}
+    ttl: {base: 600, max: 2400}
+    requires_whisper: false
+    requires_citations: 0
