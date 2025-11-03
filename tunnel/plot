@@ -1,125 +1,113 @@
-class PlotRequest(BaseModel):
-    model: str = Field(..., description="One of: qm, ftir, waveguide")
-    # sweep variable is the distance-like parameter:
-    #   qm: barrier_width_nm
-    #   ftir: gap_nm
-    #   waveguide: length_mm
-    d_min: float = Field(..., gt=0, description="Start of sweep (distance units depend on model)")
-    d_max: float = Field(..., gt=0, description="End of sweep")
-    points: int = Field(200, gt=1, le=5000)
-    # Model params
-    # QM
-    barrier_height_eV: float | None = None
-    particle_energy_eV: float | None = None
-    mass_kg: float | None = None
-    # FTIR
-    n1: float | None = None
-    n2: float | None = None
-    theta_deg: float | None = None
-    wavelength_nm: float | None = None
-    # WAVEGUIDE
-    n: float | None = None
-    a_mm: float | None = None
-    wavelength_nm_wg: float | None = None
-    # ARC blend (optional)
-    R_free: float = 0.0
-    A: float = 0.0
-    C: float = 0.15
-    alpha: float = 1.0
-    # output format
-    fmt: str = Field("png", pattern="^(png|svg)$")
-
 @router.post("/plot")
 def tunnel_plot(body: PlotRequest):
-    model = body.model.lower()
+    import numpy as np
+
     if body.d_max <= body.d_min:
         raise HTTPException(400, "d_max must be > d_min")
-
-    import numpy as np
     ds = np.linspace(body.d_min, body.d_max, body.points)
-    Ts = []
 
-    if model == "qm":
-        # validate
+    def sweep_qm(ds_nm):
         if any(v is None for v in [body.barrier_height_eV, body.particle_energy_eV]):
             raise HTTPException(400, "QM requires barrier_height_eV and particle_energy_eV")
         m = body.mass_kg if body.mass_kg else M_ELECTRON
-        V0 = eV_to_J(body.barrier_height_eV)
-        E = eV_to_J(body.particle_energy_eV)
-        for d_nm in ds:
+        V0 = eV_to_J(body.barrier_height_eV); E = eV_to_J(body.particle_energy_eV)
+        Ts = []
+        for d_nm in ds_nm:
             d_m = d_nm * 1e-9
-            if E >= V0:
-                T = 1.0
-            else:
-                T = qm_T_rectangular(m, V0, E, d_m)
+            T = 1.0 if E >= V0 else qm_T_rectangular(m, V0, E, d_m)
             Ts.append(T)
+        return np.asarray(Ts), "Barrier width d (nm)"
 
-        x_label = "Barrier width d (nm)"
-
-    elif model == "ftir":
-        required = [body.n1, body.n2, body.theta_deg, body.wavelength_nm]
-        if any(v is None for v in required):
+    def sweep_ftir(ds_nm):
+        if any(v is None for v in [body.n1, body.n2, body.theta_deg, body.wavelength_nm]):
             raise HTTPException(400, "FTIR requires n1, n2, theta_deg, wavelength_nm")
-        theta = deg_to_rad(body.theta_deg)
-        lam = nm_to_m(body.wavelength_nm)
-        for gap_nm in ds:
+        theta = deg_to_rad(body.theta_deg); lam = nm_to_m(body.wavelength_nm)
+        Ts = []
+        for gap_nm in ds_nm:
             gap_m = gap_nm * 1e-9
             T = ftir_T(body.n1, body.n2, theta, lam, gap_m)
             Ts.append(T)
+        return np.asarray(Ts), "Gap d (nm)"
 
-        x_label = "Gap d (nm)"
-
-    elif model == "waveguide":
-        required = [body.n, body.a_mm, body.wavelength_nm_wg]
-        if any(v is None for v in required):
+    def sweep_waveguide(ds_mm):
+        if any(v is None for v in [body.n, body.a_mm, body.wavelength_nm_wg]):
             raise HTTPException(400, "waveguide requires n, a_mm, wavelength_nm_wg")
-        a_m = body.a_mm * 1e-3
-        lam0 = nm_to_m(body.wavelength_nm_wg)
-        for L_mm in ds:
+        a_m = body.a_mm * 1e-3; lam0 = nm_to_m(body.wavelength_nm_wg)
+        Ts = []
+        for L_mm in ds_mm:
             L_m = L_mm * 1e-3
             T = waveguide_T_te10(body.n, a_m, lam0, L_m)
             Ts.append(T)
+        return np.asarray(Ts), "Below-cutoff length L (mm)"
 
-        x_label = "Below-cutoff length L (mm)"
+    def sweep_metal(ds_um):
+        if any(v is None for v in [body.sigma_S_per_m, body.freq_Hz]):
+            raise HTTPException(400, "metal requires sigma_S_per_m and freq_Hz")
+        mu_r = 1.0 if body.mu_r is None else body.mu_r
+        Ts = []
+        for t_um in ds_um:
+            t_m = t_um * 1e-6
+            T = metal_T_skin_depth(body.sigma_S_per_m, body.freq_Hz, t_m, mu_r=mu_r)
+            Ts.append(T)
+        return np.asarray(Ts), "Metal thickness t (μm)"
 
+    # Single-model mode
+    if body.model != "multi":
+        if body.model == "qm":
+            Ts, xlabel = sweep_qm(ds)
+        elif body.model == "ftir":
+            Ts, xlabel = sweep_ftir(ds)
+        elif body.model == "waveguide":
+            Ts, xlabel = sweep_waveguide(ds)
+        elif body.model == "metal":
+            Ts, xlabel = sweep_metal(ds)
+        else:
+            raise HTTPException(400, "model must be qm | ftir | waveguide | metal | multi")
+
+        Rprime = body.R_free + body.alpha * Ts
+        fig, ax = plt.subplots(figsize=(8,5))
+        ax.plot(ds, Ts, lw=2, label="T(d)")
+        ax.plot(ds, Rprime, lw=1.5, ls="--", label="R' = R_free + α T")
+        ax.axhline(body.A + body.C, color="gray", lw=1, ls=":")
+        ax.set_xlabel(xlabel); ax.set_ylabel("Transmission / Return")
+        ax.set_title(f"Tunneling sweep — {body.model.upper()}")
+        ax.set_ylim(0, 1.05); ax.grid(True, alpha=0.3); ax.legend()
+
+    # Multi-curve overlay
     else:
-        raise HTTPException(400, "model must be one of: qm, ftir, waveguide")
+        curves = body.curves or ["qm", "ftir", "waveguide", "metal"]
+        fig, ax = plt.subplots(figsize=(9,5))
+        legend_labels = []
+        # Each curve uses its “natural” distance unit; we reuse ds as given.
+        # For readability, we just annotate unit in legend entries.
+        for cv in curves:
+            cv = cv.lower()
+            if cv == "qm":
+                Ts, _ = sweep_qm(ds)  # ds: nm
+                ax.plot(ds, Ts, lw=2); legend_labels.append("QM (d nm)")
+            elif cv == "ftir":
+                Ts, _ = sweep_ftir(ds)  # ds: nm
+                ax.plot(ds, Ts, lw=2); legend_labels.append("FTIR (gap nm)")
+            elif cv == "waveguide":
+                Ts, _ = sweep_waveguide(ds)  # ds: mm
+                ax.plot(ds, Ts, lw=2); legend_labels.append("WG (L mm)")
+            elif cv == "metal":
+                Ts, _ = sweep_metal(ds)  # ds: μm
+                ax.plot(ds, Ts, lw=2); legend_labels.append("Metal (t μm)")
+            else:
+                raise HTTPException(400, f"unknown curve: {cv}")
 
-    Ts = np.asarray(Ts)
-
-    # optional ARC blending just for overlay (R' = R_free + alpha T)
-    Rprime = body.R_free + body.alpha * Ts
-    passes = (Rprime - body.A) >= body.C
-
-    # render figure
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.plot(ds, Ts, lw=2, label="Tunneling T(d)")
-    ax.plot(ds, Rprime, lw=1.5, linestyle="--", label="R' = R_free + α T")
-    # show pass region
-    try:
-        # horizontal line at A + C
-        ax.axhline(body.A + body.C, color="gray", lw=1, linestyle=":")
-        # shade where passes == True (visual cue)
-        import numpy as np
-        mask = passes.astype(float)
-        # (optional: no shade to keep clean)
-    except Exception:
-        pass
-
-    ax.set_xlabel(x_label)
-    ax.set_ylabel("Transmission / Return (unitless)")
-    ax.set_title(f"Tunneling sweep — {model.upper()}")
-    ax.set_ylim(0, 1.05)
-    ax.grid(True, alpha=0.3)
-    ax.legend()
+        ax.set_xlabel("Sweep variable (unit differs per curve)")
+        ax.set_ylabel("Transmission T")
+        ax.set_title("Tunneling models — multi-curve overlay")
+        ax.set_ylim(0, 1.05); ax.grid(True, alpha=0.3)
+        ax.legend(legend_labels, loc="best")
 
     buf = BytesIO()
     if body.fmt == "svg":
-        fig.savefig(buf, format="svg", bbox_inches="tight")
-        media = "image/svg+xml"
+        fig.savefig(buf, format="svg", bbox_inches="tight"); media = "image/svg+xml"
     else:
-        fig.savefig(buf, format="png", dpi=160, bbox_inches="tight")
-        media = "image/png"
+        fig.savefig(buf, format="png", dpi=160, bbox_inches="tight"); media = "image/png"
     plt.close(fig)
     buf.seek(0)
     return Response(content=buf.getvalue(), media_type=media)
