@@ -1,3 +1,12 @@
+## Metal-Film (Skin-Depth) Tunneling
+For an ohmic conductor with conductivity σ at angular frequency ω,
+the skin depth is \( \delta = \sqrt{2 / (\mu \sigma \omega)} \).
+For a film of thickness \( t \), transmission magnitude is approximated by
+\( T \approx e^{-2 t / \delta} \).
+
+> At higher optical frequencies, replace this RF model with complex ε(ω)
+> (Drude/Lorentz) for accurate results. Our API keeps the RF/ohmic case simple
+> for design intuition and ARC blending.
 # Tunneling Channels in ARC
 
 We implement three families of near-field / forbidden-region transport:
