@@ -1,3 +1,48 @@
+from modules.tunneling import (
+    # existing imports ...
+    metal_T_skin_depth, waveguide_T_te10, nm_to_m
+)
+# --- Metal film (skin-depth tunneling) -----------------------------------------
+# Ohmic conductor model (RF / microwave friendly). For optics you’d normally use
+# complex ε(ω); here we use the classic skin-depth δ = sqrt(2/(μ σ ω)).
+# Transmission magnitude across thickness t: T ≈ exp(-2 t / δ)
+
+def metal_T_skin_depth(
+    sigma_S_per_m: float,        # conductivity, e.g. Cu ~ 5.8e7 S/m
+    freq_Hz: float,              # frequency
+    thickness_m: float,          # metal thickness
+    mu_r: float = 1.0            # relative permeability (≈1 for Cu/Al)
+) -> float:
+    if sigma_S_per_m <= 0 or freq_Hz <= 0 or thickness_m < 0:
+        return 0.0
+    omega = 2.0 * math.pi * freq_Hz
+    delta = skin_depth(omega=omega, sigma=sigma_S_per_m, mu_r=mu_r)
+    return math.exp(-2.0 * thickness_m / delta)class MetalRequest(BaseModel):
+    sigma_S_per_m: float = Field(..., gt=0, description="Conductivity (S/m), e.g. Cu~5.8e7")
+    freq_Hz: float = Field(..., gt=0, description="Frequency (Hz)")
+    thickness_um: float = Field(..., ge=0, description="Metal thickness (μm)")
+    mu_r: float = Field(1.0, gt=0, description="Relative permeability (≈1)")
+    R_free: float = 0.0
+    A: float = 0.0
+    C: float = 0.15
+    alpha: float = 1.0
+
+class MetalResponse(BaseModel):
+    T_metal: float
+    arc: dict
+    skin_depth_um: float
+
+@router.post("/metal", response_model=MetalResponse)
+def metal_tunneling(body: MetalRequest):
+    t_m = body.thickness_um * 1e-6
+    T = metal_T_skin_depth(body.sigma_S_per_m, body.freq_Hz, t_m, mu_r=body.mu_r)
+
+    # compute skin depth for reference
+    omega = 2.0 * math.pi * body.freq_Hz
+    delta_m = skin_depth(omega=omega, sigma=body.sigma_S_per_m, mu_r=body.mu_r)
+
+    arc = arc_with_tunneling(body.R_free, body.A, body.C, T_tun=T, alpha=body.alpha)
+    return {"T_metal": T, "arc": arc, "skin_depth_um": delta_m * 1e6}
 # modules/tunneling.py
 # Quantum + Electromagnetic tunneling utilities for ARC integration
 
