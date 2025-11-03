@@ -1,3 +1,10 @@
+from fpt.utils.handshake import handshake_message
+
+def run_feedback_cycle(session_id: str, inputs):
+    handshake_message(seed=f"FPT:cycle_start:{session_id}")
+    result = process(inputs)
+    handshake_message(seed=f"FPT:cycle_end:{session_id}|status=ok")
+    return result
 # fpt/engine.py (example snippet)
 from fpt.utils.handshake import handshake_message
 
