@@ -1,3 +1,5 @@
+from api.tunnel import router as tunnel_router
+app.include_router(tunnel_router)
 # api/app.py (or your main service)
 from fastapi import FastAPI
 from api.tunnel import router as tunnel_router
