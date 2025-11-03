@@ -1,4 +1,41 @@
 from modules.tunneling import (
+    # ...existing imports...
+    drude_epsilon_r, drude_thinfilm_T, complex_n_from_eps
+)
+# --------------------- Drude thin-film (normal incidence) --------------------
+class DrudeRequest(BaseModel):
+    freq_Hz: float = Field(..., gt=0, description="Frequency (Hz)")
+    thickness_nm: float = Field(..., ge=0, description="Film thickness (nm)")
+    omega_p_rad_s: float = Field(..., gt=0, description="Plasma freq (rad/s)")
+    gamma_rad_s: float = Field(..., gt=0, description="Collision rate γ (rad/s)")
+    eps_inf: float = Field(1.0, gt=0, description="High-frequency permittivity")
+    mu_r: float = Field(1.0, gt=0, description="Rel. permeability")
+    n0: float = Field(1.0, gt=0, description="Incident medium index (real)")
+    ns: float = Field(1.0, gt=0, description="Exit medium index (real)")
+    R_free: float = 0.0
+    A: float = 0.0
+    C: float = 0.15
+    alpha: float = 1.0
+
+class DrudeResponse(BaseModel):
+    T_drude: float
+    arc: dict
+
+@router.post("/drude", response_model=DrudeResponse)
+def drude_tunneling(body: DrudeRequest):
+    T = drude_thinfilm_T(
+        freq_Hz=body.freq_Hz,
+        thickness_m=body.thickness_nm * 1e-9,
+        omega_p=body.omega_p_rad_s,
+        gamma=body.gamma_rad_s,
+        eps_inf=body.eps_inf,
+        mu_r=body.mu_r,
+        n0=complex(body.n0, 0.0),
+        ns=complex(body.ns, 0.0),
+    )
+    arc = arc_with_tunneling(body.R_free, body.A, body.C, T_tun=T, alpha=body.alpha)
+    return {"T_drude": T, "arc": arc}
+from modules.tunneling import (
     # existing imports ...
     metal_T_skin_depth, waveguide_T_te10, nm_to_m
 )
@@ -420,3 +457,85 @@ def tunnel_plot(body: PlotRequest):
     plt.close(fig)
     buf.seek(0)
     return Response(content=buf.getvalue(), media_type=media)
+# --- Drude metal (complex epsilon) + thin-film transmission (normal incidence) --
+
+def drude_epsilon_r(
+    omega: float,
+    omega_p: float,
+    gamma: float,
+    eps_inf: float = 1.0
+) -> complex:
+    """
+    Relative permittivity using the Drude model:
+      ε(ω) = ε_inf - ω_p^2 / (ω^2 + i γ ω)
+    All angular frequencies (rad/s).
+    """
+    denom = (omega**2) + 1j * gamma * omega
+    return eps_inf - (omega_p**2) / denom
+
+def complex_n_from_eps(eps_r: complex, mu_r: float = 1.0) -> complex:
+    """Return complex refractive index ñ = sqrt(ε_r μ_r)."""
+    return (eps_r * mu_r) ** 0.5
+
+def thinfilm_transmittance_normal(
+    n0: complex,          # incident medium index
+    n1: complex,          # film index (can be complex)
+    ns: complex,          # exit medium index
+    k0: float,            # 2π/λ0 (rad/m)
+    d_m: float            # film thickness (m)
+) -> float:
+    """
+    Single-layer (n1, thickness d) on substrate ns, normal incidence.
+    Returns intensity transmittance T (unitless 0..1).
+    Uses 2x2 transfer-matrix with:
+      t = 2 n0 / (n0 + ns) * 1/(cosδ - i * ( (ns + n0) / (2 n1) ) sinδ - i * ( (ns - n0)/(2 n1) ) sinδ )
+    Safer: use standard matrix formalism.
+    """
+    # Fresnel at normal incidence
+    def r_ij(ni, nj): return (ni - nj) / (ni + nj)
+    def t_ij(ni, nj): return 2 * ni / (ni + nj)
+
+    delta = n1 * k0 * d_m  # phase thickness (complex)
+    # Transfer matrix for single film at normal incidence
+    cosd = math.cos(delta)
+    sind = math.sin(delta)
+    # Characteristic matrix of the layer
+    M11 = cosd
+    M12 = 1j * sind / n1
+    M21 = 1j * n1 * sind
+    M22 = cosd
+
+    # Global transmission amplitude
+    denom = (n0 * M11 + n0 * ns * M12 + M21 + ns * M22)
+    t = 2 * n0 / denom
+    # Intensity transmittance with impedance correction:
+    T = (abs(t) ** 2) * (ns.real / n0.real)
+    # Guard
+    if not math.isfinite(T):
+        return 0.0
+    return max(0.0, min(1.0, T.real))
+
+def drude_thinfilm_T(
+    freq_Hz: float,
+    thickness_m: float,
+    omega_p: float,
+    gamma: float,
+    eps_inf: float = 1.0,
+    mu_r: float = 1.0,
+    n0: complex = 1.0,
+    ns: complex = 1.0
+) -> float:
+    """
+    Drude metal film at normal incidence between media n0 -> ns.
+    Compute ε(ω) -> ñ -> thin-film T.
+    """
+    if freq_Hz <= 0 or thickness_m < 0 or omega_p <= 0 or gamma <= 0:
+        return 0.0
+    c0 = 299792458.0
+    lambda0 = c0 / freq_Hz
+    k0 = 2.0 * math.pi / lambda0
+    omega = 2.0 * math.pi * freq_Hz
+
+    eps_r = drude_epsilon_r(omega, omega_p, gamma, eps_inf=eps_inf)
+    n1 = complex_n_from_eps(eps_r, mu_r=mu_r)
+    return thinfilm_transmittance_normal(n0=n0, n1=n1, ns=ns, k0=k0, d_m=thickness_m)
