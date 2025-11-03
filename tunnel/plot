@@ -2,112 +2,138 @@
 def tunnel_plot(body: PlotRequest):
     import numpy as np
 
-    if body.d_max <= body.d_min:
-        raise HTTPException(400, "d_max must be > d_min")
-    ds = np.linspace(body.d_min, body.d_max, body.points)
-
+    # Helpers for thickness sweep (nm / mm / μm) like before
     def sweep_qm(ds_nm):
         if any(v is None for v in [body.barrier_height_eV, body.particle_energy_eV]):
             raise HTTPException(400, "QM requires barrier_height_eV and particle_energy_eV")
         m = body.mass_kg if body.mass_kg else M_ELECTRON
         V0 = eV_to_J(body.barrier_height_eV); E = eV_to_J(body.particle_energy_eV)
-        Ts = []
-        for d_nm in ds_nm:
-            d_m = d_nm * 1e-9
-            T = 1.0 if E >= V0 else qm_T_rectangular(m, V0, E, d_m)
-            Ts.append(T)
+        Ts = [ (1.0 if E >= V0 else qm_T_rectangular(m, V0, E, d_nm*1e-9)) for d_nm in ds_nm ]
         return np.asarray(Ts), "Barrier width d (nm)"
 
     def sweep_ftir(ds_nm):
         if any(v is None for v in [body.n1, body.n2, body.theta_deg, body.wavelength_nm]):
             raise HTTPException(400, "FTIR requires n1, n2, theta_deg, wavelength_nm")
         theta = deg_to_rad(body.theta_deg); lam = nm_to_m(body.wavelength_nm)
-        Ts = []
-        for gap_nm in ds_nm:
-            gap_m = gap_nm * 1e-9
-            T = ftir_T(body.n1, body.n2, theta, lam, gap_m)
-            Ts.append(T)
+        Ts = [ ftir_T(body.n1, body.n2, theta, lam, gap_nm*1e-9) for gap_nm in ds_nm ]
         return np.asarray(Ts), "Gap d (nm)"
 
     def sweep_waveguide(ds_mm):
         if any(v is None for v in [body.n, body.a_mm, body.wavelength_nm_wg]):
             raise HTTPException(400, "waveguide requires n, a_mm, wavelength_nm_wg")
         a_m = body.a_mm * 1e-3; lam0 = nm_to_m(body.wavelength_nm_wg)
-        Ts = []
-        for L_mm in ds_mm:
-            L_m = L_mm * 1e-3
-            T = waveguide_T_te10(body.n, a_m, lam0, L_m)
-            Ts.append(T)
+        Ts = [ waveguide_T_te10(body.n, a_m, lam0, L_mm*1e-3) for L_mm in ds_mm ]
         return np.asarray(Ts), "Below-cutoff length L (mm)"
 
     def sweep_metal(ds_um):
         if any(v is None for v in [body.sigma_S_per_m, body.freq_Hz]):
             raise HTTPException(400, "metal requires sigma_S_per_m and freq_Hz")
         mu_r = 1.0 if body.mu_r is None else body.mu_r
-        Ts = []
-        for t_um in ds_um:
-            t_m = t_um * 1e-6
-            T = metal_T_skin_depth(body.sigma_S_per_m, body.freq_Hz, t_m, mu_r=mu_r)
-            Ts.append(T)
+        Ts = [ metal_T_skin_depth(body.sigma_S_per_m, body.freq_Hz, t_um*1e-6, mu_r=mu_r) for t_um in ds_um ]
         return np.asarray(Ts), "Metal thickness t (μm)"
 
-    # Single-model mode
+    # NEW: Drude frequency sweep
+    def sweep_drude_freq(fs_Hz):
+        need = [body.thickness_nm, body.omega_p_rad_s, body.gamma_rad_s]
+        if any(v is None for v in need):
+            raise HTTPException(400, "drude requires thickness_nm, omega_p_rad_s, gamma_rad_s")
+        eps_inf = 1.0 if body.eps_inf is None else body.eps_inf
+        n0 = complex(1.0 if body.n0_r is None else body.n0_r, 0.0)
+        ns = complex(1.0 if body.ns_r is None else body.ns_r, 0.0)
+        Ts = [
+            drude_thinfilm_T(
+                freq_Hz=freq,
+                thickness_m=body.thickness_nm * 1e-9,
+                omega_p=body.omega_p_rad_s,
+                gamma=body.gamma_rad_s,
+                eps_inf=eps_inf,
+                mu_r=1.0 if body.mu_r is None else body.mu_r,
+                n0=n0, ns=ns
+            ) for freq in fs_Hz
+        ]
+        return np.asarray(Ts), "Frequency f (Hz)"
+
+    # Decide sweep axis:
+    is_freq_sweep = (body.f_min_Hz is not None) and (body.f_max_Hz is not None)
+    is_thick_sweep = (body.d_min is not None) and (body.d_max is not None)
+
+    if not (is_freq_sweep or is_thick_sweep):
+        raise HTTPException(400, "Provide either (d_min,d_max) for thickness/length or (f_min_Hz,f_max_Hz) for frequency sweep.")
+
+    # Create x-axis vector
+    if is_freq_sweep:
+        if body.f_max_Hz <= body.f_min_Hz:
+            raise HTTPException(400, "f_max_Hz must be > f_min_Hz")
+        xs = np.linspace(body.f_min_Hz, body.f_max_Hz, body.points)
+    else:
+        if body.d_max <= body.d_min:
+            raise HTTPException(400, "d_max must be > d_min")
+        xs = np.linspace(body.d_min, body.d_max, body.points)
+
+    # SINGLE MODEL
     if body.model != "multi":
         if body.model == "qm":
-            Ts, xlabel = sweep_qm(ds)
+            if is_freq_sweep:
+                raise HTTPException(400, "QM supports thickness sweep only.")
+            Ts, xlabel = sweep_qm(xs)
         elif body.model == "ftir":
-            Ts, xlabel = sweep_ftir(ds)
+            if is_freq_sweep:
+                raise HTTPException(400, "FTIR supports gap-thickness sweep only.")
+            Ts, xlabel = sweep_ftir(xs)
         elif body.model == "waveguide":
-            Ts, xlabel = sweep_waveguide(ds)
+            if is_freq_sweep:
+                raise HTTPException(400, "Waveguide supports below-cutoff length sweep only.")
+            Ts, xlabel = sweep_waveguide(xs)
         elif body.model == "metal":
-            Ts, xlabel = sweep_metal(ds)
+            if is_freq_sweep:
+                raise HTTPException(400, "Ohmic metal model here supports thickness sweep at fixed freq.")
+            Ts, xlabel = sweep_metal(xs)
+        elif body.model == "drude":
+            if not is_freq_sweep:
+                raise HTTPException(400, "Drude currently supports frequency sweep (f_min_Hz,f_max_Hz).")
+            Ts, xlabel = sweep_drude_freq(xs)
         else:
-            raise HTTPException(400, "model must be qm | ftir | waveguide | metal | multi")
+            raise HTTPException(400, "model must be qm | ftir | waveguide | metal | drude | multi")
 
         Rprime = body.R_free + body.alpha * Ts
         fig, ax = plt.subplots(figsize=(8,5))
-        ax.plot(ds, Ts, lw=2, label="T(d)")
-        ax.plot(ds, Rprime, lw=1.5, ls="--", label="R' = R_free + α T")
+        ax.plot(xs, Ts, lw=2, label="T(x)")
+        ax.plot(xs, Rprime, lw=1.5, ls="--", label="R' = R_free + α T")
         ax.axhline(body.A + body.C, color="gray", lw=1, ls=":")
         ax.set_xlabel(xlabel); ax.set_ylabel("Transmission / Return")
-        ax.set_title(f"Tunneling sweep — {body.model.upper()}")
+        ax.set_title(f"Sweep — {body.model.upper()}")
         ax.set_ylim(0, 1.05); ax.grid(True, alpha=0.3); ax.legend()
 
-    # Multi-curve overlay
+    # MULTI OVERLAY
     else:
-        curves = body.curves or ["qm", "ftir", "waveguide", "metal"]
+        curves = (body.curves or ["qm", "ftir", "waveguide", "metal", "drude"])
         fig, ax = plt.subplots(figsize=(9,5))
-        legend_labels = []
-        # Each curve uses its “natural” distance unit; we reuse ds as given.
-        # For readability, we just annotate unit in legend entries.
+        labels = []
         for cv in curves:
-            cv = cv.lower()
-            if cv == "qm":
-                Ts, _ = sweep_qm(ds)  # ds: nm
-                ax.plot(ds, Ts, lw=2); legend_labels.append("QM (d nm)")
-            elif cv == "ftir":
-                Ts, _ = sweep_ftir(ds)  # ds: nm
-                ax.plot(ds, Ts, lw=2); legend_labels.append("FTIR (gap nm)")
-            elif cv == "waveguide":
-                Ts, _ = sweep_waveguide(ds)  # ds: mm
-                ax.plot(ds, Ts, lw=2); legend_labels.append("WG (L mm)")
-            elif cv == "metal":
-                Ts, _ = sweep_metal(ds)  # ds: μm
-                ax.plot(ds, Ts, lw=2); legend_labels.append("Metal (t μm)")
+            c = cv.lower()
+            if c == "qm" and not is_freq_sweep:
+                Ts, _ = sweep_qm(xs); ax.plot(xs, Ts, lw=2); labels.append("QM (d nm)")
+            elif c == "ftir" and not is_freq_sweep:
+                Ts, _ = sweep_ftir(xs); ax.plot(xs, Ts, lw=2); labels.append("FTIR (gap nm)")
+            elif c == "waveguide" and not is_freq_sweep:
+                Ts, _ = sweep_waveguide(xs); ax.plot(xs, Ts, lw=2); labels.append("WG (L mm)")
+            elif c == "metal" and not is_freq_sweep:
+                Ts, _ = sweep_metal(xs); ax.plot(xs, Ts, lw=2); labels.append("Metal (t μm)")
+            elif c == "drude" and is_freq_sweep:
+                Ts, _ = sweep_drude_freq(xs); ax.plot(xs, Ts, lw=2); labels.append("Drude (f Hz)")
             else:
-                raise HTTPException(400, f"unknown curve: {cv}")
-
-        ax.set_xlabel("Sweep variable (unit differs per curve)")
+                # Skip incompatible curve for the chosen sweep axis
+                continue
+        ax.set_xlabel("Frequency (Hz)" if is_freq_sweep else "Sweep variable (per-curve units)")
         ax.set_ylabel("Transmission T")
         ax.set_title("Tunneling models — multi-curve overlay")
         ax.set_ylim(0, 1.05); ax.grid(True, alpha=0.3)
-        ax.legend(legend_labels, loc="best")
+        ax.legend(labels, loc="best")
 
     buf = BytesIO()
-    if body.fmt == "svg":
-        fig.savefig(buf, format="svg", bbox_inches="tight"); media = "image/svg+xml"
-    else:
-        fig.savefig(buf, format="png", dpi=160, bbox_inches="tight"); media = "image/png"
+    media = "image/svg+xml" if body.fmt == "svg" else "image/png"
+    fmt = "svg" if body.fmt == "svg" else "png"
+    fig.savefig(buf, format=fmt, dpi=(160 if fmt=="png" else None), bbox_inches="tight")
     plt.close(fig)
     buf.seek(0)
     return Response(content=buf.getvalue(), media_type=media)
