@@ -1,3 +1,17 @@
+## Drude metal (frequency sweep)
+
+We model dispersive metals with the Drude permittivity:
+
+\[
+\varepsilon_r(\omega) = \varepsilon_{\infty} - \frac{\omega_p^2}{\omega^2 + i \gamma \omega}
+\]
+
+Then compute the complex index \( \tilde{n}=\sqrt{\varepsilon_r \mu_r} \) and
+use a single-layer transfer matrix at normal incidence to get the film
+transmittance \(T\). Endpoint:
+
+- `POST /tunnel/drude`
+- `POST /tunnel/plot` with `model="drude"` and `f_min_Hz/f_max_Hz` for frequency sweeps.
 ## Metal-Film (Skin-Depth) Tunneling
 For an ohmic conductor with conductivity σ at angular frequency ω,
 the skin depth is \( \delta = \sqrt{2 / (\mu \sigma \omega)} \).
