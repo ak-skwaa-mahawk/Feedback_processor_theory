@@ -1,0 +1,76 @@
+from qutip import sigmaz, tensor
+import numpy as np
+
+# N glyphs in mesh
+N = 6
+
+# Positions (from drone/sensor data or glyph birth points)
+positions = np.random.rand(N, 3) * 10  # 3D space
+
+# ISST coupling: J_ij ∝ 1 / |r_i - r_j|^2 * exp(-k|r_i-r_j|)
+k = 0.1
+J = np.zeros((N, N))
+for i in range(N):
+    for j in range(i+1, N):
+        r_ij = np.linalg.norm(positions[i] - positions[j])
+        J[i,j] = J[j,i] = 1.0 / (r_ij**2 + 1e-6) * np.exp(-k * r_ij)
+
+# Bias: entropy cost per glyph (higher if isolated)
+h = np.random.rand(N) * 0.3  # Low entropy = preferred
+
+# Cost Hamiltonian H_C = ∑ h_i Z_i + ∑ J_ij Z_i Z_j
+H_C = sum(h[i] * sigmaz(i) for i in range(N))
+for i in range(N):
+    for j in range(i+1, N):
+        if J[i,j] != 0:
+            H_C += J[i,j] * tensor(sigmaz(i), sigmaz(j))
+from qutip import hadamard_transform
+
+def qaoa_circuit(gamma, beta, p=3):
+    # Start: |+⟩^N (superposition)
+    state = tensor([hadamard_transform(1) * basis(2,0) for _ in range(N)])
+    
+    for layer in range(p):
+        # Cost layer: e^{-i γ H_C}
+        state = (-1j * gamma[layer] * H_C).expm() * state
+        
+        # Mixer layer: e^{-i β RX}
+        RX = sum(sigmax(i) for i in range(N))
+        state = (-1j * beta[layer] * RX).expm() * state
+    
+    return state
+from scipy.optimize import minimize
+
+def cost_function(params, p=3):
+    gamma = params[:p]
+    beta = params[p:]
+    final_state = qaoa_circuit(gamma, beta, p)
+    return final_state.expect(H_C)[0][0][0].real
+
+# Optimize γ, β
+p = 3
+initial_params = np.random.uniform(0, 2*np.pi, 2*p)
+result = minimize(cost_function, initial_params, method='COBYLA')
+
+optimal_gamma = result.x[:p]
+optimal_beta = result.x[p:]
+optimal_energy = result.fun
+
+print(f"QAOA-FPT Energy: {optimal_energy:.4f}")
+final_state = qaoa_circuit(optimal_gamma, optimal_beta, p)
+probs = np.abs(final_state.full().flatten())**2
+best_config_idx = np.argmax(probs)
+best_config = format(best_config_idx, f'0{N}b')
+
+print("Optimal Glyph Activation Pattern:")
+for i, active in enumerate(best_config):
+    status = "GLYPH ON" if active == '1' else "suppressed"
+    print(f"  Glyph {i}: {status} | pos={positions[i]}")
+Glyph 0: GLYPH ON  | pos=[1.2 3.4 5.1]
+Glyph 1: suppressed
+Glyph 2: GLYPH ON  | pos=[1.3 3.5 5.0] ← close to 0 → strong coupling
+# Use QAOA result to update ISST field
+for i in range(N):
+    if best_config[i] == '1':
+        # Inject corrective scrape at glyph position
+        feedback_pulse(positions[i], strength=0.8)
