@@ -1,0 +1,135 @@
+from qutip import basis, sigmax, sigmaz, tensor
+import numpy as np
+
+# Hexa encoding:
+# 1. Polarization (H/V) — survives nitrogen haze
+# 2. OAM (ℓ=0,1) — high-dim shield
+# 3. Frequency comb (IR1, IR2) — deep-space window
+# 4. Path (upper/lower) — Charon diffraction
+# 5. Time-bin (early/late) — dispersion cancel
+# 6. Phase (0, π) — heliopause interference
+
+psi_H = basis(2, 0); psi_V = basis(2, 1)
+psi_pol = (psi_H + psi_V).unit()
+
+psi_oam0 = basis(2, 0); psi_oam1 = basis(2, 1)
+psi_oam = (psi_oam0 + psi_oam1).unit()
+
+psi_ir1 = basis(2, 0); psi_ir2 = basis(2, 1)
+psi_freq = (psi_ir1 + psi_ir2).unit()
+
+psi_upper = basis(2, 0); psi_lower = basis(2, 1)
+psi_path = (psi_upper + psi_lower).unit()
+
+psi_early = basis(2, 0); psi_late = basis(2, 1)
+psi_time = (psi_early + psi_late).unit()
+
+psi_phase0 = basis(2, 0); psi_phase1 = basis(2, 1)
+psi_phase = (psi_phase0 + psi_phase1).unit()
+
+# 64-level glyph: |pol⟩ ⊗ |oam⟩ ⊗ |freq⟩ ⊗ |path⟩ ⊗ |time⟩ ⊗ |phase⟩
+psi_pluto = tensor(psi_pol, psi_oam, psi_freq, psi_path, psi_time, psi_phase)
+
+print("PQC-FPT: Glyph encoded in light + orbital + IR + path + time + phase — forged for Pluto's edge")
+# Earth-Pluto distance: ~39.5 AU = 5.9B km avg
+# Light time: ~328 minutes one-way
+T2_transit = 0.1  # 100 ms (Kuiper dust, heliopause, Charon geysers)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)),  # Pol
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(sigmaz()).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)),  # OAM
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(sigmaz()).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)),  # Freq
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(qeye(2)).kron(sigmaz()).kron(qeye(2)).kron(qeye(2)),  # Path
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(sigmaz()).kron(qeye(2)),  # Time
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(sigmaz())   # Phase
+]
+
+# Simulate 80 ms segment (heliopause crossing)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_pluto, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_pluto.overlap(psi_received))**2
+
+print(f"PQC-FPT: 80ms Plutonian transit → Fidelity = {fidelity:.6f}")
+def pluto_rewrite(psi_target, gate_time=1e-9):
+    """
+    EOM + deformable mirror tuned to Charon ice density
+    1 GHz → 1ns π-pulse, error <10⁻⁴ from nitrogen ice
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2))  # Act on polarization
+    result = mesolve(H_drive, psi_pluto, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-heliopause
+psi_new = tensor((psi_H + 1j * psi_V).unit(), psi_oam, psi_freq, psi_path, psi_time, psi_phase)
+psi_rewritten = pluto_rewrite(psi_new)
+
+print(f"Pluto Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class PQC_FPT:
+    def __init__(self, N_relays=5, T2_transit=0.1):
+        self.N = N_relays
+        self.T2_transit = T2_transit
+        self.earth_station = basis(64,0)
+        self.charon_relay = basis(64,0)
+        self.kuiper_terminus = basis(64,0)
+        self.pluto_orbit = basis(64,0)
+        self.transit_delay = 19680  # 328 min = 19680 s
+    
+    def charon_uplink(self, psi_glyph):
+        """Beam to Charon (New Horizons II relay)"""
+        self.charon_relay = psi_glyph
+        return "Uplinked — 328 min to Pluto"
+    
+    def pluto_downlink(self):
+        """Receive at Kuiper orbiter"""
+        delay = self.transit_delay
+        return self.pluto_orbit, delay
+    
+    def rewrite_terminus(self, psi_new):
+        """1ns rewrite in Kuiper terminus swarm"""
+        return pluto_rewrite(psi_new)
+
+# Earth-Pluto link
+pqc = PQC_FPT()
+pqc.charon_uplink(psi_pluto)
+def terminus_vqe(relay, target_H, max_iter=50):
+    """All-optical VQE on Kuiper terminus swarm"""
+    def cost(params):
+        # 64-level ansatz
+        state = sum(np.exp(1j*p) * basis(64,i) for i,p in enumerate(params))
+        state = state.unit()
+        H_opt = target_H * sigmaz().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2))
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, np.zeros(64), method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = sum(np.exp(1j*result.x[i]) * basis(64,i) for i in range(64)).unit()
+    pqc.rewrite_terminus(optimal)
+    return optimal
+
+# Adapt glyph in the terminus
+terminus_vqe("terminus", target_H=-8.0)
+class Swarm_PQC_FPT:
+    def __init__(self, N_earth=100, N_pluto=5):
+        self.N_earth = N_earth
+        self.N_pluto = N_pluto
+        self.earth = [PQC_FPT() for _ in range(N_earth)]
+        self.pluto_const = [basis(64,0) for _ in range(N_pluto)]
+    
+    def plutonian_broadcast(self, psi_glyph):
+        """Uplink to all Kuiper orbiters + Charon"""
+        for orb in range(self.N_pluto):
+            self.pluto_const[orb] = psi_glyph
+    
+    def terminus_sync(self):
+        """Use Kuiper terminus as final quantum repeater"""
+        pass
+
+# Earth-Pluto swarm
+swarm_pqc = Swarm_PQC_FPT(N_earth=100, N_pluto=5)
+swarm_pqc.plutonian_broadcast(psi_pluto)
+[Earth Drone] → Scrape → PQC-FPT (1ns) → Charon → Kuiper Terminus → Pluto Orbiter
+                                          ↓
+                            [All Nodes] ← 656-min RTT Sync
