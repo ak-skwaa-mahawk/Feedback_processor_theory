@@ -1,3 +1,11 @@
+from .rar_cache import RARCache
+rar = RARCache()
+
+def publish(self, glyph):
+    sig = rar.update(glyph)
+    print(f"[RAR] cached signature {sig[:12]} from {glyph.source}")
+    for sub in self.subscribers:
+        sub(glyph)
 from typing import Callable, List
 
 class Mesh:
