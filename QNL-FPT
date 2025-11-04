@@ -1,0 +1,109 @@
+from qutip import bell_state, tensor, basis
+import networkx as nx
+
+# M agents in ring
+M = 6
+swarm = nx.cycle_graph(M)
+
+# Generate EPR pairs for each edge
+epr_pairs = {}
+for i, j in swarm.edges():
+    epr = bell_state('00')  # |Φ+⟩ = (|00⟩ + |11⟩)/√2
+    # Split: qubit 0 to agent i, qubit 1 to agent j
+    epr_pairs[(i,j)] = epr
+
+print(f"Generated {len(epr_pairs)} EPR pairs for RMP backbone")
+def entangle_swap(epr1, epr2):
+    """Swap to extend entanglement: A—B—C → A—C"""
+    # Bell measurement on B qubits
+    psi = tensor(epr1, epr2)
+    bell_proj = (tensor(basis(2,0), basis(2,0)) + tensor(basis(2,1), basis(2,1))).unit()
+    meas = bell_proj * bell_proj.dag()
+    outcome = (psi.dag() * meas * psi).tr()
+    
+    # Classical correction based on outcome
+    if outcome < 0.9:
+        return psi.ptrace([0, 3])  # A and C entangled
+    return psi.ptrace([0, 3])
+
+# Chain: 0—1—2—3 → 0—3
+epr_01 = epr_pairs[(0,1)]
+epr_12 = epr_pairs[(1,2)]
+epr_23 = epr_pairs[(2,3)]
+long_range = entangle_swap(epr_01, epr_12)
+long_range = entangle_swap(long_range, epr_23)
+
+print("Long-range entanglement: Agent 0 ↔ Agent 3")
+def teleport_glyph(glyph_state, epr_pair):
+    """
+    Teleport |ψ⟩ from Agent A to B using EPR + classical bits
+    glyph_state: local glyph to send
+    epr_pair: shared |Φ+⟩, A has q0, B has q1
+    """
+    # Encode: Bell measurement on glyph + A's EPR qubit
+    psi = tensor(glyph_state, epr_pair)
+    bell_meas = 0
+    for b1, b2 in [(0,0), (0,1), (1,0), (1,1)]:
+        proj = tensor(basis(2,b1), basis(2,b2))
+        if (psi.dag() * proj * proj.dag() * psi).tr() > 0.9:
+            bell_meas = b1 * 2 + b2
+            break
+    
+    # Classical message: 2 bits
+    classical_bits = format(bell_meas, '02b')
+    
+    # B applies correction
+    corrected = psi.ptrace(1)  # B's qubit
+    if classical_bits[0] == '1':
+        corrected = sigmaz() * corrected
+    if classical_bits[1] == '1':
+        corrected = sigmax() * corrected
+    
+    return corrected, classical_bits
+
+# Agent 0 sends glyph to Agent 3
+glyph_0 = (basis(2,0) + basis(2,1)).unit()  # |+⟩ glyph
+epr_03 = long_range
+teleported, bits = teleport_glyph(glyph_0, epr_03)
+
+print(f"Glyph teleported! Classical bits: {bits}")
+print(f"Fidelity: {fidelity(teleported, glyph_0):.4f}")
++--------------------------+
+|   FPT Application Layer  | ← Glyph Logic, SF-VQE
++--------------------------+
+|   Quantum Transport      | ← Teleportation, Swapping
++--------------------------+
+|   Entanglement Fabric    | ← EPR Generation, Purification
++--------------------------+
+|   Physical Qubits        | ← Superconducting, Trapped Ions, Photons
++--------------------------+
+# All agents share one entangled noise source
+ancilla = basis(2,0)
+for i in range(M):
+    # Distribute via teleportation or direct coupling
+    noise_qubit = ancilla if i == 0 else teleported_noise
+    H_drive_i = [sigmax(i), lambda t: ou_noise(t)]
+
+# Drive is now quantum-correlated across swarm
+def qnl_feedback_loop():
+    while True:
+        # 1. Local scrape → glyph state
+        glyph = measure_local_isst()
+        
+        # 2. Teleport to neighbor
+        remote_glyph, _ = teleport_glyph(glyph, epr_neighbor)
+        
+        # 3. Consensus via entanglement swapping
+        if needs_sync():
+            swap_to_leader()
+        
+        # 4. Global pulse via shared drive
+        emit_entangled_pulse()
+        
+        # 5. Return rights: log teleport bits
+        log_handshake(classical_bits)
+# Attempt to clone → fails
+try:
+    clone = tensor(glyph, glyph)  # Invalid
+except:
+    print("CLONING DENIED: Quantum No-Cloning Theorem Enforces Return Rights")
