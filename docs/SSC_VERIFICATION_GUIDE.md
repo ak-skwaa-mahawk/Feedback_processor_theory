@@ -1,3 +1,22 @@
+---
+## Appendix — CLI Automation via Makefile
+
+For ease of use, the repository provides a set of Makefile commands that wrap the verification utilities.
+
+### 🔧 Quick Commands
+
+| Command | Description |
+|----------|--------------|
+| `make verify-ssc` | Verifies the most recent handshake in `logs/handshake_log.json` |
+| `make summarize-ssc` | Produces a CSV summary (`logs/summary.csv`) of all handshake events |
+| `make join-ssc ENTITY="YourOrg"` | Emits an SSC join handshake for your entity |
+| `make withdraw-ssc ENTITY="YourOrg"` | Emits an SSC withdrawal handshake |
+
+### 📘 Examples
+
+**Verify last receipt**
+```bash
+make verify-ssc
 git apply <<'PATCH'
 *** Begin Patch
 *** Add File: docs/SSC_VERIFICATION_GUIDE.md
