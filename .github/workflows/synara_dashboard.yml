@@ -1,0 +1,398 @@
+name: Build Synara Sync Dashboard
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"  # hourly; adjust as needed
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install jinja2 requests
+
+      # Optional: run your sync checker here to produce sync_results.json
+      # - name: Run Grafana sync check
+      #   env:
+      #     GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }}
+      #   run: |
+      #     python synara_grafana_sync_check.py --grafana ${{ secrets.GRAFANA_URL }} --token "$GRAFANA_API_KEY"
+      #     # Expect it to write sync_results.json
+
+      - name: Ensure sample data (fallback)
+        if: ${{ !hashFiles('sync_results.json') }}
+        run: |
+          echo '[{"title":"synara_latency_ms_Warning","status":"match","expected_expr":">500","actual_expr":">500","for_duration":"5m"}]' > sync_results.json
+
+      - name: Write enhanced template & renderer (if not committed)
+        run: |
+          cat > synara_sync_dashboard_template_enhanced.html <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Synara Grafana Sync Dashboard — Enhanced</title>
+  {% if auto_refresh %}<meta http-equiv="refresh" content="{{refresh_interval}}">{% endif %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#fafafa;--fg:#222;--muted:#666;--card:#ffffff;--line:#e5e7eb;
+      --ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--accent:#3b82f6;
+    }
+    body.dark{
+      --bg:#0b0f14;--fg:#e5e7eb;--muted:#9aa4af;--card:#10161d;--line:#1f2937;
+      --ok:#22c55e;--warn:#fbbf24;--err:#f87171;--accent:#60a5fa;
+    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--fg);margin:0;}
+    header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;gap:14px;align-items:center;z-index:20}
+    h1{font-size:1.1rem;margin:0;font-weight:600}
+    .sub{color:var(--muted);font-size:.9rem}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);padding:6px 10px;border-radius:999px;background:var(--bg)}
+    .btn{border:1px solid var(--line);background:var(--card);padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--fg)}
+    .btn:hover{border-color:var(--accent)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:.8rem}
+    .ok{background:var(--ok)} .warn{background:var(--warn)} .err{background:var(--err)}
+    main{padding:18px}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px 0}
+    .search{flex:1;min-width:200px}
+    input[type="search"]{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg)}
+    .group{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;background:var(--card);overflow:hidden}
+    .group-header{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;background:var(--bg)}
+    .group-header:hover{background:rgba(0,0,0,0.04)}
+    .group-title{font-weight:600}
+    .count{color:var(--muted);font-size:.9rem}
+    table{width:100%;border-collapse:collapse;min-width:720px}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+    th{position:sticky;top:52px;background:var(--card);cursor:pointer;user-select:none}
+    th .sort{opacity:.55}
+    th.active .sort{opacity:1}
+    tr:hover td{background:rgba(0,0,0,0.02)}
+    @media (max-width:800px){
+      table{min-width:unset}
+      .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+      th{top:unset;position:static}
+    }
+    footer{padding:18px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Synara Grafana Sync Status</h1>
+    <span class="pill sub">Generated: <strong id="gen">{{generation_time}}</strong></span>
+    {% if auto_refresh %}<span class="pill sub" id="age">⏱ last checked …</span>{% endif %}
+    <div class="toolbar">
+      <button id="darkToggle" class="btn">🌙 Toggle Dark</button>
+      <button id="expandAll" class="btn">➕ Expand all</button>
+      <button id="collapseAll" class="btn">➖ Collapse all</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="controls">
+      <div class="search">
+        <input id="searchBox" type="search" placeholder="Filter by rule name or expression… (live)">
+      </div>
+      <div class="pill">
+        <label><input type="checkbox" id="showMatch" checked> Show ✓ Match</label>
+      </div>
+      <div class="pill">
+        <label><input type="checkbox" id="showMismatch" checked> Show ∆ Mismatch</label>
+      </div>
+      <div class="pill">
+        <label><input type="checkbox" id="showMissing" checked> Show ✗ Missing</label>
+      </div>
+    </div>
+
+    <!-- Groups will be populated by JS from the base table rows -->
+    <div id="groups"></div>
+
+    <!-- Base table (rendered by Jinja); hidden and used as data source for grouping/sorting -->
+    <div class="table-wrap" style="display:none">
+      <table id="base">
+        <thead>
+          <tr>
+            <th data-key="title">Rule <span class="sort">↕</span></th>
+            <th data-key="status">Status <span class="sort">↕</span></th>
+            <th data-key="expected_expr">Expected Expr <span class="sort">↕</span></th>
+            <th data-key="actual_expr">Grafana Expr <span class="sort">↕</span></th>
+            <th data-key="for_duration">Duration <span class="sort">↕</span></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for entry in entries %}
+          <tr>
+            <td>{{entry.title}}</td>
+            <td>{{entry.status}}</td>
+            <td>{{entry.expected_expr}}</td>
+            <td>{{entry.actual_expr}}</td>
+            <td>{{entry.for_duration}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <strong>Legend:</strong>
+    <span class="badge ok">✓ Match</span> identical •
+    <span class="badge warn">∆ Mismatch</span> drift •
+    <span class="badge err">✗ Missing</span> absent
+    {% if auto_refresh %} — auto-refresh: {{refresh_interval}}s {% endif %}
+  </footer>
+
+<script>
+(function(){
+  const gen = document.getElementById('gen').textContent.trim();
+  const base = document.getElementById('base');
+  const groupsEl = document.getElementById('groups');
+  const searchBox = document.getElementById('searchBox');
+  const showMatch = document.getElementById('showMatch');
+  const showMismatch = document.getElementById('showMismatch');
+  const showMissing = document.getElementById('showMissing');
+  const expandAll = document.getElementById('expandAll');
+  const collapseAll = document.getElementById('collapseAll');
+  const darkToggle = document.getElementById('darkToggle');
+
+  // Dark mode persisted
+  const saved = localStorage.getItem('synara-dark');
+  if(saved === '1'){ document.body.classList.add('dark'); }
+  darkToggle.onclick = () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('synara-dark', document.body.classList.contains('dark') ? '1':'0');
+  };
+
+  // “last checked” age counter
+  const age = document.getElementById('age');
+  function updateAge(){
+    if(!age) return;
+    const t = new Date(gen).getTime();
+    const mins = Math.max(0, Math.floor((Date.now()-t)/60000));
+    age.textContent = `⏱ last checked \${mins} minute\${mins!==1?'s':''} ago`;
+  }
+  updateAge(); setInterval(updateAge, 60000);
+
+  // Extract rows into data array
+  function readData(){
+    const rows = Array.from(base.querySelectorAll('tbody tr'));
+    return rows.map(r => {
+      const c = r.children;
+      return { title:c[0].textContent.trim(),
+               status:c[1].textContent.trim(),
+               expected_expr:c[2].textContent.trim(),
+               actual_expr:c[3].textContent.trim(),
+               for_duration:c[4].textContent.trim() };
+    });
+  }
+  let data = readData();
+
+  let sortKey = 'title';
+  let sortDir = 1; // 1 asc, -1 desc
+
+  function cmp(a,b){
+    const va = (a[sortKey]||'').toLowerCase();
+    const vb = (b[sortKey]||'').toLowerCase();
+    if(va<vb) return -1*sortDir;
+    if(va>vb) return  1*sortDir;
+    return 0;
+  }
+
+  function statusLabel(s){
+    if(s==='match') return 'Match';
+    if(s==='mismatch') return 'Mismatch';
+    return 'Missing';
+  }
+  function statusBadge(s){
+    if(s==='match') return '<span class="badge ok">✓ Match</span>';
+    if(s==='mismatch') return '<span class="badge warn">∆ Mismatch</span>';
+    return '<span class="badge err">✗ Missing</span>';
+  }
+
+  function rowHTML(item){
+    return `<tr>
+      <td>\${item.title}</td>
+      <td>\${statusBadge(item.status)}</td>
+      <td><code>\${item.expected_expr}</code></td>
+      <td><code>\${item.actual_expr}</code></td>
+      <td>\${item.for_duration}</td>
+    </tr>`;
+  }
+
+  function buildGroup(title, key, rows){
+     const count = rows.length;
+     const id = `grp-\${key}`;
+     const open = true;
+     return `<section class="group" data-key="\${key}">
+        <div class="group-header" role="button" aria-expanded="\${open}" tabindex="0">
+          <div class="group-title">\${title}</div>
+          <div class="count">(\${count})</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-key="title">Rule <span class="sort">↕</span></th>
+                <th>Status</th>
+                <th data-key="expected_expr">Expected Expr <span class="sort">↕</span></th>
+                <th data-key="actual_expr">Grafana Expr <span class="sort">↕</span></th>
+                <th data-key="for_duration">Duration <span class="sort">↕</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              \${rows.map(rowHTML).join('')}
+            </tbody>
+          </table>
+        </div>
+     </section>`;
+  }
+
+  function render(){
+    // Filter by search and toggles
+    const q = searchBox.value.trim().toLowerCase();
+    const filt = data.filter(d => {
+      const okStatus =
+        (d.status==='match' && showMatch.checked) ||
+        (d.status==='mismatch' && showMismatch.checked) ||
+        (d.status!=='match' && d.status!=='mismatch' && showMissing.checked);
+      const text = `\${d.title} \${d.expected_expr} \${d.actual_expr}`.toLowerCase();
+      const okSearch = q==='' || text.includes(q);
+      return okStatus && okSearch;
+    }).sort(cmp);
+
+    const match = filt.filter(x=>x.status==='match');
+    const mismatch = filt.filter(x=>x.status==='mismatch');
+    const missing = filt.filter(x=>x.status!=='match' && x.status!=='mismatch');
+
+    let html = '';
+    if(match.length)   html += buildGroup('✓ Match', 'match', match);
+    if(mismatch.length)html += buildGroup('∆ Mismatch', 'mismatch', mismatch);
+    if(missing.length) html += buildGroup('✗ Missing', 'missing', missing);
+    groupsEl.innerHTML = html;
+
+    // group header toggle
+    groupsEl.querySelectorAll('.group-header').forEach(h=>{
+      const sec = h.closest('.group');
+      const tableWrap = sec.querySelector('.table-wrap');
+      const toggle = () => {
+        const open = h.getAttribute('aria-expanded') !== 'false';
+        h.setAttribute('aria-expanded', String(!open));
+        tableWrap.style.display = open ? 'none' : 'block';
+      };
+      h.onclick = toggle;
+      h.onkeypress = (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); }};
+    });
+
+    // column sorting (rebuild sort based on header click)
+    groupsEl.querySelectorAll('th[data-key]').forEach(th=>{
+      th.onclick = () => {
+        const key = th.getAttribute('data-key');
+        if(sortKey===key){ sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+        groupsEl.querySelectorAll('th').forEach(x=>x.classList.remove('active'));
+        th.classList.add('active');
+        render();
+      };
+    });
+  }
+
+  // expand/collapse all
+  expandAll.onclick = ()=>{
+    groupsEl.querySelectorAll('.group .table-wrap').forEach(w=>w.style.display='block');
+    groupsEl.querySelectorAll('.group-header').forEach(h=>h.setAttribute('aria-expanded','true'));
+  };
+  collapseAll.onclick = ()=>{
+    groupsEl.querySelectorAll('.group .table-wrap').forEach(w=>w.style.display='none');
+    groupsEl.querySelectorAll('.group-header').forEach(h=>h.setAttribute('aria-expanded','false'));
+  };
+
+  // live search
+  searchBox.addEventListener('input', render);
+  showMatch.onchange = render;
+  showMismatch.onchange = render;
+  showMissing.onchange = render;
+
+  render();
+})();
+</script>
+</body>
+</html>
+
+EOF
+          cat > synara_render_enhanced_dashboard.py <<'PY'
+#!/usr/bin/env python3
+import json, argparse
+from datetime import datetime
+from jinja2 import Template
+
+def load_entries(path):
+    with open(path) as f:
+        return json.load(f)
+
+def render(entries, template_path, output_path, auto_refresh=True, refresh_interval=300):
+    with open(template_path, "r", encoding="utf-8") as f:
+        tmpl = Template(f.read())
+    html = tmpl.render(
+        generation_time=datetime.utcnow().isoformat()+"Z",
+        entries=entries,
+        auto_refresh=auto_refresh,
+        refresh_interval=refresh_interval
+    )
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"✅ Rendered {output_path} (auto_refresh={auto_refresh}, refresh_interval={refresh_interval}s)")
+
+def main():
+    p = argparse.ArgumentParser(description="Render Synara enhanced dashboard")
+    p.add_argument("--entries", default="sync_results.json")
+    p.add_argument("--template", default="synara_sync_dashboard_template_enhanced.html")
+    p.add_argument("--output", default="synara_sync_dashboard.html")
+    p.add_argument("--auto-refresh", choices=["yes","no"], default="yes")
+    p.add_argument("--refresh-interval", type=int, default=300)
+    args = p.parse_args()
+
+    entries = load_entries(args.entries)
+    render(entries, args.template, args.output,
+           auto_refresh=(args.auto_refresh=="yes"),
+           refresh_interval=args.refresh_interval)
+
+if __name__ == "__main__":
+    main()
+
+PY
+
+      - name: Render dashboard
+        run: |
+          python synara_render_enhanced_dashboard.py --entries sync_results.json --auto-refresh yes --refresh-interval 300
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
