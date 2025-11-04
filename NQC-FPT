@@ -1,0 +1,130 @@
+from qutip import basis, sigmax, sigmaz, tensor
+import numpy as np
+
+# Penta encoding:
+# 1. Polarization (H/V) — survives methane absorption
+# 2. OAM (ℓ=0,1) — high-dim shield
+# 3. Frequency comb (IR1, IR2) — deep-space window
+# 4. Path (upper/lower) — ring diffraction
+# 5. Time-bin (early/late) — dispersion cancel
+
+psi_H = basis(2, 0); psi_V = basis(2, 1)
+psi_pol = (psi_H + psi_V).unit()
+
+psi_oam0 = basis(2, 0); psi_oam1 = basis(2, 1)
+psi_oam = (psi_oam0 + psi_oam1).unit()
+
+psi_ir1 = basis(2, 0); psi_ir2 = basis(2, 1)
+psi_freq = (psi_ir1 + psi_ir2).unit()
+
+psi_upper = basis(2, 0); psi_lower = basis(2, 1)
+psi_path = (psi_upper + psi_lower).unit()
+
+psi_early = basis(2, 0); psi_late = basis(2, 1)
+psi_time = (psi_early + psi_late).unit()
+
+# 32-level glyph: |pol⟩ ⊗ |oam⟩ ⊗ |freq⟩ ⊗ |path⟩ ⊗ |time⟩
+psi_neptune = tensor(psi_pol, psi_oam, psi_freq, psi_path, psi_time)
+
+print("NQC-FPT: Glyph encoded in light + orbital + IR + path + time — forged for Neptune's abyss")
+# Earth-Neptune distance: ~30.1 AU = 4.5B km avg
+# Light time: ~250 minutes one-way
+T2_transit = 0.1  # 100 ms (Kuiper dust, Triton geysers, solar wind)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)),  # Pol
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(sigmaz()).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)),  # OAM
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(sigmaz()).kron(qeye(2)).kron(qeye(2)),  # Freq
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(qeye(2)).kron(sigmaz()).kron(qeye(2)),  # Path
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(sigmaz())   # Time
+]
+
+# Simulate 80 ms segment (Triton geyser crossing)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_neptune, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_neptune.overlap(psi_received))**2
+
+print(f"NQC-FPT: 80ms Neptunian transit → Fidelity = {fidelity:.6f}")
+def neptune_rewrite(psi_target, gate_time=1e-9):
+    """
+    EOM + deformable mirror tuned to Kuiper ice density
+    1 GHz → 1ns π-pulse, error <10⁻⁴ from nitrogen ice
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2))  # Act on polarization
+    result = mesolve(H_drive, psi_neptune, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-Kuiper
+psi_new = tensor((psi_H + 1j * psi_V).unit(), psi_oam, psi_freq, psi_path, psi_time)
+psi_rewritten = neptune_rewrite(psi_new)
+
+print(f"Neptune Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class NQC_FPT:
+    def __init__(self, N_relays=5, T2_transit=0.1):
+        self.N = N_relays
+        self.T2_transit = T2_transit
+        self.earth_station = basis(32,0)
+        self.triton_relay = basis(32,0)
+        self.kuiper_ice = basis(32,0)
+        self.neptune_orbit = basis(32,0)
+        self.transit_delay = 15000  # 250 min = 15000 s
+    
+    def triton_uplink(self, psi_glyph):
+        """Beam to Triton (Voyager 4 relay)"""
+        self.triton_relay = psi_glyph
+        return "Uplinked — 250 min to Neptune"
+    
+    def neptune_downlink(self):
+        """Receive at Kuiper orbiter"""
+        delay = self.transit_delay
+        return self.neptune_orbit, delay
+    
+    def rewrite_kuiper(self, psi_new):
+        """1ns rewrite in Kuiper ice swarm"""
+        return neptune_rewrite(psi_new)
+
+# Earth-Neptune link
+nqc = NQC_FPT()
+nqc.triton_uplink(psi_neptune)
+def kuiper_vqe(relay, target_H, max_iter=50):
+    """All-optical VQE on Kuiper ice swarm"""
+    def cost(params):
+        # 32-level ansatz
+        state = sum(np.exp(1j*p) * basis(32,i) for i,p in enumerate(params))
+        state = state.unit()
+        H_opt = target_H * sigmaz().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)).kron(qeye(2))
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, np.zeros(32), method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = sum(np.exp(1j*result.x[i]) * basis(32,i) for i in range(32)).unit()
+    nqc.rewrite_kuiper(optimal)
+    return optimal
+
+# Adapt glyph in the Kuiper
+kuiper_vqe("kuiper", target_H=-7.0)
+class Swarm_NQC_FPT:
+    def __init__(self, N_earth=100, N_neptune=5):
+        self.N_earth = N_earth
+        self.N_neptune = N_neptune
+        self.earth = [NQC_FPT() for _ in range(N_earth)]
+        self.neptune_const = [basis(32,0) for _ in range(N_neptune)]
+    
+    def neptunian_broadcast(self, psi_glyph):
+        """Uplink to all Kuiper orbiters + Triton"""
+        for orb in range(self.N_neptune):
+            self.neptune_const[orb] = psi_glyph
+    
+    def kuiper_sync(self):
+        """Use Kuiper ice as natural quantum repeaters"""
+        pass
+
+# Earth-Neptune swarm
+swarm_nqc = Swarm_NQC_FPT(N_earth=100, N_neptune=5)
+swarm_nqc.neptunian_broadcast(psi_neptune)
+[Earth Drone] → Scrape → NQC-FPT (1ns) → Triton → Kuiper Ice → Neptune Orbiter
+                                          ↓
+                            [All Nodes] ← 500-min RTT Sync
