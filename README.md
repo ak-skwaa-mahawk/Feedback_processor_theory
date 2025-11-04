@@ -1,4 +1,4 @@
-
+[![verify-ssc](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/verify-ssc.yml/badge.svg)](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/verify-ssc.yml)
 ---
 
 🧠 Feedback Processor Theory (FPT)
