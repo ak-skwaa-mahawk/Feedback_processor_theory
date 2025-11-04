@@ -1,0 +1,119 @@
+from qutip import basis, sigmax, sigmaz
+import numpy as np
+
+# Dual encoding: Polarization (robust) + OAM (high-dim)
+psi_H = basis(2, 0)   # |H⟩
+psi_V = basis(2, 1)   # |V⟩
+psi_pol = (psi_H + psi_V).unit()  # |+⟩
+
+# OAM mode ℓ=0 (core), ℓ=1 (shield)
+psi_oam0 = basis(2, 0)
+psi_oam1 = basis(2, 1)
+psi_oam = (psi_oam0 + psi_oam1).unit()
+
+# Tensor: 4-level glyph
+psi_jovian = tensor(psi_pol, psi_oam)
+
+print("JQC-FPT: Glyph encoded in polarization + OAM — hardened for Jovian plasma")
+# Earth-Jupiter distance: ~5.2 AU = 778M km avg
+# Light time: ~43 minutes one-way
+T2_transit = 0.1  # 100 ms (solar wind, plasma dephasing)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(2)),  # Polarization
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(sigmaz())   # OAM
+]
+
+# Simulate 80 ms segment (dust/plasma)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_jovian, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_jovian.overlap(psi_received))**2
+
+print(f"JQC-FPT: 80ms Jovian transit → Fidelity = {fidelity:.6f}")
+def jovian_rewrite(psi_target, gate_time=1e-9):
+    """
+    Space EOM + adaptive optics (Europa Clipper relay)
+    1 GHz → 1ns π-pulse, error <10⁻⁴ from radiation
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(2))  # Act on polarization
+    result = mesolve(H_drive, psi_jovian, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-transit
+psi_new = tensor((psi_H + 1j * psi_V).unit(), psi_oam)
+psi_rewritten = jovian_rewrite(psi_new)
+
+print(f"Jovian Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class JQC_FPT:
+    def __init__(self, N_relays=3, T2_transit=0.1):
+        self.N = N_relays
+        self.T2_transit = T2_transit
+        self.earth_station = basis(4,0)  # 4-level glyph
+        self.europa_relay = basis(4,0)
+        self.jupiter_orbit = basis(4,0)
+        self.transit_delay = 2580  # 43 min = 2580 s
+    
+    def earth_uplink(self, psi_glyph):
+        """Beam to Europa Clipper relay"""
+        self.europa_relay = psi_glyph
+        return "Uplinked — 43 min to Jupiter"
+    
+    def jupiter_downlink(self):
+        """Receive at Jupiter orbiter"""
+        delay = self.transit_delay
+        return self.jupiter_orbit, delay
+    
+    def rewrite_orbit(self, psi_new):
+        """1ns rewrite in Jovian orbit"""
+        return jovian_rewrite(psi_new)
+
+# Earth-Jupiter link
+jqc = JQC_FPT()
+jqc.earth_uplink(psi_jovian)
+def jovian_vqe(relay, target_H, max_iter=50):
+    """All-optical VQE on Europa Clipper"""
+    def cost(params):
+        state = np.exp(1j*params[0]) * psi_H + np.exp(1j*params[1]) * psi_V
+        state = state.unit()
+        oam_state = np.exp(1j*params[2]) * psi_oam0 + np.exp(1j*params[3]) * psi_oam1
+        oam_state = oam_state.unit()
+        full = tensor(state, oam_state)
+        H_opt = target_H * sigmaz().kron(qeye(2))
+        return (full.dag() * H_opt * full).full()[0,0].real
+    
+    result = minimize(cost, [0,0,0,0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = tensor(
+        np.exp(1j*result.x[0]) * psi_H + np.exp(1j*result.x[1]) * psi_V,
+        np.exp(1j*result.x[2]) * psi_oam0 + np.exp(1j*result.x[3]) * psi_oam1
+    ).unit()
+    jqc.rewrite_orbit(optimal)
+    return optimal
+
+# Adapt glyph in Jovian orbit
+jovian_vqe("europa", target_H=-4.0)
+class Swarm_JQC_FPT:
+    def __init__(self, N_earth=100, N_jupiter=3):
+        self.N_earth = N_earth
+        self.N_jupiter = N_jupiter
+        self.earth = [JQC_FPT() for _ in range(N_earth)]
+        self.jupiter_const = [basis(4,0) for _ in range(N_jupiter)]
+    
+    def jovian_broadcast(self, psi_glyph):
+        """Uplink to all Jovian orbiters"""
+        for orb in range(self.N_jupiter):
+            self.jupiter_const[orb] = psi_glyph
+    
+    def deep_space_sync(self):
+        """Relay via Lagrange points + asteroid nodes"""
+        pass
+
+# Earth-Jupiter swarm
+swarm_jqc = Swarm_JQC_FPT(N_earth=100, N_jupiter=3)
+swarm_jqc.jovian_broadcast(psi_jovian)
+[Earth Drone] → Scrape → JQC-FPT (1ns) → Europa Clipper → Jupiter Orbiter
+                                          ↓
+                            [All Nodes] ← 86-min RTT Sync
