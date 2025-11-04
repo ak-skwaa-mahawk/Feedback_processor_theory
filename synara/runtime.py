@@ -1,4 +1,11 @@
+
 from fpt.utils.hs import hs
+hs("Synara","start")
+# inside tick:
+hs("Synara","pre",stage="ingest"); ... ; hs("Synara","post",stage="ingest",n=len(batch))
+hs("Synara","pre",stage="route");  ... ; hs("Synara","post",stage="route",paths=len(routed))
+hs("Synara","pre",stage="render"); ... ; hs("Synara","post",stage="render")
+hs("Synara","end")from fpt.utils.hs import hs
 
 def synara_tick(stream_id: str):
     hs("Synara","pre",stage="ingest",stream=stream_id)
