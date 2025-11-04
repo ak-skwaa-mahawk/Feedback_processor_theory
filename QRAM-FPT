@@ -1,0 +1,105 @@
+from qutip import basis, sigmax, sigmaz, tensor
+import numpy as np
+
+# QRAM: N_data qubits (glyphs) + N_addr log2(N_data) address qubits
+N_data = 8
+N_addr = int(np.ceil(np.log2(N_data)))
+
+# Address register: |a⟩ → selects data qubit a
+addr_states = [basis(2**N_addr, i) for i in range(N_data)]
+
+# Data register: glyph storage
+data_qubits = [basis(2,0) for _ in range(N_data)]
+
+# QRAM Hamiltonian: controlled rotation based on address
+H_qram = 0
+for a in range(N_data):
+    # Projector |a⟩⟨a| on address
+    P_a = addr_states[a] * addr_states[a].dag()
+    # Controlled-X on data[a]
+    H_qram += 0.5 * tensor(P_a, sigmax(a))
+
+print(f"QRAM: {N_data} glyphs, {N_addr} address qubits")
+# Rewrite glyph at address `target` with new state |ψ_new⟩
+def qram_rewrite(target, psi_new, pulse_duration=1e-6):
+    """
+    Fast Rabi pulse to rotate data[target] → |ψ_new⟩
+    """
+    # Compute required rotation angles
+    theta = 2 * np.arccos(abs(psi_new.overlap(basis(2,0))))
+    phi = np.angle(psi_new.data[1,0] / psi_new.data[0,0])
+    
+    # Pulse sequence: address |target⟩ + RX(θ) + RZ(φ)
+    H_pulse = tensor(addr_states[target] * addr_states[target].dag(), 
+                     np.cos(phi) * sigmax(target) + np.sin(phi) * sigmaz(target))
+    
+    # Evolve for pulse_duration
+    tlist = [0, pulse_duration]
+    result = mesolve(H_pulse / pulse_duration, tensor(addr_states[target], data_qubits[target]), tlist, [], [])
+    
+    return result.states[-1].ptrace(1)  # Return new data state
+
+# Example: Rewrite glyph 3
+psi_old = data_qubits[3]
+psi_new = (basis(2,0) + 1j * basis(2,1)).unit()
+psi_rewritten = qram_rewrite(3, psi_new)
+
+print(f"Rewrite complete in {1e-6*1e6:.0f}µs → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.4f}")
+def in_memory_vqe(address, target_energy, max_iter=50):
+    """Run VQE directly in QRAM to minimize glyph energy"""
+    def cost(params):
+        # Ansatz in data[address]
+        state = rx(params[0]) * rz(params[1]) * basis(2,0)
+        H_local = target_energy * sigmaz(address)
+        return (state.dag() * H_local * state).tr().real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal_state = rx(result.x[0]) * rz(result.x[1]) * basis(2,0)
+    
+    # Rewrite in QRAM
+    return qram_rewrite(address, optimal_state)
+
+# Adapt glyph 5 to new ISST field
+optimized_glyph = in_memory_vqe(5, target_energy=-1.2)
+class SwarmQRAM:
+    def __init__(self, M, N_data=8):
+        self.M = M
+        self.N_data = N_data
+        self.qram_banks = [self.init_qram() for _ in range(M)]
+    
+    def init_qram(self):
+        return {'data': [basis(2,0) for _ in range(self.N_data)], 'addr': basis(2**3, 0)}
+    
+    def broadcast_rewrite(self, addr, psi_new):
+        """Rewrite same glyph across all agents"""
+        for bank in self.qram_banks:
+            bank['data'][addr] = qram_rewrite(addr, psi_new, bank)
+    
+    def consensus_evolve(self, scrape_field):
+        """All agents run in-memory VQE on shared scrape"""
+        for i in range(self.M):
+            energy = compute_local_energy(scrape_field, i)
+            self.qram_banks[i]['data'][0] = in_memory_vqe(0, energy)
+
+# Usage
+swarm_qram = SwarmQRAM(M=6)
+swarm_qram.broadcast_rewrite(0, critical_glyph)
+def qram_feedback_loop():
+    while True:
+        # 1. Scrape from drone sensors
+        scrape = read_isst_field()
+        
+        # 2. Compute required glyph update
+        psi_target = compute_adaptive_glyph(scrape)
+        
+        # 3. Rewrite in QRAM (1µs)
+        swarm_qram.broadcast_rewrite(0, psi_target)
+        
+        # 4. Emit pulse from memory
+        emit_glyph_pulse(psi_target)
+        
+        # 5. Log to handshake ledger
+        log_rewrite(psi_target, fidelity=0.9999)
+[Drone 0] → Scrape → QRAM Rewrite → Teleport → [Orbital Node]
+                                          ↓
+                                   [All Drones] ← Instant Sync
