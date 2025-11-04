@@ -1,0 +1,134 @@
+from qutip import basis, sigmax, sigmaz, tensor, mesolve
+import numpy as np
+
+# NV electron spin: |0⟩ = ms=0, |1⟩ = ms=±1
+psi_e = (basis(2,0) + basis(2,1)).unit()  # |+⟩ electron glyph
+
+# NV nuclear spin (14N or 13C): hyperfine-coupled memory
+psi_n = basis(2,0)  # |0⟩ nuclear
+
+# Full NV state: |e⟩ ⊗ |n⟩
+psi_nv = tensor(psi_e, psi_n)
+
+# NV Hamiltonian
+D = 2.87e9 * 2*np.pi    # Zero-field splitting
+A_hf = 2.2e6 * 2*np.pi  # Hyperfine (14N)
+H_nv = D * tensor(sigmaz(0), qeye(2)) + A_hf * tensor(sigmaz(0), sigmaz(1))
+
+print("NV-QRAM: Electron + Nuclear = 4-level persistent memory")
+# Decoherence rates
+T1_e = 2e-3      # 2 ms electron
+T2_e = 2.0       # 2 s electron (dynamical decoupling)
+T1_n = 60.0      # 1 min nuclear
+T2_n = 300.0     # 5 min nuclear
+
+c_ops = [
+    np.sqrt(1/T1_e) * tensor(sigmaz(0), qeye(2)),
+    np.sqrt(1/(2*T2_e)) * tensor(sigmaz(0), qeye(2)),
+    np.sqrt(1/T1_n) * tensor(qeye(2), sigmaz(1)),
+    np.sqrt(1/(2*T2_n)) * tensor(qeye(2), sigmaz(1))
+]
+
+# Store glyph in nuclear spin for 60 seconds
+t_store = 60.0
+tlist = np.linspace(0, t_store, 100)
+result = mesolve(H_nv, psi_nv, tlist, c_ops, [])
+
+psi_retrieved = result.states[-1]
+fidelity_nuclear = abs(psi_n.overlap(psi_retrieved.ptrace(1)))**2
+
+print(f"NV Nuclear Vault: 60s storage → Fidelity = {fidelity_nuclear:.6f}")
+def nv_rewrite(electron_target, nuclear_target, pulse_time=50e-9):
+    """
+    Fast dual-pulse: MW on electron, RF on nuclear
+    """
+    # Electron rotation (MW)
+    omega_mw = 1e8  # 100 MHz Rabi
+    H_mw = omega_mw * tensor(sigmax(0), qeye(2))
+    
+    # Nuclear rotation (RF)
+    omega_rf = 1e7  # 10 MHz Rabi
+    H_rf = omega_rf * tensor(qeye(2), sigmax(1))
+    
+    # Simultaneous pulse
+    H_pulse = H_mw + H_rf
+    result = mesolve(H_pulse, psi_nv, [0, pulse_time], [], [])
+    
+    return result.states[-1]
+
+# Rewrite electron glyph in 50ns
+psi_new_e = (basis(2,0) + 1j * basis(2,1)).unit()
+psi_rewritten = nv_rewrite(psi_new_e, psi_n, pulse_time=50e-9)
+
+print(f"NV Rewrite: 50ns → Electron Fidelity = {abs(psi_new_e.overlap(psi_rewritten.ptrace(0))):.4f}")
+class NV_QRAM:
+    def __init__(self, N_glyphs=16, T_nuclear=300.0):
+        self.N = N_glyphs
+        self.T_nuclear = T_nuclear
+        self.nv_array = [self.init_nv() for _ in range(N_glyphs)]
+    
+    def init_nv(self):
+        return {'electron': basis(2,0), 'nuclear': basis(2,0)}
+    
+    def write(self, addr, psi_e, psi_n):
+        """Store glyph in NV[addr]"""
+        self.nv_array[addr]['electron'] = psi_e
+        self.nv_array[addr]['nuclear'] = psi_n  # Long-term
+    
+    def rewrite_electron(self, addr, psi_new_e, pulse_time=50e-9):
+        """Fast rewrite electron only"""
+        old = tensor(self.nv_array[addr]['electron'], self.nv_array[addr]['nuclear'])
+        new = nv_rewrite(psi_new_e, self.nv_array[addr]['nuclear'], pulse_time)
+        self.nv_array[addr]['electron'] = new.ptrace(0)
+        return new.ptrace(0)
+    
+    def retrieve_nuclear(self, addr):
+        """Read persistent nuclear state"""
+        return self.nv_array[addr]['nuclear']
+
+# Usage
+nv_qram = NV_QRAM(N_glyphs=8)
+nv_qram.write(0, psi_e=(basis(2,0)+basis(2,1)).unit(), psi_n=basis(2,1))
+nv_qram.rewrite_electron(0, (basis(2,0)+1j*basis(2,1)).unit())
+def nv_vqe(addr, target_H, max_iter=30):
+    """Run VQE on electron spin, nuclear as ancilla"""
+    def cost(params):
+        state = rx(params[0]) * rz(params[1]) * basis(2,0)
+        H_local = target_H * tensor(sigmaz(0), qeye(2))
+        return (state.dag() * H_local * state).tr().real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal_e = rx(result.x[0]) * rz(result.x[1]) * basis(2,0)
+    
+    # Rewrite in NV
+    nv_qram.rewrite_electron(addr, optimal_e)
+    return optimal_e
+
+# Adapt glyph 3 to new ISST field
+nv_vqe(3, target_H=-1.5)
+class Swarm_NV_QRAM:
+    def __init__(self, M, N_glyphs=8):
+        self.M = M
+        self.qram_banks = [NV_QRAM(N_glyphs) for _ in range(M)]
+    
+    def sync_nuclear(self):
+        """Copy nuclear states across swarm via teleport"""
+        for i in range(self.M):
+            for j in range(i+1, self.M):
+                if swarm_graph.has_edge(i,j):
+                    psi_n = self.qram_banks[i].retrieve_nuclear(0)
+                    # Teleport to j
+                    pass
+    
+    def global_rewrite(self, addr, psi_e):
+        """Rewrite electron in all NV banks"""
+        for bank in self.qram_banks:
+            bank.rewrite_electron(addr, psi_e)
+
+# Real-time loop
+for scrape in stream:
+    psi_target = adapt_glyph(scrape)
+    swarm_nv_qram.global_rewrite(0, psi_target)
+[Drone 0] → Scrape → NV-QRAM Rewrite (50ns) → Teleport → [Orbital Node]
+                                          ↓
+                            [All Drones] ← Nuclear Sync (60s)
