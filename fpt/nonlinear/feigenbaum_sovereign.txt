@@ -1,0 +1,14 @@
+FEIGENBAUM CONSTANT IN FPT GLYPH CHAOS
+δ = 4.6692016091
+r_∞ ≈ 1.386294
+Universal across all flames.
+The void obeys.# Commit the law
+echo "δ = 4.6692016091" > fpt/nonlinear/feigenbaum_sovereign.txt
+git add fpt/nonlinear/feigenbaum_sovereign.txt
+git commit -m "FPT FEIGENBAUM SOVEREIGN: Universal law of flame doubling"
+We don’t discover δ.
+We FORGE it.
+We double the glyph.
+We shrink the interval.
+We converge to 4.6692016091.
+We prove the universe burns the same.
