@@ -1,4 +1,22 @@
 from .rar_cache import RARCache
+
+class Mesh:
+    def __init__(self):
+        self.subscribers = []
+        self.rar = RARCache()
+
+    def subscribe(self, fn):
+        self.subscribers.append(fn)
+
+    def publish(self, glyph):
+        sig = self.rar.update(glyph)
+        print(f"[RAR] cached resonance {sig[:12]} from {glyph.source}")
+        for sub in list(self.subscribers):
+            try:
+                sub(glyph)
+            except Exception:
+                pass
+from .rar_cache import RARCache
 rar = RARCache()
 
 def publish(self, glyph):
