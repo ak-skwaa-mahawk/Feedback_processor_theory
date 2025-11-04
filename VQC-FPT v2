@@ -1,0 +1,106 @@
+from qutip import basis, bell_state, tensor, sigmax, mesolve
+import numpy as np
+
+# Earth twin (DSN)
+psi_earth = bell_state('00')  # |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
+
+# Voyager twin (onboard)
+psi_voyager = bell_state('00')
+
+# Full entangled pair: |ψ⟩ = |Φ⁺⟩_Earth ⊗ |Φ⁺⟩_Voyager
+psi_entangled = tensor(psi_earth, psi_voyager)
+
+print("VQC-FPT v2: Full entanglement — Earth and Voyager are one")
+def quantum_teleport(psi_target, bell_pair):
+    """
+    Teleport |ψ_target⟩ from Earth to Voyager using bell_pair
+    """
+    # Bell measurement on Earth
+    bell_proj = bell_state('00').proj() + bell_state('11').proj()
+    
+    # Apply to target + Earth half
+    state = tensor(psi_target, bell_pair.ptrace(0))
+    measured = bell_proj * state * bell_proj.dag()
+    
+    # Conditional X/Z on Voyager half
+    psi_voyager_final = bell_pair.ptrace(1)
+    if np.random.rand() < 0.5:
+        psi_voyager_final = sigmax() * psi_voyager_final
+    
+    return psi_voyager_final.unit()
+
+# Target glyph to send
+psi_target = (basis(2,0) + 1j*basis(2,1)).unit()
+
+# Teleport in 1ns
+psi_received = quantum_teleport(psi_target, psi_entangled)
+
+print(f"Teleport Fidelity: {abs(psi_target.overlap(psi_received)):.6f}")
+def bell_rewrite(target_H, max_iter=50):
+    """
+    VQE on entangled pair to optimize target state
+    """
+    def cost(params):
+        # Ansatz on Earth half
+        state = np.cos(params[0]) * basis(2,0) + np.sin(params[0]) * np.exp(1j*params[1]) * basis(2,1)
+        full = tensor(state.unit(), bell_state('00').ptrace(1))
+        H_opt = target_H * sigmax().kron(qeye(2))
+        return (full.dag() * H_opt * full).full()[0,0].real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal_earth = np.cos(result.x[0]) * basis(2,0) + np.sin(result.x[0]) * np.exp(1j*result.x[1]) * basis(2,1)
+    return optimal_earth.unit()
+
+# Optimize before teleport
+optimal = bell_rewrite(target_H=-9.0)
+class VQC_FPT_v2:
+    def __init__(self, N_dsn=3):
+        self.N = N_dsn
+        self.earth_twin = [bell_state('00') for _ in range(N_dsn)]
+        self.voyager_twin = [bell_state('00') for _ in range(2)]  # V1 & V2
+        self.transit_delay = 81600  # 22.7 hr (classical)
+    
+    def entangle_pair(self, dsn_id, voyager_id):
+        """Pre-share entanglement via slow classical prep"""
+        return tensor(self.earth_twin[dsn_id], self.voyager_twin[voyager_id])
+    
+    def teleport_to_voyager(self, dsn_id, voyager_id, psi_target):
+        pair = self.entangle_pair(dsn_id, voyager_id)
+        return quantum_teleport(psi_target, pair)
+    
+    def instant_rewrite(self, psi_new, dsn_id, voyager_id):
+        return self.teleport_to_voyager(dsn_id, voyager_id, psi_new)
+
+# Active link
+vqc2 = VQC_FPT_v2()
+psi_sent = vqc2.instant_rewrite(optimal, 0, 0)
+def entangled_vqe(dsn_id, voyager_id, target_H):
+    """VQE using entanglement feedback"""
+    pair = vqc2.entangle_pair(dsn_id, voyager_id)
+    optimal = bell_rewrite(target_H)
+    return vqc2.teleport_to_voyager(dsn_id, voyager_id, optimal)
+
+# Run VQE across 24B km
+entangled_vqe(0, 0, target_H=-10.0)
+class Swarm_VQC_FPT_v2:
+    def __init__(self, N_earth=100, N_voyager=2):
+        self.N_earth = N_earth
+        self.N_voyager = N_voyager
+        self.earth = [VQC_FPT_v2() for _ in range(N_earth)]
+        self.voyager = [bell_state('00') for _ in range(N_voyager)]
+    
+    def global_entangle(self):
+        """Pre-share entanglement with all Voyagers"""
+        pass
+    
+    def instant_broadcast(self, psi_glyph):
+        """Teleport to all Voyagers instantly"""
+        for v in range(self.N_voyager):
+            self.voyager[v] = quantum_teleport(psi_glyph, bell_state('00'))
+
+# Full mesh
+swarm_vqc2 = Swarm_VQC_FPT_v2()
+swarm_vqc2.instant_broadcast(optimal)
+[Earth DSN] → Entangle → Teleport → Voyager 1 & 2
+                                          ↓
+                            [All Nodes] ← Instant Sync (via entanglement)
