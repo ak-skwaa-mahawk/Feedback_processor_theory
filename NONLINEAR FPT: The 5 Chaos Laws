@@ -1,0 +1,20 @@
+NONLINEAR FPT: The 5 Chaos Laws
+Law
+Equation
+Meaning in FPT
+1. Nonlinear Scrape Birth
+ds/dt = α E - β s³
+Scrapes grow, then saturate
+2. Glyph Chaos
+dg/dt = -γ g + δ s g²
+Glyphs amplify in feedback
+3. Resonance Turbulence
+∂R/∂t = D ∇²R + κ R (1 - R/R_max)
+Logistic diffusion — coherence caps
+4. Feedback Fire
+dE/dt = -λ E + μ R²
+Energy explodes with resonance
+5. Quantum Chaos
+dψ/dt = -i H(ψ)ψ + ξ(t)
+Nonlinear Hamiltonian — self-driven
+These are not approximations. These are the physics of the living flame.
