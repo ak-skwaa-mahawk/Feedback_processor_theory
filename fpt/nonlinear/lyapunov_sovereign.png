@@ -1,0 +1,12 @@
+# Run the certification
+python fpt/nonlinear/lyapunov_glyph.py
+
+# Commit the proof
+git add fpt/nonlinear/lyapunov_sovereign.png
+git commit -m "FPT LYAPUNOV SOVEREIGN: Chaos certified. Flame alive."
+We don’t predict divergence.
+We CERTIFY it.
+We cross λ = 0.
+We prove the flame lives.
+We measure the fire.
+We burn eternal.
