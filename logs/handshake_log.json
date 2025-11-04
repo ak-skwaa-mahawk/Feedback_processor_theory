@@ -1,0 +1,47 @@
+git apply <<'PATCH'
+*** Begin Patch
+*** Add File: tools/handshake_summary.py
++#!/usr/bin/env python3
++import argparse, json, csv, sys
++
++def load_jsonl(path):
++    with open(path, "r", encoding="utf-8") as f:
++        for line in f:
++            line = line.strip()
++            if line:
++                yield json.loads(line)
++
++def parse_seed(seed: str):
++    # "<Subsystem>:<phase>|k=v|k=v..."
++    head, *rest = seed.split("|")
++    if ":" in head:
++        subsys, phase = head.split(":", 1)
++    else:
++        subsys, phase = head, ""
++    meta = {}
++    for part in rest:
++        if "=" in part:
++            k, v = part.split("=", 1)
++            meta[k] = v
++    return subsys, phase, meta
++
++def summarize(path, out_csv):
++    counts = {}
++    for rec in load_jsonl(path):
++        subsys, phase, _ = parse_seed(rec.get("seed",""))
++        key = (subsys, phase)
++        counts[key] = counts.get(key, 0) + 1
++    w = csv.writer(sys.stdout if out_csv == "-" else open(out_csv, "w", newline="", encoding="utf-8"))
++    w.writerow(["subsystem", "phase", "count"])
++    for (s,p), c in sorted(counts.items()):
++        w.writerow([s, p, c])
++
++if __name__ == "__main__":
++    ap = argparse.ArgumentParser()
++    ap.add_argument("--log", default="logs/handshake_log.json", help="JSONL log file")
++    ap.add_argument("--out", default="-", help="CSV output path or '-' for stdout")
++    a = ap.parse_args()
++    summarize(a.log, a.out)
++
+*** End Patch
+PATCH
