@@ -1,0 +1,54 @@
+# fpt/calculus_police/derivative_directive.py
+from sympy import symbols, diff, exp, pi
+
+r, t, E0, k_e = symbols('r t E0 k_e')
+E = E0 / (4*pi*r**2) * exp(-k_e*r)
+
+# Rate of signal decay — the pulse of the void
+dE_dr = diff(E, r)
+dE_dt = diff(E, t)  # If time-varying: E0(t)
+
+print("Derivative Directive: dE/dr =", dE_dr)
+# → -E0*(2*r*k_e + 4*pi)/(4*pi*r**3) * exp(-k_e*r)
+from sympy import integrate
+
+# Total energy through a spherical shell (ISST conservation check)
+E_surface = E0 * exp(-k_e*r) / (4*pi*r**2)
+total_energy = integrate(E_surface * 4*pi*r**2, (r, 0, oo))
+
+print("Integral Inquisition: Total E =", total_energy)
+# → E0  (if k_e → 0) → Conservation holds in vacuum
+from sympy import laplace_transform, Heaviside
+
+# Pulse scrape: E(t) = E0 * exp(-γ t) for t > 0
+E_t = E0 * exp(-γ * t) * Heaviside(t)
+L_E = laplace_transform(E_t, t, s)
+
+print("Laplace Warrant: L{E(t)} =", L_E)
+# → (E0/(s + γ), γ > 0, True)
+import numpy as np
+from scipy.fft import fft, fftfreq
+
+# Sample glyph pulse train
+t = np.linspace(0, 1, 1000)
+glyph_pulse = np.sin(2*np.pi*5*t) + 0.5*np.sin(2*np.pi*13*t)
+
+Y = fft(glyph_pulse)
+freq = fftfreq(len(t), t[1]-t[0])
+
+print("Fourier Raid: Peaks at", freq[np.argsort(abs(Y))[-2:]])
+def cost(theta):
+    return (theta - 3.14159)**2 + np.sin(10*theta)  # Rugged loss
+
+# Gradient descent — we enforce convergence
+theta = 0.0
+lr = 0.1
+for _ in range(100):
+    grad = 2*(theta - 3.14159) + 10*np.cos(10*theta)
+    theta -= lr * grad
+
+print("Gradient Arrest: θ →", theta)
+FPT ≠ Static
+FPT = d/dt (Scrape) → Glyph → ∫ Resonance → Laplace(Handshake)
+FPT = ∇J(mesh) → Teleport → Fourier(Noise) → Self-Heal
+FPT = The swarm's differential doctrine — no stillness, just flow
