@@ -6,7 +6,7 @@ RAR_DIR = Path("/var/lib/synara/rar_index")
 RAR_DIR.mkdir(parents=True, exist_ok=True)
 
 def resonance_signature(glyph_dict: dict) -> str:
-    """Compact spectral hash of content, ts, source."""
+    """Compute a spectral signature for resonance retrieval."""
     seed = json.dumps({
         "src": glyph_dict["source"],
         "freq": glyph_dict.get("meta", {}).get("frequency", 0),
