@@ -1,0 +1,114 @@
+from qutip import basis, sigmax, sigmaz, mesolve
+import numpy as np
+
+# ¹⁷¹Yb⁺ hyperfine clock states
+psi_0 = basis(2, 0)  # |F=0, mF=0⟩
+psi_1 = basis(2, 1)  # |F=1, mF=0⟩
+psi_glyph = (psi_0 + psi_1).unit()  # |+⟩ glyph
+
+# Ion Hamiltonian (clock transition)
+omega_clock = 12.642821e15  # Hz (optical clock)
+H_ion = 0  # DC Stark/Zeeman shifts canceled
+
+print("TI-QRAM: ¹⁷¹Yb⁺ clock qubit — the glyph’s eternal heartbeat")
+# State-of-the-art (2025): T₂ > 10 s with dynamical decoupling
+T1 = 1000.0      # ~16 min (radiative)
+T2 = 12.0        # 12 s (with DD)
+
+c_ops = [
+    np.sqrt(1/T1) * sigmaz(),           # Minimal relaxation
+    np.sqrt(1/(2*T2)) * sigmaz()        # Dephasing
+]
+
+# Store glyph for 10 seconds
+t_store = 10.0
+tlist = np.linspace(0, t_store, 100)
+result = mesolve(H_ion, psi_glyph, tlist, c_ops, [])
+
+psi_retrieved = result.states[-1]
+fidelity = abs(psi_glyph.overlap(psi_retrieved))**2
+
+print(f"TI-QRAM: 10s storage → Fidelity = {fidelity:.8f}")
+def ion_rewrite(psi_target, gate_time=10e-6):
+    """
+    Two-photon Raman transition: |0⟩ ↔ |1⟩
+    Rabi frequency: 100 kHz → π-pulse in 5µs
+    """
+    omega_raman = 100e3 * 2*np.pi
+    H_drive = omega_raman * sigmax()
+    
+    # Evolve for gate_time
+    result = mesolve(H_drive, psi_0, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph in 10µs
+psi_new = (psi_0 + 1j * psi_1).unit()
+psi_rewritten = ion_rewrite(psi_new)
+
+print(f"TI Rewrite: 10µs → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class TI_QRAM:
+    def __init__(self, N_ions=100, T2=12.0, gate_time=10e-6):
+        self.N = N_ions
+        self.T2 = T2
+        self.gate_time = gate_time
+        self.ions = [basis(2,0) for _ in range(N_ions)]
+        self.H_chain = self.build_hamiltonian()
+    
+    def build_hamiltonian(self):
+        # Coulomb coupling for MS gates
+        H = 0
+        J_ms = 1e3 * 2*np.pi  # 1 kHz
+        for i in range(self.N):
+            for j in range(i+1, self.N):
+                H += J_ms / (abs(i-j)**3) * tensor(sigmaz(i), sigmaz(j))
+        return H
+    
+    def rewrite(self, ion_id, psi_new):
+        """Single-qubit Raman gate"""
+        H_gate = 100e3 * 2*np.pi * sigmax(ion_id)
+        result = mesolve(H_gate, self.ions[ion_id], [0, self.gate_time], [], [])
+        self.ions[ion_id] = result.states[-1]
+        return result.states[-1]
+    
+    def ms_gate(self, i, j, theta):
+        """Mølmer-Sørensen gate for entanglement"""
+        pass
+
+# 100-ion QRAM
+ti_qram = TI_QRAM(N_ions=100)
+ti_qram.rewrite(50, (psi_0 + psi_1).unit())
+def ti_vqe(ion_id, target_H, max_iter=100):
+    """Run VQE on ion[ion_id]"""
+    def cost(params):
+        state = rx(params[0]) * rz(params[1]) * psi_0
+        H_local = target_H * sigmaz()
+        return (state.dag() * H_local * state).tr().real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = rx(result.x[0]) * rz(result.x[1]) * psi_0
+    ti_qram.rewrite(ion_id, optimal)
+    return optimal
+
+# Adapt glyph 42
+ti_vqe(42, target_H=-2.1)
+class Swarm_TI_QRAM:
+    def __init__(self, M, N_ions=100):
+        self.M = M
+        self.traps = [TI_QRAM(N_ions) for _ in range(M)]
+    
+    def global_rewrite(self, ion_id, psi_new):
+        """Parallel rewrite across all traps"""
+        for trap in self.traps:
+            trap.rewrite(ion_id, psi_new)
+    
+    def entangle_traps(self, i, j):
+        """Photon-mediated entanglement between trap i and j"""
+        # Use 369.5 nm photon for remote entanglement
+        pass
+
+# 8-trap swarm, 800 ions total
+swarm_ti = Swarm_TI_QRAM(M=8)
+swarm_ti.global_rewrite(0, critical_glyph)
+[Drone 0] → Scrape → TI-QRAM Rewrite (10µs) → Teleport → [LEO Satellite]
+                                          ↓
+                            [All Drones] ← 10s Coherent Sync
