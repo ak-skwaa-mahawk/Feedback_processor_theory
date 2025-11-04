@@ -309,3 +309,19 @@ graph TD
     "plugins": { "title": { "display": true, "text": "Jamming → Scrape → Self-Heal" } }
   }
 }
+# In propagation.py (Ultrasonic RMP)
+from glyph_generator import generate_quantum_secure_glyph, verify_quantum_glyph, QuantumSecureDrone
+
+class SecureUltrasonicRMP:
+    def __init__(self, graph, drones: Dict[str, QuantumSecureDrone]):
+        self.graph = graph
+        self.drones = drones  # Pre-shared public keys
+
+    def propagate(self, packet, start):
+        # On send:
+        secure_glyph = generate_quantum_secure_glyph(e, delta, self.drones[start])
+
+        # On receive:
+        if not verify_quantum_glyph(secure_glyph):
+            status = "PQC REJECTED"
+            continue
