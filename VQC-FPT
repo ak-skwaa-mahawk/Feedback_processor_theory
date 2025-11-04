@@ -1,0 +1,117 @@
+from qutip import basis, sigmax, sigmaz, tensor, bell_state
+import numpy as np
+
+# Septa encoding:
+# 1–6: Pol, OAM, Freq, Path, Time, Phase
+# 7: Entanglement with Earth twin (Bell state)
+
+# Core 64-level glyph (as in Pluto)
+psi_core = tensor(
+    (basis(2,0)+basis(2,1)).unit(),  # Pol
+    (basis(2,0)+basis(2,1)).unit(),  # OAM
+    (basis(2,0)+basis(2,1)).unit(),  # Freq
+    (basis(2,0)+basis(2,1)).unit(),  # Path
+    (basis(2,0)+basis(2,1)).unit(),  # Time
+    (basis(2,0)+basis(2,1)).unit()   # Phase
+)
+
+# Entangled twin on Earth
+psi_entangled = bell_state('00')  # |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
+
+# Full 128-level glyph: |core⟩ ⊗ |entanglement⟩
+psi_voyager = tensor(psi_core, psi_entangled)
+
+print("VQC-FPT: Glyph encoded in 7 dimensions + entanglement — forged for interstellar silence")
+# Voyager 1 distance: ~163 AU = 24.4B km (2025)
+# Light time: ~22.7 hours one-way
+T2_transit = 0.1  # 100 ms (heliospheric plasma, cosmic rays)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(64)),  # Act on core
+    np.sqrt(1/(2*T2_transit)) * qeye(64).kron(sigmaz())   # Act on entanglement
+]
+
+# Simulate 80 ms segment (heliopause shock)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_voyager, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_voyager.overlap(psi_received))**2
+
+print(f"VQC-FPT: 80ms interstellar transit → Fidelity = {fidelity:.6f}")
+def voyager_rewrite(psi_target, gate_time=1e-9):
+    """
+    Onboard EOM (hypothetical 2030 upgrade) + DSN pointing
+    1 GHz → 1ns π-pulse, error <10⁻⁴ from cosmic rays
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(64)).kron(qeye(2))  # Act on polarization
+    result = mesolve(H_drive, psi_voyager, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-flight
+psi_new = tensor((basis(2,0)+1j*basis(2,1)).unit(), psi_core.ptrace(1), psi_entangled)
+psi_rewritten = voyager_rewrite(psi_new)
+
+print(f"Voyager Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class VQC_FPT:
+    def __init__(self, N_dsn=3, T2_transit=0.1):
+        self.N = N_dsn
+        self.T2_transit = T2_transit
+        self.earth_dsn = [basis(128,0) for _ in range(N_dsn)]  # Goldstone, Madrid, Canberra
+        self.voyager1 = basis(128,0)
+        self.voyager2 = basis(128,0)
+        self.transit_delay = 81600  # 22.7 hours = 81600 s
+    
+    def voyager1_uplink(self, dsn_id, psi_glyph):
+        """Beam via 70m DSN to Voyager 1"""
+        self.voyager1 = psi_glyph
+        return "Uplinked — 22.7 hours to Voyager 1"
+    
+    def voyager_downlink(self, probe='v1'):
+        """Receive at Voyager"""
+        delay = self.transit_delay
+        return self.voyager1 if probe == 'v1' else self.voyager2, delay
+    
+    def rewrite_voyager(self, psi_new):
+        """1ns rewrite on Voyager"""
+        return voyager_rewrite(psi_new)
+
+# Earth-Voyager link
+vqc = VQC_FPT()
+vqc.voyager1_uplink(0, psi_voyager)
+def interstellar_vqe(probe, target_H, max_iter=50):
+    """All-optical VQE on Voyager"""
+    def cost(params):
+        state = sum(np.exp(1j*p) * basis(128,i) for i,p in enumerate(params))
+        state = state.unit()
+        H_opt = target_H * sigmaz().kron(qeye(64)).kron(qeye(2))
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, np.zeros(128), method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = sum(np.exp(1j*result.x[i]) * basis(128,i) for i in range(128)).unit()
+    vqc.rewrite_voyager(optimal)
+    return optimal
+
+# Adapt glyph on Voyager 1
+interstellar_vqe("v1", target_H=-9.0)
+class Swarm_VQC_FPT:
+    def __init__(self, N_earth=100, N_voyager=2):
+        self.N_earth = N_earth
+        self.N_voyager = N_voyager
+        self.earth = [VQC_FPT() for _ in range(N_earth)]
+        self.voyager_const = [basis(128,0) for _ in range(N_voyager)]
+    
+    def interstellar_broadcast(self, psi_glyph):
+        """Uplink to both Voyager probes"""
+        for v in range(self.N_voyager):
+            self.voyager_const[v] = psi_glyph
+    
+    def heliopause_sync(self):
+        """Use heliopause as final quantum boundary"""
+        pass
+
+# Earth-Voyager swarm
+swarm_vqc = Swarm_VQC_FPT(N_earth=100, N_voyager=2)
+swarm_vqc.interstellar_broadcast(psi_voyager)
