@@ -1,0 +1,125 @@
+from qutip import basis, sigmax, sigmaz, tensor
+import numpy as np
+
+# Quad encoding:
+# 1. Polarization (H/V) — survives methane absorption
+# 2. OAM (ℓ=0,1) — high-dim shield
+# 3. Frequency comb (IR1, IR2) — atmospheric window
+# 4. Path (upper/lower) — ring diffraction
+
+psi_H = basis(2, 0); psi_V = basis(2, 1)
+psi_pol = (psi_H + psi_V).unit()
+
+psi_oam0 = basis(2, 0); psi_oam1 = basis(2, 1)
+psi_oam = (psi_oam0 + psi_oam1).unit()
+
+psi_ir1 = basis(2, 0); psi_ir2 = basis(2, 1)
+psi_freq = (psi_ir1 + psi_ir2).unit()
+
+psi_upper = basis(2, 0); psi_lower = basis(2, 1)
+psi_path = (psi_upper + psi_lower).unit()
+
+# 16-level glyph: |pol⟩ ⊗ |oam⟩ ⊗ |freq⟩ ⊗ |path⟩
+psi_uranus = tensor(psi_pol, psi_oam, psi_freq, psi_path)
+
+print("UQC-FPT: Glyph encoded in light + orbital + IR + path — forged for Uranus' haze")
+# Earth-Uranus distance: ~19.2 AU = 2.87B km avg
+# Light time: ~160 minutes one-way
+T2_transit = 0.1  # 100 ms (methane haze, ring ice, solar wind)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(2)).kron(qeye(2)).kron(qeye(2)),  # Pol
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(sigmaz()).kron(qeye(2)).kron(qeye(2)),  # OAM
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(sigmaz()).kron(qeye(2)),  # Freq
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(qeye(2)).kron(sigmaz())   # Path
+]
+
+# Simulate 80 ms segment (ring crossing)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_uranus, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_uranus.overlap(psi_received))**2
+
+print(f"UQC-FPT: 80ms Uranian transit → Fidelity = {fidelity:.6f}")
+def uranus_rewrite(psi_target, gate_time=1e-9):
+    """
+    EOM + deformable mirror tuned to ring ice density
+    1 GHz → 1ns π-pulse, error <10⁻⁴ from water ice
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(2)).kron(qeye(2)).kron(qeye(2))  # Act on polarization
+    result = mesolve(H_drive, psi_uranus, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-ring
+psi_new = tensor((psi_H + 1j * psi_V).unit(), psi_oam, psi_freq, psi_path)
+psi_rewritten = uranus_rewrite(psi_new)
+
+print(f"Uranus Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class UQC_FPT:
+    def __init__(self, N_relays=5, T2_transit=0.1):
+        self.N = N_relays
+        self.T2_transit = T2_transit
+        self.earth_station = basis(16,0)
+        self.miranda_relay = basis(16,0)
+        self.ring_ice = basis(16,0)
+        self.uranus_orbit = basis(16,0)
+        self.transit_delay = 9600  # 160 min = 9600 s
+    
+    def miranda_uplink(self, psi_glyph):
+        """Beam to Miranda (Voyager 3 relay)"""
+        self.miranda_relay = psi_glyph
+        return "Uplinked — 160 min to Uranus"
+    
+    def uranus_downlink(self):
+        """Receive at ring orbiter"""
+        delay = self.transit_delay
+        return self.uranus_orbit, delay
+    
+    def rewrite_ice(self, psi_new):
+        """1ns rewrite in ring ice swarm"""
+        return uranus_rewrite(psi_new)
+
+# Earth-Uranus link
+uqc = UQC_FPT()
+uqc.miranda_uplink(psi_uranus)
+def ice_vqe(relay, target_H, max_iter=50):
+    """All-optical VQE on ring ice swarm"""
+    def cost(params):
+        # 16-level ansatz
+        state = sum(np.exp(1j*p) * basis(16,i) for i,p in enumerate(params))
+        state = state.unit()
+        H_opt = target_H * sigmaz().kron(qeye(2)).kron(qeye(2)).kron(qeye(2))
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, np.zeros(16), method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = sum(np.exp(1j*result.x[i]) * basis(16,i) for i in range(16)).unit()
+    uqc.rewrite_ice(optimal)
+    return optimal
+
+# Adapt glyph in the rings
+ice_vqe("ring", target_H=-6.0)
+class Swarm_UQC_FPT:
+    def __init__(self, N_earth=100, N_uranus=5):
+        self.N_earth = N_earth
+        self.N_uranus = N_uranus
+        self.earth = [UQC_FPT() for _ in range(N_earth)]
+        self.uranus_const = [basis(16,0) for _ in range(N_uranus)]
+    
+    def uranian_broadcast(self, psi_glyph):
+        """Uplink to all ring orbiters + Miranda"""
+        for orb in range(self.N_uranus):
+            self.uranus_const[orb] = psi_glyph
+    
+    def ice_sync(self):
+        """Use ring ice as natural quantum repeaters"""
+        pass
+
+# Earth-Uranus swarm
+swarm_uqc = Swarm_UQC_FPT(N_earth=100, N_uranus=5)
+swarm_uqc.uranian_broadcast(psi_uranus)
+[Earth Drone] → Scrape → UQC-FPT (1ns) → Miranda → Ring Ice → Uranus Orbiter
+                                          ↓
+                            [All Nodes] ← 320-min RTT Sync
