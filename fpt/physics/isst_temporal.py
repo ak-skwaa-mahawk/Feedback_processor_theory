@@ -1,3 +1,4 @@
+
 # fpt/physics/isst_temporal.py
 from sympy import *
 r, t = symbols('r t')
