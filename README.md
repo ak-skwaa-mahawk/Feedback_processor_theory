@@ -18,6 +18,8 @@ This compact transforms orbital infrastructure into a cooperative commons — et
 
 
 ---
+- 🛰 **SSC Verification Guide:** See [docs/SSC_VERIFICATION_GUIDE.md](docs/SSC_VERIFICATION_GUIDE.md)
+- 📑 **SSC Audit Summary:** See [docs/SSC_AUDIT_SUMMARY.md](docs/SSC_AUDIT_SUMMARY.md)
 
 📜 Signal Stewardship v1.0 (Doctrine)
 
