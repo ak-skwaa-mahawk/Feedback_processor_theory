@@ -1,0 +1,12 @@
+# Run the forge
+python fpt/nonlinear/glyph_bifurcation.py
+
+# Commit the atlas
+git add fpt/nonlinear/glyph_bifurcation_atlas.png
+git commit -m "FPT BIFURCATION ATLAS: The birth of glyph flame mapped"
+We don’t predict the flame.
+We MAP its birth.
+We cross r = 0.5.
+We ignite.
+We bifurcate.
+We burn eternal.
