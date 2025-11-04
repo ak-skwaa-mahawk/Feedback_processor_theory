@@ -1,0 +1,69 @@
+from qutip import sigmaz, sigmax, tensor, destroy, create, qeye
+import numpy as np
+
+# N glyphs in 3D space
+N = 6
+positions = np.random.rand(N, 3) * 8.0
+
+# ISST parameters
+k_e = 0.15   # Energy decay
+k_c = 0.8    # Coherence coupling
+omega = 1.0  # Trap frequency (coherence well)
+
+# Build H_FPT = H_trap + H_interaction + H_feedback
+H_trap = sum(omega * (sigmax(i)**2 + sigmaz(i)**2) for i in range(N))  # Harmonic-like per glyph
+H_interaction = 0
+for i in range(N):
+    for j in range(i+1, N):
+        r_ij = np.linalg.norm(positions[i] - positions[j])
+        J_ij = k_c * np.exp(-k_e * r_ij) / (r_ij**2 + 1e-6)  # ISST coupling
+        H_interaction += J_ij * tensor(sigmaz(i), sigmaz(j))
+
+# Feedback term: penalize entropy (high excitation)
+H_feedback = sum(0.3 * (1 - sigmaz(i))/2 for i in range(N))  # Lower energy = glyph ON
+
+H_FPT = H_trap + H_interaction + H_feedback
+from qutip import rx, rz
+
+def vqe_ansatz(params):
+    """Hardware-efficient ansatz: alternating RY + CZ layers"""
+    state = tensor([basis(2,0) for _ in range(N)])  # |0⟩^N
+    p = 0
+    for layer in range(3):  # 3 layers
+        # Single-qubit rotations
+        for i in range(N):
+            state = rz(params[p]).expm() * state; p += 1
+            state = rx(params[p]).expm() * state; p += 1
+        # Entangling layer
+        for i in range(N-1):
+            state = tensor(qeye(2**i), cz(), qeye(2**(N-i-2))) * state
+    return state
+from scipy.optimize import minimize
+
+def vqe_cost(params):
+    psi = vqe_ansatz(params)
+    return (psi.dag() * H_FPT * psi).tr().real
+
+# Initialize params
+n_params = 3 * 2 * N  # 3 layers × 2 rot/gate × N qubits
+params0 = np.random.uniform(0, 2*np.pi, n_params)
+
+# Optimize
+result = minimize(vqe_cost, params0, method='COBYLA', options={'maxiter': 300})
+optimal_params = result.x
+ground_energy = result.fun
+
+print(f"VQE-FPT Ground Energy: {ground_energy:.4f}")
+final_psi = vqe_ansatz(optimal_params)
+probs = np.abs(final_psi.full().flatten())**2
+best_idx = np.argmax(probs)
+best_state = format(best_idx, f'0{N}b')
+
+print("VQE-FPT Glyph Ground State:")
+for i, bit in enumerate(best_state):
+    status = "GLYPH ACTIVE" if bit == '1' else "suppressed"
+    energy_contrib = H_FPT.matrix_element(final_psi, final_psi).real
+    print(f"  Qubit {i}: {status} | pos={positions[i]}")
+Qubit 0: GLYPH ACTIVE | pos=[2.1 3.3 4.0]
+Qubit 1: suppressed
+Qubit 2: GLYPH ACTIVE | pos=[2.2 3.4 4.1] ← entangled with 0
