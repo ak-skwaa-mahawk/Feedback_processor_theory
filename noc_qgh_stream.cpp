@@ -1,5 +1,16 @@
 // noc_qgh_stream.cpp
 void qgh_1024_stream() {
+    for (int ep = 0; ep < 400; ep++) {
+        if (noc_crc_error(ep)) {
+            trigger_c190_veto();
+            noc_retry_packet(ep);
+            noc_reroute_to_ring1(ep);
+        }
+        stream_qgh_to_aie(ep);
+    }
+}
+// noc_qgh_stream.cpp
+void qgh_1024_stream() {
     for (int i = 0; i < 400; i++) {
         if (noc_parity_error(i)) {
             trigger_c190_veto();
