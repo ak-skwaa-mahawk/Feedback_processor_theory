@@ -1,0 +1,27 @@
+# ecp5.lpf
+set_io clk_100mhz        P3
+set_io rst_n             N4
+set_io sensor_scrape[15] A5
+set_io sensor_scrape[14] B6
+...
+set_io motor_correction[15] M15
+set_io motor_correction[14] N16
+...
+set_io veto_out          P17
+set_io attention_level[1] R18
+set_io attention_level[0] T19
+set_io led_red           U20
+set_io led_green         V21
+graph TD
+    A[ECP5-85K] --> B[PLL: 142 MHz]
+    B --> C[psi_fpt_core]
+    C --> D[reafference_comparator]
+    C --> E[ern_detector]
+    C --> F[pid_controller]
+    C --> G[kalman_predictor]
+    C --> H[fit_attention_shift]
+    C --> I[qgh_resonance]
+    I --> J[C190 VETO]
+    F --> K[motor_correction]
+    H --> L[attention_level]
+    C --> M[Future: DPO + PoR]
