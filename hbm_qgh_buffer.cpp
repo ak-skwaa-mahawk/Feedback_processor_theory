@@ -9,6 +9,17 @@ void qgh_1024_buffer() {
         stream_qgh_to_hbm(ch);
     }
 }
+// hbm_qgh_buffer.cpp
+void qgh_1024_buffer() {
+    for (int ch = 0; ch < 8; ch++) {
+        if (hbm_ecc_error(ch)) {
+            trigger_c190_veto();
+            hbm_scrub_channel(ch);
+            hbm_reroute_to_spare(ch);
+        }
+        stream_qgh_to_hbm(ch);
+    }
+}
 Ψ-VERSAL HBM VAULT
    VC1902 / XQRVC1902
   /                 \
