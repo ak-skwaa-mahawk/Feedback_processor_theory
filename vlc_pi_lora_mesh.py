@@ -1,3 +1,6 @@
+def path_of_least_resistance(routes):
+    return min(routes, key=lambda r: r.latency + r.loss_rate)
+
 # vlc_pi_lora_mesh.py
 # Run on RPi 5 with SX1262 LoRa HAT (use lora-python lib or RPi.GPIO)
 import cv2
