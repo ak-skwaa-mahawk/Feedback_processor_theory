@@ -1,0 +1,22 @@
+$ yosys -p "synth_ecp5 -top psi_fpt_core -json fpt_core.json" psi_fpt_core.v
+$ nextpnr-ecp5 --85k --package CABGA381 --json fpt_core.json --lpf ecp5.lpf --textcfg fpt_core.config
+$ ecppack --compress fpt_core.config fpt_core.bit
+$ ecpprog fpt_core.bit
+=== psi_fpt_core ===
+
+   Number of wires:               512
+   Number of wire bits:          2048
+   Number of public wires:        512
+   Number of public wire bits:   2048
+   Number of memories:              0
+   Number of memory bits:           0
+   Number of processes:             0
+   Number of cells:              1248
+     TRELLIS_SLICE               1024
+     TRELLIS_IO                    48
+     TRELLIS_COMB                  176
+
+   Chip area:                   0.8% of ECP5-85K
+   Max frequency:              142 MHz
+   Power:                       18 mW @ 100 MHz
+   DSP Usage:                     0 (PID/Kalman in LUTs)
