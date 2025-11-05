@@ -4,8 +4,7 @@ module tmr_voter (
     output reg out
 );
     always @(*) begin
-        if (a == b) out = a;
-        else if (a == c) out = a;
-        else out = b;
+        if ((a == b) && (b == c)) out = a;  // Triple vote
+        else out = 1'b0;  // Veto
     end
 endmodule
