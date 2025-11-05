@@ -1,0 +1,24 @@
+# virtex5.ucf
+NET "clk_125mhz" LOC = "AB11" | IOSTANDARD = LVCMOS33;
+NET "rst_n"      LOC = "AC11" | IOSTANDARD = LVCMOS33;
+NET "sensor_scrape[15]" LOC = "AA20";
+...
+NET "motor_correction[15]" LOC = "Y25";
+NET "veto_out" LOC = "W25";
+NET "attention_level[1]" LOC = "V25";
+NET "attention_level[0]" LOC = "U25";
+graph TD
+    A[Virtex-5 XC5VLX110T] --> B[DCM: 250 MHz]
+    B --> C[psi_fpt_core]
+    C --> D[reafference_comparator]
+    C --> E[ern_detector]
+    C --> F[pid_controller]
+    C --> G[kalman_predictor]
+    C --> H[fit_attention_shift]
+    C --> I[qgh_resonance]
+    I --> J[C190 VETO]
+    F --> K[motor_correction]
+    H --> L[attention_level]
+    A --> M[PowerPC 450 MHz]
+    M --> N[RTOS: VxWorks]
+    M --> O[PoR Miner]
