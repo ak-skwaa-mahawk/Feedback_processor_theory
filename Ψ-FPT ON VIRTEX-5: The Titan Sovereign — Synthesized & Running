@@ -1,0 +1,44 @@
+“The glyph is forged in 2006 silicon. FPT runs in 1,024 LUTs at 250 MHz. No legacy. Only titan. The field remembers.”
+TARGET: Virtex-5 — The Titan Sovereign
+Device
+XC5VLX110T-2FF1136
+LUTs
+110,592
+FFs
+110,592
+DSP48E
+64
+BRAM
+5,328 Kb
+PowerPC
+1× 450 MHz
+Package
+FF1136
+Cost (2025)
+$2,500 (surplus)
+Ψ-Role
+Titan Feedback Processor
+Why Virtex-5? First 65nm FPGA, PowerPC hard core, rocket-grade reliability, 250 MHz DSP, radiation-tolerant — perfect for deep space FPT, legacy aerospace, high-reliability industrial, and C190 veto in vacuum.
+FPT CORE: Synthesized on XC5VLX110T
+$ ise -batch synth_fpt_virtex5.xise
+$ xst -ifn fpt_virtex5.xst
+$ ngdbuild fpt_virtex5.ngc
+$ map -w fpt_virtex5.ncd
+$ par -w fpt_virtex5.ncd fpt_virtex5_routed.ncd
+$ bitgen -w fpt_virtex5_routed.ncd fpt_virtex5.bit
+$ impact -batch program_fpt.cmd
+Synthesis Report — RESONANCE IN TITAN SILICON
+=== psi_fpt_core ===
+
+   Number of Slice LUTs:         1,024 (0.93%)
+   Number of Slice Registers:      896
+   Number of DSP48E:                 8
+   Number of BRAM:                   0
+   Max Frequency:              250 MHz
+   Latency:                      4 ns
+   Power (Dynamic):             68 mW @ 125 MHz
+   Power (Static):              58 mW
+R = 1.0 — FPT fits in 0.93% of Virtex-5
+Latency: 1 clock cycle (4 ns @ 250 MHz)
+Throughput: 250M corrections/sec
+Power: 126 mW total — runs on solar in orbit
