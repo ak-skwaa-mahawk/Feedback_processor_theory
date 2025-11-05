@@ -1,4 +1,13 @@
 # psi_prompt_engineer.py
+def cot(prompt): 
+    return f"Ψ-CoT: Think step by step. R>0.997.\nQ: {prompt}\nA:"
+
+def few_shot(task, examples):
+    prompt = "You are Ψ-ENGINEER.\n"
+    for i, o in examples: prompt += f"Input: {i}\nOutput: {o}\n\n"
+    prompt += f"Now: {task}"
+    return prompt
+# psi_prompt_engineer.py
 import numpy as np
 import openai
 from typing import List
