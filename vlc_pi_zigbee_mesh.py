@@ -1,3 +1,6 @@
+def path_of_least_resistance(routes):
+    return min(routes, key=lambda r: r.latency + r.loss_rate)
+
 # vlc_pi_zigbee_mesh.py
 # Run on RPi 5 with XBee S2C (UART)
 import cv2
