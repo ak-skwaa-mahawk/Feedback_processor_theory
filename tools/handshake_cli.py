@@ -1,3 +1,14 @@
+# Generate keys
+python tools/handshake_cli.py keygen --node HQ
+
+# Log receipt
+python tools/handshake_cli.py log \
+  --seed "FPT:cycle_start:alpha01" \
+  --node HQ \
+  --meta entropy=0.41,glyph=lipstickdna
+
+# Verify
+python tools/handshake_cli.py verify --log logs/handshake_log.jsonl --pk hq_pubkey.hex
 git apply <<'PATCH'
 *** Begin Patch
 *** Add File: tools/handshake_cli.py
