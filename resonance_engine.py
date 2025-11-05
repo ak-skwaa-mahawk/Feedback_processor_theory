@@ -1,3 +1,6 @@
+corrected_pi = recursive_pi(depth=feedback_depth)
+wavelength = corrected_pi * (frequency / phase)
+
 import opentimestamps as ots
 
 def notarize_log(log_data):
