@@ -1,77 +1,135 @@
-# from the repo root
-git apply <<'PATCH'
-*** Begin Patch
-*** Add File: fpt/utils/handshake.py
-+import time, socket, hashlib, json, os, threading
-+
-+_DEFAULT_LOG = "logs/handshake_log.json"
-+_LOCK = threading.Lock()
-+
-+def handshake_message(seed: str, entity: str = "TwoMileSolutionsLLC", version: str = "1.1", log_file: str = _DEFAULT_LOG):
-+    ts_unix = str(int(time.time() * 1000))
-+    ts_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-+    hostname = socket.gethostname()
-+    payload = f"{entity}|{seed.strip()}|{ts_unix}|{hostname}"
-+    digest = hashlib.sha256(payload.encode()).hexdigest()
-+    receipt = {
-+        "entity": entity, "version": version,
-+        "timestamp_unix_ms": ts_unix, "timestamp_iso": ts_iso,
-+        "seed": seed.strip(), "digest": digest, "node": hostname
-+    }
-+    os.makedirs(os.path.dirname(log_file) or ".", exist_ok=True)
-+    with _LOCK:
-+        exists = os.path.isfile(log_file)
-+        with open(log_file, "a" if exists else "w", encoding="utf-8") as f:
-+            if exists:
-+                f.write("\n")
-+            f.write(json.dumps(receipt, ensure_ascii=False))
-+    return receipt
-+
-+def verify_handshake(receipt: dict, seed: str | None = None, entity: str | None = None) -> bool:
-+    try:
-+        payload = f"{receipt['entity']}|{receipt['seed']}|{receipt['timestamp_unix_ms']}|{receipt['node']}"
-+        digest = hashlib.sha256(payload.encode()).hexdigest()
-+        ok = (digest == receipt.get("digest"))
-+        if seed is not None:
-+            ok = ok and (receipt.get("seed") == seed.strip())
-+        if entity is not None:
-+            ok = ok and (receipt.get("entity") == entity)
-+        return ok
-+    except Exception:
-+        return False
-*** End Patch
-PATCH
-import time, socket, hashlib, json, os, threading
+#!/usr/bin/env python3
+"""
+fpt/utils/handshake.py — PQC SECURE HANDSHAKE RECEIPTS
+------------------------------------------------------
+Post-Quantum secure receipt generation and verification for FPT.
+Uses CRYSTALS-Dilithium (signatures) and CRYSTALS-Kyber (KEM).
+"""
 
-_DEFAULT_LOG = "logs/handshake_log.json"
-_LOCK = threading.Lock()
+from __future__ import annotations
 
-def handshake_message(seed: str, entity: str = "TwoMileSolutionsLLC", version: str = "1.1", log_file: str = _DEFAULT_LOG):
-    ts_unix = str(int(time.time() * 1000))
-    ts_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    hostname = socket.gethostname()
-    payload = f"{entity}|{seed.strip()}|{ts_unix}|{hostname}"
-    digest = hashlib.sha256(payload.encode()).hexdigest()
+import hashlib
+import time
+import json
+from typing import Dict, Any
+from dataclasses import dataclass
+
+# --- PQC: pip install pqcrypto ---
+from pqcrypto.sign.dilithium2 import generate_keypair, sign, verify
+from pqcrypto.kem.kyber512 import generate_keypair as kyber_keypair, encapsulate, decapsulate
+
+# ----------------------------------------------------------------------
+# 1. PQC KEY MANAGEMENT
+# ----------------------------------------------------------------------
+@dataclass
+class PQCDrones:
+    node_id: str
+    dilithium_pk: bytes
+    dilithium_sk: bytes
+    kyber_pk: bytes
+    kyber_sk: bytes
+
+    @classmethod
+    def generate(cls, node_id: str) -> 'PQCDrones':
+        d_pk, d_sk = generate_keypair()
+        k_pk, k_sk = kyber_keypair()
+        print(f"[PQC] Keys generated for {node_id}")
+        return cls(node_id, d_pk, d_sk, k_pk, k_sk)
+
+    def sign_receipt(self, receipt: Dict[str, Any]) -> bytes:
+        msg = json.dumps(receipt, sort_keys=True).encode()
+        return sign(self.dilithium_sk, msg)
+
+    def verify_receipt(self, receipt: Dict[str, Any], signature: bytes, pk: bytes) -> bool:
+        try:
+            msg = json.dumps(receipt, sort_keys=True).encode()
+            verify(pk, msg, signature)
+            return True
+        except:
+            return False
+
+
+# ----------------------------------------------------------------------
+# 2. PQC HANDSHAKE RECEIPT
+# ----------------------------------------------------------------------
+def handshake_message(
+    seed: str,
+    drone: PQCDrones,
+    metadata: Dict[str, Any] = None
+) -> Dict[str, Any]:
+    """
+    Generate a PQC-signed handshake receipt.
+    """
     receipt = {
-        "entity": entity, "version": version,
-        "timestamp_unix_ms": ts_unix, "timestamp_iso": ts_iso,
-        "seed": seed.strip(), "digest": digest, "node": hostname
+        "seed": seed,
+        "node_id": drone.node_id,
+        "timestamp": time.time(),
+        "sha3_256": "",
+        "dilithium_signature": "",
+        "metadata": metadata or {}
     }
-    os.makedirs(os.path.dirname(log_file) or ".", exist_ok=True)
-    with _LOCK:
-        exists = os.path.isfile(log_file)
-        with open(log_file, "a" if exists else "w", encoding="utf-8") as f:
-            if exists: f.write("\n")
-            f.write(json.dumps(receipt, ensure_ascii=False))
+
+    # SHA3-256 digest
+    digest = hashlib.sha3_256(json.dumps(receipt, sort_keys=True).encode()).hexdigest()
+    receipt["sha3_256"] = digest
+
+    # Dilithium sign
+    signature = drone.sign_receipt(receipt)
+    receipt["dilithium_signature"] = signature.hex()
+
     return receipt
 
-def verify_handshake(receipt: dict, seed: str | None = None, entity: str | None = None) -> bool:
-    try:
-        payload = f"{receipt['entity']}|{receipt['seed']}|{receipt['timestamp_unix_ms']}|{receipt['node']}"
-        digest = hashlib.sha256(payload.encode()).hexdigest()
-        ok = (digest == receipt.get("digest"))
-        if seed is not None: ok = ok and (receipt.get("seed") == seed.strip())
-        if entity is not None: ok = ok and (receipt.get("entity") == entity)
-        return ok
-    except Exception:
+
+def verify_handshake(
+    receipt: Dict[str, Any],
+    public_key: bytes
+) -> bool:
+    """
+    Verify PQC handshake receipt.
+    """
+    sig = bytes.fromhex(receipt["dilithium_signature"])
+    expected_digest = receipt["sha3_256"]
+    computed = hashlib.sha3_256(json.dumps(
+        {k: v for k, v in receipt.items() if k != "dilithium_signature"},
+        sort_keys=True
+    ).encode()).hexdigest()
+
+    if computed != expected_digest:
         return False
+
+    temp_drone = PQCDrones("verifier", public_key, b'', b'', b'')
+    return temp_drone.verify_receipt(
+        {k: v for k, v in receipt.items() if k != "dilithium_signature"},
+        sig,
+        public_key
+    )
+
+
+# ----------------------------------------------------------------------
+# 3. DEMO: PQC Receipt Chain
+# ----------------------------------------------------------------------
+if __name__ == "__main__":
+    # Drone A (Source)
+ソース
+    drone_a = PQCDrones.generate("HQ")
+    # Drone B (Relay)
+    drone_b = PQCDrones.generate("D1")
+
+    # Handshake
+    receipt = handshake_message(
+        "FPT:cycle_start:alpha01|Sephora_scrape",
+        drone_a,
+        {"entropy_delta": 0.41, "glyph": "lipstickdna"}
+    )
+
+    print("PQC Receipt:")
+    print(json.dumps(receipt, indent=2))
+
+    # Verify
+    valid = verify_handshake(receipt, drone_a.dilithium_pk)
+    print(f"\nVerification: {'VALID' if valid else 'TAMPERED'}")
+
+    # Tamper test
+    receipt["metadata"]["glyph"] = "TAMPERED"
+    tampered = verify_handshake(receipt, drone_a.dilithium_pk)
+    print(f"Tampered: {'VALID' if tampered else 'REJECTED'}")
