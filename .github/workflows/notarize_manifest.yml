@@ -1,0 +1,5 @@
+import hashlib, json, pathlib
+def notarize(path):
+    data = json.load(open(path))
+    digest = hashlib.sha256(json.dumps(data).encode()).hexdigest()
+    print(f"Notarized {path}: {digest}")
