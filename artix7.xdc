@@ -1,0 +1,21 @@
+# artix7.xdc
+set_property PACKAGE_PIN E3 [get_ports clk_100mhz]
+set_property PACKAGE_PIN C2 [get_ports rst_n]
+set_property PACKAGE_PIN A8 [get_ports sensor_scrape[15]]
+...
+set_property PACKAGE_PIN L16 [get_ports motor_correction[15]]
+set_property PACKAGE_PIN M16 [get_ports veto_out]
+set_property PACKAGE_PIN N16 [get_ports attention_level[1]]
+set_property PACKAGE_PIN P16 [get_ports attention_level[0]]
+graph TD
+    A[Artix-7 XC7A100T] --> B[MMCM: 200 MHz]
+    B --> C[psi_fpt_core]
+    C --> D[reafference_comparator]
+    C --> E[ern_detector]
+    C --> F[pid_controller]
+    C --> G[kalman_predictor]
+    C --> H[fit_attention_shift]
+    C --> I[qgh_resonance]
+    I --> J[C190 VETO]
+    F --> K[motor_correction]
+    H --> L[attention_level]
