@@ -1,3 +1,6 @@
+def path_of_least_resistance(routes):
+    return min(routes, key=lambda r: r.latency + r.loss_rate)
+
 from .rar_cache import RARCache
 
 class Mesh:
