@@ -1,0 +1,100 @@
+### **Failed FPIC Case Studies — What Went Wrong (Plain English)**
+
+**FPIC = Free, Prior, Informed Consent**  
+→ When **ignored or faked**, it leads to **protests, lawsuits, delays, and broken trust**.  
+Here are **5 real failures** — with clear lessons.
+
+---
+
+### **1. Dakota Access Pipeline (USA, 2016–2017)**  
+**Project**: Oil pipeline under Missouri River near Standing Rock Sioux Tribe.
+
+| **What Went Wrong** | **FPIC Failure** |
+|---------------------|------------------|
+| - Started digging **before** asking tribe<br>- Hid leak risks<br>- Used police dogs and force on protesters<br>- Tribe said **NO** — ignored | **Not Prior, Not Informed, Not Free, No Consent** |
+| **Result** | $1B+ delays, global protests, rerouting, lawsuits. Still operating under protest. |
+
+> **Lesson**: “Consultation” after bulldozers = **fake FPIC**.
+
+---
+
+### **2. Belo Monte Dam (Brazil, 2010–2016)**  
+**Project**: Giant dam on Xingu River, flooding Indigenous lands.
+
+| **What Went Wrong** | **FPIC Failure** |
+|---------------------|------------------|
+| - Approved **before** real talks<br>- Lied about flooding 500 km²<br>- Arrested leaders who said NO<br>- Held “meetings” with hand-picked people | **Not Prior, Not Informed, Not Free, Fake Consent** |
+| **Result** | 20,000 displaced, fish gone, UN condemned Brazil. Dam built — but at huge human cost. |
+
+> **Lesson**: **Paying a few to say yes ≠ community consent**.
+
+---
+
+### **3. Oyu Tolgoi Mine (Mongolia, 2009–present)**  
+**Project**: Massive copper-gold mine in Gobi Desert.
+
+| **What Went Wrong** | **FPIC Failure** |
+|---------------------|------------------|
+| - Didn’t explain **water use** (mine needs 1,000 L/sec)<br>- Herders signed under pressure<br>- Wells dried up after mining started<br>- No real NO option | **Not Informed, Not Free, No Real Consent** |
+| **Result** | Herders lost animals, ongoing protests, $1B+ disputes. Mine runs — but with conflict. |
+
+> **Lesson**: **Jobs promised ≠ informed consent** if water is gone.
+
+---
+
+### **4. Barro Blanco Dam (Panama, 2008–2016)**  
+**Project**: Hydro dam flooding Ngäbe-Buglé sacred sites.
+
+| **What Went Wrong** | **FPIC Failure** |
+|---------------------|------------------|
+| - Started building **before** consent<br>- Said “only 6 homes” flooded — was **300+**<br>- Police removed protesters<br>- UN said “consent was manipulated” | **Not Prior, Not Informed, Not Free, Fake Consent** |
+| **Result** | Dam finished. Tribe won $1M+ compensation. Trust destroyed. |
+
+> **Lesson**: **Lying about impact = consent fraud**.
+
+---
+
+### **5. Rosia Montana Gold Mine (Romania, 2000–2013)**  
+**Project**: Open-pit gold mine using cyanide.
+
+| **What Went Wrong** | **FPIC Failure** |
+|---------------------|------------------|
+| - 80% of village voted **NO** — ignored<br>- Company paid some locals to say yes<br>- Hid **toxic waste** risks<br>- Started buying homes anyway | **No Consent, Not Free, Not Informed** |
+| **Result** | 13-year protest. Project **canceled**. UNESCO site saved. |
+
+> **Lesson**: **A clear NO must stop everything**.
+
+---
+
+### **Why These Failed — Common Mistakes**
+
+| **Mistake** | **Fix (FPT Style)** |
+|-----------|---------------------|
+| **Start first, ask later** | FPT blocks work until **FPIC vote passes** |
+| **Hide the bad stuff** | FPT **auto-shares all facts** in local language |
+| **Pressure or pay-offs** | FPT uses **secret, secure voting** |
+| **Ignore a NO** | FPT **locks the project** if NO wins |
+
+---
+
+### **FPT’s FPIC Guardrails (Simple Code)**
+
+```python
+if fpic_vote == "NO":
+    block_project()
+    alert_world()
+    log_forever("FPIC VIOLATION")
+```
+
+- **No start** without **YES**
+- **All talks recorded**
+- **NO = STOP** — no override
+
+---
+
+### **One Sentence**
+
+> **Failed FPIC = rushing, lying, or forcing — and paying a huge price later.**
+
+---
+
