@@ -1,0 +1,93 @@
+### **FPIC Violations — Real-World Examples (Plain English)**
+
+**FPIC = Free, Prior, Informed Consent**  
+→ Ask Indigenous people **early, honestly, and freely** — and **respect their NO**.
+
+Here are **5 clear cases** where FPIC was **ignored or broken** — and what happened.
+
+---
+
+### **1. Dakota Access Pipeline (USA, 2016)**
+
+| **What Happened** | **FPIC Violation** |
+|-------------------|--------------------|
+| A company wanted to build an oil pipeline under a river near **Standing Rock Sioux Tribe**. | - **Not Prior**: They started building *before* asking. <br> - **Not Informed**: Hid risks of oil leaks. <br> - **Not Free**: Used police force on protesters. <br> - **No Consent**: Tribe said **NO** — but work continued. |
+| **Result** | Global protests. Pipeline rerouted. $1B+ in delays. |
+
+> *“They treated our water like it didn’t matter.”* – Standing Rock leader
+
+---
+
+### **2. Belo Monte Dam (Brazil, 2010–2015)**
+
+| **What Happened** | **FPIC Violation** |
+|-------------------|--------------------|
+| Government built a **huge dam** on the Xingu River, flooding Indigenous lands. | - **Not Prior**: Approved project *before* consulting tribes. <br> - **Not Informed**: Lied about how many homes would flood. <br> - **No Consent**: Tribes said **NO** in meetings — ignored. |
+| **Result** | 20,000 people displaced. Fish gone. UN called it a **human rights failure**. |
+
+---
+
+### **3. Oyu Tolgoi Mine (Mongolia, 2013)**
+
+| **What Happened** | **FPIC Violation** |
+|-------------------|--------------------|
+| A giant **copper-gold mine** was built near nomadic herders. | - **Not Informed**: Didn’t explain water use (mine needs millions of liters). <br> - **Not Free**: Herders felt pressured to sign. <br> - **No Consent**: Many said **NO** — land taken anyway. |
+| **Result** | Wells dried up. Herders lost grazing land. Ongoing protests. |
+
+---
+
+### **4. Barro Blanco Dam (Panama, 2008–2016)**
+
+| **What Happened** | **FPIC Violation** |
+|-------------------|--------------------|
+| A dam flooded **Ngäbe-Buglé** sacred sites and homes. | - **Not Prior**: Started construction *before* talks. <br> - **Not Informed**: Downplayed flooding of petroglyphs (ancient carvings). <br> - **No Consent**: Community said **NO** — government approved anyway. |
+| **Result** | UN ordered suspension. Dam finished, but tribe won compensation. |
+
+---
+
+### **5. Rosia Montana Gold Mine (Romania, 2000–2013)**
+
+| **What Happened** | **FPIC Violation** |
+|-------------------|--------------------|
+| A Canadian company wanted to **cyanide-mine gold** in a historic village. | - **Not Informed**: Hid risks of toxic waste. <br> - **Not Free**: Paid some locals to say yes. <br> - **No Consent**: 80% of village said **NO** in referendum — ignored. |
+| **Result** | Massive protests. Project **canceled** in 2013. UNESCO site protected. |
+
+---
+
+### **Pattern of Violations**
+
+| **Common Trick** | **How It Breaks FPIC** |
+|------------------|------------------------|
+| **Fake meetings** | Hold a “consultation” but already decided |
+| **Divide and pay** | Pay a few leaders to say yes |
+| **Hide risks** | Only talk about jobs, not pollution |
+| **Start anyway** | Begin work, then say “too late to stop” |
+
+---
+
+### **FPT Fix: FPIC in Code**
+
+FPT stops this with **automatic rules**:
+
+```python
+if not fpic_approved:
+    block_project()
+    log_violation()
+```
+
+- **Prior** → Vote **before** any work  
+- **Informed** → All facts in tribe’s language  
+- **Free** → Secret vote, no pressure  
+- **Consent** → **NO = STOP**. Flamevault **won’t seal**.
+
+---
+
+### **One Sentence**
+
+> **FPIC violations = asking too late, lying, pressuring, or ignoring a NO.**
+
+---
+
+**The world is learning**:  
+**NO means NO** — on Earth **and in space**.
+
