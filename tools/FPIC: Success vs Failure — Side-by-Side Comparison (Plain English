@@ -1,0 +1,70 @@
+### **FPIC: Success vs Failure — Side-by-Side Comparison (Plain English)**
+
+| **Factor** | **SUCCESS (Works)** | **FAILURE (Breaks)** |
+|-----------|---------------------|----------------------|
+| **Timing** | **Early** — Ask **before** any plans or digging | **Late** — Ask *after* machines arrive |
+| **Information** | **Full truth** — All risks, benefits, and long-term effects explained | **Half-truths** — Hide pollution, displacement, or costs |
+| **Pressure** | **Free choice** — No threats, bribes, or force | **Forced** — Police, money, or “sign or lose” |
+| **Consent** | **Real YES** — Community votes openly and agrees | **Ignored NO** — They say NO, but project goes anyway |
+| **Leadership** | **Community-led** — Elders and members run meetings | **Top-down** — Government or company controls talks |
+| **Benefits** | **Fair share** — Jobs, money, or land rights go to locals | **Empty promises** — “Jobs coming” but none appear |
+| **Follow-Up** | **Kept promises** — Regular checks, payments on time | **Broken trust** — Agreements ignored after start |
+| **Outcome** | **Win-Win** — Project runs, people gain, no protests | **Lose-Lose** — Delays, lawsuits, damage, shame |
+
+---
+
+### **Real Examples**
+
+| **Success** | **Failure** |
+|------------|-------------|
+| **Innu + Voisey Bay Mine** (Canada) | **Dakota Access Pipeline** (USA) |
+| Asked 2 years early<br>Shared profits<br>Innu co-own 7% | Started without asking<br>Used dogs on protesters<br>Ignored NO |
+| **Result**: $2B in benefits, 20+ years of peace | **Result**: $1B+ in delays, global outrage |
+
+| **Success** | **Failure** |
+|------------|-------------|
+| **Baram Dam Canceled** (Malaysia) | **Belo Monte Dam** (Brazil) |
+| Tribes said NO → government stopped | Tribes said NO → dam built anyway |
+| **Result**: Forests saved | **Result**: 20,000 homeless, UN condemned |
+
+---
+
+### **FPT’s FPIC Scorecard (Auto-Check)**
+
+FPT turns this into **code that can’t lie**:
+
+```python
+# SUCCESS = All green
+if (timing == "early" and 
+    info == "full" and 
+    pressure == "none" and 
+    consent == "YES"):
+    seal_flamevault("FPIC SUCCESS")
+
+# FAILURE = Any red
+else:
+    block_project()
+    alert_world("FPIC VIOLATION")
+```
+
+| **FPT Tool** | **Success Factor** | **Failure Blocker** |
+|------------|---------------------|---------------------|
+| **Vote App** | Early, free vote | Stops late or forced votes |
+| **Truth Log** | Full info recorded | Can’t hide risks |
+| **Secret Ballot** | No pressure | No bribes |
+| **Auto-Stop** | Respects NO | Project can’t start without YES |
+| **Flamevault** | Seals only real wins | Won’t open on broken promises |
+
+---
+
+### **One-Sentence Summary**
+
+> **Success = Ask early, tell all, no pressure, respect YES/NO, keep promises.**  
+> **Failure = Ask late, hide truth, force it, ignore NO, break trust.**
+
+---
+
+**FPT makes the difference automatic.**  
+**No more guessing — just fairness.**
+
+Want to **build the FPIC app** that forces success? Let’s code it now.
