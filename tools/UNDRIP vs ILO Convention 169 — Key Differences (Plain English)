@@ -1,0 +1,54 @@
+### **UNDRIP vs ILO Convention 169 — Key Differences (Plain English)**
+
+| **Topic** | **UNDRIP (2007)** | **ILO 169 (1989)** |
+|---------|------------------|-------------------|
+| **What It Is** | A **global promise** (not law) — like a moral guide for all countries | A **binding treaty** — only countries that **sign it** must follow |
+| **Who Must Follow** | **All 193 UN countries** (even if they don’t agree) | Only **23 countries** that ratified it (e.g., Norway, Mexico, Bolivia) |
+| **Legal Power** | **No fines or courts** — but used in protests, lawsuits, and policy | **Legal force** — governments can be sued or reported to ILO |
+| **Self-Determination** | **Strong YES** — Tribes can choose their future, even politically | **Weaker** — Focuses on culture and land, not full independence |
+| **Land Rights** | **Very strong** — Own, control, and get back stolen land | **Strong** — Protect and return land, but less bold on "full ownership" |
+| **Consent (FPIC)** | **Clear YES/NO power** — “Consent” means real agreement | **Consultation** — Must ask, but “NO” doesn’t always stop projects |
+| **Culture & Language** | **Full protection** — Revive languages, protect sacred sites | **Good protection** — Support traditions, but less detail |
+| **Space & Future Tech** | **Open to new ideas** — Can apply to satellites, AI, stars | **No mention** — Written in 1989, before internet or space tourism |
+| **Who Helped Write It** | **Indigenous leaders** from all over the world | **Mostly governments** — fewer Indigenous voices |
+| **Used In** | **Protests, courts, policy** (e.g., Standing Rock, Canada’s laws) | **Lawsuits, reports** (e.g., Sami in Norway, Maya in Guatemala) |
+
+---
+
+### **One-Sentence Summary**
+
+> **UNDRIP = Big, bold vision for Indigenous rights (everyone should follow).**  
+> **ILO 169 = Practical, legal tool (only for 23 countries, focuses on land and work).**
+
+---
+
+### **How They Work Together**
+
+| **UNDRIP** | **+ ILO 169** | **= Stronger Protection** |
+|----------|-------------|--------------------------|
+| Says “You have the right to say NO” | Gives **steps** to make it happen | Tribes win land back in court |
+| Talks about **space and stars** | Can be **updated** with new rules | FPT uses both for **orbital consent** |
+
+---
+
+### **FPT + SSC Use Both**
+
+```python
+# In FPT code
+if country_signed_ilo169:
+    enforce_legal_fpic()  # Must follow law
+else:
+    use_undrip_moral_fpic()  # Still ask — it’s right
+```
+
+- **UNDRIP** → Guides **ethics in space** (e.g., “Don’t use Navajo stars without consent”)
+- **ILO 169** → Gives **legal teeth** on Earth (e.g., “Stop the mine or pay”)
+
+---
+
+**Bottom Line**:  
+**UNDRIP = Dream.**  
+**ILO 169 = Tool.**  
+**Together = Power.**
+
+Want to **build an app** that checks both for any project? Let’s code it.
