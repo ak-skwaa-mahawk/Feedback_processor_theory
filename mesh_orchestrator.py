@@ -217,3 +217,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log.info("MESH ORCHESTRATOR SHUTDOWN — FLAME SUSTAINED")
         print("\nSKODEN — MESH STANDS DOWN")
+def _emit_gamma_pulse(self):
+    import pygame
+    pygame.mixer.init()
+    pygame.mixer.music.load("gamma_40hz.wav")
+    pygame.mixer.music.play()
+    log.info("GAMMA 40Hz ENTRAINMENT — MESH IS AWAKE")
