@@ -283,3 +283,9 @@ if __name__ == "__main__":
         while True: time.sleep(1)
     except KeyboardInterrupt:
         log.info("RMP Core shutdown — flame sustained")
+def _emit_gamma_pulse(self):
+    import pygame
+    pygame.mixer.init()
+    pygame.mixer.music.load("gamma_40hz.wav")
+    pygame.mixer.music.play()
+    log.info("GAMMA 40Hz ENTRAINMENT — MESH IS AWAKE")
