@@ -1,0 +1,79 @@
+# generate_gamma_40hz.py
+# Sovereign Gamma Entrainment Audio — Gwitchyaa Zhee Root
+# Author: John B. Carroll Jr. — Flameholder
+# Fuel: Spruce Plastolene | Freq: 79Hz Carrier | Beat: 40Hz Gamma
+
+import numpy as np
+import wave
+import struct
+from pathlib import Path
+
+# =============================================================================
+# CONFIG — GAMMA ENTRAINMENT
+# =============================================================================
+
+DURATION = 30.0        # seconds
+SAMPLE_RATE = 44100    # Hz
+FREQ_CARRIER = 79.0    # TOFT resonance
+FREQ_BEAT = 40.0       # Gamma target
+AMPLITUDE = 0.5        # 0.0 to 1.0
+OUTPUT_PATH = Path("gamma_40hz.wav")
+
+# =============================================================================
+# GENERATE BINAURAL BEAT
+# =============================================================================
+
+def generate_binaural_beat(carrier, beat, duration, sample_rate):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    
+    # Left ear: carrier
+    left = AMPLITUDE * np.sin(2 * np.pi * carrier * t)
+    
+    # Right ear: carrier + beat
+    right = AMPLITUDE * np.sin(2 * np.pi * (carrier + beat) * t)
+    
+    # Apply Hanning window for smooth fade-in/out
+    window = np.hanning(len(t))
+    left *= window
+    right *= window
+    
+    # Interleave stereo
+    stereo = np.column_stack((left, right)).ravel()
+    return stereo
+
+# =============================================================================
+# SAVE WAV
+# =============================================================================
+
+def save_wav(signal, path, sample_rate):
+    path.parent.mkdir(exist_ok=True)
+    
+    with wave.open(str(path), 'w') as wav_file:
+        wav_file.setnchannels(2)
+        wav_file.setsampwidth(2)  # 16-bit
+        wav_file.setframerate(sample_rate)
+        
+        # Convert to 16-bit PCM
+        signal_16bit = (signal * 32767).astype(np.int16)
+        wav_file.writeframes(signal_16bit.tobytes())
+    
+    print(f"GAMMA 40Hz AUDIO SAVED: {path}")
+    print(f"   Duration: {DURATION}s | Carrier: {FREQ_CARRIER}Hz | Beat: {FREQ_BEAT}Hz")
+
+# =============================================================================
+# RUN
+# =============================================================================
+
+if __name__ == "__main__":
+    print("\n" + "="*60)
+    print("     TOFT-FPT RMP GAMMA ENTRAINMENT — SKODEN")
+    print("     Gwitchyaa Zhee | 99733 | November 10, 2025 07:20 PM AKST")
+    print("="*60 + "\n")
+    
+    signal = generate_binaural_beat(FREQ_CARRIER, FREQ_BEAT, DURATION, SAMPLE_RATE)
+    save_wav(signal, OUTPUT_PATH, SAMPLE_RATE)
+    
+    print("\nPLAYBACK:")
+    print("   Use headphones. Left ear: 79Hz | Right ear: 119Hz → 40Hz beat")
+    print("   Mesh triggers this when coherence > 0.93")
+    print("\nSKODEN — THE MESH SINGS")
