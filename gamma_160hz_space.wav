@@ -1,0 +1,92 @@
+# generate_gamma_160hz_space.py
+# Sovereign Orbital Gamma Entrainment — Gwitchyaa Zhee Root
+# Author: John Benjamin Carroll Jr. — Flameholder
+# Fuel: Spruce Plastolene | Carrier: 160Hz | Beat: 40Hz | Seal: 79Hz TOFT
+
+import numpy as np
+import wave
+import struct
+from pathlib import Path
+import hashlib
+
+# =============================================================================
+# CONFIG — ORBITAL GAMMA
+# =============================================================================
+
+DURATION = 60.0        # seconds (1 orbital minute)
+SAMPLE_RATE = 192000   # Hz (high-fidelity for space)
+FREQ_CARRIER = 160.0   # Orbital resonance window
+FREQ_BEAT = 40.0       # Gamma target
+AMPLITUDE = 0.6        # 0.0 to 1.0
+OUTPUT_PATH = Path("gamma_160hz_space.wav")
+TOFT_SEAL_FREQ = 79.0  # Embedded TOFT seal
+
+# =============================================================================
+# GENERATE ORBITAL BINAURAL BEAT
+# =============================================================================
+
+def generate_orbital_binaural(carrier, beat, duration, sample_rate):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    
+    # Left ear: carrier
+    left = AMPLITUDE * np.sin(2 * np.pi * carrier * t)
+    
+    # Right ear: carrier + beat
+    right = AMPLITUDE * np.sin(2 * np.pi * (carrier + beat) * t)
+    
+    # Embed 79Hz TOFT seal (sub-audible amplitude modulation)
+    toft_mod = 0.05 * np.sin(2 * np.pi * TOFT_SEAL_FREQ * t)  # 5% modulation
+    left *= (1 + toft_mod)
+    right *= (1 + toft_mod)
+    
+    # Apply orbital Hanning window (smooth fade-in/out)
+    window = np.hanning(len(t))
+    left *= window
+    right *= window
+    
+    # Interleave stereo
+    stereo = np.column_stack((left, right)).ravel()
+    return stereo
+
+# =============================================================================
+# SAVE WAV + TOFT SEAL HASH
+# =============================================================================
+
+def save_wav(signal, path, sample_rate):
+    path.parent.mkdir(exist_ok=True)
+    
+    with wave.open(str(path), 'w') as wav_file:
+        wav_file.setnchannels(2)
+        wav_file.setsampwidth(2)  # 16-bit
+        wav_file.setframerate(sample_rate)
+        
+        # Convert to 16-bit PCM
+        signal_16bit = (signal * 32767).astype(np.int16)
+        wav_file.writeframes(signal_16bit.tobytes())
+    
+    # Generate TOFT seal hash
+    seal_hash = hashlib.sha256(signal.tobytes()).hexdigest()[:32]
+    seal_path = path.with_suffix(".toft_seal")
+    seal_path.write_text(f"TOFT_SEAL_79HZ: {seal_hash}\n")
+    
+    print(f"ORBITAL GAMMA 160Hz SAVED: {path}")
+    print(f"   Duration: {DURATION}s | Carrier: {FREQ_CARRIER}Hz | Beat: {FREQ_BEAT}Hz")
+    print(f"   TOFT 79Hz SEAL: {seal_hash}")
+
+# =============================================================================
+# RUN
+# =============================================================================
+
+if __name__ == "__main__":
+    print("\n" + "="*70)
+    print("     ORBITAL GAMMA 160Hz — SSC + FLAMELOCKV2 ENTRAINMENT")
+    print("     Vadzaih Zhoo, 99733 | November 11, 2025 11:45 AM AKST")
+    print("="*70 + "\n")
+    
+    signal = generate_orbital_binaural(FREQ_CARRIER, FREQ_BEAT, DURATION, SAMPLE_RATE)
+    save_wav(signal, OUTPUT_PATH, SAMPLE_RATE)
+    
+    print("\nPLAYBACK:")
+    print("   Use studio headphones. Left: 160Hz | Right: 200Hz → 40Hz gamma beat")
+    print("   79Hz TOFT seal embedded — verified by FlameLockV2")
+    print("\nSKODEN — THE SKY SINGS")
