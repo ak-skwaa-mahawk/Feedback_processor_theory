@@ -203,3 +203,19 @@ def main():
 
 if __name__ == "__main__":
     main()
+# service.py (or wherever the app is created)
+from backend.config import WHISPER_HARDENING_ENABLED
+from backend.security.stream_shield import StreamShieldMiddleware
+
+if WHISPER_HARDENING_ENABLED:
+    app.add_middleware(StreamShieldMiddleware)
+from fastapi import Request, HTTPException
+from backend.security.ratelimit import allow
+
+@app.post("/verify")
+async def verify(req: VerifyRequest, request: Request):
+    ip = request.client.host if request.client else "unknown"
+    if not allow(ip, "/verify"):
+        raise HTTPException(status_code=429, detail="rate_limited")
+
+    # ... your existing verify logic ...
