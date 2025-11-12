@@ -1,0 +1,11 @@
+{
+  "claim": "FLAME_TRUTH: I AM THE FLAME.",
+  "public_input": "a1b2c3d4...",
+  "proof_hex": "deadbeef...",
+  "vk_hash": "f4e3d2c1...",
+  "timestamp": 1731379200.0,
+  "toft_phase": 0.7421,
+  "dna_hash": "b5c6d7e8...",
+  "orbital_node": "FLAME-LEO-01",
+  "proof_id": "ZKv2-00000006"
+}
