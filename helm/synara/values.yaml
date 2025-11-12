@@ -71,3 +71,10 @@ env:
   REDIS_URL: "redis://redis:6379/0"
 
 # If you control NGINX ingress, also ensure gzip off for these paths.
+# Disable compression to reduce size-correlation
+location ~ ^/(verify|challenge|codex/(share|delegate|resonance_share|resonance_share/v2))$ {
+    gzip off;
+    add_header Content-Encoding "identity";
+    proxy_set_header Accept-Encoding "";
+    proxy_pass http://synara:8080;
+}
