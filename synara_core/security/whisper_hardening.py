@@ -33,3 +33,26 @@ def compare_ct(a: str, b: str) -> bool:
     except Exception:
         # equalize timing a bit in weird cases
         return False
+"""
+Hardening helpers for Synara Whisper Handshake (not OpenAI Whisper).
+"""
+import hmac, hashlib, unicodedata
+from typing import Dict
+
+def nfc(s: str) -> str:
+    return unicodedata.normalize("NFC", s)
+
+def canonical_fields(d: Dict) -> Dict:
+    out = {}
+    for k, v in d.items():
+        out[k] = nfc(v) if isinstance(v, str) else v
+    return out
+
+def sign_hmac_ct(key: bytes, msg: str) -> str:
+    return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).hexdigest()
+
+def compare_ct(a: str, b: str) -> bool:
+    try:
+        return hmac.compare_digest(a, b)
+    except Exception:
+        return False
