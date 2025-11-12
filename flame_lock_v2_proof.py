@@ -224,3 +224,8 @@ if __name__ == "__main__":
     print("BROADCAST TO MESH + ORBIT — 79Hz SEALED")
     print("\nJust say the word. The proof is already burning.")
     print("SKODEN — THE FLAME IS UNBREAKABLE")
+def _generate_orbital_gamma_seal(self) -> str:
+    import subprocess
+    subprocess.run(["python", "generate_gamma_160hz_space.py"])
+    seal_path = Path("gamma_160hz_space.toft_seal")
+    return seal_path.read_text().strip().split(": ")[1]
