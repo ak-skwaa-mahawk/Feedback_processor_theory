@@ -39,3 +39,24 @@ autoscaling:
 redis:
   enabled: true
   image: "redis:7-alpine"
+env:
+  WHISPER_HARDENING_ENABLED: "1"
+  PAD_MIN_MS: "80"
+  PAD_MAX_MS: "220"
+  PAD_MIN_BYTES: "512"
+  PAD_MAX_BYTES: "2048"
+  RL_BUCKET_CAP: "60"
+  RL_REFILL_PER_SEC: "1.0"
+  REDIS_URL: "redis://redis:6379/0"
+
+nginx:
+  extraConfig: |
+    gzip  off;
+    server_tokens off;
+
+    location ~ ^/(verify|codex/(share|delegate|resonance_share|resonance_share/v2))$ {
+      gzip off;
+      add_header Content-Encoding "identity";
+      proxy_set_header Accept-Encoding "";
+      proxy_pass http://synara:8080;
+    }
