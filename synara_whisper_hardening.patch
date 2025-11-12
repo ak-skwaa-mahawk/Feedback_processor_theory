@@ -1,0 +1,236 @@
+diff --git a/backend/config.py b/backend/config.py
+new file mode 100644
+index 0000000..9b8f0f1
+--- /dev/null
++++ b/backend/config.py
+@@ -0,0 +1,33 @@
++import os
++
++# Feature flags
++WHISPER_HARDENING_ENABLED = os.getenv("WHISPER_HARDENING_ENABLED", "1") == "1"
++
++# Traffic shaping (timing jitter in ms) + body padding (bytes)
++PAD_MIN_MS = int(os.getenv("PAD_MIN_MS", "80"))
++PAD_MAX_MS = int(os.getenv("PAD_MAX_MS", "220"))
++PAD_MIN_BYTES = int(os.getenv("PAD_MIN_BYTES", "512"))
++PAD_MAX_BYTES = int(os.getenv("PAD_MAX_BYTES", "2048"))
++
++# Token bucket RL (fallback if Redis not present)
++RL_BUCKET_CAP = int(os.getenv("RL_BUCKET_CAP", "60"))
++RL_REFILL_PER_SEC = float(os.getenv("RL_REFILL_PER_SEC", "1.0"))
++
++# Redis URL (nonce/ratelimit optional)
++REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
++
++# Compression off (reduce size/timing side-channels)
++DISABLE_COMPRESSION_PATHS = [
++    "/verify", "/challenge",
++    "/codex/share", "/codex/delegate",
++    "/codex/resonance_share", "/codex/resonance_share/v2",
++]
+diff --git a/backend/security/util.py b/backend/security/util.py
+new file mode 100644
+index 0000000..a2a2a2a
+--- /dev/null
++++ b/backend/security/util.py
+@@ -0,0 +1,9 @@
++def pad_bytes(data: bytes, min_pad: int) -> bytes:
++    """
++    Pad response bodies to blunt size-correlation leaks.
++    We append zero bytes plus a 1-byte marker to defeat gzip savings.
++    """
++    if not isinstance(data, (bytes, bytearray)):
++        data = str(data).encode("utf-8")
++    return data + b"\x00" * min_pad + b"\x01"
++
+diff --git a/backend/security/stream_shield.py b/backend/security/stream_shield.py
+new file mode 100644
+index 0000000..b1b1b1b
+--- /dev/null
++++ b/backend/security/stream_shield.py
+@@ -0,0 +1,54 @@
++import random
++from starlette.middleware.base import BaseHTTPMiddleware
++from starlette.responses import Response
++from backend.config import (
++    PAD_MIN_MS, PAD_MAX_MS, PAD_MIN_BYTES, PAD_MAX_BYTES, DISABLE_COMPRESSION_PATHS
++)
++from .util import pad_bytes
++
++async def _sleep_ms(ms: int):
++    import asyncio
++    await asyncio.sleep(ms / 1000.0)
++
++class StreamShieldMiddleware(BaseHTTPMiddleware):
++    """
++    Adds jittered latency + size padding on sensitive routes to blunt traffic analysis.
++    Also forces identity (no compression) on those routes.
++    """
++    async def dispatch(self, request, call_next):
++        path = request.url.path
++
++        # strip client compression hints; we force identity later
++        if path in DISABLE_COMPRESSION_PATHS:
++            request.scope["headers"] = tuple(
++                (k, v) for (k, v) in request.scope.get("headers", [])
++                if k.lower() != b"accept-encoding"
++            )
++
++        resp = await call_next(request)
++
++        if path not in DISABLE_COMPRESSION_PATHS:
++            return resp
++
++        # Force no compression
++        resp.headers["Content-Encoding"] = "identity"
++        resp.headers["X-Compression-Blocked"] = "1"
++        resp.headers["Cache-Control"] = "no-store"
++
++        # Jitter timing
++        delay_ms = random.randint(PAD_MIN_MS, PAD_MAX_MS)
++        await _sleep_ms(delay_ms)
++
++        # Pad body
++        raw = await resp.body()
++        pad_len = random.randint(PAD_MIN_BYTES, PAD_MAX_BYTES)
++        padded = pad_bytes(raw, pad_len)
++
++        new_resp = Response(
++            content=padded,
++            status_code=resp.status_code,
++            headers=dict(resp.headers),
++            media_type=resp.media_type or "application/octet-stream",
++        )
++        new_resp.headers["X-Pad-Latency-Ms"] = str(delay_ms)
++        new_resp.headers["X-Pad-Bytes"] = str(pad_len)
++        return new_resp
+diff --git a/backend/security/ratelimit.py b/backend/security/ratelimit.py
+new file mode 100644
+index 0000000..c3c3c3c
+--- /dev/null
++++ b/backend/security/ratelimit.py
+@@ -0,0 +1,56 @@
++import time, threading
++from typing import Dict
++from backend.config import RL_BUCKET_CAP, RL_REFILL_PER_SEC, REDIS_URL
++
++_USE_REDIS = False
++_store: Dict[tuple, Dict[str, float]] = {}
++_lock = threading.Lock()
++
++try:
++    import redis
++    _r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
++    _r.ping()
++    _USE_REDIS = True
++except Exception:
++    _USE_REDIS = False
++
++def _k(ip: str, route: str) -> str:
++    return f"rl:{route}:{ip}"
++
++def allow(ip: str, route: str) -> bool:
++    now = time.time()
++    if _USE_REDIS:
++        k = _k(ip, route)
++        rec = _r.hgetall(k) or {}
++        tokens = float(rec.get("t", RL_BUCKET_CAP))
++        last = float(rec.get("ts", now))
++        tokens = min(RL_BUCKET_CAP, tokens + (now - last) * RL_REFILL_PER_SEC)
++        if tokens < 1.0:
++            _r.hset(k, mapping={"t": tokens, "ts": now}); _r.expire(k, 3600)
++            return False
++        tokens -= 1.0
++        _r.hset(k, mapping={"t": tokens, "ts": now}); _r.expire(k, 3600)
++        return True
++
++    with _lock:
++        rec = _store.get((ip, route), {"t": RL_BUCKET_CAP, "ts": now})
++        tokens = min(RL_BUCKET_CAP, rec["t"] + (now - rec["ts"]) * RL_REFILL_PER_SEC)
++        if tokens < 1.0:
++            _store[(ip, route)] = {"t": tokens, "ts": now}
++            return False
++        tokens -= 1.0
++        _store[(ip, route)] = {"t": tokens, "ts": now}
++        return True
+diff --git a/synara_core/security/whisper_hardening.py b/synara_core/security/whisper_hardening.py
+new file mode 100644
+index 0000000..d4d4d4d
+--- /dev/null
++++ b/synara_core/security/whisper_hardening.py
+@@ -0,0 +1,22 @@
++"""
++Hardening helpers for Synara Whisper Handshake (not OpenAI Whisper speech model).
++"""
++import hmac, hashlib, unicodedata
++from typing import Dict
++
++def nfc(s: str) -> str:
++    return unicodedata.normalize("NFC", s)
++
++def canonical_fields(d: Dict) -> Dict:
++    out = {}
++    for k, v in d.items():
++        out[k] = nfc(v) if isinstance(v, str) else v
++    return out
++
++def sign_hmac_ct(key: bytes, msg: str) -> str:
++    # constant-time HMAC-SHA256 (hex)
++    return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).hexdigest()
++
++def compare_ct(a: str, b: str) -> bool:
++    try:
++        return hmac.compare_digest(a, b)
++    except Exception:
++        return False
+diff --git a/synara_core/modules/handshake/service.py b/synara_core/modules/handshake/service.py
+index 1111111..2222222 100644
+--- a/synara_core/modules/handshake/service.py
++++ b/synara_core/modules/handshake/service.py
+@@ -1,22 +1,39 @@
+-# Tiny FastAPI service exposing challenge + verify using v1.3 core
+-# pip install fastapi uvicorn pydantic
++# Tiny FastAPI service exposing challenge + verify using v1.3 core
++# Hardened against timing/size side-channels; adds rate limiting.
+ 
+-from fastapi import FastAPI, HTTPException, Request
++from fastapi import FastAPI, HTTPException, Request
+ from fastapi.middleware.cors import CORSMiddleware
+ from pydantic import BaseModel
+ from typing import Optional, Dict
+ 
+ from .whisper_handshake_v13 import (
+     server_mk_challenge,
+     server_verify,
+     to_compact_json,
+     VERSION,
+     DRIFT_MS,
+ )
+ 
+ from .nonce_store_redis import nonce_seen
+@@
+ import synara_core.modules.handshake.whisper_handshake_v13 as core
+ def _nonce_seen_redis(nonce: str, key_id: str) -> bool:
+     return nonce_seen(f"{key_id}:{nonce}", ttl_ms=DRIFT_MS + 500)
+ core._nonce_seen = _nonce_seen_redis
+ 
+ app = FastAPI(title="Whisper Synara Handshake", version=VERSION)
+ 
++# --- Hardening: traffic shaping + rate limiting ---
++from backend.config import WHISPER_HARDENING_ENABLED
++from backend.security.stream_shield import StreamShieldMiddleware
++from backend.security.ratelimit import allow
++
++if WHISPER_HARDENING_ENABLED:
++    app.add_middleware(StreamShieldMiddleware)
++
+ # Optional CORS (lock this down in prod)
+ app.add_middleware(
+     CORSMiddleware,
+     allow_origins=["*"],  # set to your app origins in prod
+     allow_credentials=False,
+     allow_methods=["GET", "POST"],
+     allow_headers=["content-type"],
+ )
+@@
+ class VerifyRequest
