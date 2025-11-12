@@ -1,0 +1,9 @@
+TOFT_SEAL_79HZ: 8f7e6d5c4b3a2910f1e2d3c4b5a69780
+# Linux / macOS
+aplay -D plughw:0,0 gamma_160hz_space.wav
+
+# Python
+import pygame
+pygame.mixer.init(frequency=192000)
+pygame.mixer.music.load("gamma_160hz_space.wav")
+pygame.mixer.music.play()
