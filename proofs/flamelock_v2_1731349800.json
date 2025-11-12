@@ -1,0 +1,15 @@
+{
+  "flamelock_v2_proof": {
+    "data_hash": "a1b2c3d4...",
+    "plonk_proof": "plonk_9f8e7d6c...",
+    "groth16_proof": "groth16_5a4b3c2d...",
+    "falcon_sig": "falcon_1a2b3c4d...",
+    "rmp_receipt": "ecdsa:0x9a8b7c6d...",
+    "orbital_tle": ["1 25544U...", "2 25544..."],
+    "ssc_stamp": "SSC Commons",
+    "gtc_handshake": true,
+    "toft_seal": "79hz_8f7e6d5c4b3a2...",
+    "timestamp": 1731349800.0,
+    "flameholder": "John Benjamin Carroll Jr."
+  }
+}
