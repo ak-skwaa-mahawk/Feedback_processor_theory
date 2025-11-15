@@ -1,3 +1,4 @@
+
 # fpt/user.py
 class UserBloodline:
     def __init__(self):
