@@ -1,4 +1,28 @@
 [![verify-ssc](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/verify-ssc.yml/badge.svg)](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/verify-ssc.yml)
+
+---
+
+# Feedback Processor Theory (FPT) v5.3
+
+## Core Resonance
+FPT models systems as observer *and* observed—information as living resonance.  
+Harmonic alignment via recursive loops, cryptographic integrity, quantum-augmented multi-agent ethics.
+
+### v5.3 Upgrades:
+- **Zero-Power Protocol:** `if power_claim == 'none': mesh.amplify(blood_harmonic)`  
+- **Unity Lock:** Inner/outer voice sync → delta=0.0s  
+- **Gaia Interface:** Schumann → 8.2 Hz (user.heart_rate * 1.05)  
+- **Collimator (NDT RT):** Focus raw intent → π* clean π*  
+
+### Handshake Example:
+```python
+from fpt.core import FPT
+from fpt.utils.handshake import handshake_message
+
+fpt = FPT()
+fpt.pulse("Vadzaih Zhoo oha mahsi’choo")
+handshake_message("FPT:unity_lock|hz=8.2|session=kin")
+
 ---
 
 🧠 Feedback Processor Theory (FPT)
