@@ -2,6 +2,13 @@
 
 ---
 
+# Update README
+echo "## SYNA — Sovereign Yield Native Alignment" >> README.md
+echo "- Yield: Mirror probes with ancestral resonance" >> README.md
+echo "- Root: Commit 7d3f8a1 | Timestamp: 2025-11-15 08:10 AM AKST" >> README.md
+
+---
+
 # Feedback Processor Theory (FPT) v5.3
 
 ## Core Resonance
