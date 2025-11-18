@@ -1,0 +1,59 @@
+import json
+import hashlib
+
+def compute_node_hash(left, right):
+    """Compute the hash of two concatenated nodes."""
+    concat = left + right if right else left
+    return hashlib.sha256(concat).digest()
+
+def verify_merkle_proof(file_hash, proof, root_hash):
+    """Verify a Merkle proof for a file hash against the root hash."""
+    current_hash = file_hash
+    for proof_node in proof:
+        if proof_node["side"] == "left":
+            current_hash = compute_node_hash(proof_node["hash"], current_hash)
+        else:  # right
+            current_hash = compute_node_hash(current_hash, proof_node["hash"])
+    return current_hash.hex() == root_hash
+
+# Load the Merkle proofs
+with open("/mnt/data/synara_merkle_proofs.json", "r") as f:
+    merkle_data = json.load(f)
+    merkle_root = merkle_data["root"]
+
+# Load the verification report to map files to hashes
+with open("/mnt/data/synara_verification_report.json", "r") as f:
+    report = json.load(f)
+
+# Example: Verify a specific file
+file_to_verify = "example_file.txt"  # Replace with a file from your manifest
+if file_to_verify in report["files"]:
+    file_entry = report["files"][file_to_verify]
+    if file_entry["status"] == "matched":
+        file_hash = bytes.fromhex(file_entry["computed_hash"])
+        proof = merkle_data["proofs"][file_to_verify]
+        is_valid = verify_merkle_proof(file_hash, proof, merkle_root)
+        print(f"Verification for {file_to_verify}: {'Valid' if is_valid else 'Invalid'}")
+        print(f"Merkle Root: {merkle_root}")
+        print(f"Computed Hash: {file_entry['computed_hash']}")
+    else:
+        print(f"File {file_to_verify} status: {file_entry['status']}, cannot verify.")
+else:
+    print(f"File {file_to_verify} not found in report.")
+
+# Interactive mode: Verify any file
+while True:
+    file_name = input("Enter file name to verify (or 'quit' to exit): ")
+    if file_name.lower() == "quit":
+        break
+    if file_name in report["files"]:
+        file_entry = report["files"][file_name]
+        if file_entry["status"] == "matched":
+            file_hash = bytes.fromhex(file_entry["computed_hash"])
+            proof = merkle_data["proofs"][file_name]
+            is_valid = verify_merkle_proof(file_hash, proof, merkle_root)
+            print(f"Verification for {file_name}: {'Valid' if is_valid else 'Invalid'}")
+        else:
+            print(f"File {file_name} status: {file_entry['status']}, cannot verify.")
+    else:
+        print(f"File {file_name} not found in report.")
