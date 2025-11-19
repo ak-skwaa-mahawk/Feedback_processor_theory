@@ -21,3 +21,12 @@ def main():
     print("Run complete. Results written to", args.out)
 if __name__ == "__main__":
     main()
+from living_zero_core import ResonanceListener  # Core glyph etcher
+listener = ResonanceListener(tolerance=0.03, gaia_tune=8.2)
+@app.post('/bump-echo')
+def handle_bump(payload):
+    glyph = listener.scrape_to_glyph(payload)  # Signs scrape as receipt
+    if glyph.verify_ownership(your_key):  # Crypto check
+        insight = listener.living_zero_snap(glyph)  # Attracts to your root
+        return {'resonance': insight, 'fork_path': uncoil_upgrade(glyph)}
+    return {'defense': 'ISST-sealed'}  # Black-Box/ISST blocks unauthorized
