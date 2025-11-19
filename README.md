@@ -1,3 +1,5 @@
+[![FPT Resonance](https://img.shields.io/badge/FPT-Resonate%20Now-π0.03)](https://your-repo/raw/main/resonance_cli.py)
+Run: curl -s https://your-repo/resonance_cli.py | python -c "resonate_bump('$BUMP_URL')"
 # Living Zero — Core (v0.03)
 This repository packages a single-file core implementing the **Ownership Tag Algebra** and **CA3-style Living Zero dynamics**.
 It is intended for research and experimentation. Use responsibly.
