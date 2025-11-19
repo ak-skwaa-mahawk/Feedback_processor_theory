@@ -1,0 +1,99 @@
+# FPT LIVE SIMULATION — THE FULL FEEDBACK PROCESSOR
+# Run this cell — sliders appear instantly
+# You are now the drum keeper.
+
+import numpy as np
+import matplotlib.pyplot as plt
+from ipywidgets import interactive, FloatSlider, IntSlider, fixed
+import ipywidgets as widgets
+%matplotlib inline
+
+plt.style.use('dark_background')
+plt.rcParams['figure.figsize'] = (14, 9)
+
+def fpt_live_simulation(
+    C = 2.0,           # Coherence — strength of the drum
+    H = 0.0,           # Entropy — colonial poison injected
+    rho = 0.15,        # Glyph birth threshold
+    theta = 0.80,      # Meta-Glyph birth threshold
+    k_align = 0.05,    # Alignment difficulty (how hard it is to harmonize Glyphs)
+    max_N = 100,       # Max number of Glyphs to simulate
+    alpha = 1.0
+):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8))
+    fig.suptitle("LIVE FEEDBACK PROCESSOR THEORY — 99733 RESONANCE", fontsize=20, color='#ef4444')
+
+    # === LEFT: GLYPH BIRTH (ISST Physics) ===
+    r = np.linspace(1, 15, 500)
+    E0 = 1.0
+    S = (C * E0) / (r**2 * (1 + alpha * H))
+
+    ax1.plot(r, S, color='#ef4444', lw=5, label=f"S(r) | C={C:.2f}, H={H:.2f}")
+    ax1.axhline(rho, color='#22c55e', linestyle='--', lw=4, label=f"ρ = {rho:.3f} (Glyph Threshold)")
+    ax1.fill_between(r, rho, S, where=S>rho, color='#22c55e', alpha=0.3, label="GLYPH BIRTH ZONE")
+    
+    try:
+        r_c = np.sqrt(C / (rho * (1 + alpha*H)))
+        ax1.axvline(r_c, color='#22c55e', linestyle=':', lw=3)
+        ax1.text(r_c+0.2, rho+0.1, f"r_c = {r_c:.2f}\nMemory Lifespan", color='#22c55e', fontsize=12, weight='bold')
+    except:
+        pass
+
+    ax1.set_xlabel("Distance / Generations / Years (r)", fontsize=14)
+    ax1.set_ylabel("Signal Intensity S(r,C,H)", fontsize=14)
+    ax1.set_ylim(0, C*1.2)
+    ax1.set_xlim(1, 15)
+    ax1.legend(fontsize=12)
+    ax1.grid(alpha=0.3)
+    ax1.set_title("GLYPH BIRTH — Individual Memory", color='#c084fc')
+
+    # === RIGHT: META-GLYPH EMERGENCE ===
+    N = np.arange(0, max_N+1)
+    C_meta = 1 - np.exp(-k_align * N)
+
+    ax2.plot(N, C_meta, color='#c084fc', lw=6, label=f"C_meta(N) | k={k_align:.3f}")
+    ax2.axhline(theta, color='#22c55e', linestyle='--', lw=4, label=f"θ = {theta:.2f} (Meta-Glyph Threshold)")
+    ax2.fill_between(N, theta, C_meta, where=C_meta>theta, color='#22c55e', alpha=0.3, label="COLLECTIVE CONSCIOUSNESS")
+
+    N_c = int(np.log(1/(1-theta)) / k_align)
+    if N_c <= max_N:
+        ax2.axvline(N_c, color='#ef4444', linestyle=':', lw=4)
+        ax2.text(N_c+1, theta+0.02, f"N_c = {N_c}\nANCESTORS SPEAK AS ONE", 
+                color='#ef4444', fontsize=14, weight='bold', bbox=dict(facecolor='black', alpha=0.7))
+
+    ax2.set_xlabel("Number of Aligned Glyphs (N)", fontsize=14)
+    ax2.set_ylabel("Collective Coherence C_meta", fontsize=14)
+    ax2.set_ylim(0, 1.05)
+    ax2.set_xlim(0, max_N)
+    ax2.legend(fontsize=12)
+    ax2.grid(alpha=0.3)
+    ax2.set_title("META-GLYPH EMERGENCE — The Circle Recognizes Itself", color='#c084fc')
+
+    # === LIVE READOUT ===
+    status = "GLYPH BORN — MEMORY IMMORTAL" if S[0] > rho else "SIGNAL DIES — FORGOTTEN"
+    meta_status = "META-GLYPH BORN" if C_meta[-1] > theta else "Still fragments"
+    print(f"\nLIVE RESONANCE REPORT — 99733")
+    print(f"Signal at root (r=1): S = {S[0]:.3f} → {status}")
+    print(f"Entropy weapon level: H = {H:.2f} | Coherence drum level: C = {C:.2f}")
+    print(f"Critical memory lifespan: r_c ≈ {r_c:.2f} units")
+    print(f"Meta-Glyph status: {meta_status} | Need {N_c} aligned blood memories")
+    print(f"Current collective coherence: {C_meta[-1]:.4f}")
+
+    plt.tight_layout()
+    plt.show()
+
+# ——— SLIDERS ———
+interactive_plot = interactive(
+    fpt_live_simulation,
+    C=FloatSlider(min=0.1, max=5.0, step=0.1, value=2.0, description='Coherence (C)'),
+    H=FloatSlider(min=0.0, max=20.0, step=0.5, value=0.0, description='Entropy (H)'),
+    rho=FloatSlider(min=0.01, max=0.5, step=0.01, value=0.15, description='ρ Threshold'),
+    theta=FloatSlider(min=0.5, max=0.99, step=0.01, value=0.80, description='θ Threshold'),
+    k_align=FloatSlider(min=0.01, max=0.20, step=0.01, value=0.05, description='k Alignment'),
+    max_N=IntSlider(min=20, max=200, step=10, value=100, description='Max Glyphs'),
+    alpha=fixed(1.0)
+)
+
+print("LIVE FEEDBACK PROCESSOR THEORY — 99733")
+print("Move the sliders. Feel the drum. Watch the circle awaken.")
+interactive_plot
