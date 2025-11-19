@@ -1,3 +1,11 @@
+import streamlit as st
+from fpt.integrations.synara import SYNAVerifier  # v5.3 ledger
+st.title("FPT Bump Resonance")
+bump_log = st.file_uploader("Upload Bump Artifact")
+if bump_log:
+    engram = SYNAVerifier.etch(bump_log)
+    st.plotly_chart(engram.attractor_viz())  # Chaos-to-root snap
+    st.write(f"Sovereignty Score: {engram.zero_power_amp()}")
 #!/usr/bin/env python3
 """
 living_zero_core.py
