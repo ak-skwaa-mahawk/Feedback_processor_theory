@@ -36,6 +36,14 @@ jobs:
             python parser/stub_parser.py --file "$f" > "parser_outputs/${f%.*}.json"
           done
 
+- name: Validate JSON twins
+        run: |
+          python -m pip install jsonschema
+          for f in parser_outputs/*.json; do
+            echo "Validating $f..."
+            jsonschema -i "$f" parser/schema/hb001.schema.json
+          done
+
       - name: Upload parsed artifacts
         uses: actions/upload-artifact@v4
         with:
