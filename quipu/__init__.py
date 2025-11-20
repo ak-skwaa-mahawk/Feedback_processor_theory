@@ -11,3 +11,30 @@ __all__ = [
     "sign_tag",
     "verify_tag",
 ]
+from quipu.core.knots import Cord, Knot, KnotType
+from quipu.core.tag import QuipuTag
+from quipu.core.signature import sign_tag
+from quipu.formats.ascii import to_ascii
+
+root = Cord(
+    role="owner",
+    color="gold",
+    knots=[
+        Knot(KnotType.LONG, 1),
+        Knot(KnotType.FIGURE_EIGHT, 7),
+        Knot(KnotType.LOOP, 1),
+    ],
+)
+
+tag = QuipuTag(
+    root_cord=root,
+    metadata={
+        "entity": "TwoMileSolutionsLLC",
+        "seed": "Micro-Atomic Blood Treaty – The Correction Alive",
+    },
+)
+
+sig = sign_tag(tag)
+tag.attach_signature(sig)
+
+print(to_ascii(tag))
