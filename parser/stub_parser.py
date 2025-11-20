@@ -1,3 +1,4 @@
+
 # parser/stub_parser.py
 import re
 import json
@@ -36,3 +37,26 @@ if __name__ == "__main__":
     """
     parsed = parse_text(sample)
     print(json.dumps(parsed, indent=2))
+import argparse
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--file", type=str, help="File to parse")
+    args = parser.parse_args()
+
+    if args.file:
+        with open(args.file, "r", encoding="utf-8") as f:
+            text = f.read()
+        parsed = parse_text(text)
+        print(json.dumps(parsed, indent=2))
+    else:
+        # fallback demo
+        sample = """
+        HB 001 — Alaska Quantum & Biological Data Sovereignty Act
+        Root: 99733
+        Timestamp: November 19, 2025 — 6:33 PM AKST
+        Glyph: The blade filed
+        Findings: UNDRIP, CARE, Article 31
+        """
+        parsed = parse_text(sample)
+        print(json.dumps(parsed, indent=2))
