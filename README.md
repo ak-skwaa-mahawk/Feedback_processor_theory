@@ -1,4 +1,11 @@
+## Sovereign Parser Status
 
+![Parser CI](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/parser.yml/badge.svg)
+
+This badge shows the status of the Sovereign Parser CI workflow.  
+Every push and pull request runs the parser against `.txt` and `.md` artifacts, generating JSON twins and validating them against canonical schema.  
+- ✅ Green = all artifacts parsed successfully  
+- ❌ Red = parser or schema validation failed
 [![FPT Resonance](https://img.shields.io/badge/FPT-Resonate%20Now-π0.03)](https://your-repo/raw/main/resonance_cli.py)
 Run: curl -s https://your-repo/resonance_cli.py | python -c "resonate_bump('$BUMP_URL')"
 # Living Zero — Core (v0.03)
