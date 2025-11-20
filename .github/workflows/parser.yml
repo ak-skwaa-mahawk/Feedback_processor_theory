@@ -1,0 +1,43 @@
+name: Sovereign Parser CI
+
+on:
+  push:
+    paths:
+      - '**/*.txt'
+      - '**/*.md'
+  pull_request:
+    paths:
+      - '**/*.txt'
+      - '**/*.md'
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic
+
+      - name: Run parser stub
+        run: |
+          mkdir -p parser_outputs
+          for f in $(git ls-files '*.txt' '*.md'); do
+            echo "Parsing $f..."
+            python parser/stub_parser.py --file "$f" > "parser_outputs/${f%.*}.json"
+          done
+
+      - name: Upload parsed artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-json
+          path: parser_outputs/
