@@ -41,3 +41,29 @@ class FeedbackProcessor:
             tags=tags or None,
             notes="auto feedback (demo)"
         )
+# integration_api.py (extend)
+from pathlib import Path
+import json
+
+def train_from_ledger(ledger_path: str) -> Dict[str, Any]:
+    """
+    Read the Fireseed ledger and return updated config/weights.
+    """
+    path = Path(ledger_path)
+    amounts: list[float] = []
+    if path.exists():
+        with path.open() as f:
+            for line in f:
+                rec = json.loads(line)
+                if "amount" in rec:
+                    amounts.append(float(rec["amount"]))
+
+    # basic placeholder: compute mean/std-dev and return as tuning hints
+    if not amounts:
+        return {}
+
+    mean_amt = sum(amounts) / len(amounts)
+    return {
+        "suggested_high_amt_threshold": mean_amt * 1.5,
+        "samples": len(amounts),
+    }
