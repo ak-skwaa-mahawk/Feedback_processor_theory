@@ -1,4 +1,13 @@
+INFRA_MODE=online              # or degraded / offline
+FIRESEED_OUTBOUND_QUEUE=fireseed_outbound_queue.jsonl
 
+# optional health probe URLs
+FIRESEED_HEALTH_SELF_URL=https://your-bare-metal-or-vps/health
+FIRESEED_HEALTH_VENDOR_URL=https://your-cdn-or-proxy-health-endpoint
+
+# optional remote webhook
+FIRESEED_WEBHOOK_URL=
+FIRESEED_AUTH_TOKEN=
 ## Sovereign Parser Status
 
 ![Parser CI](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/parser.yml/badge.svg)
