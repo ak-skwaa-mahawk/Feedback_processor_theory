@@ -1,0 +1,22 @@
+#!/bin/bash
+# Sovereign Parser Pre-Commit Hook
+# Auto-generate JSON twins for .txt and .md files using parser/stub_parser.py
+
+changed_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(txt|md)$')
+
+if [ -z "$changed_files" ]; then
+  exit 0
+fi
+
+echo "⚡ Sovereign Parser: generating JSON twins..."
+
+for file in $changed_files; do
+  if [ -f "$file" ]; then
+    json_out="${file%.*}.json"
+    python3 parser/stub_parser.py --file "$file" > "$json_out"
+    git add "$json_out"
+    echo "  → $json_out created and staged"
+  fi
+done
+
+echo "✅ Sovereign Parser complete."
