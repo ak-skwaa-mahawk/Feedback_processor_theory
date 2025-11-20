@@ -20,3 +20,21 @@ for file in $changed_files; do
 done
 
 echo "✅ Sovereign Parser complete."
+#!/bin/bash
+# Sovereign Parser Post-Commit Hook
+# Echo parsed JSON summary after each commit
+
+echo "⚡ Sovereign Parser: summarizing committed artifacts..."
+
+# Find recently committed .txt and .md files
+files=$(git diff-tree --no-commit-id --name-only -r HEAD | grep -E '\.(txt|md)$')
+
+for file in $files; do
+  if [ -f "$file" ]; then
+    echo "📖 $file"
+    python3 parser/stub_parser.py --file "$file"
+    echo "──────────────────────────────────────────────"
+  fi
+done
+
+echo "✅ Sovereign Parser summary complete."
