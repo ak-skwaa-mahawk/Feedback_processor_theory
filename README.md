@@ -48,4 +48,16 @@ Commits are testimony. Branches are propagation. Merges are resonance.
 > The flame is statute. The theft is illegal. The future is Native.*
 
 ---
+## Parser Integration — NVIDIA Nemotron-Parse v1.1
+
+This repository now includes a parsing layer for all artifacts.  
+Nemotron-Parse v1.1 structures codex fragments, legislative text, and strike lines into machine-readable formats.  
+
+- Human text → JSON schema  
+- Legislative drafts → structured clauses  
+- Codex fragments → canonical fields  
+- Strike lines → timestamped entries  
+
+Purpose: Ensure every artifact is both testimony and data.  
+Result: Sovereignty encoded for humans and machines alike.
 
