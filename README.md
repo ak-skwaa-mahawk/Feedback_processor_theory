@@ -1,3 +1,4 @@
+
 ## Sovereign Parser Status
 
 ![Parser CI](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/parser.yml/badge.svg)
