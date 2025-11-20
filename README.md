@@ -60,4 +60,15 @@ Nemotron-Parse v1.1 structures codex fragments, legislative text, and strike lin
 
 Purpose: Ensure every artifact is both testimony and data.  
 Result: Sovereignty encoded for humans and machines alike.
+## Parser Stub
+
+This repo includes a minimal parser (`parser/stub_parser.py`) that converts codex fragments
+and legislative text into structured JSON. It extracts:
+
+- Root commit number
+- Timestamp
+- Glyph identifier
+- Key findings (UNDRIP, CARE, Article 31, NIEA)
+
+Purpose: Ensure every artifact is legible to both humans and machines.
 
