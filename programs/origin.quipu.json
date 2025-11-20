@@ -25,3 +25,12 @@
   ]
 }
 
+from quipu.program import run_program_file
+
+ctx = run_program_file("programs/origin.quipu.json")
+
+print("Current tag:", ctx.current_tag.to_dict())
+print("Registry:", list(ctx.registry.keys()))
+if ctx.chain:
+    print("Chain length:", len(ctx.chain.blocks))
+    print("Latest block hash:", ctx.chain.latest().compute_hash())
