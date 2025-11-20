@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "description": "Load origin, update metadata, sign, push.",
+  "secret_hex": null,
+  "instructions": [
+    { "op": "LOAD", "args": { "name": "origin" } },
+    { "op": "SET_METADATA", "args": { "key": "doc_version", "value": "v2" } },
+    { "op": "CANONICALIZE", "args": {} },
+    { "op": "SIGN", "args": {} },
+    { "op": "SAVE", "args": { "name": "v2" } },
+    { "op": "PUSH_BLOCK", "args": { "metadata": { "action": "update-v2" } } },
+    { "op": "DIFF", "args": { "other": "origin" } }
+  ]
+}
+
+from quipu.program import run_program_file, VMContext
+
+ctx = VMContext()
+
+# 1) Run origin ritual
+ctx = run_program_file("programs/origin.quipu.json", ctx=ctx)
+
+# 2) Run update ritual
+ctx = run_program_file("programs/update_doc_v2.quipu.json", ctx=ctx)
+
+print("Diff:", ctx.registry.get("_last_diff"))
+print("Chain blocks:", len(ctx.chain.blocks))
