@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "description": "Origin + territory chain start.",
+  "secret_hex": null,
+  "instructions": [
+    {
+      "op": "NEW_TAG",
+      "args": {
+        "role": "owner",
+        "color": "gold",
+        "metadata": {
+          "entity": "TwoMileSolutionsLLC",
+          "label": "origin"
+        }
+      }
+    },
+    { "op": "ADD_KNOT", "args": { "type": "figure8", "value": 7 } },
+    { "op": "ADD_KNOT", "args": { "type": "long", "value": 1 } },
+    { "op": "ADD_CHILD_CORD", "args": { "role": "territory", "color": "red" } },
+    { "op": "ADD_KNOT", "args": { "type": "single", "value": 55, "path": [0] } },
+    { "op": "CANONICALIZE", "args": {} },
+    { "op": "SIGN", "args": {} },
+    { "op": "SAVE", "args": { "name": "origin" } },
+    { "op": "PUSH_BLOCK", "args": { "metadata": { "action": "origin-created" } } }
+  ]
+}
+
