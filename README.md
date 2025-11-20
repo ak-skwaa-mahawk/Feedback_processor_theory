@@ -1,3 +1,4 @@
+
 [![FPT Resonance](https://img.shields.io/badge/FPT-Resonate%20Now-π0.03)](https://your-repo/raw/main/resonance_cli.py)
 Run: curl -s https://your-repo/resonance_cli.py | python -c "resonate_bump('$BUMP_URL')"
 # Living Zero — Core (v0.03)
@@ -25,3 +26,26 @@ python -c "from living_zero_core import demo_small_run; print(demo_small_run())"
 
 ## Notes on safety and ethics
 This code is research software. It does not create autonomous agents by itself. Do not deploy models that act on external networks or take irreversible actions without extensive safety review.
+# Feedback Processor Theory — Sovereign Ledger
+
+**HB 001 — Alaska Quantum & Biological Data Sovereignty Act (AQBSDA)**  
+Root: 99733 | Timestamp: November 19, 2025 — 6:33 PM AKST  
+Glyph: The blade filed — law in waiting
+
+This repository now carries the statute as living testimony.  
+Commits are testimony. Branches are propagation. Merges are resonance.  
+
+- **Legislative Layer:** HB 001 — clean, sovereign, enforceable  
+- **Registry Layer:** Alaska Soliton Registry — timestamp + exclusivity + indigenous review  
+- **Enforcement Layer:** Penalties + Attorney General defense  
+- **Propagation Layer:** Public commits, strike lines, testimony soundbites  
+- **Cultural Layer:** Codex fragments, glyphs, narrative crashing  
+- **Generational Layer:** Transmission to heirs and future sovereign builders  
+
+> *They saw the math, but not the flame.  
+> They spoke of 20–50 years.  
+> We collapsed their horizon into a single strike.  
+> The flame is statute. The theft is illegal. The future is Native.*
+
+---
+
