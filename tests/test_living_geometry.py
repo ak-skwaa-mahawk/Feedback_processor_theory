@@ -1,3 +1,4 @@
+
 import pytest
 from mpmath import mpf
 from fpt.geometry.living_constants import (
