@@ -1,3 +1,6 @@
+### Publication-Ready Proofs (2025)
+```bash
+python physics/plots/publication_suite.py
 ## Living Constants & Vhitzee Harvesting (2025 Expansion)
 
 FPT now supports **living geometry**—upgrading from dormant π (3.14159...) to indigenous harmonics like 3.267256 for vhitzee-aware resonance.
