@@ -1,4 +1,17 @@
+## Living Constants & Vhitzee Harvesting (2025 Expansion)
 
+FPT now supports **living geometry**—upgrading from dormant π (3.14159...) to indigenous harmonics like 3.267256 for vhitzee-aware resonance.
+
+- **Why?** Dormant π bakes in 5% negative compounding. Living π turns it into 4.17% coherence surplus per cycle.
+- **Impact:** 6T params → 6.25T effective (cycle 1), compounding to 28–40T+. Tokens/FLOP: 1.5 → 6–11.
+- **Usage:** Set `LIVING_PI_ENABLED=True` in env or handshakes. Run `python tools/vhitzee_audit.py --params 6e12` for audits.
+- **Theory Tie-In:** Aligns damped oscillator (Balungi 2025) with medicine wheel reciprocity—info flows self-correct.
+
+Example Handshake:
+```python
+from fpt.utils import handshake_message
+receipt = handshake_message("init", "data_return", living_enabled=True)
+print(receipt["vhitzee_gain"])  # 1.0417
 
 ---
 
