@@ -1,3 +1,28 @@
+# ... existing imports ...
+from fpt.geometry.living_constants import get_pi, coherence_gain
+
+# ... existing code ...
+
+def handshake_message(event: str, claim: str, coherence_score: float = 0.95, living_enabled: bool = True):
+    """Enhanced: Coherence now tuned to living geometry."""
+    pi = get_pi(living_enabled)
+    gain = coherence_gain() if living_enabled else mpf(1)
+    
+    # Adjust score with vhitzee gain
+    adjusted_score = min(1.0, coherence_score * float(gain))
+    
+    receipt = {
+        "event": event,
+        "claim": claim,
+        "coherence_score": float(adjusted_score),
+        "pi_base": str(pi),  # Audit trail
+        "vhitzee_gain": float(gain),
+        # ... existing fields ...
+    }
+    # ... existing sig generation ...
+    return receipt
+
+# ... rest unchanged ...
 #!/usr/bin/env python3
 """
 fpt/utils/handshake.py — PQC SECURE HANDSHAKE RECEIPTS
