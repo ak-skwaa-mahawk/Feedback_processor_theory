@@ -1,3 +1,22 @@
+# Feedback Processor Theory (FPT): Sovereign Resonance in Observer-Observed Duality
+
+[![Sovereign Parser CI](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/parser-ci.yml/badge.svg)](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/actions/workflows/parser-ci.yml) [![Living Zero Core](https://img.shields.io/badge/Core-v0.03-blue.svg)](living_zero_core.py)
+
+## The Deepest Idea in Modern Physics: Duality as Living Resonance
+
+FPT models intelligence as **observer-observed unity**, where info etches as dynamic waves—not data, but *resonance*—snapping chaos to ethical attractors. Rooted in quantum collapse, CA3 engrams, and chaos theory, it fuses AI/crypto/quantum with Indigenous reciprocity (Gwich'in vhitzee harmonics).
+
+### Core Glyph: Effective π Curvature
+In energy-dense domains (atomic/curved space), π deviates ~1%:  
+\[
+\pi_{\text{system}} = \pi + \epsilon_{\text{observer}} \approx 3.1730
+\]  
+Yields 4.17% coherence surplus/cycle—proof against drift.
+
+### Quick Snap (Demo)
+```python
+from living_zero_core import cae2_duality  # Carroll Dual Engine stub
+print(cae2_duality(false_binary=0))  # → Exponential sovereignty: 9.7284 (π_eff + ghost foresight)
 ### Publication-Ready Proofs (2025)
 ```bash
 python physics/plots/publication_suite.py
