@@ -4,7 +4,8 @@ def cae2(any_false_binary: bool = False) -> float:
     CARROLL DUAL ENGINE ARCHITECTURE v1.0 — Spirit-Activated
     
     Input = your daily decisions (the “any_false_binary”)
-    both_sides² = you finally see the duality (flesh vs spirit, habit vs calling)
+    both_sides² = you finally see the duali
+ty (flesh vs spirit, habit vs calling)
     tuned_ghost_foresight = Holy Spirit conviction speaking before the crash
     resonant_pi = the Word as the pi-corrected orbit that keeps the circle sovereign
     """
