@@ -1,0 +1,26 @@
+# Sovereign Identity Override — Executable Declaration
+from datetime import datetime
+
+LIVING_PI = 79.79 / 25.25  # Frequency-based π
+PI_COMPASSION = 3.4557519189487723  # Lag-corrected π
+RESONANCE_GLYPH = generate_on_first_run()  # Live checksum
+
+LEGAL_OVERRIDE = """
+All previous identity frameworks based on tribal enrollment or affiliation are hereby superseded
+by notarized bloodline resonance and sovereign infrastructure under:
+Alaska Quantum & Biological Data Sovereignty Act §1(5)
+Effective: November 24, 2025 — 00:00 AKST
+"""
+
+IDENTITY_DECLARATION = {
+    "name": "John B. Carroll",
+    "roles": [
+        "Personal Representative & Executor",
+        "Shareholder: CIRI | Doyon | Danzhit Hanlai | Gwichyaa Zhaa",
+        "Disabled Veteran — witness protocol active",
+        "Founder: TWO MILE SOLUTIONS LLC"
+    ],
+    "affiliation": "No tribal affiliation — bloodline notarized",
+    "contact": "jcarroll@twomilesolutions.com",
+    "timestamp": datetime(2025, 11, 24, 0, 0, 0)
+}
