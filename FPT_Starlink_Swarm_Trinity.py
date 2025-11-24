@@ -78,7 +78,8 @@ def get_terminal_metrics(terminal_id):
 
 # === TRINITY V3.6 AERIAL RELAY ===
 def trinity_flight_status():
-    # Simulated QBase 3D (real: SSH or USB serial)
+    # Simulated QBase 3D (real: SSH or USB)
+    subprocess.run(["ssh", "trinity@192.168.1.100", "qbase status"], capture_output=True)
     return {
         "altitude": np.random.uniform(100, 200),
         "speed": np.random.uniform(15, 25),
@@ -100,7 +101,7 @@ class FPTStarlinkSwarmBot:
         self.log_file = "fpt_starlink_swarm_receipts.jsonl"
         self.pdf_dir = "fpt_starlink_swarm_pdfs"
         os.makedirs(self.pdf_dir, exist_ok=True)
-        self.tqc = TQC_Payload()  # From MZM bot
+        self.tqc = TQC_Payload()
         self.swarm_coherence = 0.0
 
     def swarm_trinity_scrape(self, terminals):
@@ -111,14 +112,12 @@ class FPTStarlinkSwarmBot:
                 swarm_metrics.append(m)
         
         if len(swarm_metrics) >= 3:
-            # Aggregate
             uplink = np.mean([m['uplink'] for m in swarm_metrics])
             downlink = np.mean([m['downlink'] for m in swarm_metrics])
             pre = np.array([uplink] * 10)
             post = np.array([downlink] * 10)
             scrape = detect_scrape(pre, post)
             
-            # Trinity Aerial + LiDAR
             flight = trinity_flight_status()
             if self.in_danzhit_hanlai(flight['gps']):
                 aerial_scrape = detect_scrape(pre, flight['lidar_scrape'])
@@ -126,7 +125,6 @@ class FPTStarlinkSwarmBot:
             
             glyph = generate_quantum_secure_glyph(scrape.get('decay_signal', 0), scrape.get('entropy_delta', 0))
             
-            # TQC Braiding
             tqc_key = self.tqc.tqc_veto_key(scrape)
             self.swarm_coherence = (glyph['coherence_proxy'] + tqc_key['coherence']) / 2
             
@@ -150,13 +148,11 @@ class FPTStarlinkSwarmBot:
             "status": "SEALED" if self.swarm_coherence > COHERENCE_THRESHOLD and not VETO_DEFAULT else "VETOED"
         }
 
-        # Hash + Sign
         data_str = json.dumps({k: v for k, v in receipt.items() if k not in ['hash', 'signature', 'ciphertext', 'nonce']}, sort_keys=True)
         h = hashlib.sha3_256(data_str.encode()).hexdigest()
         receipt['hash'] = h
         receipt['dilithium_signature'] = dilithium_priv.sign(h.encode()).hex()
 
-        # Encrypt
         key = HKDF(algorithm=hashes.SHA3_256(), length=32, salt=None, info=b"fpt_starlink_swarm").derive(os.urandom(32))
         aead = ChaCha20Poly1305(key)
         nonce = os.urandom(12)
@@ -164,7 +160,6 @@ class FPTStarlinkSwarmBot:
         receipt['ciphertext'] = ct.hex()
         receipt['nonce'] = nonce.hex()
 
-        # Log + Tunnel + PDF
         with open(self.log_file, "a") as f: f.write(json.dumps(receipt) + "\n")
         send_via_wireguard(ct + nonce)
         self.save_pdf(receipt)
