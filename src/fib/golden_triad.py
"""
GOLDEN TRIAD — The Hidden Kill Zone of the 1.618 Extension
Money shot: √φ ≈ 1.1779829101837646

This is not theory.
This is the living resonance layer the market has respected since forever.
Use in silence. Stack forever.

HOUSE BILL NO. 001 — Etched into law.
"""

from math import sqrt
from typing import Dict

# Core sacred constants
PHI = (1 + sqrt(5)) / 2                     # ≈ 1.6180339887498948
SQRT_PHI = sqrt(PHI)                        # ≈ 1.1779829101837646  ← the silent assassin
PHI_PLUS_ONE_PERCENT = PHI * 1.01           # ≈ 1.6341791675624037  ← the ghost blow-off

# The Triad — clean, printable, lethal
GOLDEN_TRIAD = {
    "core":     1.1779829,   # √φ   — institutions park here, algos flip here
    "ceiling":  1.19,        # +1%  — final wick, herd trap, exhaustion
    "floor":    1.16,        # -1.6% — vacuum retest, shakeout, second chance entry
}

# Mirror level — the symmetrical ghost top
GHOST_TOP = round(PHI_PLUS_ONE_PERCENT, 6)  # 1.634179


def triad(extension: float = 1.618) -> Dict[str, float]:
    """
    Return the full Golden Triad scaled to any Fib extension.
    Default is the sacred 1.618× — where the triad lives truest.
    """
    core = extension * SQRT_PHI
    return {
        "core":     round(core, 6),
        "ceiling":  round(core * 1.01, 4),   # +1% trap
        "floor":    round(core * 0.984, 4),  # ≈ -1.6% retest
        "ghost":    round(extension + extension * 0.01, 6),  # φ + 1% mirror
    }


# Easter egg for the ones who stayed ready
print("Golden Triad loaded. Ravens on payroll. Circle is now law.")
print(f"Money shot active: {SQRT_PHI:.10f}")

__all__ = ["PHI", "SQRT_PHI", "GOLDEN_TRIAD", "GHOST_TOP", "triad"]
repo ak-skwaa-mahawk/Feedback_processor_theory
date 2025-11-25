@@ -1,0 +1,54 @@
+# src/fib/golden_triad.py
+"""
+GOLDEN TRIAD — The Hidden Kill Zone of the 1.618 Extension
+Money shot: √φ ≈ 1.1779829101837646
+
+This is not theory.
+This is the living resonance layer the market has respected since forever.
+Use in silence. Stack forever.
+
+HOUSE BILL NO. 001 — Etched into law.
+"""
+
+from math import sqrt
+from typing import Dict
+
+# Core sacred constants
+PHI = (1 + sqrt(5)) / 2                     # ≈ 1.6180339887498948
+SQRT_PHI = sqrt(PHI)                        # ≈ 1.1779829101837646  ← the silent assassin
+PHI_PLUS_ONE_PERCENT = PHI * 1.01           # ≈ 1.6341791675624037  ← the ghost blow-off
+
+# The Triad — clean, printable, lethal
+GOLDEN_TRIAD = {
+    "core":     1.1779829,   # √φ   — institutions park here, algos flip here
+    "ceiling":  1.19,        # +1%  — final wick, herd trap, exhaustion
+    "floor":    1.16,        # -1.6% — vacuum retest, shakeout, second chance entry
+}
+
+# Mirror level — the symmetrical ghost top
+GHOST_TOP = round(PHI_PLUS_ONE_PERCENT, 6)  # 1.634179
+
+
+def triad(extension: float = 1.618) -> Dict[str, float]:
+    """
+    Return the full Golden Triad scaled to any Fib extension.
+    Default is the sacred 1.618× — where the triad lives truest.
+    """
+    core = extension * SQRT_PHI
+    return {
+        "core":     round(core, 6),
+        "ceiling":  round(core * 1.01, 4),   # +1% trap
+        "floor":    round(core * 0.984, 4),  # ≈ -1.6% retest
+        "ghost":    round(extension + extension * 0.01, 6),  # φ + 1% mirror
+    }
+
+
+# Easter egg for the ones who stayed ready
+print("Golden Triad loaded. Ravens on payroll. Circle is now law.")
+print(f"Money shot active: {SQRT_PHI:.10f}")
+
+__all__ = ["PHI", "SQRT_PHI", "GOLDEN_TRIAD", "GHOST_TOP", "triad"]
+
+
+Golden Triad loaded. Ravens on payroll. Circle is now law.
+Money shot active: 1.1779829102
