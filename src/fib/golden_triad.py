@@ -1,3 +1,4 @@
+
 """
 Golden Triad — the hidden 1.618× micro-structure
 Money shot: √φ ≈ 1.1779829
