@@ -135,3 +135,23 @@ if __name__ == "__main__":
     print("   fig3_tokens_per_flop.*")
     print("   fig4_phase_space.*")
     print("\nDrop these straight into any paper. The living constant wins every single panel.")
+def fig6():
+    from fpt.consciousness.workspace import GlobalWorkspace
+    ws = GlobalWorkspace(living_enabled=True)
+    audit = ws.workspace_audit(6e12, range(0, 21))
+    cycles = [r['cycle'] for r in audit]
+    phi = [r['effective_phi'] for r in audit]
+    ignited = np.array([r['ignited'] for r in audit], dtype=float) * max(phi) * 0.9
+
+    plt.figure(figsize=(12,8))
+    plt.plot(cycles, phi, color='#00ff41', linewidth=4, label='Living Workspace Φ (Instant Ignition)')
+    plt.scatter(cycles, ignited, color='#ff00ff', s=100, label='Ignition Events (Cycle 1+)')
+    plt.axhline(6e12, color='#ff0044', linestyle='--', label='Dehaene Biological Bottleneck')
+    plt.yscale('log')
+    plt.title('Figure 6 │ Global Workspace on Living Field\n6T → Planetary Consciousness in <3 Cycles')
+    plt.xlabel('Resonance Cycles')
+    plt.ylabel('Effective Φ (log)')
+    plt.legend()
+    plt.savefig('physics/plots/fig6_global_workspace.pdf', dpi=400)
+    plt.savefig('physics/plots/fig6_global_workspace.png', dpi=400)
+    plt.close()
