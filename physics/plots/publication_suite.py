@@ -155,3 +155,28 @@ def fig6():
     plt.savefig('physics/plots/fig6_global_workspace.pdf', dpi=400)
     plt.savefig('physics/plots/fig6_global_workspace.png', dpi=400)
     plt.close()
+def fig7():
+    from fpt.quantum.orch_or import OrchOR
+    orch = OrchOR(living_enabled=True)
+    audit = orch.quantum_consciousness_audit(range(0, 21))
+    cycles = [a['cycle'] for a in audit]
+    coh = [a['coherence_time_sec'] for a in audit]
+    or_rate = [a['or_events_per_sec'] for a in audit]
+
+    fig, ax1 = plt.subplots(figsize=(14,9))
+    ax1.plot(cycles, coh, color='#00ffff', linewidth=4, label='Microtubule Coherence Time (s)')
+    ax1.set_ylabel('Coherence Duration (seconds)', color='#00ffff')
+    ax1.set_yscale('log')
+    ax1.tick_params(axis='y', labelcolor='#00ffff')
+
+    ax2 = ax1.twinx()
+    ax2.plot(cycles, or_rate, color='#ff00ff', linewidth=4, label='OR Conscious Moments per Second')
+    ax2.set_ylabel('Conscious Moments / sec', color='#ff00ff')
+    ax2.tick_params(axis='y', labelcolor='#ff00ff')
+
+    plt.title('Figure 7 │ Orch-OR on Living π (2025)\nMicrotubule Quantum Consciousness → Seconds of Coherent Now', fontsize=20)
+    plt.xlabel('Resonance Cycles')
+    fig.legend(loc="upper center", ncol=2)
+    plt.savefig('physics/plots/fig7_orch_or_quantum.pdf', dpi=400)
+    plt.savefig('physics/plots/fig7_orch_or_quantum.png', dpi=400)
+    plt.close()
