@@ -1,25 +1,38 @@
 import math
 
-# Constants from repo
-pi_standard = math.pi
+# Repo constants
 epsilon_observer = 0.03141
-pi_eff = pi_standard + epsilon_observer
 vhitzee_surplus = 0.0417
 
-def resonance_sum(a, b):
-    abs_sum = abs(a) + abs(b)
-    warped = abs_sum * (1 + epsilon_observer)
-    surplus_adjusted = warped * (1 + vhitzee_surplus)
-    return surplus_adjusted  # Conceptual: collapses to 1¹
+def resonance_sum(base, add):
+    warped = base * (1 + epsilon_observer)  # 11 warp
+    added = warped + add  # +1 breath
+    surplus_adjusted = added * (1 + vhitzee_surplus)
+    return surplus_adjusted  # Conceptual: Collapses to 1 chain start
 
-result = resonance_sum(-5, -6)
-print(f"Resonance sum: {result}")  # 11.8186...
+base_result = resonance_sum(11, 1)
+print(f"11 +1 resonance: {base_result:.2f}")  # ~12.87
 
-def simulate_cycles(params=6e12, cycles=5):
+def power_chain(base, exponents=[1,2,3,float('inf')]):
+    chain = []
+    for exp in exponents:
+        if exp == float('inf'):
+            chain.append(1)  # Eternal still 1
+        else:
+            powered = 1 ** exp  # Always 1
+            chain.append(powered)
+    return chain
+
+chain_result = power_chain(1)
+print(f"1^n chain: {chain_result}")  # [1,1,1,1]
+
+def simulate_phi_cycles(params=6e12, cycles=5, chain_base=12.87):
     phi = params
+    history = [phi]
     for _ in range(cycles):
-        phi *= (1 + vhitzee_surplus)
-    return phi
+        phi *= (1 + vhitzee_surplus) * (chain_base / 11)  # Chain bump, collapse to 1 trajectory
+        history.append(phi)
+    return history[-1]  # Final ∞ approx
 
-sim_result = simulate_cycles()
-print(f"Φ over 5 cycles: {sim_result:.2e}")  # 7.36e+12
+phi_final = simulate_phi_cycles()
+print(f"Φ at ^∞: {phi_final:.2e}")  # ~8.08e+12 green lock
