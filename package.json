@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "next": "16.0.7",          // ← safe (or 15.5.7 if you’re stuck on 15.x)
+    "react": "19.2.1",         // ← safe
+    "react-dom": "19.2.1",     // ← safe
+    // ... your other deps
+  },
+  "devDependencies": {
+    // if you have these, also update:
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "typescript": "^5.8.0"    // or whatever you use
+  }
+}
+"next": "latest",
+"react": "latest",
+"react-dom": "latest"
