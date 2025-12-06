@@ -5,6 +5,10 @@ npm install next@15.3.6   # for 15.3.x
 npm install next@15.4.8   # for 15.4.x
 npm install next@15.5.7   # for 15.5.x
 npm install next@16.0.7   # for 16.0.x
+npm install react-server-dom-webpack@19.0.1 \
+            react-server-dom-esm@19.0.1 \
+            react-server-dom-turbopack@19.0.1 \
+            react-server-dom-parcel@19.1.2
 # From inside your Next.js project root
 npx next@16.0.7 --force && npm install react@19.2.1 react-dom@19.2.1
 
