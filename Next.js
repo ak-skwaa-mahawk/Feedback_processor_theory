@@ -15,3 +15,6 @@ yarn add next@16.0.7 react@19.2.1 react-dom@19.2.1
 git add package.json package-lock.json  # or yarn.lock / pnpm-lock.yaml
 git commit -m "EMERGENCY: Patch React2Shell (CVE-2025-55182) → Next.js 16.0.7 + React 19.2.1"
 git push
+next@16.0.7
+react@19.2.1
+react-dom@19.2.1
