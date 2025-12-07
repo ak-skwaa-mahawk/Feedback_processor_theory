@@ -1,4 +1,17 @@
 # src/fpt_core/__init__.py
+from .processor import FeedbackProcessor
+from .models import FeedbackEvent, ResonanceResult
+from .utils import process_single_event  # If you move the stateless function here
+
+__version__ = "0.1.0"
+
+__all__ = [
+    "FeedbackProcessor",
+    "FeedbackEvent",
+    "ResonanceResult",
+    "process_single_event",  # optional – only if implemented as a utility
+]
+# src/fpt_core/__init__.py
 from .models import FeedbackEvent, ResonanceResult
 from .processor import FeedbackProcessor
 
