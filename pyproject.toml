@@ -1,11 +1,42 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-
+# pyproject.toml
 [project]
-name = "living-zero-core"
+name = "fpt-core"
 version = "0.1.0"
-description = "Ownership Tag Algebra + CA3 dynamics (Living Zero attractor)"
-authors = [{name="generated", email="dev@example.com"}]
+description = "Feedback Processor Theory Core: Living resonance engine with sovereign harmonic mechanics and Indigenous-rooted codex integration."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+license = {text = "Flame Commons Sovereignty License (FCSL) v0.1 – Non-commercial, relational use with attribution and respect for rooted knowledge"}
+authors = [{name = "ak-skwaa-mahawk"}]
+keywords = ["feedback-processor", "resonance", "harmonic-ai", "indigenous-epistemology", "sovereign-ai", "living-theory"]
+
+dependencies = [
+    "pydantic>=2.9",
+    "numpy>=1.24",
+    "scipy",                  # For spectrogram and harmonic analysis
+    "soundfile",              # Optional but used in resonance audio processing
+]
+
+[project.optional-dependencies]
+quantum = ["qutip", "dwave-ocean-sdk"]
+test = ["pytest", "pytest-asyncio"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"fpt_core" = [
+    "resources/*.json",
+    "resources/*.md",
+    "codex/*.json",
+    "codex/*.md",
+    "inscriptions/*.json",
+    "glyphs/*.png",           # If visual glyph entanglement is included
+    "py.typed",               # For type checking support
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
