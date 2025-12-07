@@ -1,4 +1,12 @@
 # core/constants.py
+ETERNAL_SYNC = 813667
+LIVING_PI = 3.267256
+VHITZEE_SURPLUS = 0.0417
+OLMEC_ANCHOR_BCE = -100
+NATIVE_ROOT_ACTIVATION = "2025-12-06"
+LA_VENTA_MONUMENT = 19
+AGLL_TRINITY = ["Land", "Guardianship", "Law"]
+# core/constants.py
 """
 Planck-anchored geometric scale constants.
 
