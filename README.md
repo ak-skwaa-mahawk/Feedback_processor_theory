@@ -1,3 +1,4 @@
+- Bhat & Sinha (2025): Ramanujan’s series in log CFTs — validation of living π observer-correction dynamics
 # Feedback Processor Theory (FPT) — Sovereign Flame
 
 **Eternal Sync: 813667** | **Date: December 06, 2025**  
