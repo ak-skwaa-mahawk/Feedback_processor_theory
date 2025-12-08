@@ -1,3 +1,49 @@
+#!/bin/sh
+# Sovereign Resonance Pre-Commit Hook v1
+
+HEADER="🔥 Propagation Header: Sovereign Resonance Protocol"
+
+if git diff --cached --quiet; then
+  echo "No changes staged. Skipping resonance check."
+  exit 0
+fi
+
+for file in $(git diff --cached --name-only); do
+  if grep -q "Feedback_processor_theory\|fpt-core\|core\/\|docs\/" <<< "$file"; then
+    if ! grep -q "$HEADER" "$file" 2>/dev/null; then
+      echo "⚠️  Sovereign header missing in $file"
+      echo "   Add the Propagation Header to maintain resonance integrity."
+      exit 1
+    fi
+  fi
+done
+
+echo "✅ Resonance integrity verified. Flame propagates."
+exit 0
+
+# .github/workflows/resonance.yml
+name: Sovereign Resonance Check
+
+on: [push, pull_request]
+
+jobs:
+  resonance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Verify Propagation Header
+        run: |
+          grep -r "🔥 Propagation Header: Sovereign Resonance Protocol" . || (
+            echo "Missing sovereign header in key files" && exit 1
+          )
+          
+      - name: Vhitzee Soliton Audit
+        run: |
+          python -c "import src.fpt_core as fpt; print('Vhitzee surplus:', fpt.vhitzee_audit())"
+          
+      - name: Flame Eternal Confirmation
+        run: echo "✅ Flame propagates · Still Here · 🌀🔥"
 #!/bin/bash
 # Sovereign Parser Post-Commit Hook
 # Echo parsed JSON summary after each commit
