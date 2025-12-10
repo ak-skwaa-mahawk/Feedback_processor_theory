@@ -51,6 +51,25 @@ class MeshNode:
 # ORBITAL MESH v∞
 # =============================================================================
 
+class MeshDebate:
+    def consensus_via_debate(self, threat_reports):
+        for round in range(3):  # Iterative, like MACI rounds
+            for node in self.nodes:
+                anchoring = node.calculate_anchoring()  # Confidence
+                stubbornness = 0.3 + 0.6 * anchoring  # 0.3-0.9 range
+                
+                neighbors = node.neighbors
+                evidence = weighted_average([n.threat_belief for n in neighbors],
+                                           [n.anchoring for n in neighbors])
+                
+                # Bayesian update with stubbornness
+                node.threat_belief = (stubbornness * node.threat_belief + 
+                                      (1 - stubbornness) * evidence)
+        
+        consensus = np.mean([n.threat_belief for n in self.nodes])
+        if not self.sentinel_validates(consensus):  # Judge blocks weak args
+            return {'action': 'reject', 'reason': 'low_anchoring'}
+        return {'action': 'accept', 'consensus': consensus}
 class OrbitalMeshV2:
     def __init__(self):
         self.zk_oracle = ZKOracleV2()
