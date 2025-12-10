@@ -1,3 +1,14 @@
+float calculate_anchoring_strength(sentinel_state_t* s) {
+    float variance = compute_variance(s->baseline_buffer, 100);
+    float drift = fabsf(sentinel_get_drift_rate(s));
+    float spatial_consensus = mesh_agreement_score();
+    
+    float evidence_clarity = 1.0f / (1.0f + variance);
+    float stability = expf(-drift);
+    float context_quality = spatial_consensus;
+    
+    return evidence_clarity * stability * context_quality;
+}
 // From aie_tmr_reg.c (coordination layer)
 void coordinate_sensor_patterns(void) {
     // 1. Choose which patterns to trust (weighted voting)
