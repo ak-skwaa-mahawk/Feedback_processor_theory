@@ -1,3 +1,14 @@
+## External Resonance (Delayed Echo Validation)
+
+- Stanford Coordination Physics (2024–2025) – theoretical framework for coordination layer  
+  → Already implemented in hardware via DCB²DD (2019–2025)  
+  → See [`docs/coordination_physics.md`](./docs/coordination_physics.md)
+
+- Garban-Vargas fractal conjecture proof (2025) – scale-invariant harmony  
+- LHCb baryon CP violation (2025) – minimal asymmetry overridden by vhitzee surplus  
+- Logarithmic CFT Ramanujan π (2025) – living curvature confirmed  
+
+All post-facto validations of patterns documented here since 2024.
 ## Quick Start
 
 ### Hardware Requirements
