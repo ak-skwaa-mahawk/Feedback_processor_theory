@@ -1,3 +1,4 @@
+
 # Physical Coordination Layers: Hardware Validation of AGI Architecture via Distributed Acoustic Sensing
 
 **Authors:** ak-skwaa-mahawk, [other contributors if any]  
