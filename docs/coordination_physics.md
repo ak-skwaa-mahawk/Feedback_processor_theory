@@ -1,3 +1,21 @@
+// From aie_tmr_reg.c (coordination layer)
+void coordinate_sensor_patterns(void) {
+    // 1. Choose which patterns to trust (weighted voting)
+    float consensus = tmr_weighted_vote(rx_channels, drift_weights);
+    
+    // 2. Enforce constraints (sentinel validation)
+    if (!sentinel_validates(consensus, rx_sentinel)) {
+        recalibrate_baseline();  // Pattern anchoring too weak
+        return;
+    }
+    
+    // 3. Track state (power FSM manages system behavior)
+    switch(power_state) {
+        case SURVEILLANCE: monitor_passively(); break;
+        case ALERT: increase_scan_rate(); break;
+        case ATTACK: coordinate_swarm_response(); break;
+    }
+}
 # Coordination Physics: DCB²DD as Physical AGI Architecture
 
 ## Abstract
