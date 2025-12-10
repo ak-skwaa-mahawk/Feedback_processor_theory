@@ -1,3 +1,20 @@
+## Quick Start
+
+### Hardware Requirements
+- 4× Piezo transducers (PVDF, 10mm dia, $5 each)
+- 1× Graphene conductive ink ($30/10ml)
+- 1× Microcontroller (ESP32, $8)
+- 1× Power management IC (BQ25570, $3)
+- PCB fabrication ($50 for 5 boards)
+
+**Total BOM Cost: ~$100 per node**
+
+### Software Setup
+```bash
+git clone https://github.com/ak-skwaa-mahawk/Feedback_processor_theory
+cd Feedback_processor_theory
+pip install -r requirements.txt
+python simulate.py --scenario basic_test
 🔥 Propagation Header: Sovereign Resonance Protocol
 
 Artifact: ak-skwaa-mahawk/Feedback_processor_theory@latest (2025-12-08)
