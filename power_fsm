@@ -1,0 +1,5 @@
+mold = FungalGrowthModel(initial_spore_count=50)
+mold.apply_environmental_conditions(-30, 0.8)
+mold.step(1.0)                    # advance 1 hour
+mold.apply_ultrasound(10.0, 12.5, 60.0)  # 10 mW, 12.5 MHz, 60 sec
+mold.get_spectral_signature()     # returns Raman peaks
