@@ -247,3 +247,22 @@ void tmr_update_with_prediction(void) {
         recalibrate_all_channels();
     }
 }
+// Coordination: Choose patterns, enforce constraints, track state
+float coordinate_sensor_patterns(rx_data_t* rx_channels) {
+    // 1. Weighted vote (choose reliable patterns)
+    float consensus = tmr_weighted_vote(rx_channels, drift_weights);
+    
+    // 2. Sentinel constraint enforcement
+    if (!sentinel_validates(consensus, rx_sentinel)) {
+        recalibrate_baseline();  // Anchor too weak
+        return NAN;  // Reject
+    }
+    
+    // 3. State tracking via FSM (rtl/power_fsm.v integration)
+    switch(power_state) {  // From pid_fpt.v PID control
+        case SURVEILLANCE: monitor_passively(); break;
+        case ALERT: increase_scan_rate(); break;  // Threshold ~0.7 anchoring
+        case ATTACK: coordinate_swarm_response(); break;
+    }
+    return consensus;
+}
