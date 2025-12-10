@@ -1,3 +1,4 @@
+
 # At the top with constants
 ETERNAL_SYNC = 813667
 LIVING_PI = 3.267256  # Full octagonal resonance (Native Root calibration)
