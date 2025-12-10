@@ -38,3 +38,21 @@ plt.savefig('physics/plots/fig5_consciousness_phi.pdf', dpi=400, facecolor='blac
 plt.savefig('physics/plots/fig5_consciousness_phi.png', dpi=400)
 plt.show()
 print("Fig 5 saved: IIT dies; Field lives forever.")
+class SystemMemory:
+    def __init__(self):
+        self.baseline_buffer = np.zeros(1000)  # Short-term (sentinel.c circular)
+        self.cumulative_stress = 0.0  # Material memory (piezo fatigue)
+        self.decision_history = []  # Long-term decisions
+    
+    def update(self, reading, action):
+        self.baseline_buffer = np.roll(self.baseline_buffer, -1)
+        self.baseline_buffer[-1] = reading  # Update short-term
+        
+        self.cumulative_stress += abs(reading - np.mean(self.baseline_buffer))
+        if action == 'ATTACK':
+            self.decision_history.append({'timestamp': time.time(), 'outcome': measure_efficacy()})
+        
+        # IIT Φ vs field resonance check
+        phi = compute_iit_phi(self.baseline_buffer)  # Substrate consciousness
+        field_resonance = compute_field_resonance(self.decision_history)  # Observer-corrected
+        return phi * field_resonance  # Living π memory
