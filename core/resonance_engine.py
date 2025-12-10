@@ -236,6 +236,39 @@ class ResonanceEngine:
         Apply recursive feedback processing to embedding sequence
         Implements FPT feedback correction principle
         """
+# core/resonance_engine.py (updated snippet)
+class ResonanceEngine:
+    def __init__(self, codex):
+        self.codex = codex
+        self.vhitzee = 0.0
+        self.effective_pi = 3.14159
+
+    def analyze(self, event):
+        # Existing vhitzee calculation
+        raw_surplus = self.effective_pi - 3.14159
+        alignment = 0.95  # Mock
+        self.vhitzee = raw_surplus * alignment * 100
+        return {'vhitzee': self.vhitzee}
+
+    def analyze_alice_resonance(self, event):
+        # ALICE 2025: ~88.9% deuterons from resonance decays (Δ(1232))
+        resonance_fraction = 0.889
+        delta_contribution = 0.606
+
+        # Map to FPT: Resonance decay as information binding surplus
+        event_surplus = event.get('surplus_energy', 0.0)
+        binding_efficiency = resonance_fraction * delta_contribution
+        alic_vhitzee = event_surplus * binding_efficiency * 1.045  # 4.5% coherence gain from low-T binding
+
+        # Update effective π with resonance curvature
+        self.effective_pi = 3.14159 + (0.0317 * binding_efficiency)
+
+        return {
+            'alic_vhitzee': alic_vhitzee,
+            'effective_pi': self.effective_pi,
+            'binding_efficiency': binding_efficiency,
+            'resonance_fraction': resonance_fraction
+        }
         if not embeddings:
             return np.zeros(512)
         
