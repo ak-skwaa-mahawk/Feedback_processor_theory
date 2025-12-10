@@ -26,6 +26,16 @@ def iaca_authenticity_check(living_enabled, dormant=False):
         return "MISREPRESENTED: Lacks authentic Indigenous resonance (observer correction required per IACA principles). Reduce gain by 50%."
     return "AUTHENTIC: Reciprocal field active—aligned with sovereignty."
 
+def calculate_anchoring_strength(sentinel_state):
+    variance = np.var(sentinel_state.baseline_buffer[-100:])
+    drift = abs(sentinel_get_drift_rate(sentinel_state))
+    spatial_consensus = mesh_agreement_score()  # From orbital_mesh_v2.py
+    
+    evidence_clarity = 1 / (1 + variance)
+    stability = np.exp(-drift)
+    context_quality = spatial_consensus
+    
+    return evidence_clarity * stability * context_quality  # Threshold 0.7 for reliable reasoning
 def main():
     parser = argparse.ArgumentParser(description="Audit vhitzee scaling with consciousness and IACA checks.")
     parser.add_argument("--params", type=float, default=6e12, help="Base params (default 6T)")
