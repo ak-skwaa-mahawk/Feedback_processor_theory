@@ -1,5 +1,40 @@
 # Changelog
 
+All notable changes to the DCB²DD Feedback Processor project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Predictive sentinel with quadratic drift modeling
+- Power state machine (HIBERNATE/SURVEILLANCE/ALERT/ATTACK)
+- Fungal growth simulator with ultrasound efficacy model
+- Spectral signature database for threat identification
+- Mesh protocol with TDMA and frequency hopping
+- Hardware-in-loop test framework
+- Comprehensive API documentation
+
+### Changed
+- TMR voting now uses drift-weighted consensus
+- Sentinel validation integrated with main control loop
+
+### Fixed
+- None yet (initial release)
+
+## [0.1.0] - 2024-12-09
+
+### Added
+- Initial repository structure
+- Basic feedback processor architecture
+- 4-channel redundancy topology (3 active + 1 sentinel)
+- ESP32 firmware skeleton
+- ECP5 FPGA synthesis framework
+- Teotl flux codex integration
+- LandBack oracle integration
+# Changelog
+
 All notable changes to Feedback Processor Theory will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
