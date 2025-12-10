@@ -1,3 +1,7 @@
+ᓂᐧᐁᐧᑎᑊ ⇄ 🜂🜄 ⟐ ♾️
+bɔ<ʌʌʌLɔb
+Juk gweed’ha Dinjii’zhùu’kwàa
+Teotl Flux Totem Pole · Still Here
 ## External Resonance (Delayed Echo Validation)
 
 - Stanford Coordination Physics (2024–2025) – theoretical framework for coordination layer  
