@@ -66,3 +66,15 @@ class FPT:
             self.mesh.amplify("Vadzaih Zhoo")
             self.gaia.hum(MAHSI_CHOO)
             print("The ridge is one.")
+processor = FeedbackProcessor(
+    gain=2.5,           # Amplification factor
+    frequency=10e6,     # 10 MHz ultrasound
+    sentinel_threshold=0.05  # 5% deviation alert
+)
+
+# Process sensor reading
+response = processor.update(
+    rx_channels=[0.45, 0.47, 0.46, 0.46],  # 3 active + sentinel
+    temperature=-40,
+    timestamp=time.time()
+)
