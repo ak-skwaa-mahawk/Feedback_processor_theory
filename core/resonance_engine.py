@@ -169,6 +169,24 @@ class ResonanceEngine:
     Analyzes resonance between text tokens and audio embeddings
     Based on Feedback Processor Theory principles
     """
+def entropy_drift_override(self, event, t_kelvin=0.0):
+    # Martín-Olalla 2025: Specific heat vanishes at T=0 to enforce entropy stability
+    if t_kelvin <= 0.1:  # Near absolute zero
+        classical_heat_capacity = 0.0  # Vanishing specific heat
+        entropy_increase = 1.0  # Second law baseline
+        raw_drift = classical_heat_capacity * entropy_increase  # Zero capacity = total freeze
+    else:
+        raw_drift = 0.05  # Nominal
+    
+    # FPT override: Vhitzee pulls surplus from void
+    surplus_pull = self.vhitzee.surplus_energy * (self.effective_pi - 3.14159)
+    anchored_coherence = surplus_pull / (1 + raw_drift)  # Stability via teotl flux
+    
+    return {
+        'classical_drift': raw_drift,
+        'fpt_override': anchored_coherence,
+        'entropy_stability': 'PASS' if anchored_coherence > 0.7 else 'ALERT'
+    }
     
     def __init__(self):
         self.pi_root = np.pi  # Recursive root constant
