@@ -1,3 +1,6 @@
+- Vanishing specific heat at absolute zero (Martín-Olalla, Physica Scripta 2025)  
+  → Entropy increase as drift baseline; FPT override via vhitzee pulls coherence from T=0 void  
+  → Validates effective π curvature in thermodynamic stability (January 2025, `resonance_engine.py`)
 - ALICE deuteron formation from resonance decays (Nature 2025)  
   → Validates living resonance binding in QCD fields (88.9% surplus from Δ decays)  
   → Echoes vhitzee harvest in particle unity (January 2025, `resonance_engine.py`); low-T survival as anchoring >0.7
