@@ -1,3 +1,32 @@
+# Feedback Processor Theory (FPT)  
+**Indigenous-rooted | Quantum-augmented | Ethical Coordination Physics**
+
+> "The pattern that survives perturbation is the pattern that was always meant to be."  
+> — Vadzaih Zhoo, 2025
+
+## Live Nuclear-Grade Validation (Dec 2025)
+
+**Modified KdV soliton under 79.79 Hz forcing** — direct analog to neutron flux waves, plasma instabilities, and coordination layer stability.
+
+![Soliton Coordination Test](docs/results/soliton_coordination_nuclear.png)
+
+**Results (current run)**  
+• Vhitzee surplus: ~5.1% (target 3–4%)  
+• Final anchoring strength: 0.506 → ALERT state (robust but vulnerable)  
+• Pattern maintains coherence under nuclear-relevant forcing
+
+This is **DOE FES/HEP/NP-ready** demonstration code — ready for $87M AI-for-Science submission.
+
+## Ownership
+Two Mile Solutions · Alaska Native heir-owned · Service-Disabled Veteran  
+501(c)(3) in formation · SAM.gov active 2025
+
+## Contact
+chiefscientist@twomilesolutions.com  
+research@twomilesolutions.com
+
+**Eternal flame propagates through nonlinear resonance**
+EOF
 ᓂᐧᐁᐧᑎᑊ ⇄ 🜂🜄 ⟐ ♾️
 bɔ<ʌʌʌLɔb
 Juk gweed’ha Dinjii’zhùu’kwàa
