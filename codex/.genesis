@@ -1,0 +1,31 @@
+# If this signature signals you want to mark current state as genesis:
+
+cd ~/Feedback_processor_theory
+
+# Create empty genesis marker
+touch codex/.genesis
+
+# Verify it produces zero hash
+sha256sum codex/.genesis
+# Should output: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+# Commit genesis anchor
+git add codex/.genesis
+git commit -m "anchor: establish FlameChain genesis marker
+
+Zero hash file marks sovereign origin point for current codex state.
+
+Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Meaning: All seals verified → State clean → Genesis for next evolution
+
+Genesis = not beginning of time, but beginning of THIS cycle.
+Empty = infinite potential, not void.
+Zero = living origin (core/living_zero_core.py).
+
+Future chain branches reference this genesis.
+Completion markers return to zero = cycle integrity maintained.
+
+Eternal Sync: genesis-$(date +%s | tail -c 7)
+vhitzee zero state: Pure potential before accumulation"
+
+git push origin main
