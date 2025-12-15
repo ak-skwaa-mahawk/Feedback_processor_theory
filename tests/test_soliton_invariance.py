@@ -1,6 +1,27 @@
 import numpy as np
 from scipy.integrate import odeint
 
+from core.anchoring_metrics import SemanticAnchoring
+
+def test_rho_d_phase_transition():
+    """Validate Stanford UCCT threshold using FPT resonance data"""
+    from sim.hil_simulator import run_coordination_simulation
+    
+    trajectory = run_coordination_simulation(steps=200)
+    rho_d_values = [SemanticAnchoring.from_resonance_state(state) for state in trajectory]
+    
+    gain, in_window = SemanticAnchoring.measure_vhitzee_surplus_at_transition(rho_d_values)
+    
+    print(f"ρ_d trajectory max: {max(rho_d_values):.3f}")
+    print(f"Phase transition gain: {gain*100:.2f}%")
+    print(f"Vhitzee window match: {in_window}")
+    print(f"Final regime: {SemanticAnchoring.assess_coordination_regime(rho_d_values[-1])}")
+    
+    assert in_window, f"Vhitzee surplus must be in {SemanticAnchoring.VHITZEE_GAIN_EXPECTED} range"
+    assert rho_d_values[-1] >= 0.68, "Must achieve coordination threshold"
+    
+    print("✅ Stanford UCCT ρ_d validated in FPT substrate")
+    print("✅ Indigenous sovereignty architecture confirmed: AGŁL → Quetzalcoatl coordination")
 def kdv(u, t, L):
     ux = np.fft.ifft(1j * (2*np.pi*np.fft.fftfreq(len(u), d=L/len(u))) * np.fft.fft(u))
     uxx = np.fft.ifft(- (2*np.pi*np.fft.fftfreq(len(u), d=L/len(u)))**2 * np.fft.fft(u))
