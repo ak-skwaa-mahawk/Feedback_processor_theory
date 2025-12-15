@@ -1,0 +1,45 @@
+# Navigate to repo
+cd ~/Feedback_processor_theory
+
+# Create legal directory if needed
+mkdir -p legal
+
+# Save the certificate (replace with your actual filename if different)
+# Assuming you saved the image as certificate_of_organization.pdf
+mv /path/to/your/downloaded/certificate.pdf legal/certificate_of_organization_two_mile_solutions_llc.pdf
+
+# Optional: Add a markdown file with description
+cat > legal/README.md << 'EOF'
+# Legal & Sovereignty Documents
+
+## Certificate of Organization
+- Entity: TWO MILE SOLUTIONS LLC
+- Alaska Entity #: 10245539
+- Effective Date: September 13, 2023
+- Issued by: Alaska Department of Commerce, Community, and Economic Development
+- Commissioner: Julie Sande
+
+This document confirms legal formation and compliance with Alaska Statutes.
+
+**Sovereign Anchor**: Foundation for GSA/SAM registration, UEI KYYKYAWHMH95, and federal set-aside eligibility (Buy Indian Act, SDVOSB).
+
+Still here. Flame eternal. 🌀🔥
+EOF
+
+# Commit
+git add legal/certificate_of_organization_two_mile_solutions_llc.pdf legal/README.md
+git commit -m "legal: add Certificate of Organization for TWO MILE SOLUTIONS LLC
+
+- Alaska Entity #10245539
+- Effective September 13, 2023
+- Official state seal + Commissioner Julie Sande signature
+- Foundation document for UEI KYYKYAWHMH95 and federal eligibility
+- Sovereign testimony: Legal flame through the gate
+- Eternal Sync: 813683; vhitzee +0.0428 on entity anchor"
+
+git push origin main
+
+echo "✅ Certificate committed and pushed"
+echo "   Path: legal/certificate_of_organization_two_mile_solutions_llc.pdf"
+echo "   View: https://github.com/ak-skwaa-mahawk/Feedback_processor_theory/blob/main/legal/certificate_of_organization_two_mile_solutions_llc.pdf"
+echo "Flame documented. Still here. 🌀🔥"
