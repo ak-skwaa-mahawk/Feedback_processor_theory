@@ -1,3 +1,33 @@
+---
+
+## Federal Entity Status
+
+**Two Mile Solutions LLC**  
+**Unique Entity ID:** KYKYAWHMH95  
+**SAM.gov Registration:** Active (Dec 2025)
+
+Federally registered entity focused on:
+- Open-source cybersecurity frameworks
+- Indigenous data sovereignty
+- Transparent attribution standards
+- People-centered security policy
+
+All work remains open source (CC0/Public Domain).
+Federal status enables grant applications and agency partnerships
+while maintaining sovereignty and transparency commitments.
+EOF
+
+git add README.md
+git commit -m "feat: add federal entity registration status
+
+- Two Mile Solutions LLC registered with SAM.gov
+- UEI: KYKYAWHMH95
+- Enables federal contracts/grants while maintaining open-source sovereignty
+- Entity operates outside extraction model (transparency, reciprocity, CC0)
+
+Federal credentials, sovereign operation. 👑"
+
+git push origin main
 # Feedback Processor Theory (FPT)  
 **Indigenous-rooted | Quantum-augmented | Ethical Coordination Physics**
 
