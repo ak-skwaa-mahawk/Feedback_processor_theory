@@ -1,5 +1,148 @@
 import numpy as np
 from collections import namedtuple
+import math  # For math derivation in scoring
+
+# Data structure for raw feedback
+FeedbackItem = namedtuple('FeedbackItem', ['source', 'content', 'timestamp', 'is_reply'])  # Added is_reply for Vhitzee check
+
+class FeedbackProcessor:
+    def __init__(self, threshold=0.5, epsilon=0.0417):  # Add observer ε surplus
+        self.threshold = threshold
+        self.epsilon = epsilon  # Coherence surplus for relational boost
+        self.categories = {
+            'critical': [],
+            'feature_request': [],
+            'noise': []
+        }
+        self.history = []  # For psyselsic "coiled" dynamic threshold
+        self.t = 0  # Time step for dynamic k in neutrosophic scoring
+        self.pi_star = 3.1730  # Curved π for relational cycles
+
+    def ingest(self, raw_data):
+        """Simulate ingesting a list of raw feedback items."""
+        print(f"Ingesting {len(raw_data)} items...")
+        return [self._preprocess(item) for item in raw_data]
+
+    def _preprocess(self, item):
+        """Clean data and detect if reply (for Vhitzee duality check)."""
+        cleaned_content = item.content.strip().lower()
+        is_reply = 'reply' in item.source.lower() or '@' in cleaned_content  # Simple duality flag
+        return FeedbackItem(item.source, cleaned_content, item.timestamp, is_reply)
+
+    def analyze_sentiment(self, text, is_reply):
+        """
+        Neutrosophic scoring with ε surplus.
+        Derive T/I/F from text, compute score = T - F + k * I with dynamic k.
+        Sigmoid curve + ε boost for relational coherence.
+        """
+        # Neutrosophic T/I/F heuristic (0-1)
+        T = 0  # Truth: positive/urgent alignment
+        I = 0  # Indeterminacy: ambiguity
+        F = 0  # Falsity: negative misalignment
+        if any(w in text for w in ['fail', 'broken', 'error', 'urgent']):
+            F = 0.9  # High falsity for critical issues
+        elif any(w in text for w in ['please', 'add', 'suggest', 'maybe']):
+            I = 0.5  # Indeterminacy for requests/uncertainty
+            T = 0.3  # Partial truth as opportunity
+        else:
+            F = 0.1  # Low falsity for noise
+
+        # Sensor parser fix (extract numeric for vibration/levels)
+        words = text.split()
+        for word in words:
+            try:
+                value = float(word)
+                if 0.0 <= value <= 1.0:
+                    F = max(F, 1 - value)  # High value → low falsity (good state)
+                    T = max(T, value)      # High value → high truth (alignment)
+            except ValueError:
+                pass
+
+        # Vhitzee duality: If reply, attenuate T/I/F (opposition feedback)
+        if is_reply:
+            T *= 0.5
+            I *= 0.5
+            F *= 0.5
+
+        # Dynamic k based on time cycle (sky-law resonance)
+        k = 0.3 + 0.2 * math.sin(2 * math.pi * (self.t % 1) / self.pi_star)
+
+        # Unified neutrosophic score: T - F + k * I
+        score = T - F + k * I
+
+        # Sigmoid curve for normalization + ε boost
+        k_sigmoid = 2  # Steepness
+        x0 = 0.5  # Midpoint
+        sigmoid = 1 / (1 + math.exp(-k_sigmoid * (score - x0)))
+        severity = sigmoid + self.epsilon * sigmoid  # ~4.17% relational gain
+        return min(severity, 1.0)  # Cap at 1
+
+    def process_batch(self, feedback_list):
+        """The core processing loop with psyselsic dynamic threshold."""
+        for item in feedback_list:
+            severity = self.analyze_sentiment(item.content, item.is_reply)
+            self.t += 1  # Increment time for dynamic k
+
+            # Psyselsic "coiled" adjustment: If history has high critical, lower threshold (readiness uncoils)
+            if len(self.history) > 0 and len(self.categories['critical']) / len(self.history) > 0.2:
+                effective_threshold = self.threshold * 0.8  # Attenuate for faster response
+            else:
+                effective_threshold = self.threshold
+
+            if severity > effective_threshold:
+                self.categories['critical'].append(item)
+                self.trigger_alert(item)
+            elif severity > 0.2:
+                self.categories['feature_request'].append(item)
+            else:
+                self.categories['noise'].append(item)
+
+            self.history.append(item)  # Build coiled history for next cycles
+
+    def trigger_alert(self, item):
+        """The 'Actuator' - doing something with the feedback."""
+        print(f"!!! ALERT TRIGGERED: {item.content} (Source: {item.source})")
+
+# --- Piezo Tie-In Simulation (Connection to Your Model) ---
+class PiezoActuator:
+    def __init__(self, d=5e-10, thickness=0.001):
+        self.d = d
+        self.thickness = thickness
+        self.current_voltage = 100  # Initial DC battery voltage
+
+    def calculate_strain(self, voltage):
+        E = voltage / self.thickness
+        return self.d * E
+
+    def adjust_voltage(self, feedback_severity):
+        if feedback_severity > 0.8:
+            self.current_voltage *= 0.5  # Attenuate voltage for stability
+            print(f"Piezo Actuation: Reduced voltage to {self.current_voltage} V to stabilize.")
+
+# --- Simulation ---
+data_stream = [
+    FeedbackItem("User_A", "The system is BROKEN and failing!", 101, False),
+    FeedbackItem("User_B", "Can you please add a dark mode?", 102, True),
+    FeedbackItem("Sensor_Piezo", "Vibration level 0.95", 103, False)  # Piezo feedback as float string
+]
+
+processor = FeedbackProcessor(threshold=0.8, epsilon=0.0417)
+clean_data = processor.ingest(data_stream)
+processor.process_batch(clean_data)
+
+print("\n--- Summary ---")
+print(f"Critical Issues: {len(processor.categories['critical'])}")
+print(f"Feature Requests: {len(processor.categories['feature_request'])}")
+
+# Piezo Tie-In: If critical sensor feedback, actuate
+piezo = PiezoActuator()
+for item in processor.categories['critical']:
+    if 'sensor' in item.source.lower():
+        severity = processor.analyze_sentiment(item.content, item.is_reply)
+        piezo.adjust_voltage(severity)
+        print(f"New strain: {piezo.calculate_strain(piezo.current_voltage)}")
+import numpy as np
+from collections import namedtuple
 import math  # For math derivation in sentiment
 
 # Data structure for raw feedback
