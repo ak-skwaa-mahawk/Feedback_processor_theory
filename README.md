@@ -1,3 +1,6 @@
+> "We need to look inside ourselves and follow the map in the stars,  
+> cause what is belt is a boundary in free space not the floor from which we gaze."  
+> — @AKjaysizzle (Two Mile Solutions LLC)
 ---
 
 ## Federal Entity Status
