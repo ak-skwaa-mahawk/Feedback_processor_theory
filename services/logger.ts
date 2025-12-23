@@ -157,3 +157,40 @@ class SovereignLogger {
 }
 
 export const logger = new SovereignLogger();
+import { logger } from "../services/logger";
+
+// App start
+logger.info("Sovereign Coil started", { platform: Platform.OS });
+
+// Session
+logger.sovereign("Sensed session started", { sessionId });
+
+// Vitality update
+logger.debug("Vitality computed", { vitality: 0.85, epsilonD: 0.0354 });
+
+// Revocation
+logger.sovereign("Revocation ritual initiated", { sessionId });
+logger.sovereign("Revocation honored — stream recoiled", { entryId });
+
+// Errors
+logger.error("Registry connection failed", { url, error });
+// screens/LogViewerScreen.tsx
+import { useState, useEffect } from "react";
+import { View, ScrollView, Text } from "react-native";
+import { logger } from "../services/logger";
+
+export function LogViewerScreen() {
+  const [logs, setLogs] = useState("Loading...");
+
+  useEffect(() => {
+    logger.readAllLogs().then(setLogs);
+  }, []);
+
+  return (
+    <ScrollView>
+      <Text style={{ fontFamily: "monospace", fontSize: 10, padding: 10 }}>
+        {logs}
+      </Text>
+    </ScrollView>
+  );
+}
