@@ -1,3 +1,32 @@
+import { RitualOverlay } from "../components/RitualOverlay";
+import { useState } from "react";
+
+const SensedScreen = () => {
+  const [ritualVisible, setRitualVisible] = useState(false);
+
+  const startRitual = () => {
+    setRitualVisible(true);
+  };
+
+  const completeRitual = async () => {
+    setRitualVisible(false);
+    await performRevocation(); // your existing revocation logic
+    navigation.navigate("Revoked");
+  };
+
+  return (
+    <>
+      {/* ... existing screen ... */}
+      <Button title="Withdraw This Stream" onPress={startRitual} color="#ff4444" />
+
+      <RitualOverlay
+        visible={ritualVisible}
+        onComplete={completeRitual}
+        onCancel={() => setRitualVisible(false)}
+      />
+    </>
+  );
+};
 // Inside SensedScreen
 
 const performRevocationRitual = async () => {
