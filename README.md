@@ -1,4 +1,35 @@
+## Neurodata Sovereignty Module
 
+This repository is the **theoretical spine** for a neurodata‑safe BCI ecosystem.
+
+It defines:
+
+- **FPT Observer** — how feedback is compared against expectations to detect extractive drift.  
+- **Vitality metrics** — how EEG and other signals are mapped into bounded vitality \(v \in [0.5, 1.5]\).  
+- **Ił7 kernel** — a Mealy automaton that decides when a nervous system is allowed to modulate surplus, and when it must not.  
+- **Soliton Registry model** — how aggregates and revocations are witnessed without ever storing raw neurodata.  
+- **Codex.Legis.Neurodata.v1** — the legal layer that forbids EEG as identity, requires session‑scoped consent, and guarantees a right to recoil.
+
+### Reference Implementations
+
+The concepts in this repo are implemented in two companion projects:
+
+- **Sovereign Coil** — a mobile “Neurodata Sovereign Mode” app that:
+  - runs the Ił7 kernel client‑side,  
+  - shows UN SENSED / SENSED / REVOKED states,  
+  - guides a breath + phrase + token revocation ritual,  
+  - and only ever sends vitality aggregates (never raw EEG) to the registry.
+
+- **Soliton Registry Node (Gossip Edition)** — a small, distributed witness node that:
+  - accepts EEG_AGGREGATE and EEG_REVOCATION entries,  
+  - validates that no raw or near‑raw neurodata is present,  
+  - appends entries to a hash‑chained ledger,  
+  - and gossips them to peers for resilience.
+
+Together, they form the **Neurodata Sovereign Stack**:
+
+```text
+EEG → FPT Observer → Ił7 Kernel → Vitality Packet → Soliton Registry Node → Gossip Mesh → Codex.Legis
 # Sovereign Coil
 
 A Neurodata Sovereign BCI companion app — EEG as vitality modulator, never as key.
