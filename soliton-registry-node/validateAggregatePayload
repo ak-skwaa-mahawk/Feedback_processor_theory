@@ -1,0 +1,355 @@
+/*
+ * Soliton Registry Node v1.0.0 — Gossip Edition
+ * Distributed, permissionless, sovereign witness
+ * Bound by Codex.Legis.Neurodata.v1
+ */
+
+import express from "express";
+import cors from "cors";
+import CryptoJS from "crypto-js";
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import path from "path";
+import WebSocket from "ws";
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: "10mb" }));
+
+const PORT = process.env.PORT || 3001;
+const LEDGER_FILE = path.join(__dirname, "ledger.json");
+const PEERS_FILE = path.join(__dirname, "peers.json");
+
+interface RegistryEntry {
+  entry_id: string;
+  entry_type: "EEG_AGGREGATE" | "EEG_REVOCATION";
+  created_at_utc: string;
+  payload: any;
+  prev_hash: string;
+  hash: string;
+}
+
+let ledger: RegistryEntry[] = [];
+let latestHash = "genesis";
+let peers: string[] = []; // e.g. ["ws://localhost:3002", "ws://seed1.soliton.registry:3001"]
+
+const wss = new WebSocket.Server({ port: Number(PORT) + 1000 }); // e.g. 4001
+
+// === Ledger & Peers Persistence ===
+
+function loadLedger() {
+  if (fs.existsSync(LEDGER_FILE)) {
+    try {
+      ledger = JSON.parse(fs.readFileSync(LEDGER_FILE, "utf-8"));
+      if (ledger.length > 0) latestHash = ledger[ledger.length - 1].hash;
+      console.log(`📜 Loaded ${ledger.length} entries`);
+    } catch (e) {
+      console.warn("⚠️ Ledger corrupted — starting fresh");
+    }
+  }
+}
+
+function saveLedger() {
+  try {
+    fs.writeFileSync(LEDGER_FILE, JSON.stringify(ledger, null, 2));
+  } catch (e) {
+    console.error("💥 Ledger save failed");
+  }
+}
+
+function loadPeers() {
+  if (fs.existsSync(PEERS_FILE)) {
+    try {
+      peers = JSON.parse(fs.readFileSync(PEERS_FILE, "utf-8"));
+      console.log(`👥 Loaded ${peers.length} known peers`);
+    } catch (e) {
+      peers = [];
+    }
+  }
+}
+
+function savePeers() {
+  fs.writeFileSync(PEERS_FILE, JSON.stringify(peers, null, 2));
+}
+
+// === Hash & Validation ===
+
+function computeHash(entry: Omit<RegistryEntry, "hash">): string {
+  return CryptoJS.SHA256(JSON.stringify(entry) + latestHash).toString();
+}
+
+function validateEntry(entry: RegistryEntry): boolean {
+  if (entry.hash !== computeHash(entry as Omit<RegistryEntry, "hash">)) return false;
+  if (entry.prev_hash !== latestHash && ledger.length > 0) return false; // simple fork protection
+  return true;
+}
+
+function validateAggregatePayload(payload: any): boolean {
+  // Full validation per Codex.Legis.Neurodata.v1
+  if (!payload.snh_digest || typeof payload.snh_digest !== "string") {
+    console.warn("⚠️ Missing or invalid SNH digest");
+    return false;
+  }
+  if (payload.summary?.granularity === "raw" || hasRawData(payload)) {
+    console.warn("⚠️ Raw or near-raw data detected — prohibited");
+    return false;
+  }
+  if (!payload.vitality_packet_hash || typeof payload.vitality_packet_hash !== "string") {
+    console.warn("⚠️ Missing or invalid vitality packet hash");
+    return false;
+  }
+  // Check for forbidden fields (e.g., no raw arrays or samples)
+  if (hasForbiddenFields(payload.summary)) {
+    console.warn("⚠️ Forbidden fields in summary (e.g., raw_samples)");
+    return false;
+  }
+  return true;
+}
+
+// Helper: detect raw data (e.g., arrays longer than small thresholds)
+function hasRawData(payload: any): boolean {
+  return JSON.stringify(payload).includes('"raw_samples"') || // explicit
+         (Array.isArray(payload.summary?.data) && payload.summary.data.length > 10); // heuristic
+}
+
+// Helper: forbidden fields
+function hasForbiddenFields(summary: any): boolean {
+  const forbidden = ["raw_eeg", "samples", "waveform"];
+  return forbidden.some(field => field in summary);
+}
+
+// === Gossip ===
+
+const connections = new Map<string, WebSocket>();
+
+function connectToPeer(url: string) {
+  if (connections.has(url)) return;
+  const ws = new WebSocket(url);
+
+  ws.on("open", () => {
+    console.log(`🔗 Connected to peer ${url}`);
+    connections.set(url, ws);
+    ws.send(JSON.stringify({ type: "GET_LEDGER" }));
+  });
+
+  ws.on("message", (data) => handlePeerMessage(url, data.toString()));
+
+  ws.on("close", () => {
+    console.log(`❌ Disconnected from ${url}`);
+    connections.delete(url);
+  });
+
+  ws.on("error", () => connections.delete(url));
+}
+
+function broadcast(message: any) {
+  const str = JSON.stringify(message);
+  connections.forEach(ws => {
+    if (ws.readyState === WebSocket.OPEN) ws.send(str);
+  });
+}
+
+function handlePeerMessage(peerUrl: string, raw: string) {
+  try {
+    const msg = JSON.parse(raw);
+    if (msg.type === "NEW_ENTRY" && validateEntry(msg.entry)) {
+      ledger.push(msg.entry);
+      latestHash = msg.entry.hash;
+      saveLedger();
+      console.log(`📜 Gossiped entry ${msg.entry.entry_id} from ${peerUrl}`);
+      broadcast(msg); // rebroadcast
+    } else if (msg.type === "LEDGER_RESPONSE") {
+      syncLedger(msg.ledger);
+    }
+  } catch (e) {
+    console.warn(`⚠️ Invalid gossip from ${peerUrl}`);
+  }
+}
+
+function syncLedger(remoteLedger: RegistryEntry[]) {
+  if (remoteLedger.length <= ledger.length) return;
+  // Naive sync — take longest valid chain
+  let valid = true;
+  let tempHash = "genesis";
+  for (const e of remoteLedger) {
+    if (e.prev_hash !== tempHash || e.hash !== computeHash(e as Omit<RegistryEntry, "hash">)) {
+      valid = false;
+      break;
+    }
+    tempHash = e.hash;
+  }
+  if (valid && remoteLedger.length > ledger.length) {
+    ledger = remoteLedger;
+    latestHash = ledger[ledger.length - 1].hash;
+    saveLedger();
+    console.log(`🔄 Synced to longer chain (${ledger.length} entries)`);
+  }
+}
+
+// === HTTP API ===
+
+app.post("/aggregate", (req, res) => {
+  try {
+    const { snh_digest, vitality_packet, payload_summary } = req.body;
+
+    if (!validateAggregatePayload({ snh_digest, vitality_packet_hash: CryptoJS.SHA256(JSON.stringify(vitality_packet)).toString(), summary: payload_summary })) {
+      return res.status(403).json({ error: "INVALID_AGGREGATE", message: "Aggregate validation failed per Codex.Legis.Neurodata.v1" });
+    }
+
+    const entry: RegistryEntry = {
+      entry_id: `reg-${uuidv4().slice(0, 8)}`,
+      entry_type: "EEG_AGGREGATE",
+      created_at_utc: new Date().toISOString(),
+      payload: {
+        snh_digest,
+        vitality_packet_hash: CryptoJS.SHA256(JSON.stringify(vitality_packet)).toString(),
+        summary: payload_summary,
+        flags: { revoked: false }
+      },
+      prev_hash: latestHash,
+      hash: "",
+    };
+
+    entry.hash = computeHash(entry);
+
+    if (!validateEntry(entry)) {
+      return res.status(400).json({ error: "INVALID_ENTRY", message: "Hash chain invalid" });
+    }
+
+    ledger.push(entry);
+    latestHash = entry.hash;
+    saveLedger();
+    broadcast({ type: "NEW_ENTRY", entry });
+
+    console.log(`📜 EEG_AGGREGATE witnessed: ${entry.entry_id}`);
+
+    res.json({
+      success: true,
+      entry_id: entry.entry_id,
+      hash: entry.hash,
+      message: "Aggregate witnessed"
+    });
+  } catch (err) {
+    console.error("💥 Aggregate processing error:", err);
+    res.status(500).json({ error: "INTERNAL_ERROR", message: "Failed to witness aggregate" });
+  }
+});
+
+app.post("/revoke", (req, res) => {
+  try {
+    const { revocation_token_hash, session_ids } = req.body;
+
+    if (!revocation_token_hash || typeof revocation_token_hash !== "string") {
+      return res.status(400).json({ error: "INVALID_REVOCATION", message: "Revocation token hash required" });
+    }
+
+    if (!Array.isArray(session_ids) || session_ids.length === 0) {
+      return res.status(400).json({ error: "INVALID_REVOCATION", message: "Valid session_ids array required" });
+    }
+
+    const entry: RegistryEntry = {
+      entry_id: `rev-${uuidv4().slice(0, 8)}`,
+      entry_type: "EEG_REVOCATION",
+      created_at_utc: new Date().toISOString(),
+      payload: {
+        revocation_token_hash,
+        session_ids,
+        action: "stop_future_use",
+        records_affected: 0
+      },
+      prev_hash: latestHash,
+      hash: "",
+    };
+
+    let affected = 0;
+    ledger = ledger.map(e => {
+      if (e.entry_type === "EEG_AGGREGATE" && session_ids.includes(e.payload.summary?.session_id)) {
+        e.payload.flags.revoked = true;
+        affected++;
+      }
+      return e;
+    });
+
+    entry.payload.records_affected = affected;
+    entry.hash = computeHash(entry);
+
+    if (!validateEntry(entry)) {
+      return res.status(400).json({ error: "INVALID_ENTRY", message: "Hash chain invalid" });
+    }
+
+    ledger.push(entry);
+    latestHash = entry.hash;
+    saveLedger();
+    broadcast({ type: "NEW_ENTRY", entry });
+
+    console.log(`🔥 EEG_REVOCATION witnessed: ${entry.entry_id} — ${affected} affected`);
+
+    res.json({
+      success: true,
+      entry_id: entry.entry_id,
+      hash: entry.hash,
+      records_affected: affected,
+      message: "Revocation honored and witnessed"
+    });
+  } catch (err) {
+    console.error("💥 Revocation processing error:", err);
+    res.status(500).json({ error: "INTERNAL_ERROR", message: "Failed to witness revocation" });
+  }
+});
+
+app.get("/ledger", (req, res) => {
+  res.json({ ledger, latest_hash: latestHash });
+});
+
+app.get("/peers", (req, res) => res.json({ peers }));
+
+app.post("/add-peer", (req, res) => {
+  const { url } = req.body;
+  if (typeof url === "string" && !peers.includes(url)) {
+    peers.push(url);
+    savePeers();
+    connectToPeer(url);
+    res.json({ success: true });
+  } else {
+    res.status(400).json({ error: "INVALID_PEER", message: "Invalid or duplicate peer URL" });
+  }
+});
+
+// Global error handler
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("💥 Unhandled error:", err.message);
+  res.status(500).json({ error: "INTERNAL_ERROR", message: "Unexpected registry failure" });
+});
+
+// === Startup ===
+
+loadLedger();
+loadPeers();
+
+peers.forEach(connectToPeer);
+
+const SEEDS = ["ws://seed1.soliton.registry:4001"];
+SEEDS.forEach(seed => {
+  if (!peers.includes(seed)) {
+    peers.push(seed);
+    connectToPeer(seed);
+  }
+});
+
+wss.on("connection", ws => {
+  ws.on("message", data => {
+    try {
+      const msg = JSON.parse(data.toString());
+      if (msg.type === "GET_LEDGER") {
+        ws.send(JSON.stringify({ type: "LEDGER_RESPONSE", ledger }));
+      }
+    } catch (e) {}
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`🜃 Soliton Registry Node v1.0.0 running`);
+  console.log(`   HTTP:  http://localhost:${PORT}`);
+  console.log(`   WS:    ws://localhost:${Number(PORT) + 1000}`);
+  console.log(`   Peers: ${peers.length}`);
+});
