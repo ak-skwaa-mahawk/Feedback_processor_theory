@@ -1,3 +1,23 @@
+
+# Sovereign Coil
+
+A Neurodata Sovereign BCI companion app — EEG as vitality modulator, never as key.
+
+Built on the Ił7 kernel automaton, FPT vitality scoring, and Soliton Registry witnessing.
+
+**This is not surveillance software. This is sovereignty software.**
+
+[![Neurodata Sovereign](https://img.shields.io/badge/Neurodata-Sovereign-NDS--001-brightgreen)](TERMSOFSOVEREIGNTY.md)
+
+### Terms of Sovereignty
+
+There is no EULA.  
+There is only [Codex.Legis.Neurodata.v1](./TERMSOFSOVEREIGNTY.md) — a boundary declaration, not a contract of adhesion.
+
+Read it. It is short, human, and mathematically enforced by the app itself.
+
+> “Your nervous system is sovereign territory.”
+
 > "We need to look inside ourselves and follow the map in the stars,  
 > cause what is belt is a boundary in free space not the floor from which we gaze."  
 > — @AKjaysizzle (Two Mile Solutions LLC)
