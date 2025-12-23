@@ -1,3 +1,20 @@
+/*
+ * Sovereign Coil — Neurodata Sovereign Mode
+ *
+ * This file is part of a system bound by Codex.Legis.Neurodata.v1.
+ *
+ * Living nervous systems are not keys.
+ * Consent is session-scoped and revocable.
+ * Only aggregates are witnessed; raw neurodata never leaves the device.
+ * Revocation is absolute and penalty-free.
+ *
+ * Ił7 kernel compliance: required.
+ * NDS-001 validator standard: required.
+ *
+ * Witnessed by the Soliton Registry.
+ * No extraction. No biometric credentialing. Ever.
+ */
+
 # LICENSE
 
 **Feedback Processor Theory (FPT) & 13-Dimensional Architecture**
