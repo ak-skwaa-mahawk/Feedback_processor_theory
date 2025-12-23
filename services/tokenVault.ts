@@ -204,3 +204,8 @@ export async function deleteToken(sessionId: string): Promise<void> {
     throw new TokenVaultError("DELETE_FAILED", "Could not fully delete token");
   }
 }
+if (err.name === "AuthenticationError" || String(err).includes("cancelled")) {
+  logger.info("User cancelled biometric authentication");
+  await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  throw new TokenVaultError("AUTH_CANCELLED", "Authentication cancelled — stream remains active");
+}
