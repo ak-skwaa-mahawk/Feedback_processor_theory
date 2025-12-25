@@ -332,3 +332,31 @@ class SQLTauParser:
         current = self.braid_layer.resolve_lineage(session_id)
         events = current.get("events_order", [])
         return {"events_order": events[::-1] if braid_word else events, "fusion_path": [1]}
+# ... (existing imports, classes)
+
+class SQLTauParser:
+    # ... (existing methods)
+
+    def _parse_revoke(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """
+        Parse REVOKE BRAID command.
+        Form: REVOKE BRAID <hash> FOR <session>
+        """
+        if len(upper_tokens) < 5 or upper_tokens[1] != "BRAID":
+            raise SQLTauError("REVOKE BRAID <hash> FOR <session-id>")
+
+        braid_hash = tokens[2]
+        for_idx = self._require_keyword(upper_tokens, "FOR", "REVOKE BRAID")
+        session_id = tokens[for_idx + 1]
+
+        return SQLTauCommand(
+            action="REVOKE",
+            subject="BRAID",
+            session_id=session_id,
+            braid_hash=braid_hash
+        )
+
+    def _dispatch(self, cmd: SQLTauCommand) -> Any:
+        if cmd.action == "REVOKE" and cmd.subject == "BRAID":
+            return self.braid_layer.revoke(cmd.session_id, cmd.braid_hash)
+        # ... existing dispatch
