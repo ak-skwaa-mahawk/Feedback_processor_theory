@@ -264,3 +264,71 @@ class SQLTauParser:
         current = self.engine.resolve_lineage(session_id)
         events = current.get("events_order", [])
         return {"events_order": events[::-1] if braid_word else events, "fusion_path": [1]}
+# ... (existing imports, classes, methods)
+
+class SQLTauParser:
+    # ... (existing __init__, execute, _parse, etc.)
+
+    def _parse_create_braid(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """
+        Parse CREATE BRAID command.
+        Forms:
+        CREATE BRAID WORD [ ... ] FOR <session> [NOTE "text"]
+        CREATE BRAID B2 B1^-1 B2 FOR <session> [NOTE "text"]
+        """
+        if len(upper_tokens) < 4:
+            raise SQLTauError("CREATE BRAID requires WORD [...] or generator sequence")
+
+        for_idx = self._require_keyword(upper_tokens, "FOR", "CREATE BRAID")
+        session_id = tokens[for_idx + 1]
+
+        note = None
+        if "NOTE" in upper_tokens:
+            note_idx = upper_tokens.index("NOTE")
+            if note_idx + 1 >= len(tokens):
+                raise SQLTauError("NOTE requires quoted text")
+            note = tokens[note_idx + 1]
+
+        # Parse braid word
+        if upper_tokens[2] == "WORD":
+            # JSON-like list
+            if tokens[3] != "[" or tokens[-2] != "]":
+                raise SQLTauError("CREATE BRAID WORD requires [...] list")
+            word_str = " ".join(tokens[4:-2])
+            # Simple parse — expect {"generator": "B1", "exponent": 1} format
+            raise SQLTauError("JSON word list parsing not implemented in demo")
+        else:
+            # Symbolic: B2 B1^-1 B3
+            braid_word = []
+            for t in tokens[2:for_idx]:
+                match = re.match(r"(B\d+)(\^-1)?$", t, re.I)
+                if not match:
+                    raise SQLTauError(f"Invalid generator: {t}")
+                gen = match.group(1).upper()
+                exp = -1 if match.group(2) else 1
+                braid_word.append({"generator": gen, "exponent": exp})
+
+        return SQLTauCommand(
+            action="CREATE",
+            subject="BRAID",
+            session_id=session_id,
+            braid_word=braid_word,
+            note=note
+        )
+
+    def _dispatch(self, cmd: SQLTauCommand) -> Any:
+        if cmd.action == "CREATE" and cmd.subject == "BRAID":
+            return self.braid_layer.log_braid_op(
+                session_id=cmd.session_id,
+                braid_word=cmd.braid_word,
+                before=self.braid_layer.resolve_lineage(cmd.session_id),
+                after=self._simulate_after(cmd.session_id, cmd.braid_word),
+                note=cmd.note
+            )
+        # ... existing dispatch
+
+    def _simulate_after(self, session_id: str, braid_word: List[Dict]) -> Dict:
+        # Stub simulation — reverse order for demo
+        current = self.braid_layer.resolve_lineage(session_id)
+        events = current.get("events_order", [])
+        return {"events_order": events[::-1] if braid_word else events, "fusion_path": [1]}
