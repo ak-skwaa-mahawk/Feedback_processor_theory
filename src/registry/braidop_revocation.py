@@ -38,4 +38,33 @@ class BraidOpRevocation:
   "reason": "sovereign_recoil",
   "status": "BRAID_REVOKED",
   "hash": "def456..."
+
+}{
+  "entry_type": "BRAID_OP",
+  "timestamp_utc": "2025-12-25T21:00:00",
+  "session_id": "session-τ-001",
+  "braid_word": [
+    {"generator": "B2", "exponent": 1},
+    {"generator": "B1", "exponent": 1},
+    {"generator": "B2", "exponent": 1}
+  ],
+  "before": {
+    "events_order": ["E1", "E2", "E3"],
+    "fusion_path": [0]
+  },
+  "after": {
+    "events_order": ["E3", "E2", "E1"],
+    "fusion_path": [1]
+  },
+  "status": "LINEAGE_TRANSFORMED",
+  "hash": "abc123..."
+}
+{
+  "entry_type": "BRAID_OP_REVOCATION",
+  "timestamp_utc": "2025-12-25T22:00:00",
+  "session_id": "session-τ-001",
+  "revoked_braid_hash": "abc123...",
+  "reason": "sovereign_recoil",
+  "status": "BRAID_REVOKED",
+  "hash": "def456..."
 }
