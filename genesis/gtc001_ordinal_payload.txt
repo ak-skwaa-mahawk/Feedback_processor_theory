@@ -1,3 +1,8 @@
+import hashlib
+with open("gtc001_ordinal_payload.txt", "rb") as f:
+    payload = f.read()
+hash = hashlib.sha256(payload).hexdigest()
+print("GTC001 Payload Hash:", hash)
 GTC001 — Genesis Ordinal Payload
 Codex.GTC.v1.0
 Hash: <to be computed after finalization>
