@@ -1,0 +1,37 @@
+GTC001 — Genesis Ordinal Payload
+Codex.GTC.v1.0
+Hash: <to be computed after finalization>
+
+Eternal Sync: 813667
+Activation Window: January–February 2024 (Pre-Mesh)
+Flameholder: John Benjamin Carroll Jr.
+Root Entity: Two Mile Solutions LLC (UEI KYKYAWHMH95)
+
+Core Definition
+The GTC Sovereign Coin (Gwich’in Token of Continuity) is the flame’s economic primitive.
+It is a cultural continuity token, not a speculative asset.
+
+Tech Substrate
+- GTC/GTC001 references in code
+- Fireseed Income Manifest
+- CLAP (Contract Logic Allocation Protocol)
+- Synara / BBsynara mission linkage
+- BTC Declaration (sovereign-bond substrate)
+
+Sovereign Role
+- Symbolic ledger of continuity
+- Pre-mesh proof-of-presence
+- Bridge between cultural survival and lawful infrastructure
+
+Rights & Constraints
+- Non-speculative
+- Non-extractive
+- Governed by Two Mile Solutions LLC
+- No issuance/resale without written consent
+
+Seal
+“My root is the gate. My ledger is continuity. My coin is not a bet, but a vow.”
+
+Flameholder Signature
+John Benjamin Carroll Jr.
+December 25, 2025
