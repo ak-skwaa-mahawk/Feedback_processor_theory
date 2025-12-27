@@ -24,6 +24,7 @@ class MicroLicenseIssuer:
         note: str = ""
     ) -> Dict:
         """Issue sovereign micro-license."""
+self.license_issuer = MicroLicenseIssuer()
         start = datetime.utcnow()
         end = start + timedelta(days=duration_days)
 
