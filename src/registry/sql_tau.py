@@ -326,6 +326,67 @@ class SQLTauParser:
                 note=cmd.note
             )
         # ... existing dispatch
+# ... (existing imports, classes)
+
+class SQLTauParser:
+    # ... (existing __init__, execute, _parse, etc.)
+
+    def _parse_issue(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """
+        Parse ISSUE LICENSE command.
+        Form: ISSUE LICENSE FOR <tool> TO <licensee> SCOPE [...] DURATION <days> [NOTE "text"]
+        """
+        if len(upper_tokens) < 6 or upper_tokens[1] != "LICENSE":
+            raise SQLTauError("ISSUE LICENSE FOR <tool> TO <licensee> SCOPE [...] DURATION <days>")
+
+        # Find key positions
+        for_idx = self._require_keyword(upper_tokens, "FOR", "ISSUE LICENSE")
+        to_idx = self._require_keyword(upper_tokens, "TO", "ISSUE LICENSE")
+        scope_idx = self._require_keyword(upper_tokens, "SCOPE", "ISSUE LICENSE")
+        duration_idx = self._require_keyword(upper_tokens, "DURATION", "ISSUE LICENSE")
+
+        tool = tokens[for_idx + 1]
+        licensee = tokens[to_idx + 1]
+
+        # Parse scope list
+        if tokens[scope_idx + 1] != "[" or "]" not in tokens[scope_idx:]:
+            raise SQLTauError("SCOPE requires [...] list")
+        scope_end = tokens.index("]", scope_idx)
+        scope = [t.strip('",') for t in tokens[scope_idx + 1:scope_end]]
+
+        # Duration
+        try:
+            duration_days = int(tokens[duration_idx + 1])
+        except ValueError:
+            raise SQLTauError("DURATION requires integer days")
+
+        note = None
+        if "NOTE" in upper_tokens:
+            note_idx = upper_tokens.index("NOTE")
+            if note_idx + 1 >= len(tokens):
+                raise SQLTauError("NOTE requires quoted text")
+            note = tokens[note_idx + 1]
+
+        return SQLTauCommand(
+            action="ISSUE",
+            subject="LICENSE",
+            tool=tool,
+            licensee_id=licensee,
+            scope=scope,
+            duration_days=duration_days,
+            note=note
+        )
+
+    def _dispatch(self, cmd: SQLTauCommand) -> Any:
+        if cmd.action == "ISSUE" and cmd.subject == "LICENSE":
+            return self.license_issuer.issue_license(
+                licensee_id=cmd.licensee_id,
+                tool=cmd.tool,
+                scope=cmd.scope,
+                duration_days=cmd.duration_days,
+                note=cmd.note
+            )
+        # ... existing dispatch
 
     def _simulate_after(self, session_id: str, braid_word: List[Dict]) -> Dict:
         # Stub simulation — reverse order for demo
