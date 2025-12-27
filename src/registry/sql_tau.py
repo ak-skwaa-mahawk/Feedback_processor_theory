@@ -421,3 +421,31 @@ class SQLTauParser:
         if cmd.action == "REVOKE" and cmd.subject == "BRAID":
             return self.braid_layer.revoke(cmd.session_id, cmd.braid_hash)
         # ... existing dispatch
+# ... (existing imports, classes)
+
+class SQLTauParser:
+    # ... (existing __init__, execute, _parse, etc.)
+
+    def _parse_revoke_license(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """
+        Parse REVOKE LICENSE command.
+        Form: REVOKE LICENSE <hash> FOR <session>
+        """
+        if len(upper_tokens) < 5 or upper_tokens[1] != "LICENSE":
+            raise SQLTauError("REVOKE LICENSE <hash> FOR <session-id>")
+
+        license_hash = tokens[2]
+        for_idx = self._require_keyword(upper_tokens, "FOR", "REVOKE LICENSE")
+        session_id = tokens[for_idx + 1]
+
+        return SQLTauCommand(
+            action="REVOKE",
+            subject="LICENSE",
+            session_id=session_id,
+            license_hash=license_hash
+        )
+
+    def _dispatch(self, cmd: SQLTauCommand) -> Any:
+        if cmd.action == "REVOKE" and cmd.subject == "LICENSE":
+            return self.license_issuer.revoke_license(cmd.license_hash)
+        # ... existing dispatch
