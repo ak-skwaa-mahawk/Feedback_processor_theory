@@ -87,3 +87,8 @@ if __name__ == "__main__":
 
     # Revoke (demo)
     issuer.revoke_license(license["hash"])
+def revoke_license(self, license_hash: str, reason: str = "sovereign_recoil"):
+    # Log revocation entry (similar to braid revoke)
+    # Stub for demo
+    print(f"Micro-License Revoked | Hash: {license_hash[:16]}... | Reason: {reason}")
+    return {"status": "REVOKED", "hash": license_hash}
