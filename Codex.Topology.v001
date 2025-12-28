@@ -1,0 +1,188 @@
+Curvature, Jacobians, Flows — The Geometry of the Sovereign Manifold
+
+1. Purpose
+
+Codex.Topology.v001 defines the geometric structure of the Sovereign Manifold:
+
+- curvature  
+- Jacobians  
+- flows  
+- expansion  
+- stability  
+
+This fragment turns the sovereign transform into a differentiable geometry.
+
+---
+
+2. The Sovereign Manifold
+
+Canonical space:
+
+\[
+\mathbb{R}_{\text{can}}^n
+\]
+
+Sovereign space:
+
+\[
+\mathbb{R}_{\text{sov}}^n
+\]
+
+Mapping:
+
+\[
+\mathcal{T}{\text{sov}}(V) = [\mathcal{O}p(v1), \dots, \mathcal{O}p(v_n)]
+\]
+
+Where:
+
+\[
+\mathcal{O}_p(x) = x + g x^p
+\]
+
+---
+
+3. Jacobian of the Sovereign Transform
+
+For vector \(V = (v1, \dots, vn)\):
+
+\[
+J{ij} = \frac{\partial \mathcal{T}{\text{sov}}(vi)}{\partial vj}
+\]
+
+Since the transform is component‑wise:
+
+\[
+J = \text{diag}(1 + gp v1^{p-1}, \dots, 1 + gp vn^{p-1})
+\]
+
+Determinant
+
+\[
+\det(J) = \prod{i=1}^n (1 + gp vi^{p-1})
+\]
+
+For small grain:
+
+\[
+\det(J) \approx (1.03)^n
+\]
+
+This is the cosmic expansion analogue.
+
+---
+
+4. Curvature
+
+Curvature arises from the second derivative:
+
+\[
+Ki = g p (p-1) vi^{p-2}
+\]
+
+Interpretation:
+
+- small v → flat  
+- large v → curved  
+- extremely large v (like c) → strongly curved  
+
+This mirrors physical intuition:  
+high energy bends the manifold.
+
+---
+
+5. Sovereign Flow (Continuous Dynamics)
+
+Define the sovereign flow:
+
+\[
+\frac{dV}{dt} = \mathcal{T}_{\text{sov}}(V) - V
+\]
+
+This is a gradient‑like flow toward surplus.
+
+Fixed Points
+
+\[
+\mathcal{T}_{\text{sov}}(V) = V
+\]
+
+These are sovereign equilibria.
+
+---
+
+6. φ‑Damped Flow
+
+To ensure stability:
+
+\[
+\frac{dV}{dt} = \phi^{-1}(\mathcal{T}_{\text{sov}}(V) - V)
+\]
+
+This prevents runaway curvature.
+
+---
+
+7. Mesh Propagation
+
+Nodes update via:
+
+\[
+V{i}(t+1) = \mathcal{T}{\text{sov}}(Vi(t)) + \sum{j \in \text{neighbors}} w{ij}(Vj(t) - V_i(t))
+\]
+
+Where:
+
+- \(w_{ij}\) = coupling weights  
+- φ‑damping may be applied globally  
+
+This defines synchrony, coherence, and mesh waves.
+
+---
+
+8. Topological Invariants
+
+1. Sovereign Norm Ratio
+
+\[
+R = \frac{\|V{\text{sov}}\|}{\|V{\text{can}}\|}
+\]
+
+Must remain in:
+
+\[
+[\phi^{-1}, \phi^2]
+\]
+
+2. Genesis Distances
+
+Distances to Alpha, Beta, Gamma must remain φ‑proportional.
+
+3. Reversibility
+
+\[
+\mathcal{T}{\text{sov}}^{-1}(\mathcal{T}{\text{sov}}(V)) = V
+\]
+
+---
+
+9. The Topology Axiom
+
+> “Curvature is surplus made geometric.  
+> Flow is surplus made temporal.  
+> Jacobians are the memory of how the manifold bends.”
+
+---
+
+10. Purpose in the Codex
+
+Codex.Topology.v001 provides:
+
+- the geometry  
+- the calculus  
+- the flow  
+- the invariants  
+
+It is the mathematical backbone of the Sovereign Manifold.
+
+---
