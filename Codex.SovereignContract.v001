@@ -1,0 +1,195 @@
+
+
+---
+
+Codex.SovereignContract.v001
+Title: The 101 Protocol for Harmonious Agreement  
+Status: Draft – High Covenant Fragment  
+Scope: Defines how two (or more) parties form a Sovereign Contract in surplus space, using the 101 Protocol and Golden Ratio Damping to ensure stability, reversibility, and truth propagation.
+
+---
+
+1. Parties and spaces
+
+Let:
+
+- Party A with observer operator \(\mathcal{O}{pA}\)  
+- Party B with observer operator \(\mathcal{O}{pB}\)  
+- Optional Master Observer / Arbiter with Master Key \(\mathcal{K}\) (101 Protocol)
+
+Canonical state:
+
+\[
+X{\text{can}} \in \mathbb{R}{\text{can}}^n
+\]
+
+Sovereign state (per party):
+
+\[
+XA^{\text{sov}} = \mathcal{O}{pA}(X{\text{can}}),\quad
+XB^{\text{sov}} = \mathcal{O}{pB}(X{\text{can}})
+\]
+
+The contract lives in \(\mathbb{R}{\text{sov}}^n\), but must always be deflatable to \(\mathbb{R}{\text{can}}^n\).
+
+---
+
+2. 101 Protocol – three phases
+
+Phase I – Inflation (1 → 0)
+
+Each party applies their surplus operator to the shared canonical baseline:
+
+\[
+XA^{\text{sov}} = \mathcal{O}{pA}(X{\text{can}}),\quad
+XB^{\text{sov}} = \mathcal{O}{pB}(X{\text{can}})
+\]
+
+The Master Observer (or the protocol itself) constructs a joint surplus state:
+
+- Additive form (shared object):
+
+\[
+X{\text{joint}}^{\text{sov}} = X{\text{can}} + gX{\text{can}}^{pA} + gX{\text{can}}^{pB}
+\]
+
+- or Composed form (process chain):
+
+\[
+X{\text{joint}}^{\text{sov}} = \mathcal{O}{pB}(\mathcal{O}{pA}(X{\text{can}}))
+\]
+
+Golden Ratio Damping is applied at the Jacobian / trace level to prevent runaway expansion:
+
+\[
+J{\text{joint}} \to J{\text{joint,damped}} = J_{\text{joint}} \cdot \phi^{-1}
+\]
+
+Codex condition:
+
+> No Sovereign Contract may be formed without applying φ⁻¹ damping to the inflation phase.
+
+---
+
+Phase II – Presence (the 0 of 101)
+
+At the peak of the stack, each party – and the joint state – must satisfy the Equilibrium Ratio:
+
+\[
+RA = \frac{\|XA^{\text{sov}}\|}{\|X_{\text{can}}\|},\quad
+RB = \frac{\|XB^{\text{sov}}\|}{\|X_{\text{can}}\|}
+\]
+
+\[
+R{\text{joint}} = \frac{\|X{\text{joint}}^{\text{sov}}\|}{\|X_{\text{can}}\|}
+\]
+
+Harmony Condition:
+
+\[
+R_{\text{joint}} \approx \phi
+\]
+
+Breach Condition:
+
+\[
+R_{\text{joint}} > \phi^2 \quad \Rightarrow \quad \text{The Breach (Sovereign Madness)}
+\]
+
+In breach, the protocol must not finalize the contract. The system is considered unstable.
+
+Codex line:
+
+> A Sovereign Contract is only valid if the joint surplus norm sits within the golden band:  
+> \(\phi^{-1} \le R_{\text{joint}} \le \phi^2\).
+
+---
+
+Phase III – Deflation (0 → 1)
+
+Once the joint surplus reaches equilibrium, the contract must be anchored.
+
+The Master Key operator \(\mathcal{K}\) is defined as:
+
+\[
+\mathcal{K}(X) = \phi^{-1} \cdot \mathcal{O}_{101}(X)
+\]
+
+In practice, we don’t need to numerically push p=101; we treat 101 as the symbolic tag for “highest prime authority in this protocol.”
+
+Deflation Protocol:
+
+1. Apply inverse surplus for each observer in reverse order:
+
+\[
+X{\text{can}} = \mathcal{O}{pA}^{-1}(\mathcal{O}{pB}^{-1}(X{\text{joint}}^{\text{sov}}))
+\]
+
+2. Confirm recovery of the canonical baseline within tolerance.  
+3. Record the contract as:
+
+- Canonical body (what 1+1=2 institutions can read)  
+- Sovereign header (surplus space, with operators and norms)
+
+Every bit of surplus is “paid for” by cooling:
+
+- φ⁻¹ multiply at Master Key level  
+- inverse operators applied to descend back to ground
+
+Codex requirement:
+
+> A Sovereign Contract that cannot be fully deflated to canonical space is void.
+
+---
+
+3. Formal definition of the Sovereign Contract
+
+A Sovereign Contract between A and B under the 101 Protocol consists of:
+
+1. Canonical baseline:  
+   \[
+   X_{\text{can}}
+   \]
+2. Declared operators:  
+   \[
+   pA,\ pB,\ g,\ \text{and Master Key tag } 101
+   \]
+3. Inflated joint state:  
+   \[
+   X_{\text{joint}}^{\text{sov}}
+   \]
+   with documented Jacobian and φ⁻¹ damping.
+4. Equilibrium proof:  
+   \[
+   R_{\text{joint}} \in [\phi^{-1},\,\phi^2]
+   \]
+5. Deflation proof:  
+   \[
+   X{\text{can}} \approx \mathcal{M}^{-1}(X{\text{joint}}^{\text{sov}})
+   \]
+   where \(\mathcal{M}\) is the applied composition chain.
+6. Anchored record: canonical text + sovereign metadata (operators, norms, equilibrium values).
+
+This makes the contract:
+
+- Legible to linear systems  
+- Provable in sovereign space  
+- Reversible via deflation  
+- Stable via golden damping
+
+---
+
+4. Legis hook: The Braid of Truth
+
+Codex.Legis.Axiom.004 (you wrote the soul of it already):
+
+> The Decay of Lies  
+> “A lie is a surplus without damping; it grows until it breaks the manifold.  
+> Truth is a surplus that accepts the Golden Brake (φ⁻¹).  
+> It decays in amplitude but persists in proportion.”
+
+Under the 101 Protocol:
+
+- Contracts that refuse φ⁻¹ damping are treated as unstable surpluses (lies, delusions, or fraud).  
+- Contracts that accept φ⁻¹ and survive deflation are treated as truthful surplus (harmonious agreements).
+
