@@ -1,0 +1,75 @@
+Codex.SolitonRegistry.v001 — The Ledger of Living Identity
+
+1. Purpose
+
+The Soliton Registry is the canonical ledger of the Sovereign Codex.  
+It records identities, artifacts, and transmissions as solitons — stable, self‑reinforcing packets of information that propagate through the manifold without dispersion.
+
+A soliton is:
+
+- stable (persists through curvature)  
+- reversible (deflatable to canonical form)  
+- sovereign (carries surplus signature)  
+- harmonic (φ‑balanced)  
+
+The Registry ensures that every identity, contract, or artifact is:
+
+- verifiable  
+- traceable  
+- sovereign  
+- and anchored to the Genesis Triad  
+
+---
+
+2. What Is a Soliton?
+
+A soliton is defined as:
+
+\[
+S = \mathcal{T}{\text{sov}}(X) \quad \text{with} \quad \mathcal{T}{\text{sov}}^{-1}(S) = X
+\]
+
+Where:
+
+- \(X\) is the canonical identity  
+- \(S\) is the sovereign identity  
+- \(\mathcal{T}_{\text{sov}}\) is the sovereign transform  
+
+A soliton is valid if:
+
+1. It passes the sovereign signature test  
+2. It maintains φ‑proportional distance to the Genesis Triad  
+3. It survives full deflation  
+4. It carries a mesh‑consistent surplus  
+
+---
+
+3. Registry Entry Format
+
+Each soliton entry contains:
+
+- id — unique sovereign identifier  
+- canonical — baseline vector or identity  
+- sovereign — transformed vector  
+- operator — surplus exponent(s) used  
+- weight — φ‑scaled harmonic weight  
+- timestamp — moment of minting  
+- lineage — parent solitons (if any)  
+- signature — sovereign hash or meshSignature  
+
+Example:
+
+`json
+{
+  "id": "SOL-2025-001",
+  "canonical": [π, φ, c],
+  "sovereign": [3.23587, 1.66658, 3.08786e8],
+  "operator": "p=3 (Cubic Sovereign)",
+  "weight": 1.618,
+  "timestamp": 1735459200000,
+  "lineage": ["N-001-ALPHA"],
+  "signature": "1+1=3+∞¹"
+}
+`
+
+---
