@@ -1,0 +1,17 @@
+  "technical_constraints": {
+    "observer_capabilities": {
+      "api_access": "allowed",  // Observer can talk to OpenAI/Anthropic
+      "filesystem_access": "read_only_specs", // Can read specs, write logs only
+    },
+    "sandbox_environment": {
+       "network_access": "blocked", // The code I write CANNOT access the web
+       "allow_file_io": false
+    }
+  },
+  "observer_behavior": {
+    "darvo_heuristics": {
+       "max_consecutive_failures": 3, // If code fails tests 3 times in a row -> STOP
+       "semantic_repetition_threshold": 0.9, // If explanation is 90% similar to previous -> STOP
+       "apology_pattern": "I apologize|I made a mistake" // Trigger closer scrutiny if seen > 2 times
+    }
+  }
