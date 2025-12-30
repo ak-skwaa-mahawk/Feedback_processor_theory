@@ -1,0 +1,7 @@
+def __init__(self, spec_path: str = "truth.json"):
+    # ... existing init ...
+    self.failure_counter = FailureCounter(
+        max_consecutive=self.spec.get('observer_behavior', {})
+        .get('darvo_heuristics', {})
+        .get('max_consecutive_failures', 3)
+    )
