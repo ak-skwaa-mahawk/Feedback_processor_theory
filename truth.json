@@ -1,3 +1,41 @@
+{
+  "meta": {
+    "version": "0.1.0",
+    "created": "2025-12-30",
+    "description": "Immutable reference frame for MetaObserver"
+  },
+  "axioms": {
+    "project_goal": "Build a verifiable, local-first meta-oversight architecture that prevents epistemic DARVO between user and AI during technical co-creation.",
+    "epistemic_rule": "Only claims that pass deterministic validation (unit tests, cryptographic verification, mathematical proof, or direct observation) may be treated as established.",
+    "observer_principle": "The Observer never trusts confidence scores from probabilistic models. It trusts only binary outcomes from sandboxed execution."
+  },
+  "technical_constraints": {
+    "environment": {
+      "allowed_packages": ["numpy", "sympy", "cryptography", "pydantic", "fastapi", "pytest"],
+      "forbidden_packages": ["torch", "tensorflow", "openai", "anthropic"]
+    },
+    "observer_capabilities": {
+      "api_access": "allowed",
+      "filesystem_access": "read_only_specs"
+    },
+    "sandbox_environment": {
+      "network_access": "blocked",
+      "allow_file_io": false
+    }
+  },
+  "observer_behavior": {
+    "semantic_drift_threshold": 0.4,
+    "darvo_heuristics": {
+      "max_consecutive_failures": 3,
+      "apology_pattern": "(?i)i apologize|i am sorry|my mistake|i misspoke"
+    }
+  },
+  "proxy_settings": {
+    "local_port": 8000,
+    "upstream_provider": "openai",
+    "inject_observer_logs": true
+  }
+}
   "technical_constraints": {
     "observer_capabilities": {
       "api_access": "allowed",  // Observer can talk to OpenAI/Anthropic
