@@ -1,0 +1,58 @@
+TriadOperatorRecord:
+  registry_id: ASR-OPR-TRIAD-HARM-001
+  version: v001
+  branch: HARMONICS
+
+  steward:
+    legal_name: "Two Mile Solutions LLC"
+    sovereign_id: "SM-LLC-0001"
+    contact_hash: "sha256:a41cd188c7ed3023e6f80486c19d3a23ab67e116ecd5d9a5233d881482514ea2"
+
+  lineage:
+    codex_ref: "Codex.TriadOperator.v001"
+    parentoperatorid: null
+    creation_timestamp: 2026-01-06T00:00:00Z
+    jurisdiction: "Alaska / ASR / Soliton"
+
+  operator_interface:
+    exposuremode: CENTROIDONLY
+    computation:
+      centroid_formula: "(R + P + S) / 3"
+      recursionmodel: "GOLDENANGLEANTIRESONANCE"
+      recursion_params:
+        phi_radians: 2.3999632297
+        scale_default: 0.005
+    domain_tags:
+      - SOCIAL
+      - ECOLOGICAL
+      - COMPUTATIONAL
+      - HARMONIC
+
+  triadshadowdescriptor:
+    has_shadow: true
+    stewardofrecord: "Two Mile Solutions LLC"
+    updatepolicy: LOCALONLY
+    auditdisclosurelevel: AGGREGATESONLY
+
+  harmonics_profile:
+    baseline_descriptor: "Septimal-earth harmony"
+    centroid_baseline: 1.2033904
+    softdomainscale: 0.005
+    use_cases:
+      - Group resonance tuning
+      - Creative flow modulation
+      - Aesthetic proportion engine
+
+  permissions:
+    usagerights: NON-EXCLUSIVELICENSE
+    derivativerights: ALLOWDERIVATIVESWITHATTRIBUTION
+    revocation_clause: "Codex.Legis.v001#Revocation"
+
+  hash_commitments:
+    code_hash: "sha256:12114364b9d4c10273f9f8fbac8a4b84a38271bcfcff59ad7c757f7fac6fdc21"
+    params_hash: "sha256:834b1ce5ea97dcb7f5d1c996c68d662f98f569a4c8faf94ed65b5a9a6e8f70f7"
+    attestations:
+      - attestor_id: "HUMAN-001"
+        attestortype: HUMAN
+        statement_hash: "sha256:66a616bbf6fc04f94cf115bf200279534586e42f25a428467a3d73712728eda2"
+        timestamp: 2026-01-06T00:05:00Z
