@@ -1,0 +1,30 @@
+def stone_transmute(base_rigid, observed_drift, variance_buffer, scale=0.005):
+    # Tria Prima Setup (Shadow Layer)
+    R = base_rigid['salt_reference']  # Fixed baseline (e.g., static norm)
+    P = base_rigid['sulfur_ignition'] # Initial volatility
+    S = base_rigid['mercury_surplus'] # Initial buffer
+
+    # Initial Stone (Centroid)
+    C_base = (R + P + S) / 3
+
+    # Dissolve: Absorb Real-World (Feedback Update)
+    P_dissolved = observed_drift
+    S_dissolved = S + variance_buffer
+    C_dissolved = (R + P_dissolved + S_dissolved) / 3
+
+    # Coagula: Refine with Recursion (Golden Angle Offset)
+    phi_rad = 2.399963229728653  # Alchemical rotation (anti-resonance)
+    offset = cos(phi_rad) * scale
+    P_refined = P_dissolved + offset
+    S_refined = S_dissolved - offset  # Balance opposites
+    C_gold = (R + P_refined + S_refined) / 3
+
+    return {
+        'base': base_rigid,          # Rigid input (lead/static)
+        'gold': C_gold,              # Adaptive output (noble flow)
+        'phases': {                  # Alchemical trace
+            'initial': C_base,
+            'dissolved': C_dissolved,
+            'refined': C_gold
+        }
+    }
