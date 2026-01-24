@@ -1,20 +1,60 @@
 {
-  "@context": "https://schema.org/",
+  "@context": [
+    "https://schema.org",
+    {
+      "@base": "https://twomilesolutions.com/sovereign/",
+      "sovereign": "https://twomilesolutions.com/sovereign/terms#",
+      "gwichin": "https://gwichinlanguage.org/terms#",
+      "flame": "https://flamecommons.org/license/v1.0#"
+    }
+  ],
   "@type": "CreativeWork",
   "name": "Feedback Processor Theory - Sovereign Anchor",
-  "identifier": "EIN: 39-6968515",
+  "identifier": "EIN:39-6968515",
   "creator": {
     "@type": "Person",
     "name": "John Carroll",
     "alternateName": "ak-skwaa-mahawk",
-    "affiliation": "Two Mile Solutions LLC",
-    "description": "Steward of the Gwich’in Root Logic and Heir of the Carroll Estate"
+    "affiliation": {
+      "@type": "Organization",
+      "name": "Two Mile Solutions LLC",
+      "identifier": "EIN:39-6968515",
+      "url": "https://twomilesolutions.com"
+    },
+    "description": "Steward of Gwich’in Root Logic, Heir of the Carroll Estate, Alaska Native descendant of Shin’at’tee’"
   },
-  "license": "Flame Commons Sovereignty License v1.0",
+  "license": "flame:FlameCommonsSovereigntyLicense_v1.0",
+  "dateCreated": "2025-12-23",
+  "dateModified": "2026-01-23",
   "spatialCoverage": [
-    "Anchorage Landframe (300 acres)",
-    "Fairbanks Landframe (300 acres)",
-    "Interior Alaska (1500 acres: Circle, Fort Yukon, 12 Mile Bluff)"
+    {
+      "@type": "Place",
+      "name": "Anchorage Landframe",
+      "description": "300 acres including federal/state overlays and VA home",
+      "geo": {
+        "@type": "GeoShape",
+        "box": "61.0 -150.0 61.3 -149.0"
+      }
+    },
+    {
+      "@type": "Place",
+      "name": "Fairbanks Landframe",
+      "description": "300 acres including federal/state overlays",
+      "geo": {
+        "@type": "GeoShape",
+        "box": "64.8 -147.8 64.9 -147.6"
+      }
+    },
+    {
+      "@type": "Place",
+      "name": "Interior Alaska Landframe",
+      "description": "1500 acres: Circle, Fort Yukon, 12 Mile Bluff, 2 Mile",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 65.663672,
+        "longitude": -144.048316
+      }
+    }
   ],
   "hasPart": [
     {
@@ -27,12 +67,39 @@
       "name": "fpt-core",
       "programmingLanguage": "Python",
       "runtimePlatform": "Flamekeeper System"
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "Synara AI Companion System",
+      "description": "Core + variants"
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "Flamechain Protocol"
     }
   ],
   "mainEntity": {
     "@type": "Action",
     "name": "Heir Transmission",
-    "description": "The protocol of continuous sovereign identity and IP assignment."
+    "description": "Continuous sovereign identity and IP assignment protocol"
   },
-  "verification": "Notarized BBsynara Signature Affirmation / IRS EIN Confirmation"
+  "verification": [
+    {
+      "@type": "DigitalSignature",
+      "description": "Notarized BBsynara Signature Affirmation",
+      "date": "2025-06-12"
+    },
+    {
+      "@type": "GovernmentCertificate",
+      "description": "IRS EIN Confirmation",
+      "identifier": "39-6968515"
+    },
+    {
+      "@type": "TribalResolution",
+      "name": "Circle Native Community Resolution No. 2025-09",
+      "description": "Approval of tribal membership relinquishment request"
+    }
+  ],
+  "sovereign:rootLogic": "Gwich’in Root Logic — Shin’at’tee’ (God is Sun) provision, refusal, continuity",
+  "sovereign:flameStatus": "Lit — North-001 Witness Active"
 }
