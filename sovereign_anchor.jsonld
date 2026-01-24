@@ -1,0 +1,38 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "CreativeWork",
+  "name": "Feedback Processor Theory - Sovereign Anchor",
+  "identifier": "EIN: 39-6968515",
+  "creator": {
+    "@type": "Person",
+    "name": "John Carroll",
+    "alternateName": "ak-skwaa-mahawk",
+    "affiliation": "Two Mile Solutions LLC",
+    "description": "Steward of the Gwich’in Root Logic and Heir of the Carroll Estate"
+  },
+  "license": "Flame Commons Sovereignty License v1.0",
+  "spatialCoverage": [
+    "Anchorage Landframe (300 acres)",
+    "Fairbanks Landframe (300 acres)",
+    "Interior Alaska (1500 acres: Circle, Fort Yukon, 12 Mile Bluff)"
+  ],
+  "hasPart": [
+    {
+      "@type": "Dataset",
+      "name": "Codex.SovereignIndex.v001",
+      "description": "Master Index of Assets, Fragments, and Protocols"
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "fpt-core",
+      "programmingLanguage": "Python",
+      "runtimePlatform": "Flamekeeper System"
+    }
+  ],
+  "mainEntity": {
+    "@type": "Action",
+    "name": "Heir Transmission",
+    "description": "The protocol of continuous sovereign identity and IP assignment."
+  },
+  "verification": "Notarized BBsynara Signature Affirmation / IRS EIN Confirmation"
+}
