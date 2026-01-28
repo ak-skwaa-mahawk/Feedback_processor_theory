@@ -1,0 +1,91 @@
+Codex.FlamechainProtocol.v001
+Fragment Type: Operational Protocol — Surplus Reciprocity Management
+Steward: John Carroll
+Status: Draft — defines the Flamechain mechanism for digital surplus flow between landframe nodes, anchored in crypto laws
+Purpose of Flamechain Protocol
+Flamechain is the digital spine of full oneness — a protocol that chains surplus (crypto value, IP contributions) across landframe nodes while enforcing reciprocity (give/receive balance). It transforms isolated acres into a resonant network: observer recoil (heir decisions) provisions surplus without dilution, tied to polar continuity (north-south land anchors).
+Effective resonance: ε_π ≈ 3.1730277654 integrates the shadow triad, ensuring the chain is "right every moment" — compliant with Federal (IRS step-up), State (Alaska virtual currency), and Tribal (IDSov IP) laws from Codex.CryptoLaws.v001. No fractioning; full unification via multi-sig hashes and reciprocity tracking.
+This protocol operationalizes GTC Coin/Flamechain IP for estate continuity (SonPromise, HeirTransmission), turning the sovereignty dashboard into a live reciprocity engine.
+Core Components: The Triad Chain
+Flamechain structures as a triad-linked ledger:
+| Triad Layer | Node Function | Crypto Law Anchor |
+|---|---|---|
+| π_memory (Gwich’in Root) | Memory Nodes (Fort Yukon, Circle — tribal heritage anchors) | Tribal IP Sovereignty: Hashes glyphs/logic as cultural property; multi-sig requires heir oath. |
+| π_base (Landframe Deeds) | Base Nodes (Fairbanks, Anchorage — physical/VA deeds) | Federal Estate Compliance: Step-up basis for assets <$15M; GSA SAM for contract flows. |
+| π_surplus (Digital Provision) | Surplus Nodes (Two Mile Bluff, Preacher Creek — provision hubs) | Alaska Virtual Currency: HB99 licensing for GTC Coin ops; reciprocity ensures surplus recirculation. |
+Mean calculation per transaction: (memory_hash + base_value + surplus_flow) / 3 → must exceed drift threshold (0.25 under OperatorSeal) or reject.
+Reciprocity Mechanism: Give/Receive Balance
+Reciprocity Tracker: Built into sovereignty dashboard — scores each node interaction (e.g., IP contribution from Anchorage → surplus return to Fort Yukon).
+Formula: Reciprocity Score = (Provision Given - Recoil Received) / Polar Continuity Factor
+Given: Crypto/IP input (e.g., GTC Coin transfer).
+Received: Surplus output (e.g., hashed deed confirmation).
+Factor: Distance between nodes (polar miles, e.g., Anchorage-Fort Yukon ≈ 300mi) modulated by ε_π.
+Threshold: Score > 0 for approval; negative triggers "Drift Alert" (Observer proxy interrupt).
+Multi-Sig Enforcement: All chain actions require 2/3 signatures: Executor (base), Sovereign (memory), Heir (surplus). Ties to hardware wallets for eternal access.
+Surplus Flow Rules:
+Inbound: Federal-compliant (report gains via IRS digital assets).
+Outbound: State-licensed (Alaska surety bond for transmissions > $100K).
+Tribal Guard: IDSov check — no flow if IP shadow (glyphs) unhashed.
+This prevents drain: surplus recirculates like auroral energy in the landframe.
+Implementation: src/fpt_core/flamechain.py
+Draft code for the protocol core — integrates with handshake.py and crypto.py. Validates reciprocity before chain propagation.
+from pydantic import BaseModel
+from hashlib import sha256
+from codex.crypto import CryptoLegalAnchor  # From Codex.CryptoLaws.v001
+
+class FlamechainNode(BaseModel):
+    """
+    Represents a landframe node in the chain.
+    """
+    name: str  # e.g., "Fort Yukon - Memory"
+    triad_layer: str  # "memory", "base", "surplus"
+    location: str  # e.g., "Circle, AK"
+    reciprocity_score: float = 0.0
+
+class FlamechainProtocol:
+    def __init__(self):
+        self.nodes = [
+            FlamechainNode(name="Fort Yukon", triad_layer="memory", location="Circle"),
+            FlamechainNode(name="Fairbanks", triad_layer="base", location="Fairbanks"),
+            FlamechainNode(name="Two Mile Bluff", triad_layer="surplus", location="Preacher Creek")
+        ]
+        self.legal_anchor = CryptoLegalAnchor()
+
+    def calculate_resonance(self, memory: float, base: float, surplus: float) -> float:
+        """
+        Computes ε_π mean for transaction validation.
+        """
+        epsilon_pi = (memory + base + surplus) / 3
+        return epsilon_pi if epsilon_pi > 3.173 else 0  # Drift threshold
+
+    def perform_reciprocity_handshake(self, from_node: str, to_node: str, asset_hash: str, value: float):
+        """
+        Manages surplus flow with legal checks.
+        """
+        if not self.legal_anchor.verify_resonance(value):
+            return "DRIFT: Legal Non-Resonance"
+        
+        from_idx = next(i for i, n in enumerate(self.nodes) if n.name == from_node)
+        to_idx = next(i for i, n in enumerate(self.nodes) if n.name == to_node)
+        
+        # Polar Continuity Factor (simplified distance)
+        continuity_factor = abs(from_idx - to_idx) * 300  # Miles proxy
+        score = (value - continuity_factor) / 3.173  # ε_π modulation
+        
+        if score > 0:
+            self.nodes[to_idx].reciprocity_score += score
+            return f"SUCCESS: Surplus Chained - Hash: {sha256(asset_hash.encode()).hexdigest()}"
+        return "DRIFT: Reciprocity Imbalance"
+
+# Example Usage
+protocol = FlamechainProtocol()
+result = protocol.perform_reciprocity_handshake("Fort Yukon", "Two Mile Bluff", "0xGTC_Coin_Transfer", 500.0)
+print(result)
+Activation & Oneness
+Invoke under OperatorSeal.v001: multi-sig the chain start, hash with triad mean. Ties to sovereignty dashboard for live node status. Eternal: Blockchain permanence ensures heir access without loss.
+Legal Note: Align with shadow advisor (e.g., Reeves Amodio) for final HB99 compliance on GTC flows.
+Signature Line
+This draft seals Flamechain into oneness: triad chained, surplus managed, shadow provisioned.
+The operator is whole.
+The line moves forward with resonant intention.
+— Codex.FlamechainProtocol.v001
