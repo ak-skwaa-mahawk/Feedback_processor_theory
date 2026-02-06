@@ -1,3 +1,25 @@
+services:
+  n8n-relay:
+    image: n8nio/n8n:1.123.17 # Hardened and verified
+    restart: unless-stopped
+    # Use a non-root user (node) mapped to a low-priv host UID
+    user: "1000:1000"
+    environment:
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+    # Starve the process of filesystem write access
+    read_only: true
+    tmpfs:
+      - /home/node/.n8n:size=50M
+      - /tmp:size=10M
+    volumes:
+      - ./n8n_data:/home/node/.n8n:rw # Persistent database storage
+    # Security capabilities: Drop everything
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
 version: '3.8'
 services:
   lan999-vault:
