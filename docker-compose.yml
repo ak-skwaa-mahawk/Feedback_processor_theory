@@ -1,4 +1,18 @@
 services:
+  n8n-relay:
+    # ... existing hardening ...
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=https://telemetry.googleapis.com
+      - OTEL_SERVICE_NAME=n8n-wasilla-relay
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp_key
+    secrets:
+      - gcp_key
+
+secrets:
+  gcp_key:
+    file: ./gcp-observability-key.json
+
+services:
   # ... existing n8n and nginx services ...
 
   prometheus:
