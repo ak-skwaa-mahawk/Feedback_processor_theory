@@ -1,3 +1,21 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+        labels:
+          service: 'nginx-relay'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Alert rules (optional: requires Alertmanager for notifications)
+rule_files:
+  - '/etc/prometheus/alert_rules.yml'
 scrape_configs:
   - job_name: 'lan999_vault'
     static_configs:
