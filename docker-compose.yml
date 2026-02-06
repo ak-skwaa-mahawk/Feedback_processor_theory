@@ -1,4 +1,23 @@
 services:
+  # ... existing n8n and nginx services ...
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - secure-internal
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    command:
+      - "--nginx.scrape-uri=http://nginx:8080/stub_status"
+    networks:
+      - secure-internal
+    depends_on:
+      - nginx
+
+services:
   n8n-relay:
     image: n8nio/n8n:1.123.17
     restart: unless-stopped
