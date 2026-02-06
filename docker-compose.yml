@@ -1,25 +1,43 @@
 services:
   n8n-relay:
-    # ... existing hardening ...
+    image: n8nio/n8n:1.123.17
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /home/node/.n8n:size=64m,mode=1777
+      - /tmp:size=16m,mode=1777
     environment:
+      # Starvation Protocols
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS_TERMINATION=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_LOG_LEVEL=error
+      - N8N_ENCRYPTION_KEY_FILE=/home/node/.n8n/encryption.key
+
+      # Pioneer OTLP - Unified Google Ingestion (Effective March 4, 2026)
       - OTEL_EXPORTER_OTLP_ENDPOINT=https://telemetry.googleapis.com
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_SERVICE_NAME=n8n-wasilla-relay
-      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp_key
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production,service.owner=twomilesolutions,service.version=1.0,service.instance.id=wasilla-root-99733
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp_observability_key
+    volumes:
+      - ./n8n_data:/home/node/.n8n:rw
+      - ./encryption.key:/home/node/.n8n/encryption.key:ro
     secrets:
-      - gcp_key
-
-secrets:
-  gcp_key:
-    file: ./gcp-observability-key.json
-
-services:
-  # ... existing n8n and nginx services ...
+      - gcp_observability_key
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - secure-internal
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
-    user: "65534:65534"  # nobody:nogroup
+    user: "65534:65534"
     read_only: true
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -30,8 +48,6 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=30d'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
     networks:
       - secure-internal
     cap_drop:
@@ -41,8 +57,6 @@ services:
     image: nginx/nginx-prometheus-exporter:latest
     container_name: nginx-exporter
     restart: unless-stopped
-    user: "65534:65534"
-    read_only: true
     command:
       - "--nginx.scrape-uri=http://nginx:8080/stub_status"
     networks:
@@ -51,8 +65,10 @@ services:
       - nginx
     cap_drop:
       - ALL
-    security_opt:
-      - no-new-privileges:true
+
+secrets:
+  gcp_observability_key:
+    file: ./gcp-observability-key.json
 
 volumes:
   prometheus-data:
@@ -60,96 +76,3 @@ volumes:
 networks:
   secure-internal:
     driver: bridge
-services:
-  # ... existing n8n and nginx services ...
-
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    networks:
-      - secure-internal
-
-  nginx-exporter:
-    image: nginx/nginx-prometheus-exporter:latest
-    command:
-      - "--nginx.scrape-uri=http://nginx:8080/stub_status"
-    networks:
-      - secure-internal
-    depends_on:
-      - nginx
-
-services:
-  n8n-relay:
-    image: n8nio/n8n:1.123.17
-    restart: unless-stopped
-    user: "1000:1000"
-    read_only: true
-    tmpfs:
-      - /home/node/.n8n:size=64m,mode=1777
-      - /tmp:size=16m,mode=1777
-    environment:
-      - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
-      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS_TERMINATION=true
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - N8N_LOG_LEVEL=error          # Minimize noise / logging surface
-      - N8N_ENCRYPTION_KEY_FILE=/home/node/.n8n/encryption.key  # Separate key file
-    volumes:
-      - ./n8n_data:/home/node/.n8n:rw
-      - ./encryption.key:/home/node/.n8n/encryption.key:ro  # Key outside DB dir
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - secure-internal
-
-services:
-  n8n-relay:
-    image: n8nio/n8n:1.123.17 # Hardened and verified
-    restart: unless-stopped
-    # Use a non-root user (node) mapped to a low-priv host UID
-    user: "1000:1000"
-    environment:
-      - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-    # Starve the process of filesystem write access
-    read_only: true
-    tmpfs:
-      - /home/node/.n8n:size=50M
-      - /tmp:size=10M
-    volumes:
-      - ./n8n_data:/home/node/.n8n:rw # Persistent database storage
-    # Security capabilities: Drop everything
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-
-version: '3.8'
-services:
-  lan999-vault:
-    image: python:3.11-slim
-    volumes:
-      - ./codex:/app/codex
-      - ./psbt:/app/psbt
-      - ./bitcoin:/root/.bitcoin
-    environment:
-      - BITCOIN_RPC_USER=landback
-      - BITCOIN_RPC_PASSWORD=vault999
-    command: >
-      sh -c "pip install -r requirements.txt && python vault_lan999.py"
-    depends_on:
-      - bitcoind
-    restart: unless-stopped
-
-  bitcoind:
-    image: ruimarinho/bitcoin-core:25.0
-    command: -rpcuser=landback -rpcpassword=vault999 -rpcallowip=172.0.0.0/8
-    volumes:
-      - bitcoin-data:/root/.bitcoin
-    ports:
-      - "8332:8332"
-
-volumes:
-  bitcoin-data:
