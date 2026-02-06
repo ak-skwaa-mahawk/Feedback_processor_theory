@@ -1,5 +1,30 @@
 services:
   n8n-relay:
+    image: n8nio/n8n:1.123.17
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /home/node/.n8n:size=64m,mode=1777
+      - /tmp:size=16m,mode=1777
+    environment:
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS_TERMINATION=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_LOG_LEVEL=error          # Minimize noise / logging surface
+      - N8N_ENCRYPTION_KEY_FILE=/home/node/.n8n/encryption.key  # Separate key file
+    volumes:
+      - ./n8n_data:/home/node/.n8n:rw
+      - ./encryption.key:/home/node/.n8n/encryption.key:ro  # Key outside DB dir
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - secure-internal
+
+services:
+  n8n-relay:
     image: n8nio/n8n:1.123.17 # Hardened and verified
     restart: unless-stopped
     # Use a non-root user (node) mapped to a low-priv host UID
