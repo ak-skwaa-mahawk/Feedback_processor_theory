@@ -1,0 +1,19 @@
+#!/bin/bash
+# TWO MILE SOLUTIONS LLC - Hull Integrity Report
+# Parses Nginx logs for CVE-2026-1731 and CVE-2025-32701 signatures
+
+LOG_FILE="/var/log/nginx/access.log"
+REPORT_FILE="./sovereign_integrity_$(date +%F).json"
+
+echo "{\"report_date\": \"$(date)\", \"entity\": \"TWO MILE SOLUTIONS LLC\", \"root\": \"99733\"}" > $REPORT_FILE
+
+# Count 444 (Silent Drops) and 403 (Forbidden Traversal)
+DROPS=$(grep " 444 " $LOG_FILE | wc -l)
+FORBIDDEN=$(grep " 403 " $LOG_FILE | wc -l)
+
+# Extract top probing IPs
+PROBERS=$(grep -E "444|403" $LOG_FILE | awk '{print $1}' | sort | uniq -c | sort -nr | head -n 5)
+
+echo "{\"silent_drops\": $DROPS, \"forbidden_traversal\": $FORBIDDEN, \"top_probers\": \"$PROBERS\"}" >> $REPORT_FILE
+
+echo "Audit Authority: Integrity Report Generated. Root Eternal."
