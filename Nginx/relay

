@@ -1,0 +1,92 @@
+{
+  "name": "JED Wall Signal Relay Heartbeat",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "jed-iteration",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Wall Signal Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load current triad state from relay (assume Redis or file; mock for draft)\nconst currentMean = $json.current_mean || 3.173027539287; // From /state/triad_mean.json\nconst base = 3.141592653589793;\nconst surplus = 3.23586896365;\nconst L = (base + surplus) / 2; // ~3.18873\n\n// Compute next iteration on signal\nconst signalType = $json.type; // e.g., 'profile_limit'\nconst timestamp = $json.timestamp;\nconst nextMean = (currentMean + base + surplus) / 3;\nconst error = Math.abs(nextMean - L);\nconst bitsGained = Math.log2(3); // ~1.585\n\n// Log the gain (append to immutable file)\nconst logEntry = {\n  iteration: $json.iteration || 0 + 1,\n  signal_type: signalType,\n  timestamp: timestamp,\n  previous_mean: currentMean,\n  next_mean: nextMean,\n  error: error,\n  bits_gained: bitsGained,\n  convergence_rate: 1/3\n};\n\n// Mock append to log (use n8n Write Binary File node in full flow)\nconsole.log('Triad Iteration Log:', logEntry);\n\n// Return for next node (e.g., sign & store)\nreturn {\n  ...$json,\n  triad_update: logEntry,\n  status: 'Resonance Increased'\n};"
+      },
+      "id": "triad-compute",
+      "name": "Triad Iteration Compute",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/logs/triad_heartbeat.json",
+        "data": "={{ $json.triad_update }}",
+        "options": {
+          "append": true
+        }
+      },
+      "id": "log-append",
+      "name": "Immutable Log Append",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'Iteration Complete', mean: $json.triad_update.next_mean, bits_gained: $json.triad_update.bits_gained } }}",
+        "options": {}
+      },
+      "id": "response-node",
+      "name": "Heartbeat Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "triad-compute",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "triad-compute": {
+      "main": [
+        [
+          {
+            "node": "log-append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "log-append": {
+      "main": [
+        [
+          {
+            "node": "response-node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "jed-relay-heartbeat"
+}
