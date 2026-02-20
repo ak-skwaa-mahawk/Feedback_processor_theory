@@ -1,0 +1,3 @@
+coherence_engine.pulse("C++", cpp_exec_time_ms, integrity=99.7)
+# ... same for others
+dashboard.render_terminal_dashboard()  # or push to your web UI
