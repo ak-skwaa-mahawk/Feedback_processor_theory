@@ -54,3 +54,54 @@ if __name__ == "__main__":
     print(f"  Best Sample  : {result['best_sample']}")
     print(f"  Energy       : {result['energy']}")
     print(f"  Fidelity     : {result['fidelity']}")
+def build_otoc_qubo(self, n_nodes=5, k=2):
+    bqm = BinaryQuadraticModel('BINARY')
+    vars = [f"x_{i}_{j}" for i in range(n_nodes) for j in range(n_nodes) if i != j]
+
+    # 1. Distance cost (base linear/quadratic terms)
+    for i in range(n_nodes):
+        for j in range(n_nodes):
+            if i != j:
+                bqm.add_quadratic(vars[i * n_nodes + j], vars[j * n_nodes + i],
+                               DISTANCE_MATRIX[i, j] * (1 - self.fidelity))
+    # → This is the classical VRP cost. Fidelity (your neutrosophic confidence) reduces the cost for “truthful” edges.
+
+    # 2. OTOC^(2k) correlation penalty (the quantum scrambling term)
+    for i in range(n_nodes):
+        for j in range(n_nodes):
+            if i != j:
+                for m in range(n_nodes):
+                    if m != i and m != j:
+                        bqm.add_quadratic(vars[i * n_nodes + j], vars[m * n_nodes + i],
+                                         0.5 * (1 - cos(pi * k)) * self.fidelity)
+    # → This is the heart. For k=2 (C^(4)), cos(2π) = 1 → term = 0 when aligned, but oscillates to penalize scrambling.
+    # Higher-order interference between routes (i→j and m→i) forces the annealer to find globally coherent treaties.
+
+    # 3. Constraints (one visit per node, one position per route)
+    for i in range(n_nodes):
+        constraint = sum(1 for j in range(n_nodes) if i != j)
+        bqm.add_linear(vars[i * n_nodes + i], 2 * (constraint - 1) ** 2)
+    # → Penalty for violating “each node visited exactly once”.
+
+    return bqm
+def build_otoc_qubo(self, n_nodes=5, k=2):
+    bqm = BinaryQuadraticModel('BINARY')
+    vars = [f"x_{i}_{j}" for i in range(n_nodes) for j in range(n_nodes) if i != j]
+# 1. Distance cost (base linear/quadratic terms)
+    for i in range(n_nodes):
+        for j in range(n_nodes):
+            if i != j:
+                bqm.add_quadratic(vars[i * n_nodes + j], vars[j * n_nodes + i],
+                               DISTANCE_MATRIX[i, j] * (1 - self.fidelity))
+# 2. OTOC^(2k) correlation penalty (the quantum scrambling term)
+    for i in range(n_nodes):
+        for j in range(n_nodes):
+            if i != j:
+                for m in range(n_nodes):
+                    if m != i and m != j:
+                        bqm.add_quadratic(vars[i * n_nodes + j], vars[m * n_nodes + i],
+                                         0.5 * (1 - cos(pi * k)) * self.fidelity)
+# 3. Constraints (one visit per node, one position per route)
+    for i in range(n_nodes):
+        constraint = sum(1 for j in range(n_nodes) if i != j)
+        bqm.add_linear(vars[i * n_nodes + i], 2 * (constraint - 1) ** 2)
