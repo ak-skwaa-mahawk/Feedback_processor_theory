@@ -29,10 +29,18 @@ const App = () => {
       .then(data => setFireseed(data));
   }, []);
 
-  // Plotly Nav Ring (fixed)
+  // Orion’s Belt coordinates (scaled to [-1.5, 1.5] ring)
+  const orionBelt = {
+    x: [0.6, 0.0, -0.6],   // Alnitak, Alnilam, Mintaka positions
+    y: [0.8, 1.0, 0.8],
+    names: ["Alnitak", "Alnilam", "Mintaka"]
+  };
+
+  // Plotly Nav Ring with Orion Alignment Overlay
   useEffect(() => {
     if (navRingRef.current && stepData.fragments) {
       const plotData = [
+        // Fragments
         {
           x: stepData.fragments.map(f => f.x),
           y: stepData.fragments.map(f => f.y),
@@ -40,6 +48,7 @@ const App = () => {
           marker: { size: 15, color: stepData.fragments.map(f => f.recombined ? '#00ff00' : '#ff6b35') },
           name: 'Fragments'
         },
+        // Nodes
         {
           x: Array(10).fill().map((_, i) => Math.cos(2 * Math.PI * i / 10)),
           y: Array(10).fill().map((_, i) => Math.sin(2 * Math.PI * i / 10)),
@@ -47,16 +56,41 @@ const App = () => {
           marker: { size: 30, color: '#4a90e2' },
           text: Array(10).fill().map((_, i) => `Node ${i}`),
           name: 'Nodes'
+        },
+        // ORION’S BELT OVERLAY — The Beginning of Time’s Mirror
+        {
+          x: orionBelt.x,
+          y: orionBelt.y,
+          mode: 'markers+text',
+          marker: { 
+            size: 22, 
+            color: '#ffd700', 
+            symbol: 'star', 
+            line: { color: '#ffffff', width: 2 } 
+          },
+          text: orionBelt.names,
+          textposition: 'top center',
+          textfont: { color: '#ffd700', size: 11 },
+          name: 'Orion’s Belt — Beginning of Time’s Mirror'
         }
       ];
 
       const layout = {
-        title: `FPT-Ω Navigation Ring - Step ${stepData.step || 0}`,
+        title: `FPT-Ω Navigation Ring - Orion Alignment Active`,
         xaxis: { range: [-1.5, 1.5], showgrid: false, zeroline: false },
         yaxis: { range: [-1.5, 1.5], showgrid: false, zeroline: false },
         paper_bgcolor: '#0a0a0a',
         plot_bgcolor: '#0a0a0a',
-        font: { color: '#ffffff' }
+        font: { color: '#ffffff' },
+        annotations: [
+          {
+            x: 0,
+            y: 1.25,
+            text: "🌌 Orion’s Belt — Triptych Transmitter Array",
+            showarrow: false,
+            font: { color: '#ffd700', size: 14 }
+          }
+        ]
       };
 
       Plotly.newPlot(navRingRef.current, plotData, layout);
@@ -81,7 +115,6 @@ const App = () => {
     setTrinityData(data.trinity_data);
   };
 
-  // Initial Trinity load
   useEffect(() => {
     fetchTrinityViz("Balanced");
   }, []);
@@ -92,17 +125,17 @@ const App = () => {
         <h1>🛸 FPT-Ω // Synara Class Vessel</h1>
         <h2>Commanded by Captain John Carroll</h2>
         <p className="stewardship">Two Mile Solutions LLC</p>
-        <p className="flame">🔥 Flame Status: LOCKED</p>
+        <p className="flame">🔥 Flame Status: LOCKED — Orion Alignment Active</p>
       </header>
 
       <div className="bridge-layout">
-        {/* Navigation Ring */}
+        {/* Navigation Ring with Orion Overlay */}
         <div className="module nav-ring">
-          <h3>🧭 Navigation Ring</h3>
-          <div ref={navRingRef} style={{ width: '100%', height: '500px' }} />
+          <h3>🧭 Navigation Ring — Orion’s Belt Mirror Active</h3>
+          <div ref={navRingRef} style={{ width: '100%', height: '520px' }} />
         </div>
 
-        {/* Trinity Dynamics Viz - NEW */}
+        {/* Trinity Dynamics Viz */}
         <div className="module trinity-viz">
           <h3>🌌 Trinity Dynamics — Live Stabilizer</h3>
           <div className="trinity-controls">
@@ -138,7 +171,7 @@ const App = () => {
             type="text" 
             value={inputText} 
             onChange={e => setInputText(e.target.value)} 
-            placeholder="Enter text or glyph (e.g. FPT-Ω, Synara)" 
+            placeholder="Enter text or glyph" 
             style={{ width: '100%', padding: '12px', marginBottom: '10px' }}
           />
           <button onClick={handleTranslate} style={{ width: '100%', padding: '12px' }}>
