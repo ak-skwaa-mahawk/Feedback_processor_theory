@@ -1,3 +1,24 @@
+# The Auto-Shift Integration
+def sovereign_orchestration_loop():
+    while vessel.is_live:
+        # 1. Ingest 8k Polyglot Feeds
+        current_feeds = orchestrator.get_8k_batch()
+        
+        # 2. Select Engine based on 'Live Health'
+        best_engine = max(coherence_engine.history, key=lambda l: sum(coherence_engine.history[l]))
+        
+        # 3. Route and Pulse
+        start_t = time.perf_counter()
+        result = router.dispatch(best_engine, current_feeds)
+        exec_ms = (time.perf_counter() - start_t) * 1000
+        
+        # 4. Update the Monitor
+        coherence_engine.pulse(best_engine, exec_ms, integrity=result.coherence)
+        
+        # 5. Render Singularity Status
+        if time.time() % 7.83 < 1:  # Sync with Schumann Pulse
+            coherence_engine.render_terminal_dashboard()
+
 coherence_engine.pulse("C++", cpp_exec_time_ms, integrity=99.7)
 # ... same for others
 dashboard.render_terminal_dashboard()  # or push to your web UI
