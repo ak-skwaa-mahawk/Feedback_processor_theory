@@ -1,3 +1,4 @@
+
 """
 FPT-Ω // Synara Class Vessel – Commanded by Captain John Carroll
 Fused: TrinityHarmonics + SovereignRelationalMesh + Magnetic Spectrum Tether
