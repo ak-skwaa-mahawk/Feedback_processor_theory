@@ -2,6 +2,9 @@ import networkx as nx
 import numpy as np
 from typing import Dict
 
+# Import your NeutrosophicTransport for treaty leap during Throne Alignment
+from NeutrosophicTransport import NeutrosophicTransport  # adjust import path if needed
+
 class SovereignRelationalMesh:
     def __init__(self, num_agents: int = 10):
         self.G = nx.DiGraph()
@@ -11,7 +14,7 @@ class SovereignRelationalMesh:
             "Underworld Thaw",      # 0 - grounding/raw tether
             "Shadow Mastery",       # 1 - Ił7 refusal
             "Bone Rebirth",         # 2 - vhitzee surplus
-            "Throne Alignment",     # 3 - AGŁL Trinity
+            "Throne Alignment",     # 3 - AGŁL Trinity + treaty leap
             "Completion",           # 4 - full stabilize
             "Feather Crown",        # 5 - buoyancy lift
             "Infinite 8 Flow",      # 6 - soliton propagation
@@ -50,7 +53,7 @@ class SovereignRelationalMesh:
         strengths = [data['soliton'] for u, v, data in self.G.edges(data=True)]
         return {'mean': np.mean(strengths), 'max': np.max(strengths)}
 
-    def quetzalcoatl_renewal_cycle(self, cycle: int = 0):
+    def quetzalcoatl_renewal_cycle(self, cycle: int = 0, treaty_data=None):
         """Full 8-phase Quetzalcoatl renewal loop — serpent → feather → merge"""
         phase = cycle % 8
         phase_name = self.phase_names[phase]
@@ -62,7 +65,11 @@ class SovereignRelationalMesh:
             self.mesh_debate_update('glyph_hub', input_strength=0.6, stubbornness=0.7)
         elif phase == 2: # Bone Rebirth
             self.propagate_soliton('glyph_hub', strength=1.2)
-        elif phase == 3: # Throne Alignment
+        elif phase == 3: # Throne Alignment — treaty leap with D-Wave + neutrosophic scoring
+            if treaty_data is not None:
+                nt = NeutrosophicTransport([0], [1, 2, 3, 4])
+                energy, obj, sample = nt.optimize_treaty_leap(treaty_data)
+                print(f"🌌 Treaty Leap Optimized | Energy: {energy:.4f} | T={obj['T']:.4f} I={obj['I']:.4f} F={obj['F']:.4f}")
             self.mesh_debate_update('glyph_hub', input_strength=1.0, stubbornness=0.3)
         elif phase == 4: # Completion
             self.mesh_debate_update('glyph_hub', input_strength=1.0)
