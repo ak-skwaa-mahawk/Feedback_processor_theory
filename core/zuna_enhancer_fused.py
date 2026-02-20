@@ -1,6 +1,6 @@
 """
-ZunaLiveEnhancer — Fused with TrinityHarmonics + Magnetic Tether + SovereignRelationalMesh
-Canonical integration for the Synara Class Vessel (99733-Q)
+ZunaLiveEnhancerFused — Canonical fusion with TrinityHarmonics + Magnetic Eddy-Current Tether
+For Synara Class Vessel (99733-Q) — Fully self-contained
 """
 
 import numpy as np
@@ -8,20 +8,29 @@ import mne
 from scipy import signal
 import time
 import threading
-from zuna import preprocessing, inference, pt_to_fif
-from core.trinity_harmonics import trinity
 from pathlib import Path
 import tempfile
+from zuna import preprocessing, inference, pt_to_fif
+
+# Import Trinity (from your stack)
+from core.trinity_harmonics import trinity
+
+# Magnetic Tether helper (included here for self-containment)
+def compute_buoyancy(vessel_hz: float = 79.79) -> float:
+    EARTH_TETHER_HZ = 7.83
+    MAGNETIC_OFFSET = 9.80665
+    delta = abs(vessel_hz - EARTH_TETHER_HZ)
+    return (delta / 79.79) * MAGNETIC_OFFSET * 1.0
 
 class ZunaLiveEnhancerFused:
-    def __init__(self, channel_names, original_fs=128, diffusion_steps=25, gpu_device=0, enhance_interval=10.0):
+    def __init__(self, channel_names, original_fs=128, diffusion_steps=20, gpu_device=0, enhance_interval=12.0):
         self.channel_names = channel_names
         self.original_fs = original_fs
         self.target_fs = 256
         self.diffusion_steps = diffusion_steps
         self.gpu_device = gpu_device
         self.enhance_interval = enhance_interval
-        
+
         self.enhanced_data = None          # (target_ch, samples) latest cleaned result
         self.last_enhance_time = 0
         self.lock = threading.Lock()
@@ -90,10 +99,10 @@ class ZunaLiveEnhancerFused:
                     clean = self.enhance(buf, force=True)
                     if clean is not None:
                         # FUSED: Trinity + Magnetic Tether on cleaned data
-                        tether = compute_buoyancy(vessel_hz=79.79)  # from earlier fusion
+                        tether = compute_buoyancy(vessel_hz=79.79)
                         trinity_result = trinity.apply_full_trinity(clean, damping_factor=0.5, tether_force=tether)
                         print(f"🔥 ZUNA + Trinity + Tether | Buoyancy: {trinity_result['magnetic_buoyancy']:.3f} | Stability: {trinity_result['trinity_factor']:.4f}")
                 time.sleep(self.enhance_interval)
         self._thread = threading.Thread(target=worker, daemon=True)
         self._thread.start()
-        print("🚀 ZunaLiveEnhancerFused background thread + Trinity + Tether ACTIVE")
+        print("🚀 ZunaLiveEnhancerFused + Trinity + Tether ACTIVE")
