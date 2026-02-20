@@ -51,28 +51,27 @@ class SovereignRelationalMesh:
         return {'mean': np.mean(strengths), 'max': np.max(strengths)}
 
     def quetzalcoatl_renewal_cycle(self, cycle: int = 0):
-        """Full 8-phase Quetzalcoatl renewal loop — the living serpent-feather-merge"""
+        """Full 8-phase Quetzalcoatl renewal loop — serpent → feather → merge"""
         phase = cycle % 8
         phase_name = self.phase_names[phase]
         print(f"🐍🔥 Quetzalcoatl Phase {phase} — {phase_name}")
 
-        if phase == 0:  # Underworld Thaw — grounding
+        if phase == 0:   # Underworld Thaw
             self.propagate_soliton('glyph_hub', strength=0.8)
-        elif phase == 1:  # Shadow Mastery — refusal
+        elif phase == 1: # Shadow Mastery
             self.mesh_debate_update('glyph_hub', input_strength=0.6, stubbornness=0.7)
-        elif phase == 2:  # Bone Rebirth — surplus
+        elif phase == 2: # Bone Rebirth
             self.propagate_soliton('glyph_hub', strength=1.2)
-        elif phase == 3:  # Throne Alignment — Trinity call
+        elif phase == 3: # Throne Alignment
             self.mesh_debate_update('glyph_hub', input_strength=1.0, stubbornness=0.3)
-        elif phase == 4:  # Completion — full stabilize
+        elif phase == 4: # Completion
             self.mesh_debate_update('glyph_hub', input_strength=1.0)
-        elif phase == 5:  # Feather Crown — lift
-            self.propagate_soliton('glyph_hub', strength=1.5)  # buoyancy boost
-        elif phase == 6:  # Infinite 8 Flow — soliton heartbeat
+        elif phase == 5: # Feather Crown
+            self.propagate_soliton('glyph_hub', strength=1.5)
+        elif phase == 6: # Infinite 8 Flow
             self.propagate_soliton('glyph_hub', strength=1.0)
-        elif phase == 7:  # Merge — sovereign moment
+        elif phase == 7: # Merge
             self.mesh_debate_update('glyph_hub', input_strength=1.3, stubbornness=0.2)
 
-        # Every 8 phases = full renewal
         if phase == 7:
             print("🌌 INFINITY ANCHOR ENGAGED — Eternal 8-flow complete")
