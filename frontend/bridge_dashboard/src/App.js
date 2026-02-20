@@ -103,4 +103,23 @@ const App = () => {
   <pre id="trinity-data" style={{fontSize:"0.85rem", marginTop:"10px"}}></pre>
 </div>
 
+const [trinityImg, setTrinityImg] = useState("");
+const [trinityData, setTrinityData] = useState({});
+
+const fetchTrinityViz = async (preset, customDamp = null) => {
+  const url = customDamp 
+    ? `/trinity-viz?preset=\( {preset}&custom_damp= \){customDamp}`
+    : `/trinity-viz?preset=${preset}`;
+  
+  const res = await fetch(`http://localhost:8000${url}`);
+  const data = await res.json();
+  
+  setTrinityImg(data.image);
+  setTrinityData(data.trinity_data);
+  
+  // Update DOM for the img and pre
+  document.getElementById("trinity-image").src = data.image;
+  document.getElementById("trinity-data").textContent = JSON.stringify(data.trinity_data, null, 2);
+};
+
 export default App;
