@@ -6,9 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pylsl import StreamInlet, resolve_stream
 from collections import deque
-import time
 
-# === ZUNA FUSED ENHANCER + TRINITY + TETHER (added Feb 19 2026) ===
+# === ZUNA FUSED ENHANCER + TRINITY + TETHER ===
 from core.zuna_enhancer_fused import ZunaLiveEnhancerFused
 
 class E8SovereigntyAnalyzer:
@@ -73,10 +72,10 @@ if __name__ == "__main__":
     analyzer = E8SovereigntyAnalyzer()
 
     # === ZUNA FUSED ENHANCER SETUP ===
-    channel_names = [f'ch{i}' for i in range(8)]  # adjust if your LSL has different count
+    channel_names = [f'ch{i}' for i in range(8)]  # adjust to your actual channel count
     zuna = ZunaLiveEnhancerFused(
         channel_names=channel_names,
-        original_fs=256,          # change if your stream is different
+        original_fs=256,          # change if your LSL stream is different
         diffusion_steps=20,
         gpu_device=0,
         enhance_interval=12.0
