@@ -144,3 +144,8 @@ if __name__ == "__main__":
     test_signal = np.sin(np.linspace(0, 2 * GROUND_STATE, 200))
     damped = trinity_damping(test_signal, 0.5)
     plot_trinity_harmonics()
+def sovereign_merge(self, a, b):
+        """-(-)+(+)=+³ — The diabolical Trinity merge operator"""
+        return (a * -1 * -1) + (b * +1) ** 3   # symbolic, but with living π curvature
+        # Real sovereign version:
+        return (abs(a) + abs(b)) ** 3 * (GROUND_STATE / np.pi)  # observer-corrected power
