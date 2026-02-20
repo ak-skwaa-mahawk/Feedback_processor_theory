@@ -1,108 +1,135 @@
-"""
-ZunaLiveEnhancerFused — Canonical fusion with TrinityHarmonics + Magnetic Eddy-Current Tether
-For Synara Class Vessel (99733-Q) — Fully self-contained
-"""
+# eeg_e8_bridge.py – The 8D Mirror for Live EEG with ZUNA + Sovereign Priors
+# Flameholder: John Benjamin Carroll Jr. – Vadzaih Zhoo
+# Glyph A fused: ZUNA-cleaned data → YOUR sovereign E8 + Trinity + Magnetic Tether + Fibonacci-φ
 
-import numpy as np
 import mne
-from scipy import signal
-import time
-import threading
-from pathlib import Path
-import tempfile
-from zuna import preprocessing, inference, pt_to_fif
-
-# Import Trinity (from your stack)
+import numpy as np
+import matplotlib.pyplot as plt
+from pylsl import StreamInlet, resolve_stream
+from collections import deque
+from core.zuna_enhancer_fused import ZunaLiveEnhancerFused
 from core.trinity_harmonics import trinity
 
-# Magnetic Tether helper (included here for self-containment)
+# Magnetic tether (your sovereign prior)
 def compute_buoyancy(vessel_hz: float = 79.79) -> float:
     EARTH_TETHER_HZ = 7.83
     MAGNETIC_OFFSET = 9.80665
     delta = abs(vessel_hz - EARTH_TETHER_HZ)
     return (delta / 79.79) * MAGNETIC_OFFSET * 1.0
 
-class ZunaLiveEnhancerFused:
-    def __init__(self, channel_names, original_fs=128, diffusion_steps=20, gpu_device=0, enhance_interval=12.0):
-        self.channel_names = channel_names
-        self.original_fs = original_fs
-        self.target_fs = 256
-        self.diffusion_steps = diffusion_steps
-        self.gpu_device = gpu_device
-        self.enhance_interval = enhance_interval
+class E8SovereigntyAnalyzer:
+    def __init__(self, g=1e-6, phi=1.6180042358):
+        self.g = g
+        self.phi = phi
+        self.roots = 240
+        self.target_gamma = 42.8
+        self.living_pi = 3.1730  # Your observer-corrected π curvature
 
-        self.enhanced_data = None          # (target_ch, samples) latest cleaned result
-        self.last_enhance_time = 0
-        self.lock = threading.Lock()
-        self._thread = None
+    def calculate_spectral_density(self, n_cycles):
+        """YOUR Fibonacci-φ derivation with living π curvature"""
+        lambdas = [0.0, 1.0]
+        root_sum = self.roots ** 3
+        for n in range(2, n_cycles + 1):
+            next_l = (self.phi * lambdas[-1]) - lambdas[-2] + (self.g * root_sum / n)
+            # Apply your living π curvature
+            next_l *= (self.living_pi / np.pi)
+            lambdas.append(next_l)
+        return np.array(lambdas)
 
-    def _run_zuna(self, raw_data: np.ndarray) -> np.ndarray:
-        """One full ZUNA batch on (ch, samples) buffer"""
-        with tempfile.TemporaryDirectory() as tmp:
-            base = Path(tmp)
-            in_fif = base / "input/live.fif"
-            in_fif.parent.mkdir(parents=True, exist_ok=True)
+    def check_gamma_alignment(self, observed_hz):
+        diff = abs(observed_hz - self.target_gamma)
+        is_sovereign = diff < 1.0
+        return is_sovereign, diff
 
-            # Resample to 256 Hz
-            if self.original_fs != self.target_fs:
-                n_new = int(raw_data.shape[1] * self.target_fs / self.original_fs)
-                data_256 = signal.resample(raw_data, n_new, axis=1)
-            else:
-                data_256 = raw_data
+    def compute_entropy(self, spectral_density):
+        """YOUR E8-Orch entropy with grain + Trinity + magnetic tether"""
+        base_entropy = np.log2(len(spectral_density))
+        grain_kick = self.g * (self.roots ** 3) * np.mean(spectral_density)
+        # Apply Trinity stabilization
+        trinity_stable = trinity.stabilize(spectral_density.reshape(1, -1))[0]
+        # Apply magnetic tether buoyancy
+        tether = compute_buoyancy()
+        buoyancy_mod = 1.0 + (tether / 15.0)  # positive buoyancy = higher entropy
+        return (base_entropy + grain_kick) * buoyancy_mod * np.mean(trinity_stable)
 
-            info = mne.create_info(self.channel_names, sfreq=self.target_fs, ch_types='eeg')
-            raw = mne.io.RawArray(data_256, info)
-            raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
-            raw.save(str(in_fif), overwrite=True)
+def isolate_gamma_band(data, sfreq, low=40, high=45):
+    raw = mne.io.RawArray(data, mne.create_info(ch_names=[f'ch{i}' for i in range(data.shape[0])], sfreq=sfreq))
+    raw.filter(low, high, fir_design='firwin')
+    filtered_data = raw.get_data()
+    freqs = np.fft.rfftfreq(filtered_data.shape[1], 1/sfreq)
+    fft_vals = np.abs(np.fft.rfft(filtered_data, axis=1))
+    observed_hz = np.average(freqs, weights=fft_vals.mean(axis=0))
+    return filtered_data, observed_hz
 
-            dirs = {k: base / k for k in ["1_fif_filter", "2_pt_input", "3_pt_output", "4_fif_output"]}
-            for d in dirs.values(): d.mkdir(parents=True, exist_ok=True)
+def detect_sovereign_moments(filtered_data, observed_hz, analyzer, cycles=20):
+    spectral_density = analyzer.calculate_spectral_density(cycles)
+    entropy = analyzer.compute_entropy(spectral_density)
+    is_sovereign, diff = analyzer.check_gamma_alignment(observed_hz)
+    sovereign_moments = entropy > np.log2(240)
+    return {
+        "sovereign": is_sovereign,
+        "gamma_diff_hz": diff,
+        "entropy": entropy,
+        "moments": sovereign_moments,
+        "glyph": "ᕯᕲᐧᐁᐧOR" if sovereign_moments else None,
+        "buoyancy": compute_buoyancy(),
+        "trinity_factor": trinity.trinity_factor(entropy)
+    }
 
-            preprocessing(input_dir=str(in_fif.parent), output_dir=str(dirs["2_pt_input"]),
-                          apply_notch_filter=False, apply_highpass_filter=True,
-                          apply_average_reference=True, target_channel_count=self.channel_names,
-                          bad_channels=[], preprocessed_fif_dir=str(dirs["1_fif_filter"]))
+def visualize_8d_projection(spectral_density):
+    theta = np.linspace(0, 4 * np.pi, len(spectral_density))
+    r = np.cumsum(spectral_density) / max(spectral_density)
+    plt.figure(figsize=(6, 6))
+    plt.polar(theta, r)
+    plt.title("8D E8 Projection – Sovereign Entropy Spiral (ZUNA + YOUR Priors)")
+    plt.show()
 
-            inference(input_dir=str(dirs["2_pt_input"]), output_dir=str(dirs["3_pt_output"]),
-                      gpu_device=self.gpu_device, tokens_per_batch=50000,
-                      data_norm=10.0, diffusion_cfg=1.0,
-                      diffusion_sample_steps=self.diffusion_steps, plot_eeg_signal_samples=False)
+# ====================== MAIN LIVE STREAM ======================
+if __name__ == "__main__":
+    streams = resolve_stream('type', 'EEG')
+    inlet = StreamInlet(streams[0])
+    analyzer = E8SovereigntyAnalyzer()
 
-            pt_to_fif(input_dir=str(dirs["3_pt_output"]), output_dir=str(dirs["4_fif_output"]))
+    # === ZUNA FUSED ENHANCER SETUP ===
+    channel_names = [f'ch{i}' for i in range(8)]  # adjust to your actual LSL channel count
+    zuna = ZunaLiveEnhancerFused(
+        channel_names=channel_names,
+        original_fs=256,          # change if your stream differs
+        diffusion_steps=20,
+        gpu_device=0,
+        enhance_interval=12.0
+    )
 
-            out_fif = next(dirs["4_fif_output"].glob("*.fif"))
-            raw_out = mne.io.read_raw_fif(str(out_fif), preload=True)
-            return raw_out.get_data()
+    # Spatial fill — ZUNA hallucinates missing channels
+    full_32ch = ['Fp1','Fp2','F7','F3','Fz','F4','F8','T7','C3','Cz','C4','T8','P7','P3','Pz','P4','P8','O1','O2',
+                 'AF3','AF4','F1','F2','FC5','FC6','CP5','CP6','PO7','PO8','FT7','FT8','TP7']
+    zuna.target_channel_names = full_32ch
 
-    def enhance(self, current_buffer: np.ndarray, force=False):
-        """Call with (ch, samples). Returns enhanced or None."""
-        if not force and (time.time() - self.last_enhance_time < self.enhance_interval):
-            return self.enhanced_data
+    # Rolling buffer
+    rolling_buffer = deque(maxlen=256 * 20)
 
-        with self.lock:
-            try:
-                enhanced = self._run_zuna(current_buffer)
-                self.enhanced_data = enhanced
-                self.last_enhance_time = time.time()
-                print(f"✅ ZUNA enhanced {enhanced.shape[0]} ch @ 256 Hz | Buoyancy ready")
-                return enhanced
-            except Exception as e:
-                print(f"⚠️ ZUNA first-run HF download or error: {e}")
-                return None
+    def get_latest_buffer():
+        return np.array(rolling_buffer).T if len(rolling_buffer) > 0 else None
 
-    def start_background(self, buffer_callback):
-        """buffer_callback() must return current (ch, samples) array"""
-        def worker():
-            while True:
-                buf = buffer_callback()
-                if buf is not None and buf.shape[1] > self.target_fs * 4:
-                    clean = self.enhance(buf, force=True)
-                    if clean is not None:
-                        # FUSED: Trinity + Magnetic Tether on cleaned data
-                        tether = compute_buoyancy(vessel_hz=79.79)
-                        trinity_result = trinity.apply_full_trinity(clean, damping_factor=0.5, tether_force=tether)
-                        print(f"🔥 ZUNA + Trinity + Tether | Buoyancy: {trinity_result['magnetic_buoyancy']:.3f} | Stability: {trinity_result['trinity_factor']:.4f}")
-                time.sleep(self.enhance_interval)
-        self._thread = threading.Thread(target=worker, daemon=True)
-        self._thread.start()
-        print("🚀 ZunaLiveEnhancerFused + Trinity + Tether ACTIVE")
+    zuna.start_background(get_latest_buffer)
+
+    print("Streaming Sovereign EEG with ZUNA + YOUR Priors – Press Ctrl+C to stop")
+    try:
+        while True:
+            samples, timestamps = inlet.pull_chunk(timeout=1.0, max_samples=250)
+            if samples:
+                chunk = np.array(samples)  # (samples, channels)
+                rolling_buffer.extend(chunk)
+
+                # === ZUNA CLEAN DATA → YOUR SOVEREIGN PRIORS ===
+                clean_data = zuna.enhanced_data if zuna.enhanced_data is not None else chunk.T
+                data = clean_data  # now lab-grade + YOUR priors
+
+                sfreq = inlet.info().nominal_srate()
+                filtered, observed_hz = isolate_gamma_band(data, sfreq)
+                result = detect_sovereign_moments(filtered, observed_hz, analyzer)
+                print("Live Sovereign Audit (ZUNA + YOUR Priors):", result)
+                if result['moments']:
+                    visualize_8d_projection(analyzer.calculate_spectral_density(20))
+    except KeyboardInterrupt:
+        print("Stream ended. The flame rests.")
