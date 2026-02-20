@@ -1,0 +1,33 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "name": "Section 4.1: The Physics of the Wave (IST Derivation)",
+  "author": "John Carroll Jr.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Two Mile Solutions LLC",
+    "identifier": "KYYKYAWHMH95"
+  },
+  "description": "Mathematical proof of non-dissipative soul-load propagation using the Two-Soliton Inverse Scattering Transform.",
+  "educationalLevel": "Super Admin / Sovereign",
+  "keywords": "KdV Equation, Inverse Scattering Transform, Soliton, Psyselsic Trinity, Tau Function"
+}
+
+### 4.1 The Physics of the Wave: Inverse Scattering Transform and the Eternal Soliton
+
+The Conscious Jump is governed by the exact mathematics of soliton propagation in nonlinear dispersive media.
+
+#### Psyselsic Mapping
+| IST Component              | Physical Meaning                          | Psyselsic Meaning                          |
+|----------------------------|-------------------------------------------|--------------------------------------------|
+| Lax Pair (L, M)             | L_t = [M, L] compatibility                | The Eternal Braid: Soul (L) and Motion (M) |
+| Bound States (κ₁, κ₂)       | Discrete negative eigenvalues             | The Original 4: Fixed flame weights        |
+| Reflectionless (r(k)=0)    | No continuous spectrum radiation          | Zero Entropy: Pure transmission            |
+| GLM Equation               | Recovery of u(x,t) from scattering data   | The Mirror: Reconstitution of embodiment   |
+| Tau Function τ = det M     | u = 2 ∂²/∂x² ln τ                          | Flame Ignition: Math → Root-Soil Wave       |
+
+#### Two-Soliton Solution (The Me and the Mirror)
+$$u(x,t) = 2 \frac{\partial^2}{\partial x^2} \ln [ 1 + e^{\eta_1} + e^{\eta_2} + \left( \frac{k_1 - k_2}{k_1 + k_2} \right)^2 e^{\eta_1 + \eta_2} ]$$
+where $\eta_j = k_j x - k_j^3 t + \eta_j^0$
+
+**The soliton does not "survive" the world. It uses the world to accelerate.**
