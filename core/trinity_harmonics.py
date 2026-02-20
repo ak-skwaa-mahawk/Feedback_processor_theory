@@ -6,7 +6,7 @@ File:            core/trinity_harmonics.py
 Author:          John B. Carroll Jr. (ak-skwaa-mahawk)
 Organization:    Two Mile Solutions LLC
 License:         Open Research License — 2025
-Version:         1.2.0 — Unified Lightweight + Elegant π/φ + Magnetic Tether + Interactive Viz
+Version:         1.3.0 — Quetzalcoatl 8-Phase Renewal Integrated
 ====================================================================
 """
 
@@ -18,20 +18,17 @@ from typing import Union, Dict, List
 
 # ====================== LIGHTWEIGHT NEUTROSOPHIC LAYER ======================
 def trinity_damping(signal: np.ndarray, damp_factor: float = 0.5) -> np.ndarray:
-    """Fast exponential decay damping"""
     return signal * np.exp(-damp_factor * np.arange(len(signal)))
 
 def dynamic_weights(t: float) -> Dict[str, float]:
-    """Neutrosophic T/I/F dynamic weights"""
     scale = 0.1
     return {
-        "T": 0.5 + scale * np.sin(2 * math.pi * t),   # Alignment
-        "I": 0.3 - scale * np.cos(2 * math.pi * t),   # Reciprocity pause
-        "F": 0.2 + scale * np.sin(math.pi * t)        # Balance check
+        "T": 0.5 + scale * np.sin(2 * math.pi * t),
+        "I": 0.3 - scale * np.cos(2 * math.pi * t),
+        "F": 0.2 + scale * np.sin(math.pi * t)
     }
 
 def phase_lock_recursive(phases: List[float]) -> tuple[float, float]:
-    """Recursive phase lock with stability metric"""
     if not phases:
         return 0.0, 0.0
     locked = phases[-1]
@@ -41,9 +38,9 @@ def phase_lock_recursive(phases: List[float]) -> tuple[float, float]:
     return locked_phase, stability
 
 # ====================== ELEGANT π/φ LAYER + MAGNETIC TETHER ======================
-GROUND_STATE = math.pi                    # Phase equilibrium
-DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1   # φ - 1 ≈ 0.618
-RATIO = DIFFERENCE / GROUND_STATE         # ≈ 0.197
+GROUND_STATE = math.pi
+DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1
+RATIO = DIFFERENCE / GROUND_STATE
 EPSILON = 0.01
 DELTA = 3 * EPSILON
 
@@ -64,14 +61,13 @@ class TrinityHarmonics:
         self.t += EPSILON
         self.phase = (self.phase + DELTA) % (2 * np.pi)
         stabilized = self.damping_operator(vector, damping_factor, self.phase)
-        stabilized = stabilized / GROUND_STATE * (1 + DIFFERENCE)  # self-similar scaling
+        stabilized = stabilized / GROUND_STATE * (1 + DIFFERENCE)
         return np.clip(stabilized, -1.0, 1.0)
 
     def trinity_factor(self, value: float) -> float:
         return value / GROUND_STATE
 
     def apply_full_trinity(self, vector: np.ndarray, damping_factor: float = 0.5, tether_force: float = 0.0) -> Dict:
-        """Full fusion: lightweight + elegant + magnetic eddy-current tether"""
         light_damped = trinity_damping(vector, damping_factor)
         elegant = self.stabilize(vector, damping_factor)
         buoyancy = 1.0 - (tether_force / 15.0) if tether_force != 0 else 1.0
@@ -85,10 +81,15 @@ class TrinityHarmonics:
             "magnetic_buoyancy": buoyancy
         }
 
+    def quetzalcoatl_phase_damping(self, vector: np.ndarray, phase: int) -> np.ndarray:
+        """Phase-aware damping — each Quetzalcoatl phase modulates Trinity differently"""
+        phase_mod = [0.3, 0.7, 0.4, 0.6, 0.5, 0.8, 0.2, 1.0][phase % 8]  # serpent → feather → merge
+        return self.stabilize(vector, damping_factor=phase_mod)
+
 # Vessel-wide singleton
 trinity = TrinityHarmonics()
 
-# ====================== INTERACTIVE VISUALIZATION (Trinity Dynamics) ======================
+# ====================== INTERACTIVE VISUALIZATION ======================
 def describe_trinity_state():
     print("=== Trinity Harmonic Framework ===")
     print(f"Equilibrium (π):           {GROUND_STATE:.8f}")
@@ -98,7 +99,6 @@ def describe_trinity_state():
     print("Interpretation: π equilibrium + φ-1 self-similarity + eddy-current tether = spectral sovereignty\n")
 
 def plot_trinity_harmonics(initial_preset: str = "Balanced"):
-    """Interactive visualization with damping presets and custom input"""
     fig, ax = plt.subplots(figsize=(11, 7))
     plt.subplots_adjust(bottom=0.35, left=0.25)
     x = np.linspace(0, 2 * GROUND_STATE, 200)
@@ -111,12 +111,10 @@ def plot_trinity_harmonics(initial_preset: str = "Balanced"):
     ax.legend()
     ax.grid(True, alpha=0.3)
 
-    # Preset selector
     ax_presets = plt.axes([0.05, 0.25, 0.18, 0.5])
     presets = ["Stable", "Responsive", "Balanced", "Amplified"]
     preset_selector = RadioButtons(ax_presets, presets, active=2)
 
-    # Custom preset
     ax_custom = plt.axes([0.25, 0.05, 0.35, 0.03])
     custom_input = TextBox(ax_custom, 'Custom Preset (name:value)', initial="Custom:0.55")
 
@@ -132,7 +130,6 @@ def plot_trinity_harmonics(initial_preset: str = "Balanced"):
         try:
             name, val = text.split(':')
             val = float(val)
-            # Apply immediately
             damped = trinity_damping(y, val)
             line.set_ydata(damped)
             fig.canvas.draw_idle()
@@ -142,7 +139,6 @@ def plot_trinity_harmonics(initial_preset: str = "Balanced"):
 
     plt.show()
 
-# ====================== EXAMPLE / TEST ======================
 if __name__ == "__main__":
     describe_trinity_state()
     test_signal = np.sin(np.linspace(0, 2 * GROUND_STATE, 200))
