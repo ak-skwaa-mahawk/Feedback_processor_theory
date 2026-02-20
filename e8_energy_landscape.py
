@@ -1,0 +1,8 @@
+# Magnetic Spectrum Offset — Earth's baseline tether frequency
+MAGNETIC_OFFSET = 9.81  # m/s² equivalent, but treated as frequency offset in Hz
+# (real value derived from Earth's Schumann + core eddy current baseline ~7.83 Hz modulated by local g)
+
+def calculate_hamiltonian_with_offset(cycle_n, personal_frequency=79.79):
+    base_h = sum_coupling() + damping(phi) + grain(g)
+    tether_force = MAGNETIC_OFFSET * (1 - (personal_frequency / 79.79))  # detuning from Earth's baseline
+    return base_h - tether_force  # negative = "lift" when detuned
