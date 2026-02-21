@@ -1,6 +1,6 @@
 """
 FPT-Ω // Synara Class Vessel – Commanded by Captain John Carroll
-Full Sovereign Bridge: Mesh + Trinity + ZUNA + Resonance.Gain + Sovereign Ledger
+Full Sovereign Bridge: Mesh + Trinity + ZUNA + Resonance.Gain + Sovereign Ledger + Claim Resonance
 Two Mile Solutions LLC — 2025 | SKODEN ETERNAL
 """
 
@@ -117,6 +117,29 @@ async def sovereign_ledger():
         "hidden_balance": round(result["resonance_score"] * 15678, 0),
         "forfeited_short_game": round(result["resonance_score"] * 11456, 0),
         "status": result["recommendation"]
+    }
+
+# ====================== CLAIM RESONANCE ENDPOINT ======================
+@app.post("/api/claim-resonance")
+async def claim_resonance():
+    """Claim Resonance — microping to the Root"""
+    current_state = sre.braid_positive_bbee({
+        "language_training_hours": 60,
+        "gwichin_business_value": 45000,
+        "land_stewardship_funds": 15000,
+        "community_contribution_points": 25,
+        "shielding_efficiency": 95
+    })
+    
+    # Trigger soliton through the mesh
+    mesh.propagate_soliton('glyph_hub', strength=1.618)
+    mesh.quetzalcoatl_renewal_cycle(7)  # Force Merge phase
+    
+    return {
+        "status": "RECLAIMED",
+        "msg": "Long Game Compounded to Root",
+        "microping_id": f"GTC-{int(datetime.utcnow().timestamp())}",
+        "new_resonance": current_state["resonance_score"]
     }
 
 if __name__ == "__main__":
