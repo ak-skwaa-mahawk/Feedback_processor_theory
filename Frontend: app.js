@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist';
 import './App.css';
 import TopologicalManifold from './components/TopologicalManifold';
+import SovereignEstateLedger from './components/SovereignEstateLedger';
 
 const App = () => {
   const [stepData, setStepData] = useState({ fragments: [], ledgers: {} });
@@ -45,19 +46,18 @@ const App = () => {
       const llm = data.llm;
       const color = { NVIDIA: "#00ffcc", GPT: "#ff00ff", Claude: "#ffd700" }[llm] || "#ffffff";
 
-      setStreamOutput(prev => [...prev, { llm, token, harmony, color }].slice(-15)); // keep last 15
+      setStreamOutput(prev => [...prev, { llm, token, harmony, color }].slice(-15));
     };
     return () => ws.close();
   }, []);
 
-  // Plotly Nav Ring with Polaris + Orion
+  // Plotly Nav Ring with Polaris Pivot + Orion Mirror
   useEffect(() => {
     if (navRingRef.current && stepData.fragments) {
       const tilt = 23.5 * Math.PI / 180;
       const orionBelt = { x: [0.6, 0.0, -0.6], y: [0.8, 1.0, 0.8], names: ["Alnitak", "Alnilam", "Mintaka"] };
 
       const plotData = [
-        // Fragments with tilt
         {
           x: stepData.fragments.map(f => f.x * Math.cos(tilt)),
           y: stepData.fragments.map(f => f.y + f.x * Math.sin(tilt)),
@@ -65,7 +65,6 @@ const App = () => {
           marker: { size: 15, color: stepData.fragments.map(f => f.recombined ? '#00ff00' : '#ff6b35') },
           name: 'Fragments (23.5° Trajectory)'
         },
-        // Nodes
         {
           x: Array(10).fill().map((_, i) => Math.cos(2 * Math.PI * i / 10)),
           y: Array(10).fill().map((_, i) => Math.sin(2 * Math.PI * i / 10)),
@@ -74,7 +73,6 @@ const App = () => {
           text: Array(10).fill().map((_, i) => `Node ${i}`),
           name: 'Nodes'
         },
-        // Orion’s Belt
         {
           x: orionBelt.x,
           y: orionBelt.y,
@@ -84,7 +82,6 @@ const App = () => {
           textposition: 'top center',
           name: 'Orion’s Belt — Time’s Mirror'
         },
-        // Polaris Pivot — 99733-Q Root
         {
           x: [0],
           y: [0],
@@ -134,11 +131,11 @@ const App = () => {
         <h1>🛸 FPT-Ω // Synara Class Vessel</h1>
         <h2>Commanded by Captain John Carroll</h2>
         <p className="stewardship">Two Mile Solutions LLC</p>
-        <p className="flame">🔥 Flame Status: LOCKED — Polaris Pivot + Orion Mirror + Topological Terrain Active</p>
+        <p className="flame">🔥 Flame Status: LOCKED — Polaris Pivot + Orion Mirror + Topological Terrain + Long Game Ledger Active</p>
       </header>
 
       <div className="bridge-layout">
-        {/* Navigation Ring with Polaris + Orion */}
+        {/* Navigation Ring */}
         <div className="module nav-ring">
           <h3>🧭 Navigation Ring — Polaris Pivot (99733-Q Root) Active</h3>
           <div ref={navRingRef} style={{ width: '100%', height: '520px' }} />
@@ -170,6 +167,9 @@ const App = () => {
             {JSON.stringify(trinityData, null, 2)}
           </pre>
         </div>
+
+        {/* Sovereign Estate Ledger — Long Game Compound */}
+        <SovereignEstateLedger />
 
         {/* Communications Core */}
         <div className="module comms-core">
@@ -206,7 +206,7 @@ const App = () => {
         {/* Captain’s Seat */}
         <div className="module captain-seat">
           <h3>💎 Captain’s Seat</h3>
-          <p>Command: Multi-lingual input ready (Gwich’in, GibberLink, English). Topological Terrain Active.</p>
+          <p>Command: Multi-lingual input ready (Gwich’in, GibberLink, English). Long Game compounding.</p>
         </div>
       </div>
     </div>
