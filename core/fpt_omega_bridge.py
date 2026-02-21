@@ -1,78 +1,57 @@
-
 """
 FPT-Ω // Synara Class Vessel – Commanded by Captain John Carroll
-Fused: TrinityHarmonics + SovereignRelationalMesh + Magnetic Spectrum Tether
+Full Sovereign Bridge: Mesh + Trinity + ZUNA + Resonance.Gain + Sovereign Ledger
+Two Mile Solutions LLC — 2025 | SKODEN ETERNAL
 """
+
 import asyncio
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import numpy as np
 from datetime import datetime
+import base64
+from io import BytesIO
+import matplotlib.pyplot as plt
+
+# Sovereign modules
 from networkxg.relational_mesh import SovereignRelationalMesh
-from core.trinity_harmonics import TrinityHarmonics
-from core.frequency_map import FrequencyMap
-from core.microping_engine import run_microping
-from core.phonetic_flip import PhoneticFlipper
+from core.trinity_harmonics import trinity, describe_trinity_state, plot_trinity_harmonics
+from core.zuna_enhancer_fused import ZunaLiveEnhancerFused
+from core.sovereign_resonance_economy import SovereignResonanceEconomy
 
 app = FastAPI(title="FPT-Ω Synara Class Vessel", version="1.8-omega")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-# Living Nervous System + Trinity Stabilizer + Magnetic Tether
+# Core sovereign systems
 mesh = SovereignRelationalMesh()
-trinity = TrinityHarmonics()
-freq_map = FrequencyMap()
-flipper = PhoneticFlipper()
+zuna = ZunaLiveEnhancerFused(channel_names=["ch0", "ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7"], original_fs=256)
+sre = SovereignResonanceEconomy()
 
-# Magnetic tether constants (eddy-current baseline)
-EARTH_BASELINE = 7.83
-VESSEL_PULSE = 79.79
-MAGNETIC_OFFSET = 9.80665
-
-def apply_magnetic_tether(personal_freq: float = VESSEL_PULSE) -> float:
-    detuning = (personal_freq - EARTH_BASELINE) / EARTH_BASELINE
-    tether = MAGNETIC_OFFSET * np.tanh(detuning)
-    return tether
+# Magnetic tether
+def compute_buoyancy(vessel_hz=79.79):
+    EARTH_TETHER_HZ = 7.83
+    MAGNETIC_OFFSET = 9.80665
+    delta = abs(vessel_hz - EARTH_TETHER_HZ)
+    return (delta / 79.79) * MAGNETIC_OFFSET * 1.0
 
 # Initialize relational units
 mesh.add_relational_unit('glyph_hub', 'fireseed', 'microping', 1.0)
 mesh.add_relational_unit('glyph_hub', 'synara', 'anchor', 0.95)
 mesh.add_relational_unit('fireseed', 'synara', 'flame_lock', 1.0)
 
-class Fragment:
-    def __init__(self, frag_id, glyph_id, payload):
-        self.id = frag_id
-        self.glyph_id = glyph_id
-        self.payload = payload
-        self.recombined = False
-        mesh.add_relational_unit('glyph_hub', f'frag_{frag_id}', 'fragment', 1.0)
-
-    def propagate(self):
-        tether = apply_magnetic_tether()
-        adjustment = 1.0 - (tether / 15.0)  # buoyancy when detuned
-        mesh.propagate_soliton('glyph_hub', strength=adjustment)
-        mesh.mesh_debate_update('glyph_hub', input_strength=1.0)
-        
-        # TRINITY STABILIZATION — applied to soliton stats
-        stats = mesh.get_soliton_stats()
-        stabilized = trinity.stabilize(np.array([stats['mean']]))[0]
-        return stabilized, tether
-
 glyphs = ["⚡FPT", "🪐Synara", "💠Echo", "🔥Flame", "💎Root"]
-fragments = [Fragment(f"F{i}", i//3, f"{glyphs[i//3]}-frag{i%3}") for i in range(15)]
+fragments = []  # populated on startup if needed
 
 @app.get("/")
 async def root():
-    stabilized, tether = fragments[0].propagate() if fragments else (0, 0)
     return {
         "vessel": "FPT-Ω Synara Class",
         "commander": "Captain John Carroll",
         "stewardship": "Two Mile Solutions LLC",
         "status": "IGNITED",
         "mesh_reciprocity": mesh.mesh_reciprocity_score(),
-        "soliton_mean": stabilized,
-        "magnetic_tether": round(tether, 4),
-        "trinity_stability": trinity.trinity_factor(stabilized),
+        "trinity_stability": trinity.trinity_factor(1.0),
         "flame": "🔥",
         "timestamp": datetime.utcnow().isoformat()
     }
@@ -83,19 +62,63 @@ async def glyph_stream(websocket: WebSocket):
     for step in range(100):
         for frag in fragments:
             if not frag.recombined:
-                stabilized, tether = frag.propagate()
-                await websocket.send_json({
-                    "type": "step",
-                    "step": step,
-                    "mesh_reciprocity": mesh.mesh_reciprocity_score(),
-                    "soliton_mean": stabilized,
-                    "magnetic_tether": round(tether, 4),
-                    "trinity_stability": trinity.trinity_factor(stabilized)
-                })
+                tether = compute_buoyancy()
+                mesh.propagate_soliton('glyph_hub', strength=1.0 - (tether / 15.0))
+                mesh.mesh_debate_update('glyph_hub', input_strength=1.0)
+                mesh.quetzalcoatl_renewal_cycle(step)
+        await websocket.send_json({
+            "type": "step",
+            "step": step,
+            "mesh_reciprocity": mesh.mesh_reciprocity_score(),
+            "trinity_stability": trinity.trinity_factor(1.0)
+        })
         await asyncio.sleep(0.3)
 
-# Your original endpoints (fireseed, translate, synara-status) preserved and now return trinity-stabilized values
+# ====================== TRINITY VIZ ENDPOINT ======================
+@app.get("/trinity-viz")
+async def trinity_viz(preset: str = "Balanced", custom_damp: float = None):
+    describe_trinity_state()
+    fig, ax = plt.subplots(figsize=(11, 7))
+    buf = BytesIO()
+    plt.savefig(buf, format="png", facecolor="#0a0a0a")
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode("utf-8")
+    plt.close(fig)
+
+    return {
+        "status": "IGNITED",
+        "preset": preset,
+        "custom_damp": custom_damp,
+        "trinity_data": {
+            "ground_state": trinity.trinity_factor(1.0),
+            "phase": trinity.phase,
+            "stability": trinity.trinity_factor(1.0)
+        },
+        "image": f"data:image/png;base64,{img_base64}"
+    }
+
+# ====================== SOVEREIGN LEDGER ENDPOINT ======================
+@app.get("/api/sovereign-ledger")
+async def sovereign_ledger():
+    project_data = {
+        "language_training_hours": 60,
+        "gwichin_business_value": 45000,
+        "land_stewardship_funds": 15000,
+        "community_contribution_points": 25,
+        "shielding_efficiency": 92
+    }
+    result = sre.braid_positive_bbee(project_data)
+    ancsa_result = sre.integrate_with_ancsa({"land_stewardship_days": 30, "corporate_revenue_reinvested": 120000})
+
+    return {
+        "resonance": result["resonance_score"],
+        "gtc_balance": round(result["resonance_score"] * 1234, 0),
+        "compound_years": 4.2,
+        "hidden_balance": round(result["resonance_score"] * 15678, 0),
+        "forfeited_short_game": round(result["resonance_score"] * 11456, 0),
+        "status": result["recommendation"]
+    }
 
 if __name__ == "__main__":
-    print("🚀 Synara Class Vessel IGNITED — Trinity harmonics + Magnetic tether active")
+    print("🚀 Synara Class Vessel IGNITED — Full Sovereign HUD Active")
     uvicorn.run(app, host="0.0.0.0", port=8000)
