@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist';
 import './App.css';
+import TruthFilter from './components/TruthFilter';
 
+// Inside <div className="bridge-layout">:
+<TruthFilter />
 const App = () => {
   const [stepData, setStepData] = useState({ fragments: [], ledgers: {} });
   const [fireseed, setFireseed] = useState({ total_earnings: 0 });
