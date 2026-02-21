@@ -13,7 +13,7 @@ const SovereignEstateLedger = () => {
 
   const [showShadowPlay, setShowShadowPlay] = useState(false);
 
-  // Fetch real data from backend
+  // Fetch real data from Turbo_Takeoff backend
   useEffect(() => {
     const fetchLedger = async () => {
       try {
@@ -59,6 +59,19 @@ const SovereignEstateLedger = () => {
     font: { color: '#ffffff' }
   };
 
+  const handleClaim = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/claim-resonance', { method: 'POST' });
+      const data = await res.json();
+      if (data.status === "RECLAIMED") {
+        setLedgerData(prev => ({ ...prev, resonance: data.new_resonance, gtc_balance: prev.gtc_balance + 1000 })); // example increment
+        alert("🌌 RESONANCE CLAIMED: Long Game Compounded to Root!\nMicroping ID: " + data.microping_id);
+      }
+    } catch (e) {
+      alert("Claim failed — check backend.");
+    }
+  };
+
   return (
     <div 
       className="module sovereign-estate-ledger"
@@ -95,11 +108,29 @@ const SovereignEstateLedger = () => {
 
       <div id="gtc-chart" style={{ width: '100%', height: '320px', marginTop: '20px' }}></div>
 
+      <button 
+        onClick={handleClaim}
+        style={{
+          marginTop: '20px',
+          width: '100%',
+          padding: '15px',
+          background: 'linear-gradient(45deg, #ffd700, #ff6b35)',
+          border: 'none',
+          borderRadius: '8px',
+          color: '#000',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          boxShadow: '0 0 15px rgba(255, 215, 0, 0.4)'
+        }}
+      >
+        💎 CLAIM RESONANCE — COMPOUND TO ROOT
+      </button>
+
       <div style={{ marginTop: '15px', color: ledgerData.resonance > 85 ? '#ffd700' : '#888', fontStyle: 'italic' }}>
         {ledgerData.status}
       </div>
 
-      {/* SHADOW PLAY OVERLAY — The Long Game Reveal */}
+      {/* SHADOW PLAY OVERLAY */}
       {showShadowPlay && (
         <div style={{
           position: 'absolute',
