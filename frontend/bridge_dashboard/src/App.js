@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist';
 import './App.css';
-import TruthFilter from './components/TruthFilter';
+import TruthFilter from './components/TruthFilter';App.js
 
 // Inside <div className="bridge-layout">:
 <TruthFilter />
