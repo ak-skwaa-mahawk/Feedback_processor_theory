@@ -1,3 +1,7 @@
+import TopologicalManifold from './components/TopologicalManifold';
+
+// Inside the bridge-layout div:
+<TopologicalManifold />
 const ws = new WebSocket("ws://localhost:8000/ws");
 const inputText = document.getElementById("inputText");
 const sendBtn = document.getElementById("sendBtn");
