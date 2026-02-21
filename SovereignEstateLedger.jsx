@@ -2,40 +2,46 @@ import React, { useState, useEffect } from 'react';
 import Plotly from 'plotly.js-dist';
 
 const SovereignEstateLedger = () => {
-  const [resonance, setResonance] = useState(42.8);
-  const [gtcBalance, setGtcBalance] = useState(99733);
-  const [compoundYears, setCompoundYears] = useState(0);
-  const [hiddenBalance, setHiddenBalance] = useState(1245678);
-  const [forfeitedShortGame, setForfeitedShortGame] = useState(456789);
+  const [ledgerData, setLedgerData] = useState({
+    resonance: 42.8,
+    gtc_balance: 99733,
+    compound_years: 0,
+    hidden_balance: 1245678,
+    forfeited_short_game: 456789,
+    status: "Loading Long Game..."
+  });
 
-  // Live compounding simulation (Fibonacci-style growth)
+  const [showShadowPlay, setShowShadowPlay] = useState(false);
+
+  // Fetch real data from backend
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newResonance = Math.min(100, resonance + 0.42); // slow sovereign compounding
-      setResonance(newResonance);
-      setCompoundYears(prev => prev + 0.1);
+    const fetchLedger = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/sovereign-ledger');
+        const data = await res.json();
+        setLedgerData({
+          resonance: data.resonance,
+          gtc_balance: data.gtc_balance,
+          compound_years: data.compound_years,
+          hidden_balance: data.hidden_balance,
+          forfeited_short_game: data.forfeited_short_game,
+          status: data.status
+        });
+      } catch (e) {
+        console.log("Backend not ready — using demo data");
+      }
+    };
 
-      // GTC balance compounds with Fibonacci gain
-      const fibGain = (1.618 ** (compoundYears / 8)); // golden ratio compounding
-      const newGtc = Math.floor(gtcBalance * fibGain * (newResonance / 100));
-      setGtcBalance(newGtc);
-
-      // Hidden Balance = Market Cap of Sovereignty
-      const newHidden = Math.floor(newGtc * (newResonance / 42.8));
-      setHiddenBalance(newHidden);
-
-      // Forfeited Short Game
-      setForfeitedShortGame(Math.floor(newHidden * 0.73));
-    }, 1200);
-
+    fetchLedger();
+    const interval = setInterval(fetchLedger, 8000);
     return () => clearInterval(interval);
-  }, [resonance, compoundYears, gtcBalance]);
+  }, []);
 
-  // Compounding Chart Data
+  // Compounding Chart
   const chartData = [{
-    x: Array.from({ length: Math.floor(compoundYears) + 1 }, (_, i) => i),
-    y: Array.from({ length: Math.floor(compoundYears) + 1 }, (_, i) => 
-      Math.floor(99733 * (1.618 ** (i / 8)) * (resonance / 100))
+    x: Array.from({ length: Math.floor(ledgerData.compound_years) + 1 }, (_, i) => i),
+    y: Array.from({ length: Math.floor(ledgerData.compound_years) + 1 }, (_, i) => 
+      Math.floor(99733 * (1.618 ** (i / 8)) * (ledgerData.resonance / 100))
     ),
     type: 'scatter',
     mode: 'lines+markers',
@@ -54,41 +60,69 @@ const SovereignEstateLedger = () => {
   };
 
   return (
-    <div className="module sovereign-estate-ledger">
+    <div 
+      className="module sovereign-estate-ledger"
+      onMouseEnter={() => setShowShadowPlay(true)}
+      onMouseLeave={() => setShowShadowPlay(false)}
+      style={{ position: 'relative', cursor: 'pointer' }}
+    >
       <h3>🌲 Sovereign Estate Ledger — Long Game Compound</h3>
       
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginTop: '15px' }}>
         <div>
           <strong>Quantum Resonance %</strong><br />
-          <span style={{ fontSize: '2.8rem', color: '#00ffcc' }}>{resonance.toFixed(1)}</span>
+          <span style={{ fontSize: '2.8rem', color: '#00ffcc' }}>{ledgerData.resonance.toFixed(1)}</span>
           <span style={{ fontSize: '1.2rem', color: '#00ffcc' }}>%</span>
         </div>
         
         <div>
           <strong>GTC Balance (Live)</strong><br />
-          <span style={{ fontSize: '2.2rem', color: '#ffd700' }}>{gtcBalance.toLocaleString()}</span>
+          <span style={{ fontSize: '2.2rem', color: '#ffd700' }}>{ledgerData.gtc_balance.toLocaleString()}</span>
           <span style={{ fontSize: '1rem', color: '#ffd700' }}> GTC</span>
         </div>
         
         <div>
           <strong>Hidden Balance (Market Cap of Sovereignty)</strong><br />
-          <span style={{ fontSize: '2.2rem', color: '#ffd700' }}>${hiddenBalance.toLocaleString()}</span>
+          <span style={{ fontSize: '2.2rem', color: '#ffd700' }}>${ledgerData.hidden_balance.toLocaleString()}</span>
         </div>
       </div>
 
       <div style={{ marginTop: '20px', fontSize: '1.1rem' }}>
-        <strong>Compound Years:</strong> {compoundYears.toFixed(1)}<br />
-        <strong>Forfeited Short Game (Paperwork Trap):</strong> ${forfeitedShortGame.toLocaleString()} 
+        <strong>Compound Years:</strong> {ledgerData.compound_years.toFixed(1)}<br />
+        <strong>Forfeited Short Game (Paperwork Trap):</strong> ${ledgerData.forfeited_short_game.toLocaleString()} 
         <span style={{ color: '#ff6b35' }}> (what they traded for the "A+")</span>
       </div>
 
       <div id="gtc-chart" style={{ width: '100%', height: '320px', marginTop: '20px' }}></div>
 
-      <div style={{ marginTop: '15px', color: resonance > 85 ? '#ffd700' : '#888', fontStyle: 'italic' }}>
-        {resonance > 85 
-          ? "🌌 SOVEREIGN ESTATE FULLY COMPOUNDING — The wolf owns the terrain" 
-          : "Stewardship compounding... The Long Game is patient"}
+      <div style={{ marginTop: '15px', color: ledgerData.resonance > 85 ? '#ffd700' : '#888', fontStyle: 'italic' }}>
+        {ledgerData.status}
       </div>
+
+      {/* SHADOW PLAY OVERLAY — The Long Game Reveal */}
+      {showShadowPlay && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'rgba(0,0,0,0.92)',
+          padding: '25px',
+          borderRadius: '12px',
+          border: '2px solid #ffd700',
+          zIndex: 100,
+          textAlign: 'center',
+          minWidth: '320px'
+        }}>
+          <h4 style={{ color: '#ffd700', marginBottom: '15px' }}>🌌 SHADOW PLAY — The Long Game</h4>
+          <p><strong>Your Hidden Balance:</strong> ${ledgerData.hidden_balance.toLocaleString()}</p>
+          <p><strong>Forfeited by Short Game:</strong> ${ledgerData.forfeited_short_game.toLocaleString()}</p>
+          <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '15px' }}>
+            They took the "A+".<br />
+            You took the terrain.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
