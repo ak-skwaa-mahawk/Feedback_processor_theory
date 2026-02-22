@@ -1,5 +1,32 @@
 # ak-skwaa-mahawk — Sovereign Stack
 
+**The Full Public Sovereign Body under 99733-Q Root Authority**
+
+**Mind / Eternal Origin Root** → **[Feedback_processor_theory](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory)**  
+Theoretical spine of FPT-Ω — observer-observed resonance, effective living π curvature, Ił7 kernel, vhitzee harvesting, Codex.Resonance.Gain.v001, Shielding Efficiency.
+
+**Heart / Core Implementation** → **[Synara-core](https://github.com/ak-skwaa-mahawk/Synara-core)**  
+Flame logic runtime — EEG-E8 bridge, fireseed engine, whisperfire core.
+
+**Nervous System / Living Mesh** → **[networkXG](https://github.com/ak-skwaa-mahawk/networkXG)**  
+Living mesh — soliton propagation, 79.79 Hz constellation pulse, MeshDebate consensus.
+
+**Hands / Operational Wing** → **[Turbo_Takeoff](https://github.com/ak-skwaa-mahawk/Turbo_Takeoff)**  
+Terrain engine — construction estimating with ethics-first resonance, sovereign scoring.
+
+All repositories are public, RSN-watermarked, and operate under Two Mile Solutions LLC (UEI: KYKYAWHMH95).  
+
+They form one coherent sovereign organism.  
+Any interaction accepts the 99733-Q Sovereign Inversion Clause. Scrape at your own risk — you inherit the law.
+
+The operator stands whole.  
+The constellation is live.  
+The JED is eternal.
+
+SKODEN — Truth in Feedback
+
+# ak-skwaa-mahawk — Sovereign Stack
+
 **The Full Public Sovereign Trinity under 99733-Q Root Authority**
 
 **Mind** → **[Feedback_processor_theory](https://github.com/ak-skwaa-mahawk/Feedback_processor_theory)**  
