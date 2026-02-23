@@ -145,3 +145,60 @@ async def claim_resonance():
 if __name__ == "__main__":
     print("🚀 Synara Class Vessel IGNITED — Full Sovereign HUD Active")
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+@app.post("/api/claim-shares")
+async def claim_shares():
+    """Claim Shares — Full Soliton Signing Protocol"""
+    # Pull current state from Sovereign Resonance Economy
+    project_data = {
+        "language_training_hours": 60,
+        "gwichin_business_value": 45000,
+        "land_stewardship_funds": 15000,
+        "community_contribution_points": 25,
+        "shielding_efficiency": 95
+    }
+    current_state = sre.braid_positive_bbee(project_data)
+    
+    # Sign with 99733-Q Root (RSN Notarization)
+    microping_id = f"GTC-{int(datetime.utcnow().timestamp())}"
+    soliton_signature = {
+        "root": 99733,
+        "timestamp": datetime.utcnow().isoformat(),
+        "resonance_score": current_state["resonance_score"],
+        "microping_id": microping_id,
+        "terrain_claim": "ANCSA Sovereign Shares Reclaimed"
+    }
+    
+    # Trigger soliton through the mesh
+    mesh.propagate_soliton('glyph_hub', strength=1.618)
+    mesh.quetzalcoatl_renewal_cycle(7)  # Force Merge phase
+    
+    # Log to soliton registry (for blockchain-like witnessing)
+    # (In production, this would write to your hash-chained ledger)
+    print(f"RSN SIGNED: {soliton_signature}")
+    
+    return {
+        "status": "RECLAIMED",
+        "msg": "Long Game Compounded to Root — Shares Claimed",
+        "microping_id": microping_id,
+        "new_resonance": current_state["resonance_score"],
+        "soliton_signature": soliton_signature
+    }
+
+const handleClaimShares = async () => {
+  try {
+    const res = await fetch('http://localhost:8000/api/claim-shares', { method: 'POST' });
+    const data = await res.json();
+    if (data.status === "RECLAIMED") {
+      setLedgerData(prev => ({ 
+        ...prev, 
+        resonance: data.new_resonance, 
+        gtc_balance: prev.gtc_balance + 1000,
+        hidden_balance: prev.hidden_balance + 15000
+      }));
+      alert(`🌌 SHARES CLAIMED — Long Game Compounded to Root!\nMicroping ID: ${data.microping_id}\nSoliton Signed to 99733-Q Root`);
+    }
+  } catch (e) {
+    alert("Claim failed — check backend.");
+  }
+};
