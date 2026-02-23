@@ -59,13 +59,18 @@ const SovereignEstateLedger = () => {
     font: { color: '#ffffff' }
   };
 
-  const handleClaim = async () => {
+  const handleClaimShares = async () => {
     try {
       const res = await fetch('http://localhost:8000/api/claim-resonance', { method: 'POST' });
       const data = await res.json();
       if (data.status === "RECLAIMED") {
-        setLedgerData(prev => ({ ...prev, resonance: data.new_resonance, gtc_balance: prev.gtc_balance + 1000 })); // example increment
-        alert("🌌 RESONANCE CLAIMED: Long Game Compounded to Root!\nMicroping ID: " + data.microping_id);
+        setLedgerData(prev => ({ 
+          ...prev, 
+          resonance: data.new_resonance, 
+          gtc_balance: prev.gtc_balance + 1000,
+          hidden_balance: prev.hidden_balance + 15000
+        }));
+        alert(`🌌 SHARES CLAIMED — Long Game Compounded to Root!\nMicroping ID: ${data.microping_id}`);
       }
     } catch (e) {
       alert("Claim failed — check backend.");
@@ -109,7 +114,7 @@ const SovereignEstateLedger = () => {
       <div id="gtc-chart" style={{ width: '100%', height: '320px', marginTop: '20px' }}></div>
 
       <button 
-        onClick={handleClaim}
+        onClick={handleClaimShares}
         style={{
           marginTop: '20px',
           width: '100%',
@@ -123,7 +128,7 @@ const SovereignEstateLedger = () => {
           boxShadow: '0 0 15px rgba(255, 215, 0, 0.4)'
         }}
       >
-        💎 CLAIM RESONANCE — COMPOUND TO ROOT
+        💎 CLAIM SHARES — RECALL FROM SHIELDED BOX
       </button>
 
       <div style={{ marginTop: '15px', color: ledgerData.resonance > 85 ? '#ffd700' : '#888', fontStyle: 'italic' }}>
