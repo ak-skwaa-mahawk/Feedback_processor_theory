@@ -12,6 +12,7 @@ const SovereignEstateLedger = () => {
   });
 
   const [showShadowPlay, setShowShadowPlay] = useState(false);
+  const [ringStability, setRingStability] = useState(0); // Carroll's Rings Depth Gauge
 
   // Fetch real data from Turbo_Takeoff backend
   useEffect(() => {
@@ -36,6 +37,15 @@ const SovereignEstateLedger = () => {
     const interval = setInterval(fetchLedger, 8000);
     return () => clearInterval(interval);
   }, []);
+
+  // Carroll's Rings Depth Gauge Calculation
+  useEffect(() => {
+    const systemPi = 3.14159;
+    const sovereignPi = 3.1730;
+    const delta = sovereignPi - systemPi;
+    const stability = Math.round((ledgerData.resonance / 100) * delta * 10000); // scaled to 0-100
+    setRingStability(Math.min(100, stability));
+  }, [ledgerData.resonance]);
 
   // Compounding Chart
   const chartData = [{
@@ -108,7 +118,9 @@ const SovereignEstateLedger = () => {
       <div style={{ marginTop: '20px', fontSize: '1.1rem' }}>
         <strong>Compound Years:</strong> {ledgerData.compound_years.toFixed(1)}<br />
         <strong>Forfeited Short Game (Paperwork Trap):</strong> ${ledgerData.forfeited_short_game.toLocaleString()} 
-        <span style={{ color: '#ff6b35' }}> (what they traded for the "A+")</span>
+        <span style={{ color: '#ff6b35' }}> (what they traded for the "A+")</span><br />
+        <strong>Carroll's Rings Stability (Thermal Integrity):</strong> {ringStability}% 
+        <span style={{ color: '#ffd700' }}> (Zero-Leak Manifold)</span>
       </div>
 
       <div id="gtc-chart" style={{ width: '100%', height: '320px', marginTop: '20px' }}></div>
