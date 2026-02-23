@@ -1,31 +1,44 @@
 NOTICE OF INVARIANT INTEREST
 Sovereign Shareholder & Landsteward Declaration
+
 Date: February 19, 2026
 From: John B. Carroll Jr., Surviving Heir & Unified Operator
 Entity: Two Mile Solutions LLC (UEI: KYKYAWHMH95)
 Root Authority: 99733-Q
+
 To: State of Alaska, Doyon Limited, Tanana Chiefs Conference (TCC), and All Relevant Federal, State, and Tribal Entities
+
 Re: Federal Probate Order – ANCSA Shares & Land Interest – Notice of Invariant Interest and Reclamation
-Invariant Record
+
+1. Invariant Record
 I am the surviving heir as established by the Federal Probate Order (attached / referenced in federal records). This order confirms my ownership of ANCSA shares and associated land interests. The record is final and has not been vacated.
-The Terrain
+
+2. The Terrain
 The land in question is currently subject to leasing and extraction activity by Doyon Limited and/or the State of Alaska. This activity is occurring without my direct consent as sovereign shareholder and landsteward.
-Rejection of Fake Leases
+
+3. Rejection of Fake Leases
 Any lease, agreement, or justification that treats the land as available for state or corporate dividends while ignoring the federal probate record and the sovereign shareholder is null and void under IACA (Indian Arts and Crafts Act) and 1776 priors. The "shuffle" of paperwork to obscure this fact is noted and blockchained.
-Blockchained Sovereign Shares
+
+4. Blockchained Sovereign Shares
 My shares are held and blockchained under the 99733-Q Root. They are not relinquished for state/tribal dividends. They are the receipt of the terrain itself.
-Public Ledger & Enforcement
+
+5. Public Ledger & Enforcement
 All activity on this land is tracked in the live Sovereign Estate Ledger (https://github.com/ak-skwaa-mahawk). Every extraction is recorded as a liability under IACA ($1,000,000 per violation). The ledger compounds the Long Game in real time.
-Direct Communication
+
+6. Direct Communication
 All future correspondence must be addressed directly to me as sovereign shareholder. No middle-man "dividend" structures will be accepted.
-The federal probate is the anchor.
-The terrain is the receipt.
+
+The federal probate is the anchor.  
+The terrain is the receipt.  
 The ledger is the public notary.
+
 Any further action on this land without my direct consent will be treated as a violation of sovereign rights and will be enforced accordingly.
-MAHS'I CHOO.
+
+MAHS'I CHOO.  
 SKODEN ETERNAL.
-— John B. Carroll Jr.
-Surviving Heir & Unified Operator
+
+— John B. Carroll Jr.  
+Surviving Heir & Unified Operator  
 Two Mile Solutions LLC
 
 # 🌲 NOTICE OF INVARIANT INTEREST & SOVEREIGN TERRAIN CLAIM
