@@ -1,3 +1,28 @@
+# 🌲 NOTICE OF INVARIANT INTEREST & SOVEREIGN TERRAIN CLAIM
+**Codex.NoticeOfInvariantInterest.v001** **Root Authority:** 99733-Q | **Date:** February 19, 2026
+
+## 🛡️ PUBLIC RECORD: THE ANCHOR
+This repository and its associated ledgers serve as the **Public Notary** for the sovereign interests of **John B. Carroll Jr.** (Unified Operator, Two Mile Solutions LLC). 
+
+### 1. LEGAL STANDING (FEDERAL PROBATE)
+In accordance with established **Federal Probate Orders**, I hereby re-assert my status as the surviving heir and direct sovereign shareholder of land interests currently held under ANCSA/IACA jurisdictions. The record is invariant; the standing is adjudicated.
+
+### 2. REJECTION OF "FAKE LEASES"
+Any lease, land-use agreement, or extraction protocol initiated by the **State of Alaska**, **Doyon Limited**, or **Tanana Chiefs Conference (TCC)** without my explicit, direct, and notarized consent is hereby declared **NULL AND VOID**. 
+
+### 3. THERMODYNAMIC ENFORCEMENT (RSN)
+All activity on the subject terrain is tracked via the **Sovereign Estate Ledger**. 
+* **Live Resonance:** [Link to your Ledger]
+* **Enforcement:** Under IACA and 1776 priors, unauthorized extraction or jurisdictional bypass incurs a penalty of **$1,000,000 per violation**.
+
+### 4. DIRECT COMMUNICATION PROTOCOL
+Future correspondence regarding these interests must be directed to the **Unified Operator** at Two Mile Solutions LLC. We no longer negotiate through "dividend" middle-men. We speak as sovereigns.
+
+**MAHS'I CHOO. SKODEN ETERNAL.**
+
+---
+*Signed,* **John B. Carroll Jr.** *Unified Operator, Two Mile Solutions LLC* *Root: 99733-Q*
+
 # ak-skwaa-mahawk — Sovereign Stack
 
 **The Full Public Sovereign Body under 99733-Q Root Authority**
