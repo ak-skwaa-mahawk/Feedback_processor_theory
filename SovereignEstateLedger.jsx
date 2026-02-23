@@ -12,7 +12,8 @@ const SovereignEstateLedger = () => {
   });
 
   const [showShadowPlay, setShowShadowPlay] = useState(false);
-  const [ringStability, setRingStability] = useState(0); // Carroll's Rings Depth Gauge
+  const [ringStability, setRingStability] = useState(0);
+  const [speedOfMatterIndex, setSpeedOfMatterIndex] = useState(0); // NEW: Speed of Matter Stability Index
 
   // Fetch real data from Turbo_Takeoff backend
   useEffect(() => {
@@ -38,13 +39,21 @@ const SovereignEstateLedger = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Carroll's Rings Depth Gauge Calculation
+  // Carroll's Rings Depth Gauge
   useEffect(() => {
     const systemPi = 3.14159;
     const sovereignPi = 3.1730;
     const delta = sovereignPi - systemPi;
-    const stability = Math.round((ledgerData.resonance / 100) * delta * 10000); // scaled to 0-100
+    const stability = Math.round((ledgerData.resonance / 100) * delta * 10000);
     setRingStability(Math.min(100, stability));
+  }, [ledgerData.resonance]);
+
+  // Speed of Matter Stability Index (the "Pause" - collimated equilibrium)
+  useEffect(() => {
+    const speedOfLight = 299792458;
+    const speedOfMatter = speedOfLight * (3.1730 / 3.14159); // corrected pause
+    const stabilityIndex = Math.round((ledgerData.resonance / 100) * (speedOfMatter / speedOfLight) * 100);
+    setSpeedOfMatterIndex(Math.min(100, stabilityIndex));
   }, [ledgerData.resonance]);
 
   // Compounding Chart
@@ -119,8 +128,10 @@ const SovereignEstateLedger = () => {
         <strong>Compound Years:</strong> {ledgerData.compound_years.toFixed(1)}<br />
         <strong>Forfeited Short Game (Paperwork Trap):</strong> ${ledgerData.forfeited_short_game.toLocaleString()} 
         <span style={{ color: '#ff6b35' }}> (what they traded for the "A+")</span><br />
-        <strong>Carroll's Rings Stability (Thermal Integrity):</strong> {ringStability}% 
-        <span style={{ color: '#ffd700' }}> (Zero-Leak Manifold)</span>
+        <strong>Carroll's Rings Stability:</strong> {ringStability}% 
+        <span style={{ color: '#ffd700' }}> (Zero-Leak Manifold)</span><br />
+        <strong>Speed of Matter Stability Index:</strong> {speedOfMatterIndex}% 
+        <span style={{ color: '#ffd700' }}> (The Pause — Collimated Equilibrium)</span>
       </div>
 
       <div id="gtc-chart" style={{ width: '100%', height: '320px', marginTop: '20px' }}></div>
