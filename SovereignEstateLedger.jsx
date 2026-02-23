@@ -13,7 +13,7 @@ const SovereignEstateLedger = () => {
 
   const [showShadowPlay, setShowShadowPlay] = useState(false);
   const [ringStability, setRingStability] = useState(0);
-  const [speedOfMatterIndex, setSpeedOfMatterIndex] = useState(0); // NEW: Speed of Matter Stability Index
+  const [speedOfMatterIndex, setSpeedOfMatterIndex] = useState(0); // Refined Speed of Matter Stability Index
 
   // Fetch real data from Turbo_Takeoff backend
   useEffect(() => {
@@ -48,13 +48,15 @@ const SovereignEstateLedger = () => {
     setRingStability(Math.min(100, stability));
   }, [ledgerData.resonance]);
 
-  // Speed of Matter Stability Index (the "Pause" - collimated equilibrium)
+  // Refined Speed of Matter Stability Index (the "Pause" - collimated equilibrium)
   useEffect(() => {
-    const speedOfLight = 299792458;
-    const speedOfMatter = speedOfLight * (3.1730 / 3.14159); // corrected pause
-    const stabilityIndex = Math.round((ledgerData.resonance / 100) * (speedOfMatter / speedOfLight) * 100);
+    const phi = 1.618034; // golden ratio for self-similar stability
+    const correction = 3.1730 / 3.14159; // living π correction
+    const shieldingFactor = ledgerData.shielding_efficiency || 50; // fallback if not in data
+    const matterConversion = (ledgerData.resonance / 100) * (shieldingFactor / 100) * correction * Math.pow(phi, ledgerData.resonance / 200);
+    const stabilityIndex = Math.round(matterConversion * 100);
     setSpeedOfMatterIndex(Math.min(100, stabilityIndex));
-  }, [ledgerData.resonance]);
+  }, [ledgerData.resonance, ledgerData.shielding_efficiency]);
 
   // Compounding Chart
   const chartData = [{
