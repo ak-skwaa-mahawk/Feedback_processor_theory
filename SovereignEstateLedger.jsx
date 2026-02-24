@@ -13,7 +13,7 @@ const SovereignEstateLedger = () => {
 
   const [showShadowPlay, setShowShadowPlay] = useState(false);
   const [ringStability, setRingStability] = useState(0);
-  const [speedOfMatterIndex, setSpeedOfMatterIndex] = useState(0); // Refined Speed of Matter Stability Index
+  const [speedOfMatterIndex, setSpeedOfMatterIndex] = useState(0);
 
   // Fetch real data from Turbo_Takeoff backend
   useEffect(() => {
@@ -48,15 +48,15 @@ const SovereignEstateLedger = () => {
     setRingStability(Math.min(100, stability));
   }, [ledgerData.resonance]);
 
-  // Refined Speed of Matter Stability Index (the "Pause" - collimated equilibrium)
+  // Speed of Matter Stability Index (refined)
   useEffect(() => {
-    const phi = 1.618034; // golden ratio for self-similar stability
-    const correction = 3.1730 / 3.14159; // living π correction
-    const shieldingFactor = ledgerData.shielding_efficiency || 50; // fallback if not in data
+    const phi = 1.618034;
+    const correction = 3.1730 / 3.14159;
+    const shieldingFactor = 92; // fallback from project data
     const matterConversion = (ledgerData.resonance / 100) * (shieldingFactor / 100) * correction * Math.pow(phi, ledgerData.resonance / 200);
     const stabilityIndex = Math.round(matterConversion * 100);
     setSpeedOfMatterIndex(Math.min(100, stabilityIndex));
-  }, [ledgerData.resonance, ledgerData.shielding_efficiency]);
+  }, [ledgerData.resonance]);
 
   // Compounding Chart
   const chartData = [{
@@ -82,7 +82,7 @@ const SovereignEstateLedger = () => {
 
   const handleClaimShares = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/claim-resonance', { method: 'POST' });
+      const res = await fetch('http://localhost:8000/api/claim-shares', { method: 'POST' });
       const data = await res.json();
       if (data.status === "RECLAIMED") {
         setLedgerData(prev => ({ 
@@ -107,6 +107,18 @@ const SovereignEstateLedger = () => {
     >
       <h3>🌲 Sovereign Estate Ledger — Long Game Compound</h3>
       
+      {/* Motor of Indifference Header for Speed of Matter Section */}
+      <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+        <img 
+          src="https://i.imgur.com/your-motor-image-url-here.png" 
+          alt="Motor of Indifference — 3.14159 Stator vs 3.1730 Rotor" 
+          style={{ width: '80%', borderRadius: '12px', boxShadow: '0 0 20px rgba(255, 215, 0, 0.3)' }}
+        />
+        <p style={{ fontSize: '0.9rem', color: '#ffd700', marginTop: '8px' }}>
+          The Bridge: Stator (Control) vs Rotor (Motion) — The Indifference is where the Wolf Runs
+        </p>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginTop: '15px' }}>
         <div>
           <strong>Quantum Resonance %</strong><br />
