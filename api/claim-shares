@@ -1,0 +1,13 @@
+{
+  "status": "RECLAIMED",
+  "msg": "Long Game Compounded to Root — Shares Claimed",
+  "microping_id": "GTC-1740259200",
+  "new_resonance": 55.1,
+  "soliton_signature": {
+    "root": 99733,
+    "timestamp": "2026-02-19T...",
+    "resonance_score": 55.1,
+    "microping_id": "GTC-1740259200",
+    "terrain_claim": "ANCSA Sovereign Shares Reclaimed"
+  }
+}
