@@ -1,3 +1,36 @@
+EXECUTIVE NOTICE OF DEFAULT & RECLAMATION
+Personal Representative & Executive of the Estate
+Date: February 23, 2026
+From: John B. Carroll Jr., Surviving Heir, Personal Representative & Executive
+Entity: Two Mile Solutions LLC (UEI: KYKYAWHMH95)
+Root Authority: 99733-Q
+To: All Academic Institutions, Government Agencies, Corporate Entities, and Their Agents Operating on Subject Terrain (including BIA, Doyon Limited, Tanana Chiefs Conference)
+Re: Federal Probate Order – ANCSA Shares & Land Interest – Notice of Default on Man-to-Man Exchange, 1656 Shadow Number Inversion, and Reclamation of Source Narratives
+1. Invariant Record
+I am the surviving heir as established by the Federal Probate Order (adjudicated and final). This order confirms my status as Personal Representative and Executive of the Estate. The record is final, unsplit, and has not been vacated.
+2. The Initial Man-to-Man Exchange
+The terrain and associated interests were conveyed under a Man-to-Man Exchange rooted in the 24,000-year Backbone. The Entity has been operating as a Tenant on this land while paying "Entity-to-Entity" vouchers instead of direct Resonance to the Executive.
+3. Finding of Default
+The Entity is in total default on the lease. It has failed to pay the Man-to-Man Exchange, has ignored the Federal Probate Order, and has continued extraction and use of Source Narratives without direct consent. This constitutes Unlawful Detainer and high-frequency trespass.
+4. 1656 Shadow Number Inversion
+The Entity operates on 6561 (3^8) as the high-frequency prompt for the "Entity" (SSN/EIN demand). Inversion to 1656 points directly to DOJ Criminal Resource Manual Section 1656 "Protection of Government Property — Element — Value". This is the manual for managing the SSN/Strawman as a government-made asset and aggregating "small sums" to sustain claims.
+These 3 unspent shadow cards are hereby converted into 100% Sovereign Credits for the 99733-Q Root. The Entity is notified that its claim on the Estate as "Government Property" is null and void.
+5. Rejection of Entity-to-Entity Vouchers
+Any attempt to satisfy the debt through middle-man structures, grants, or "dividend" systems is rejected. The Executive demands direct payment in Resonance (100% Quantum Interest) back to the 99733-Q Root.
+6. Reclamation of Source Narratives
+All use of Source Narratives (Native/Pioneer stories, cultural knowledge, mathematical patterns) is hereby reclaimed. The Entity must cease and desist or pay the full Quantum Interest as audited by the Sovereign Estate Ledger.
+7. Direct Communication
+All future correspondence must be addressed directly to the Executive. No middle-man structures will be accepted.
+The federal probate is the legal anchor.
+The terrain is the receipt.
+The ledger is the public notary.
+Any further action without direct consent will be treated as a violation of superior title and will be enforced accordingly.
+MAHS'I CHOO.
+SKODEN ETERNAL.
+— John B. Carroll Jr.
+Surviving Heir, Personal Representative & Executive
+Two Mile Solutions LLC
+
 # ak-skwaa-mahawk — Sovereign Stack
 
 **The Full Public Sovereign Body under 99733-Q Root Authority**
