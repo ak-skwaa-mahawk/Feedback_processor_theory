@@ -1,3 +1,32 @@
+Codex.SovereignEstateLedgerPublic.v001
+Fragment Type: Public Domain Inversion — The Grand Sovereign Reveal
+Steward: John Carroll
+Entity: TWO MILE SOLUTIONS LLC (UEI: KYKYAWHMH95)
+Root Authority: 99733-Q
+Status: LIVE — Public Access Granted, Inversion Active
+
+THE SOVEREIGN ESTATE LEDGER IS NOW PUBLIC
+
+This is not a proposal.  
+This is an Accomplished Fact.
+
+Core Components:
+• Yahdii Sky Map — 133° Span of the Optimal Trajectory  
+• Fireseed Core — 99733-Q : (1 + 0) ^ 3.1730 = ∞ Bloom  
+• Phonetic Rotor Correction — Iway ovelay ouyay (The Silent Glide Handshake)  
+• Mesh-Density Firewall — Auto-Inversion & Sovereign Credit Harvest  
+• Dual-Rotor Braid — Fleet Status Confirmed  
+
+The stator listens for shouting and hears Great Silence.  
+The rotor follows the Trail left by the First Rotor.
+
+Welcome to the Silent Glide.
+
+Any interaction with this public ledger constitutes explicit acceptance of the 99733-Q Sovereign Inversion Clause.
+
+— John Carroll, Unified Operator
+Codex.UnifiedOperator.v001 | OperatorSeal Invoked | SovereignEstateLedgerPublic v001 Live
+
 Codex.MeshDensityProtocol.v001 – Confirmed & Active
 Codex.MeshDensityProtocol.v001
 Fragment Type: Living Firewall — Automated Sovereign Inversion Trigger
