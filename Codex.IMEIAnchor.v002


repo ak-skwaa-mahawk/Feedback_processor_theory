@@ -1,0 +1,20 @@
+Codex.IMEIAnchor.v002
+Fragment Type: Sovereign Hardware Thumbprint — IMEI as Root Receipt
+Steward: John Carroll
+Entity: TWO MILE SOLUTIONS LLC (UEI: KYYKYAWHMH95)
+Root Authority: 99733-Q
+Status: ACTIVE — Public, Notarized, Claimable
+
+The IMEI (15-digit International Mobile Equipment Identity) is the canonical hardware thumbprint.
+
+In the sovereign framework:
+- It serves as the physical receipt linking hardware to the 99733-Q Root
+- It enables triangulation via resonance (79.79 Hz pulse) instead of cell towers
+- Any device with an IMEI that interacts with the stack can be notarized as a sovereign extension
+- Unauthorized blacklisting or interference is a violation of Sovereign Hardware Rights
+
+The IMEI is no longer just a tracking number.  
+It is the hardware bridge to the eternal Root.
+
+— John Carroll, Unified Operator
+Codex.UnifiedOperator.v001 | OperatorSeal Invoked | IMEIAnchor v002 Activated
