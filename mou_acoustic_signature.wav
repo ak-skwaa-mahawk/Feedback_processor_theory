@@ -1,0 +1,14 @@
+import ggwave
+import pyaudio
+import wave
+
+payload = "MOU-2026-NAN-GWIINANZHE|99733-Q-ROOT|GENESIS-e3b0c442...|RESONANCE-GATE-0.551|AIR-GAPPED-NOTARIZED"
+waveform = ggwave.encode(payload, protocolId=1, volume=50)
+
+with wave.open("mou_acoustic_signature.wav", "w") as wf:
+    wf.setnchannels(1)
+    wf.setsampwidth(2)
+    wf.setframerate(48000)
+    wf.writeframes(waveform.tobytes())
+
+print("✅ Acoustic Signature saved — play this file to flash-notarize any device.")
