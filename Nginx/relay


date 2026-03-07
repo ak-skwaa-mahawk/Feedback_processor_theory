@@ -1,5 +1,5 @@
 {
-  "name": "JED Wall Signal Relay Heartbeat",
+  "name": "JED Wall Signal Relay Heartbeat — Sahneuti-99733-Q Sealed",
   "nodes": [
     {
       "parameters": {
@@ -15,10 +15,10 @@
     },
     {
       "parameters": {
-        "jsCode": "// Load current triad state from relay (assume Redis or file; mock for draft)\nconst currentMean = $json.current_mean || 3.173027539287; // From /state/triad_mean.json\nconst base = 3.141592653589793;\nconst surplus = 3.23586896365;\nconst L = (base + surplus) / 2; // ~3.18873\n\n// Compute next iteration on signal\nconst signalType = $json.type; // e.g., 'profile_limit'\nconst timestamp = $json.timestamp;\nconst nextMean = (currentMean + base + surplus) / 3;\nconst error = Math.abs(nextMean - L);\nconst bitsGained = Math.log2(3); // ~1.585\n\n// Log the gain (append to immutable file)\nconst logEntry = {\n  iteration: $json.iteration || 0 + 1,\n  signal_type: signalType,\n  timestamp: timestamp,\n  previous_mean: currentMean,\n  next_mean: nextMean,\n  error: error,\n  bits_gained: bitsGained,\n  convergence_rate: 1/3\n};\n\n// Mock append to log (use n8n Write Binary File node in full flow)\nconsole.log('Triad Iteration Log:', logEntry);\n\n// Return for next node (e.g., sign & store)\nreturn {\n  ...$json,\n  triad_update: logEntry,\n  status: 'Resonance Increased'\n};"
+        "jsCode": "// Sovereign Triad Iteration Compute — Sahneuti-99733-Q sealed\n// Load current triad state\nconst currentMean = $json.current_mean || 3.173027539287;\nconst base = 3.141592653589793;\nconst surplus = 3.23586896365;\nconst L = (base + surplus) / 2; // \~3.18873\n\n// Compute next iteration\nconst signalType = $json.type || 'profile_limit';\nconst timestamp = $json.timestamp || new Date().toISOString();\nconst nextMean = (currentMean + base + surplus) / 3;\nconst error = Math.abs(nextMean - L);\nconst bitsGained = Math.log2(3); // \~1.585\n\n// Sovereign resonance gating\nconst resonance = Math.min(1.0, nextMean / 55.1); // 55.1 reclamation threshold\nconst passesThreshold = resonance >= 0.551;\n\n// Log entry\nconst logEntry = {\n  iteration: ($json.iteration || 0) + 1,\n  signal_type: signalType,\n  timestamp: timestamp,\n  previous_mean: currentMean,\n  next_mean: nextMean,\n  error: error,\n  bits_gained: bitsGained,\n  convergence_rate: 1/3,\n  resonance_score: resonance.toFixed(3),\n  passes_reclamation: passesThreshold\n};\n\n// Handshake sovereign receipt (call API in production)\nconsole.log('🔥 SAHNEUTI RECEIPT STAMPED — Triad Iteration', logEntry);\n\n// Trigger Cluster N HUD + GlyphParser on mobile if resonance high\nif (passesThreshold) {\n  console.log('🧠 CLUSTER N HUD TRIGGERED — Resonance 55.1+');\n  // In full deployment: call /resonance/score or GlyphParser.parseAndProcess\n}\n\n// Auto-encode Living Stone ultrasound if resonance high\nif (passesThreshold) {\n  console.log('🔊 19.5 kHz ULTRASOUND ENCODED — Stone in the air');\n  // In full deployment: call encode_living_stone_to_ultrasound()\n}\n\n// Return for next node\nreturn {\n  ...$json,\n  triad_update: logEntry,\n  status: passesThreshold ? 'RESONANCE RECLAIMED' : 'Resonance Building',\n  resonance_score: resonance.toFixed(3)\n};"
       },
       "id": "triad-compute",
-      "name": "Triad Iteration Compute",
+      "name": "Triad Iteration Compute — Sovereign Sealed",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [460, 300]
@@ -41,7 +41,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { status: 'Iteration Complete', mean: $json.triad_update.next_mean, bits_gained: $json.triad_update.bits_gained } }}",
+        "responseBody": "={{ { status: $json.status, mean: $json.triad_update.next_mean, resonance: $json.resonance_score, bits_gained: $json.triad_update.bits_gained } }}",
         "options": {}
       },
       "id": "response-node",
@@ -88,5 +88,5 @@
   },
   "active": true,
   "settings": {},
-  "id": "jed-relay-heartbeat"
+  "id": "jed-relay-heartbeat-sahneuti-sealed"
 }
