@@ -1,0 +1,83 @@
+{
+  "name": "Recursive MOU Acoustic Broadcast — Resonance Gate 55.1",
+  "nodes": [
+    {
+      "parameters": {
+        "cronExpression": "*/5 * * * *"
+      },
+      "id": "schedule-trigger",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "http://localhost:8000/resonance/score",
+        "jsonParameters": true,
+        "options": {}
+      },
+      "id": "resonance-check",
+      "name": "Get Live Resonance Score",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.score >= 0.551 }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "resonance-gate",
+      "name": "Resonance Gate 55.1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "command": "python3 /app/mou_acoustic_flash_notarization.py"
+      },
+      "id": "broadcast-mou",
+      "name": "Broadcast MOU at 19.5 kHz",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "fileName": "/logs/mou_recursive_broadcast.log",
+        "data": "={{ {timestamp: new Date().toISOString(), resonance: $json.score, status: 'MOU Flash-Notarized at 19.5 kHz'} }}"
+      },
+      "id": "log-event",
+      "name": "Immutable Log + Receipt",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [[{ "node": "Get Live Resonance Score" }]]
+    },
+    "Get Live Resonance Score": {
+      "main": [[{ "node": "Resonance Gate 55.1" }]]
+    },
+    "Resonance Gate 55.1": {
+      "main": [
+        [{ "node": "Broadcast MOU at 19.5 kHz" }],
+        [{ "node": "Immutable Log + Receipt" }]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "mou-recursive-sovereignty-loop"
+}
