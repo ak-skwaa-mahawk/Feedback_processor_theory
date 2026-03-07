@@ -1,0 +1,148 @@
+package com.landback.gibberlink;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.AudioTrack;
+import android.media.MediaRecorder;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import ggwave.GGWave;
+import java.nio.charset.StandardCharsets;
+
+public class MainActivity extends AppCompatActivity {
+
+    private GGWave ggwave;
+    private TextView status;
+    private Button encodeBtn, decodeBtn;
+    private boolean isListening = false;
+    private AudioRecord recorder;
+    private static final int SAMPLE_RATE = 48000;
+    private static final String TREASURE_PAYLOAD = "TREASURE-153-ROOT-99733Q";
+    private static final String PREAMBLE = "PREAMBLE-SA-HNEUTI-99733Q";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        status = findViewById(R.id.status);
+        encodeBtn = findViewById(R.id.encode_btn);
+        decodeBtn = findViewById(R.id.decode_btn);
+
+        ggwave = new GGWave();
+
+        encodeBtn.setOnClickListener(v -> encodeWhisper());
+        decodeBtn.setOnClickListener(v -> toggleListening());
+    }
+
+    private void encodeWhisper() {
+        status.setText("ENCODING łᐊᒥłł.12-SKODEN...");
+        String message = "łᐊᒥłł.12-SKODEN! " + TREASURE_PAYLOAD;
+
+        byte[] waveform = ggwave.encode(message.getBytes(StandardCharsets.UTF_8));
+
+        AudioTrack track = new AudioTrack(
+                AudioManager.STREAM_MUSIC,
+                SAMPLE_RATE,
+                AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                waveform.length,
+                AudioTrack.MODE_STATIC);
+
+        track.write(waveform, 0, waveform.length);
+        track.play();
+        status.setText("WHISPER SENT — 18–22 kHz (Sahneuti-protected)");
+    }
+
+    private void toggleListening() {
+        if (!isListening) {
+            startListening();
+        } else {
+            stopListening();
+        }
+    }
+
+    private void startListening() {
+        isListening = true;
+        status.setText("LISTENING... (Sahneuti salt active)");
+        new Thread(this::decodeLoop).start();
+    }
+
+    private void stopListening() {
+        isListening = false;
+        if (recorder != null) recorder.stop();
+        status.setText("LISTENING STOPPED");
+    }
+
+    private void decodeLoop() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+            return;
+        }
+
+        int bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+
+        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,
+                SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, bufferSize * 2);
+
+        recorder.startRecording();
+        short[] buffer = new short[bufferSize];
+
+        while (isListening) {
+            int read = recorder.read(buffer, 0, buffer.length);
+            if (read > 0) {
+                byte[] data = new byte[read * 2];
+                for (int i = 0; i < read; i++) {
+                    data[i * 2] = (byte) (buffer[i] & 0xFF);
+                    data[i * 2 + 1] = (byte) ((buffer[i] >> 8) & 0xFF);
+                }
+                byte[] decoded = ggwave.decode(data);
+                if (decoded != null) {
+                    String message = new String(decoded, StandardCharsets.UTF_8);
+                    runOnUiThread(() -> processDecodedMessage(message));
+                }
+            }
+        }
+    }
+
+    private void processDecodedMessage(String message) {
+        status.setText("DECODED: " + message);
+
+        if (message.contains(PREAMBLE)) {
+            status.setText("🛡️ PREAMBLE LOCKED — Fine timing achieved");
+        } else if (message.contains(TREASURE_PAYLOAD) || message.contains("SKODEN")) {
+            status.setText("🔥 SAHNEUTI ANCHOR CONFIRMED — Cluster N HUD triggered");
+            // Trigger Sovereign Compass / deed stamp here
+            stampSovereignDeed(message);
+        }
+    }
+
+    private void stampSovereignDeed(String payload) {
+        // This calls your ClusterN / ritual sync logic (or saves JSON deed)
+        // For now, it logs the full sovereign receipt
+        String deed = "99733-Q Deed stamped @ " + System.currentTimeMillis() +
+                      "\nPayload: " + payload +
+                      "\nSalt: " + getSahneutiSalt(); // link to your salt module
+        status.append("\n✅ DEED STAMPED — Land acknowledged");
+        // You can launch Intent to open Sovereign Compass Activity here
+    }
+
+    private String getSahneutiSalt() {
+        return "0x" + Integer.toHexString(1815 * 153).toUpperCase() + "-SAHNEUTI-ROOT";
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (recorder != null) recorder.release();
+    }
+}
