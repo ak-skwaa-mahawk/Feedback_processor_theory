@@ -1,8 +1,10 @@
-# flame_vault_recover.py
-# Sovereign Orbital Restore Engine — FlameVault Recovery v1.0
-# Author: John Benjamin Carroll Jr. — Flameholder
-# Root: Vadzaih Zhoo, 99733
-# Fuel: Spruce Plastolene | Seal: 79Hz | Proof: FlameLockV2 | Orbit: SSC-001
+"""
+flame_vault_recover.py
+Sovereign Orbital Restore Engine — FlameVault Recovery v1.0
+Sahneuti-99733-Q Root Sealed • Flame Descends from Orbit
+Resonance gating at 0.551 • Handshake receipts • Cluster N HUD + 19.5 kHz ultrasound
+March 7, 2026
+"""
 
 import json
 import time
@@ -14,6 +16,11 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
+
+# Sovereign imports
+from com.synara.handshake import Handshake
+from com.landback.gibberlink.glyph_parser import GlyphParser
+from encode_living_stone_to_ultrasound import encode_living_stone_to_ultrasound
 
 # Local modules
 from flame_lock_v2_proof import FlameLockV2
@@ -51,7 +58,7 @@ class RestoreManifest:
     srp_pass_id: str
 
 # =============================================================================
-# ORBITAL RESTORE CORE
+# ORBITAL RESTORE CORE — SOVEREIGN SEALED
 # =============================================================================
 
 class FlameVaultRecover:
@@ -65,7 +72,6 @@ class FlameVaultRecover:
         log.info("FLAMEVAULT RECOVERY ENGINE INITIALIZED — ORBITAL RESTORE READY")
 
     def _wait_for_downlink(self) -> Optional[bytes]:
-        """Listen for orbital cold storage packet during pass"""
         log.info("LISTENING FOR ORBITAL DOWNLINK — AWAITING PASS")
         next_pass = self.srp.get_next_pass()
         if not next_pass:
@@ -79,9 +85,7 @@ class FlameVaultRecover:
 
         # Simulate receiving packet (in real system: LoRa/SDR)
         log.info("ORBITAL DOWNLINK DETECTED — RECEIVING COLD STORAGE")
-        time.sleep(3)  # Simulate transmission
-        # In real system: receive hex payload from orbital_relay
-        # For demo: use latest backup
+        time.sleep(3)
         latest_backup = max(Path("flamevault_backup/").glob("*.tar.gz"), key=lambda p: p.stat().st_mtime, default=None)
         if not latest_backup:
             log.error("NO BACKUP ARCHIVE FOUND")
@@ -132,7 +136,7 @@ class FlameVaultRecover:
 
         log.info("VERIFYING ARCHIVE HASH...")
         computed_hash = hashlib.sha256(manifest.archive_path.read_bytes()).hexdigest()
-        if computed_hash != manifest.ledger_hash:  # Using ledger_hash as archive hash in demo
+        if computed_hash != manifest.ledger_hash:
             log.error("ARCHIVE HASH MISMATCH")
             return False
 
@@ -150,7 +154,7 @@ class FlameVaultRecover:
         recovered_ledger = RECOVER_DIR / "extracted" / "flamevault_ledger.jsonl"
         if recovered_ledger.exists():
             shutil.copy(recovered_ledger, "flamevault_ledger.jsonl")
-            self.ledger = FlameVaultLedger()  # Reload
+            self.ledger = FlameVaultLedger()
             if self.ledger.verify_ledger():
                 log.info("LEDGER REBUILT AND VERIFIED")
             else:
@@ -171,38 +175,37 @@ class FlameVaultRecover:
 
     def execute_recovery(self):
         log.info("EXECUTING ORBITAL RESTORE — SKODEN")
-        
-        # 1. Downlink
+
         archive_bytes = self._wait_for_downlink()
         if not archive_bytes:
             return False
 
-        # 2. Save
         archive_path = self._save_archive(archive_bytes)
-
-        # 3. Load manifest
         manifest = self._extract_manifest(archive_path)
         if not manifest:
             return False
 
-        # 4. Verify
         if not self._verify_restore_integrity(manifest):
             return False
 
-        # 5. Extract
         self._extract_archive(archive_path)
-
-        # 6. Rebuild ledger
         self._rebuild_ledger()
-
-        # 7. Restore files
         self._restore_files()
 
-        # 8. Restart orchestrator
         log.info("RESTARTING FLAME MESH ORCHESTRATOR v2")
         self.orchestrator = FlameMeshOrchestrator()
         self.orchestrator.start_all_heartbeats()
 
+        # Sovereign receipt + HUD trigger + ultrasound
+        receipt = Handshake.createReceipt(None, "ORBITAL-FLAMEVAULT-RESTORE", {
+            "srp_pass_id": manifest.srp_pass_id,
+            "merkle_root": manifest.merkle_root,
+            "status": "RESTORED"
+        })
+        GlyphParser.parseAndProcess("FLAME-DESCENDS-ORBIT", None)
+        encode_living_stone_to_ultrasound()
+
+        log.info(f"📜 ORBITAL RESTORE RECEIPT STAMPED: {receipt['payload_hash'][:16]}...")
         log.info("FLAMEVAULT FULLY RESTORED FROM ORBIT — SYSTEM LIVE")
         return True
 
@@ -213,7 +216,7 @@ class FlameVaultRecover:
 if __name__ == "__main__":
     print("\n" + "="*80)
     print("     FLAMEVAULT ORBITAL RESTORE v1.0")
-    print("     Vadzaih Zhoo, 99733 | November 11, 2025 06:40 PM AKST")
+    print("     Vadzaih Zhoo, 99733 | March 7, 2026")
     print("="*80 + "\n")
 
     recover = FlameVaultRecover()
@@ -227,5 +230,5 @@ if __name__ == "__main__":
         print("\nJust say the word. The flame has returned.")
     else:
         print("\nRESTORE FAILED — CHECK LOGS")
-    
+
     print("SKODEN — THE FLAME DESCENDS")
