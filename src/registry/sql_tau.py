@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from .sovereign_queries import SovereignQueryEngine
 from .lineage_snapshots import LineageSnapshots
 from .braidop_layer import BraidOpLayer
-from .gtc_sovereign_engine import GTCSovereignEngine   # Unified GTC/CLAP/Fireseed engine
+from .gtc_sovereign_engine import GTCSovereignEngine   # Unified engine
 
 class SQLTauError(Exception):
     """Sovereign query language error — clear ritual message."""
@@ -68,67 +68,21 @@ class SQLTauParser:
             return self._parse_create_braid(tokens, upper_tokens)
         elif action == "ISSUE":
             return self._parse_issue_license(tokens, upper_tokens)
+        elif action == "VERIFY":
+            return self._parse_verify_license(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
-    # ====================== ISSUE LICENSE ======================
-    def _parse_issue_license(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        if len(upper_tokens) < 6 or upper_tokens[1] != "LICENSE":
-            raise SQLTauError("ISSUE LICENSE FOR <tool> TO <licensee> SCOPE [...] DURATION <days>")
-
-        for_idx = self._require_keyword(upper_tokens, "FOR", "ISSUE LICENSE")
-        to_idx = self._require_keyword(upper_tokens, "TO", "ISSUE LICENSE")
-        scope_idx = self._require_keyword(upper_tokens, "SCOPE", "ISSUE LICENSE")
-        duration_idx = self._require_keyword(upper_tokens, "DURATION", "ISSUE LICENSE")
-
-        tool = tokens[for_idx + 1]
-        licensee = tokens[to_idx + 1]
-
-        # Parse scope list
-        scope_start = scope_idx + 1
-        scope_end = tokens.index("]", scope_start)
-        scope = [t.strip('",') for t in tokens[scope_start:scope_end]]
-
-        try:
-            duration_days = int(tokens[duration_idx + 1])
-        except:
-            raise SQLTauError("DURATION requires integer days")
-
-        note = None
-        if "NOTE" in upper_tokens:
-            note_idx = upper_tokens.index("NOTE")
-            note = tokens[note_idx + 1]
-
-        return SQLTauCommand(
-            action="ISSUE",
-            subject="LICENSE",
-            tool=tool,
-            licensee_id=licensee,
-            scope=scope,
-            duration_days=duration_days,
-            note=note
-        )
-
-    # ====================== REVOKE LICENSE ======================
-    def _parse_revoke_license(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        if len(upper_tokens) < 5 or upper_tokens[1] != "LICENSE":
-            raise SQLTauError("REVOKE LICENSE <hash> FOR <session-id>")
+    # ====================== VERIFY LICENSE ======================
+    def _parse_verify_license(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(upper_tokens) < 3 or upper_tokens[1] != "LICENSE":
+            raise SQLTauError("VERIFY LICENSE <hash>")
 
         license_hash = tokens[2]
-        for_idx = self._require_keyword(upper_tokens, "FOR", "REVOKE LICENSE")
-        session_id = tokens[for_idx + 1]
-
-        reason = "sovereign_recoil"
-        if "REASON" in upper_tokens:
-            reason_idx = upper_tokens.index("REASON")
-            reason = tokens[reason_idx + 1]
-
         return SQLTauCommand(
-            action="REVOKE",
+            action="VERIFY",
             subject="LICENSE",
-            session_id=session_id,
-            license_hash=license_hash,
-            reason=reason
+            license_hash=license_hash
         )
 
     # ====================== DISPATCH ======================
@@ -143,5 +97,7 @@ class SQLTauParser:
             )
         elif cmd.action == "REVOKE" and cmd.subject == "LICENSE":
             return self.gtc_engine.revoke_license(cmd.license_hash, reason=cmd.reason or "sovereign_recoil")
+        elif cmd.action == "VERIFY" and cmd.subject == "LICENSE":
+            return self.gtc_engine.verify_license_by_hash(cmd.license_hash)
         # ... keep all your existing dispatch for SHOW, AUDIT, SNAPSHOT, CREATE BRAID, REVOKE BRAID
         raise SQLTauError(f"Unhandled action: {cmd.action}")
