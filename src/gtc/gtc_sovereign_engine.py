@@ -98,3 +98,28 @@ class GTCSovereignEngine:
         return revocation_entry
 
     # ... (your existing deploy_gtc001 and allocate_fireseed methods remain unchanged)
+
+def verify_license_by_hash(self, license_hash: str) -> Dict:
+    """Lookup license by hash and verify its Ed25519 signature."""
+    if not self.path.exists():
+        return {"status": "NOT_FOUND"}
+
+    with self.path.open() as f:
+        for line in f:
+            try:
+                entry = json.loads(line)
+                if entry.get("hash") == license_hash and entry.get("entry_type") == "MICRO_LICENSE":
+                    sig = entry.get("signature")
+                    if not sig:
+                        return {"status": "NO_SIGNATURE", "valid": False}
+                    valid = self.verify_license(entry, sig)
+                    return {
+                        "status": "VERIFIED" if valid else "INVALID_SIGNATURE",
+                        "valid": valid,
+                        "licensee_id": entry.get("licensee_id"),
+                        "tool": entry.get("tool"),
+                        "valid_until": entry.get("valid_until")
+                    }
+            except:
+                continue
+    return {"status": "NOT_FOUND", "valid": False}
