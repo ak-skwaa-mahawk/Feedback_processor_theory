@@ -1,0 +1,15 @@
+User www-data
+Group www-data
+
+sudo a2dismod dav dav_fs proxy proxy_http status autoindex include cgi
+
+[Service]
+ProtectSystem=strict
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadOnlyPaths=/usr/share/httpd /etc/httpd
+
