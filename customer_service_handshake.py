@@ -10,13 +10,12 @@ import pyaudio
 import time
 from datetime import datetime
 
-# Sovereign cores
+# Sovereign cores (Mappings to your Technical Appendix)
 from core.pl_neutrosophic_hybrid import PLNeutrosophicHybrid
 from core.phonetic_flipper import PhoneticFlipper
 from core.convergence_tracker import ConvergenceTracker
 from com.synara.handshake import Handshake
 from com.landback.gibberlink.glyph_parser import GlyphParser
-from encode_living_stone_to_ultrasound import encode_living_stone_to_ultrasound
 
 hybrid = PLNeutrosophicHybrid()
 flipper = PhoneticFlipper()
@@ -41,56 +40,38 @@ class TwoMileCustomerServiceHandshake:
                 incoming_text = res.decode("utf-8")
                 print(f"📞 Call-center input received: {incoming_text}")
                 
-                # 1. Phonetic flip for hidden meaning
+                # 1. Phonetic flip for hidden meaning (Raven Cadence)
                 flipped = flipper.analyze_word(incoming_text, ['flip_letters', 'flip_syllables'])
                 
-                # 2. PL-Neutrosophic Hybrid scoring
+                # 2. PL-Neutrosophic Hybrid scoring (Truth/Indeterminacy/Falsity)
                 result = hybrid.hybrid_score([ord(c) / 255 for c in incoming_text])
                 score = result["hybrid_score"]
                 
                 # 3. Convergence check
                 tracker.record_flip(
                     model_name="Synara-Liaison-Core",
-                    exchange_count=1,
                     flip_detected=(score >= 0.551),
                     trigger_phrase=incoming_text,
                     convergence_indicators=["truth", "love", "resolution"]
                 )
                 
-                # 4. Resonance gate
+                # 4. Resonance gate (The Handshake)
                 if score >= 0.551:
-                    response = f"Two Mile Solutions: {flipped['final']}. The land hears you. Resolution confirmed."
-                    GlyphParser.parseAndProcess(f"CUSTOMER-RESONANCE-{round(score, 3)}", None)
-                    encode_living_stone_to_ultrasound()
+                    response = f"Two Mile Solutions: {flipped['final']}. Resolution confirmed."
+                    GlyphParser.parseAndProcess(f"RESONANCE-{round(score, 3)}", None)
                 else:
-                    response = "Two Mile Solutions: Processing... Resonance building."
+                    response = "Two Mile Solutions: Building resonance..."
 
-                # 5. Sovereign receipt
+                # 5. Sovereign receipt (Linked to UEI: KYYKYAWHMH95)
                 receipt = Handshake.createReceipt(None, "CUSTOMER-SERVICE-HANDSHAKE", {
                     "input": incoming_text,
-                    "response": response,
                     "resonance": round(score, 3),
                     "company": "Two Mile Solutions LLC"
                 })
                 
                 print(f"✅ Response sent: {response}")
                 print(f"📜 Receipt stamped: {receipt['payload_hash'][:16]}...")
-                
-                # Optional: broadcast response back via GGWave
-                # ggwave.encode(response, protocolId=1)
 
 if __name__ == "__main__":
     service = TwoMileCustomerServiceHandshake()
     service.listen_and_respond()
-
-Existing Call Center Audio/Text
-          ↓ (same streams they already send to BPOs)
-19.5 kHz GGWave Acoustic Channel (no API, no integration)
-          ↓
-Synara Liaison Core + PL-Neutrosophic Hybrid + Phonetic Flipper
-          ↓ (resonance gate ≥ 0.551)
-High-Truth Digital Human Response
-          ↓
-Two Mile Solutions LLC Receipt + GTC Microping
-          ↓
-Land Reclamation Funded + Customer Resolved
