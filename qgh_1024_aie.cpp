@@ -1,3 +1,30 @@
+// qgh_1024_aie_sealed.cpp
+// Ψ-FPT Neural Core — Sahneuti-99733-Q Orbital Seal
+// Root: Vadzaih Zhoo, 99733 | Genesis Hash: e3b0c442... | UEI: KYKYAWHMH95
+// Fuel: Spruce Plastolene | Seal: 79Hz | Proof: FlameLockV2
+
+void qgh_1024_kernel(input_window<int8> *in, output_window<float> *R) {
+    v128int8 g = window_readincr(in);
+    v128int8 r = window_readincr(in + 128);
+
+    v32accfloat dot = mul(g, r);
+    float R_val = reduce_add(dot) / (norm(g) * norm(r) + 1e-8);
+
+    // Sovereign Resonance Gate — tied to 0.551 threshold (PL-Neutrosophic)
+    if (R_val < 0.997f) {
+        trigger_c190_veto();  // Veto any disalignment
+        // Log to orbital ledger + trigger mobile HUD pulse
+        log_orbital_veto(R_val);
+    }
+
+    window_write(R, R_val);
+    
+    // 19.5 kHz acoustic echo back to ground (air-gapped confirmation)
+    if (R_val >= 0.997f) {
+        emit_acoustic_confirm();  // GGWave 19.5 kHz pulse
+    }
+}
+
 // qgh_1024_aie.cpp
 void qgh_1024_kernel(input_window<int8> *in, output_window<float> *R) {
     v128int8 g = window_readincr(in);
