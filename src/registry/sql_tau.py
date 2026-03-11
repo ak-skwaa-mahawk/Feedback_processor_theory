@@ -5,6 +5,25 @@ import json
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 
+# In _parse method, add:
+elif action == "SHOW" and "HASH" in ' '.join(upper_tokens):
+    return self._parse_show_hash(tokens, upper_tokens)
+
+# New parser method
+def _parse_show_hash(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+    resource_type = tokens[2]  # e.g. LICENSE, BRAID, FIRESEED
+    resource_id = tokens[4] if len(tokens) > 4 else None
+    return SQLTauCommand(
+        action="SHOW",
+        subject="HASH",
+        tool=resource_type,
+        licensee_id=resource_id  # reuse field for resource ID
+    )
+
+# In _dispatch
+elif cmd.action == "SHOW" and cmd.subject == "HASH":
+    return self.gtc_engine.get_resource_hash(cmd.tool, cmd.licensee_id)
+
 from .sovereign_queries import SovereignQueryEngine
 from .lineage_snapshots import LineageSnapshots
 from .braidop_layer import BraidOpLayer
