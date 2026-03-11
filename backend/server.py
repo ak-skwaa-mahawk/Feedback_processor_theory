@@ -1,3 +1,51 @@
+#!/usr/bin/env python3
+"""
+backend/server.py
+Sovereign FPT API — Scale Annotation + Planck Table
+"""
+
+from fastapi import FastAPI, Query
+from fastapi.responses import JSONResponse, StreamingResponse
+import io
+import csv
+
+from core.scale import annotate_resonance, table
+from core.constants import DEFAULT_TOP_BANDS
+
+app = FastAPI(title="FPT Sovereign API")
+
+@app.get("/scale/annotate")
+def scale_annotate(
+    resonance_score: float = Query(..., ge=-1.0, le=1.0),
+    top_bands: int = Query(DEFAULT_TOP_BANDS, ge=1, le=200)
+):
+    payload = annotate_resonance(resonance_score, top_bands=top_bands)
+    return JSONResponse(payload)
+
+@app.get("/scale/table")
+def scale_table(
+    n0: int = Query(0, ge=0),
+    n1: int = Query(DEFAULT_TOP_BANDS, ge=0, le=200),
+    sig: int = Query(4, ge=1, le=10),
+    as_csv: bool = Query(False)
+):
+    rows = table(n0=n0, n1=n1, sig=sig)
+
+    if not as_csv:
+        return JSONResponse({"n0": n0, "n1": n1, "sig": sig, "rows": rows})
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["band", "length_m", "value", "unit"])
+    for r in rows:
+        writer.writerow([r["band"], r["length_m"], r["length_human"]["value"], r["length_human"]["unit"]])
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.read()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="scale_ladder_{n0}_{n1}.csv"'}
+    )
+
 import asyncio, websockets, json
 from embeddings import audio_chunk_to_embedding, token_to_embedding
 from trinity_damping import trinity_damping
