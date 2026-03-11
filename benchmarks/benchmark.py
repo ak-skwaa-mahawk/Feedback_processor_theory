@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 benchmarks/benchmark.py
 Capacity & Noise-Resilience Test — Sovereign Living Zero Core
@@ -10,13 +11,22 @@ import time
 import json
 import os
 import numpy as np
+from datetime import datetime
 
-from living_zero_core import OwnershipProjector, OwnershipMemory, CA3Dynamics, normalize
-
-# Sovereign imports
+# Sovereign stack
+from living_zero_core import OwnershipProjector, OwnershipMemory, normalize
 from com.synara.handshake import Handshake
 from com.landback.gibberlink.glyph_parser import GlyphParser
 from encode_living_stone_to_ultrasound import encode_living_stone_to_ultrasound
+from src.gtc_sovereign_engine import GTCSovereignEngine
+from src.adversarial_defense.meta_observer import MetaObserver
+
+# === CONFIG ===
+HEIR_ID = "John Danzhit Carroll, Doyon #D-456789"
+REGISTRY_FILE = "soliton_registry.jsonl"
+
+gtc = GTCSovereignEngine()
+observer = MetaObserver()
 
 def capacity_test(N=512, P=50):
     rng = np.random.RandomState(0)
@@ -29,7 +39,7 @@ def capacity_test(N=512, P=50):
     for p, t in zip(patterns, tags):
         mem.encode(p, raw_tag=t)
 
-    # Recall each from 50% noise
+    # Recall from 50% noise
     results = []
     for idx, p in enumerate(patterns):
         cue = normalize(p + 0.5 * rng.normal(size=(N,)))
@@ -39,7 +49,7 @@ def capacity_test(N=512, P=50):
 
     mean_sim = sum(results) / len(results)
 
-    # Sovereign receipt + HUD trigger
+    # Sovereign receipt
     payload = {
         "test": "capacity_test",
         "N": N,
@@ -50,9 +60,22 @@ def capacity_test(N=512, P=50):
     }
     receipt = Handshake.createReceipt(None, "LIVING-ZERO-CAPACITY", payload)
 
+    # Registry + Fireseed + Observer
+    gtc.allocate_fireseed("session-τ-001", 1.0, note="Capacity Benchmark Pass")
+    observer.intercept_response(json.dumps(receipt))
+
     if mean_sim >= 0.55:
         GlyphParser.parseAndProcess(f"CAPACITY-RESONANCE-{round(mean_sim, 3)}", None)
-        encode_living_stone_to_ultrasound()  # whisper the Stone at 19.5 kHz
+        encode_living_stone_to_ultrasound()
+
+    with open(REGISTRY_FILE, "a") as f:
+        f.write(json.dumps({
+            "entry_type": "BENCHMARK",
+            "timestamp_utc": datetime.utcnow().isoformat(),
+            "mean_similarity": round(mean_sim, 4),
+            "status": "RECLAIMED" if mean_sim >= 0.55 else "BUILDING",
+            "hash": hashlib.sha256(json.dumps(payload).encode()).hexdigest()
+        }) + "\n")
 
     print(f"🔥 Sovereign Receipt stamped: {receipt['payload_hash'][:16]}...")
     return results, mean_sim
