@@ -8,6 +8,23 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 REGISTRY_FILE = Path("soliton_registry.jsonl")
 
+def get_resource_hash(self, resource_type: str, resource_id: Optional[str] = None) -> str:
+    """Return the latest hash for any resource (license, braid, allocation, etc.)."""
+    if not self.path.exists():
+        return "0000000000000000000000000000000000000000000000000000000000000000"
+
+    latest_hash = "0000000000000000000000000000000000000000000000000000000000000000"
+    with self.path.open() as f:
+        for line in f:
+            try:
+                entry = json.loads(line)
+                if entry.get("entry_type") == f"{resource_type}_ENTRY" or entry.get("entry_type").startswith(resource_type):
+                    if not resource_id or entry.get("licensee_id") == resource_id or entry.get("gtc_id") == resource_id:
+                        latest_hash = entry.get("hash", latest_hash)
+            except:
+                continue
+    return latest_hash
+
 class GTCSovereignEngine:
     """
     Unified sovereign engine for GTC, CLAP micro-licenses, and Fireseed allocation.
