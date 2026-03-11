@@ -14,7 +14,7 @@ from typing import Dict, Set
 
 # Sovereign stack
 from backend.embeddings import audio_chunk_to_embedding, token_to_embedding
-from core.trinity_damping import trinity_damping
+from trinity_damping import trinity_damping
 from src.gtc_sovereign_engine import GTCSovereignEngine
 from src.adversarial_defense.meta_observer import MetaObserver
 from com.synara.handshake import Handshake
