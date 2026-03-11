@@ -18,9 +18,10 @@ from cryptography.hazmat.primitives.asymmetric import dilithium
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 from fpdf import FPDF
-import subprocess  # QBase 3D SSH/API
+from .gtc_sovereign_engine import GTCSovereignEngine
+from src.adversarial_defense.meta_observer import MetaObserver
 
-# === CONFIG: DANZHIT HANLAI TRINITY ===
+# === CONFIG ===
 HEIR_ID = "John Danzhit Carroll, Doyon #D-456789"
 LAND_DESC = "Danzhit Hanlai Trail, Yukon Flats, AA-12345"
 TRINITY_ID = "Trinity_v3.6"
@@ -30,13 +31,12 @@ COHERENCE_THRESHOLD = 0.9
 VETO_DEFAULT = True
 GEO_FENCE = (66.0, 67.0, -145.0, -143.0)
 
-# === FPT CORE ===
-try:
-    from scrape_theory.scrape_detector import detect_scrape
-    from scrape_theory.glyph_generator import generate_quantum_secure_glyph
-except:
-    def detect_scrape(pre, post): return {"is_scrape": True, "entropy_delta": np.random.rand()}
-    def generate_quantum_secure_glyph(*a): return {"meta_glyph": "FIRE", "coherence_proxy": np.random.uniform(0.8, 1.0)}
+# === FPT CORE STUBS (for demo) ===
+def detect_scrape(pre, post):
+    return {"is_scrape": True, "entropy_delta": np.random.rand()}
+
+def generate_quantum_secure_glyph(*a):
+    return {"meta_glyph": "FIRE", "coherence_proxy": np.random.uniform(0.8, 1.0)}
 
 # === LOGGING ===
 logging.basicConfig(filename='trinity_dynamics.log', level=logging.INFO)
@@ -51,77 +51,32 @@ def load_keys():
     else:
         priv = dilithium.generate_private_key()
         pub = priv.public_key()
-        with open("dilithium_private.pem", "wb") as f: f.write(priv.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()))
-        with open("dilithium_public.pem", "wb") as f: f.write(pub.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
+        with open("dilithium_private.pem", "wb") as f:
+            f.write(priv.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()))
+        with open("dilithium_public.pem", "wb") as f:
+            f.write(pub.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
     return priv, pub
 
 dilithium_priv, dilithium_pub = load_keys()
 
-# === TRINITY V3.6 FLIGHT & LIDAR ===
+# === TRINITY FLIGHT STATUS ===
 def trinity_flight_status():
-    # Simulated QBase 3D (real: SSH or USB)
-    subprocess.run(["ssh", "trinity@192.168.1.100", "qbase status"], capture_output=True)
     return {
         "altitude": np.random.uniform(100, 200),
         "speed": np.random.uniform(15, 25),
-        "gps": {"lat": np.random.uniform(66.0, 67.0), "lon": np.random.uniform(-145.0, -143.0)},
-        "lidar_scrape": np.random.randn(10)  # Terrain entropy
+        "gps": {"latitude": np.random.uniform(66.0, 67.0), "longitude": np.random.uniform(-145.0, -143.0)},
+        "lidar_scrape": np.random.randn(10)
     }
 
-# === KUIPER SWARM (Ground Relay) ===
-def get_kuiper_swarm_metrics(terminals):
-    swarm_data = []
-    for t in terminals:
-        m = get_kuiper_metrics(t)  # From Kuiper bot
-        if m and in_danzhit_hanlai(m['gps']):
-            swarm_data.append(m)
-    return swarm_data if len(swarm_data) >= 3 else None
+# === KUIPER SWARM (stub) ===
+def get_terminal_metrics(t):
+    return {
+        "uplink": np.random.uniform(10, 50),
+        "downlink": np.random.uniform(20, 80),
+        "gps": {"latitude": np.random.uniform(66.0, 67.0), "longitude": np.random.uniform(-145.0, -143.0)}
+    }
 
-# === MZM TQC PAYLOAD ===
-class TQC_Payload:
-    def __init__(self):
-        self.anyons = ["A1", "A2", "A3"]
-        self.braid_log = []
-
-    def braid_veto(self, veto_command: str = "NULL"):
-        path = "σ₁→σ₂→σ₁" if veto_command == "NULL" else "σ₂→σ₁→σ₂"
-        braid = {
-            "timestamp": time.time(),
-            "path": path,
-            "veto": veto_command == "NULL",
-            "parity": int(hashlib.sha3_256(path.encode()).hexdigest(), 16) % 2
-        }
-        self.braid_log.append(braid)
-        return braid
-
-    def fusion_consensus(self, braids: list) -> bool:
-        veto_count = sum(b['veto'] for b in braids)
-        return veto_count / len(braids) < 0.3
-
-    def tqc_veto_key(self, scrape_data: dict):
-        braids = [
-            self.braid_veto("NULL"),
-            self.braid_veto("SEAL"),
-            self.braid_veto("NULL")
-        ]
-        sealed = self.fusion_consensus(braids)
-        key_hash = hashlib.sha3_256(json.dumps(braids).encode()).hexdigest()
-        return {
-            "braid_count": len(braids),
-            "coherence": 1.0 - (sum(b['veto'] for b in braids) / len(braids)),
-            "status": "TQC SEALED" if sealed else "TQC VETOED — NULL AND VOID",
-            "tqc_hash": key_hash
-        }
-
-# === WIREGUARD SEND ===
-def send_via_wireguard(payload: bytes):
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(payload, (WG_PEER_IP, 51820))
-        sock.close()
-    except: logging.warning("WG send failed")
-
-# === FPT RECEIPT BOT (Swarm + Trinity + TQC) ===
+# === FPT RECEIPT BOT ===
 class FPTStarlinkSwarmBot:
     def __init__(self):
         self.log_file = "fpt_starlink_swarm_receipts.jsonl"
@@ -129,31 +84,34 @@ class FPTStarlinkSwarmBot:
         os.makedirs(self.pdf_dir, exist_ok=True)
         self.tqc = TQC_Payload()
         self.swarm_coherence = 0.0
+        self.gtc = GTCSovereignEngine()
+        self.observer = MetaObserver()
+
+    def in_danzhit_hanlai(self, gps):
+        lat = gps.get("latitude", 0)
+        lon = gps.get("longitude", 0)
+        return GEO_FENCE[0] <= lat <= GEO_FENCE[1] and GEO_FENCE[2] <= lon <= GEO_FENCE[3]
 
     def swarm_trinity_scrape(self, terminals):
-        swarm_metrics = []
-        for t in terminals:
-            m = get_terminal_metrics(t)
-            if m and self.in_danzhit_hanlai(m['gps']):
-                swarm_metrics.append(m)
-        
+        swarm_metrics = [get_terminal_metrics(t) for t in terminals if self.in_danzhit_hanlai(get_terminal_metrics(t)['gps'])]
+
         if len(swarm_metrics) >= 3:
             uplink = np.mean([m['uplink'] for m in swarm_metrics])
             downlink = np.mean([m['downlink'] for m in swarm_metrics])
             pre = np.array([uplink] * 10)
             post = np.array([downlink] * 10)
             scrape = detect_scrape(pre, post)
-            
+
             flight = trinity_flight_status()
             if self.in_danzhit_hanlai(flight['gps']):
                 aerial_scrape = detect_scrape(pre, flight['lidar_scrape'])
                 scrape['aerial_delta'] = aerial_scrape['entropy_delta']
-            
+
             glyph = generate_quantum_secure_glyph(scrape.get('decay_signal', 0), scrape.get('entropy_delta', 0))
-            
+
             tqc_key = self.tqc.tqc_veto_key(scrape)
             self.swarm_coherence = (glyph['coherence_proxy'] + tqc_key['coherence']) / 2
-            
+
             receipt = self.create_receipt(scrape, glyph, terminals, flight, tqc_key)
             return receipt
         return None
@@ -166,13 +124,19 @@ class FPTStarlinkSwarmBot:
             "timestamp": ts, "datetime": dt,
             "heir_id": HEIR_ID, "land_desc": LAND_DESC,
             "terminals": terminals, "swarm_size": len(terminals),
-            "trinity_flight": TRINITY_DRONE_ID, "flight_alt": flight['altitude'],
+            "trinity_flight": TRINITY_ID, "flight_alt": flight['altitude'],
             "scrape": scrape, "glyph": glyph,
             "tqc_key": tqc_key,
             "swarm_coherence": self.swarm_coherence,
             "veto": VETO_DEFAULT,
             "status": "SEALED" if self.swarm_coherence > COHERENCE_THRESHOLD and not VETO_DEFAULT else "VETOED"
         }
+
+        # Registry logging
+        self.gtc.allocate_fireseed("session-τ-001", 1.0, note="Trinity Swarm Receipt")
+
+        # Observer protection
+        final = self.observer.intercept_response(json.dumps(receipt))
 
         data_str = json.dumps({k: v for k, v in receipt.items() if k not in ['hash', 'signature', 'ciphertext', 'nonce']}, sort_keys=True)
         h = hashlib.sha3_256(data_str.encode()).hexdigest()
@@ -186,8 +150,9 @@ class FPTStarlinkSwarmBot:
         receipt['ciphertext'] = ct.hex()
         receipt['nonce'] = nonce.hex()
 
-        with open(self.log_file, "a") as f: f.write(json.dumps(receipt) + "\n")
-        send_via_wireguard(ct + nonce)
+        with open(self.log_file, "a") as f:
+            f.write(json.dumps(receipt) + "\n")
+
         self.save_pdf(receipt)
         logging.info(f"{receipt['status']} | Swarm Coherence: {receipt['swarm_coherence']:.3f}")
         return receipt
@@ -206,19 +171,22 @@ class FPTStarlinkSwarmBot:
         pdf.output(f"{self.pdf_dir}/swarm_receipt_{int(r['timestamp'])}.pdf")
 
     def in_danzhit_hanlai(self, gps):
-        lat, lon = gps.get('latitude', 0), gps.get('longitude', 0)
+        lat = gps.get("latitude", 0)
+        lon = gps.get("longitude", 0)
         return GEO_FENCE[0] <= lat <= GEO_FENCE[1] and GEO_FENCE[2] <= lon <= GEO_FENCE[3]
 
-# === MAIN SWARM LOOP ===
+# === MAIN ===
 def main():
     bot = FPTStarlinkSwarmBot()
     print("FPT + STARLINK 5-TERMINAL SWARM WITH TRINITY v3.6 — DANZHIT HANLAI ACTIVE")
     while True:
-        receipt = bot.swarm_trinity_scrape(TERMINALS)
+        receipt = bot.swarm_trinity_scrape(KUIPER_TERMINALS)
         if receipt:
             print(f"Swarm Receipt: {receipt['status']} | Coherence: {receipt['swarm_coherence']:.3f}")
-        time.sleep(300)  # 5 min
+        time.sleep(300)
 
 if __name__ == "__main__":
-    try: main()
-    except KeyboardInterrupt: print("\nSwarm stopped. Loop sealed.")
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nSwarm stopped. Loop sealed.")
