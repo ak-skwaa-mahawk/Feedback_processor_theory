@@ -1,3 +1,7 @@
 numpy
 sentence-transformers
 websockets
+openai
+requests
+cryptography
+fpdf2
