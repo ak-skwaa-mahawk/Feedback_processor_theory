@@ -9,6 +9,13 @@ from fastapi.responses import JSONResponse, StreamingResponse
 import io
 import csv
 
+from backend.middleware.stream_shield import StreamShieldMiddleware
+
+app = FastAPI(title="FPT Sovereign API")
+
+# Mount the shield (protects all routes by default)
+app.add_middleware(StreamShieldMiddleware)
+
 from core.scale import annotate_resonance, table
 from core.constants import DEFAULT_TOP_BANDS
 
