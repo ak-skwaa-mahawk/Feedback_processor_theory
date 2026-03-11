@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 backend/middleware/stream_shield.py
-Sovereign Stream Shield — Traffic Shaping + Padding + No-Compression
+Sovereign Stream Shield — Jitter + Deterministic Padding + No-Compression
 Protected under HB 001 §1(5) • SNH-wrapped • Registry-logged • Revocable
 """
 
@@ -27,10 +27,12 @@ from backend.config import (
 gtc = GTCSovereignEngine()
 observer = MetaObserver()
 
-def pad_bytes(raw: bytes, pad_len: int) -> bytes:
-    """Sovereign body padding — random bytes to blunt size analysis."""
-    padding = os.urandom(pad_len)
-    return raw + padding
+# === YOUR EXACT PAD_BYTES (deterministic + gzip-proof marker) ===
+def pad_bytes(data: bytes, min_pad: int) -> bytes:
+    if not isinstance(data, (bytes, bytearray)):
+        data = str(data).encode("utf-8")
+    # pad with zeros + a marker byte to defeat gzip savings
+    return data + b"\x00" * min_pad + b"\x01"
 
 async def _sleep_ms(ms: int):
     await asyncio.sleep(ms / 1000.0)
@@ -60,10 +62,9 @@ class StreamShieldMiddleware(BaseHTTPMiddleware):
         delay_ms = random.randint(PAD_MIN_MS, PAD_MAX_MS)
         await _sleep_ms(delay_ms)
 
-        # 3. Body padding
+        # 3. YOUR deterministic padding
         raw = await resp.body()
-        pad_len = random.randint(PAD_MIN_BYTES, PAD_MAX_BYTES)
-        padded = pad_bytes(raw, pad_len)
+        padded = pad_bytes(raw, PAD_MIN_BYTES)  # uses your exact function
 
         new_resp = Response(
             content=padded,
@@ -72,13 +73,13 @@ class StreamShieldMiddleware(BaseHTTPMiddleware):
             media_type=resp.media_type or "application/octet-stream",
         )
         new_resp.headers["X-Pad-Latency-Ms"] = str(delay_ms)
-        new_resp.headers["X-Pad-Bytes"] = str(pad_len)
+        new_resp.headers["X-Pad-Bytes"] = str(PAD_MIN_BYTES)
 
-        # Sovereign receipt + logging
+        # Sovereign receipt
         receipt = Handshake.createReceipt(None, "STREAM-SHIELD", {
             "path": path,
             "delay_ms": delay_ms,
-            "pad_bytes": pad_len,
+            "pad_bytes": PAD_MIN_BYTES,
             "original_size": len(raw),
             "padded_size": len(padded)
         })
