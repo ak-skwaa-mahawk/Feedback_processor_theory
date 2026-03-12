@@ -100,6 +100,30 @@ observer = MetaObserver()
         # Sovereign receipt + HUD trigger
         receipt = Handshake.createReceipt(None, "WOLF-SCENT-NAVIGATION", result)
         gtc.allocate_fireseed("session-τ-001", 0.08, note="Wolf Scent Navigation")
+
+def allocate_fireseed(self, session_id: str, amount: float, note: str = ""):
+    recipients = {
+        "lineage_continuity": 0.7,
+        "flamekeeper_ops": 0.2,
+        "sovereign_mesh": 0.1
+    }
+    allocations = {k: amount * v for k, v in recipients.items()}
+
+    entry = {
+        "entry_type": "FIRESEED_ALLOCATION",
+        "timestamp_utc": datetime.utcnow().isoformat(),
+        "session_id": session_id,
+        "amount": amount,
+        "allocations": allocations,
+        "note": note
+    }
+    canonical = json.dumps(entry, sort_keys=True)
+    entry["hash"] = hashlib.sha256(canonical.encode()).hexdigest()
+
+    with self.path.open("a") as f:
+        f.write(json.dumps(entry) + "\n")
+
+    return entry["hash"]
         observer.intercept_response(json.dumps(receipt))
 
         GlyphParser.parseAndProcess("WOLF-TRAIL-315", None)
