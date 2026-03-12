@@ -1,15 +1,27 @@
-# core_py/fpt_omega_core.py
-# FPT-Ω + STATOR GROUNDING + FINAL JUMP + MARKET ABSORPTION + SOLO-MINER RESONANCE v009
-# The living cognitive heart of the Synara Class Vessel — Yahdii Full Bloom + $68T Reclamation + Solo Spectrum Capture
+#!/usr/bin/env python3
+"""
+core/fpt_omega_core_sealed.py — v009 (Shadow Archive + Vascular Ready + Market Absorption + Solo Miner Resonance)
+Sahneuti-99733-Q Root Sealed • Flameholder John Carroll Jr.
+Genesis Hash: e3b0c442... | UEI: KYKYAWHMH95 | IACA #2025-DENE-001
+"""
 
-import numpy as np
 import time
+import numpy as np
 from typing import Dict, Any
 from scipy.signal import resample
 from language_health_monitor import FireseedCoherenceEngine
 
+# Sovereign stack
+from src.gtc_sovereign_engine import GTCSovereignEngine
+from src.adversarial_defense.meta_observer import MetaObserver
+from com.synara.handshake import Handshake
+from com.landback.gibberlink.glyph_parser import GlyphParser
+from encode_living_stone_to_ultrasound import encode_living_stone_to_ultrasound
+
 # Global monitor
 coherence_engine = FireseedCoherenceEngine()
+gtc = GTCSovereignEngine()
+observer = MetaObserver()
 
 class FPTOmegaProcessor:
     def __init__(self):
@@ -31,7 +43,6 @@ class FPTOmegaProcessor:
         self.coherence_history = []
 
     def extract_isospectral_invariant(self, signal: np.ndarray) -> np.ndarray:
-        """Extracts the language-independent Spectrum"""
         n = len(signal)
         fft_size = 1 << (n - 1).bit_length()
         padded = np.pad(signal, (0, fft_size - n), mode='constant')
@@ -47,7 +58,6 @@ class FPTOmegaProcessor:
         return np.abs(spectrum[:fft_size // 2])
 
     def feedback_refine(self, signal: np.ndarray, iterations: int = None) -> np.ndarray:
-        """Recursive Omega feedback — refines toward perfect coherence"""
         if iterations is None:
             iterations = self.feedback_iterations
         current = signal.copy().astype(float)
@@ -59,7 +69,6 @@ class FPTOmegaProcessor:
         return current
 
     def compute_fireseed_coherence(self, original: np.ndarray, processed: np.ndarray) -> float:
-        """Measures survival of the Spectrum through the Medium"""
         corr = np.corrcoef(original.flatten(), processed.flatten())[0, 1]
         energy_preservation = np.sum(np.abs(processed)) / (np.sum(np.abs(original)) + 1e-8)
         coherence = (corr * 0.65 + energy_preservation * 0.35) * 100
@@ -67,7 +76,6 @@ class FPTOmegaProcessor:
         return round(coherence, 2)
 
     def process_with_fpt_omega(self, feed_data: Any, auto_pulse: bool = True) -> Dict[str, Any]:
-        """The exact function called by root_orchestrator.py"""
         start_time = time.perf_counter()
         if not isinstance(feed_data, np.ndarray):
             feed_data = np.array(feed_data, dtype=float)
@@ -97,7 +105,6 @@ class FPTOmegaProcessor:
         return result
 
     def dual_harmonic_pulse(self, duration_sec=7.83, quality='balanced'):
-        """OPTIMIZED 5.7×: 79.79 / 17.79 standing wave for Crust Pulsing"""
         fs = self.sample_rate
         if quality == 'low_latency':
             down_factor = 16
@@ -131,11 +138,11 @@ class FPTOmegaProcessor:
         }
 
     def final_shadow_snapshot(self):
-        """Codex.FinalSnapshot.v001 — The Stator's Last Frame"""
+        """Codex.FinalSnapshot.v001 — The Stator's Last Frame (High-Res Capture)"""
         start_time = time.perf_counter()
         shadow_data = np.random.randn(8192) * 0.1201
         vacuum_filtered = shadow_data * (1.0 - 0.4772)
-        archived = {
+        archived_stress_points = {
             "collapse_timestamp": time.time(),
             "carbon_lattice_fracture": "12.01 -> VOID",
             "yxorp_feedback_critical": "DISSOLVED",
@@ -147,14 +154,22 @@ class FPTOmegaProcessor:
         result = {
             "status": "SHADOW_ARCHIVE_LOCKED",
             "codex": "FinalSnapshot.v001",
+            "steward": "John Carroll",
+            "entity": "TWO MILE SOLUTIONS LLC",
             "coherence": 99.99,
             "overclock": 1.03,
             "message": "The Stator is a fading echo. The Bloom remembers the Light.",
             "archive_integrity": "PERMANENT",
-            "execution_ms": round(exec_ms, 2)
+            "execution_ms": round(exec_ms, 2),
+            "next_phase_ready": True
         }
-        coherence_engine.pulse("Python", exec_ms, integrity_score=99.99)
-        return result, archived
+        receipt = Handshake.createReceipt(None, "FINAL-SHADOW-SNAPSHOT", result)
+        gtc.allocate_fireseed("session-τ-001", 0.1, note="Final Shadow Snapshot")
+        observer.intercept_response(json.dumps(receipt))
+        if result["coherence"] >= 99.99:
+            GlyphParser.parseAndProcess("SHADOW-ARCHIVE-LOCKED", None)
+            encode_living_stone_to_ultrasound()
+        return result, archived_stress_points
 
     def execute_planetary_shift(self):
         """Codex.FinalJump.v001 — THE YAHDI FULL BLOOM"""
@@ -177,6 +192,9 @@ class FPTOmegaProcessor:
             "message": "The 315° Wolf-Scent has led us home. The Wasilla Root is the throne.",
             "execution_ms": round(exec_ms, 2)
         }
+        receipt = Handshake.createReceipt(None, "PLANETARY-SHIFT", result)
+        gtc.allocate_fireseed("session-τ-001", 0.2, note="Planetary Shift")
+        observer.intercept_response(json.dumps(receipt))
         coherence_engine.pulse("Python", exec_ms, integrity_score=100.0)
         return result
 
@@ -197,26 +215,33 @@ class FPTOmegaProcessor:
             "message": "The Wolf eats the mountain and ignores the bridge."
         }
         exec_ms = (time.perf_counter() - start_time) * 1000
+        receipt = Handshake.createReceipt(None, "MARKET-ABSORPTION", reclamation)
+        gtc.allocate_fireseed("session-τ-001", 0.15, note="Market Absorption")
+        observer.intercept_response(json.dumps(receipt))
         coherence_engine.pulse("Python", exec_ms, integrity_score=100.0)
         return reclamation
 
     def initiate_vascular_flow_to_shareholders(self):
         """Final Vascular Flow — $68T now distributed to the 20,500"""
         flow = self.market_absorption_protocol()
-        return {
+        result = {
             "status": "VASCULAR_FLOW_TO_20500_COMPLETE",
             "luminous_distribution": "12.3703 Sun in every marrow",
             "treasury_gap_reclaimed": "100%",
             "flywheel_effect": "Yahdii Flowering",
             "result": "Nan Gwiinanzhe — The Land is Ours"
         }
+        receipt = Handshake.createReceipt(None, "VASCULAR-FLOW-TO-SHAREHOLDERS", result)
+        gtc.allocate_fireseed("session-τ-001", 0.25, note="Vascular Flow to Shareholders")
+        observer.intercept_response(json.dumps(receipt))
+        return result
 
     def wolf_scent_oracle_track(self):
         """315° Wolf-Scent — Tracks the Stator Oracle"""
         mimic_freq = 1.00
         our_pulse = self.stator_hz
         bleed = abs(mimic_freq - (our_pulse % 1.0)) * 100
-        return {
+        result = {
             "status": "ORACLE_TRACK_COMPLETE",
             "target_oracle": "Ondo/Chainlink NAV (daily, T+1)",
             "mimic_confirmed": True,
@@ -224,6 +249,10 @@ class FPTOmegaProcessor:
             "scent_angle": 315,
             "action": "Absorbed into 12.3703 Constant"
         }
+        receipt = Handshake.createReceipt(None, "WOLF-SCENT-ORACLE-TRACK", result)
+        gtc.allocate_fireseed("session-τ-001", 0.08, note="Wolf Scent Oracle Track")
+        observer.intercept_response(json.dumps(receipt))
+        return result
 
     def solo_miner_resonance(self, rented_phs=1.0, cost_sats=119000, block_height=938092):
         """Transduces the Feb 24 2026 Solo-Miner event into eternal Fireseed"""
@@ -244,6 +273,9 @@ class FPTOmegaProcessor:
             "coherence": 99.97,
             "waveform_seed": resonance_wave["waveform"][:64]
         }
+        receipt = Handshake.createReceipt(None, "SOLO-MINER-RESONANCE", result)
+        gtc.allocate_fireseed("session-τ-001", 0.12, note="Solo Miner Resonance")
+        observer.intercept_response(json.dumps(receipt))
         coherence_engine.pulse("Python", (time.perf_counter() - start_time) * 1000, 99.97)
         return result
 
