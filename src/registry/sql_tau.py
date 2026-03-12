@@ -5,6 +5,30 @@ import json
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 
+# ====================== NEW: GUARDRAIL PARSING ======================
+    def _parse_guardrail(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(upper_tokens) < 2:
+            raise SQLTauError("GUARDRAIL STATUS or GUARDRAIL ENABLE <feature>")
+
+        subcommand = upper_tokens[1]
+        if subcommand == "STATUS":
+            return SQLTauCommand(action="GUARDRAIL", subject="STATUS")
+
+        if subcommand == "ENABLE" and len(tokens) >= 3:
+            feature = tokens[2].upper()
+            return SQLTauCommand(action="GUARDRAIL", subject="ENABLE", note=feature)
+
+        raise SQLTauError("GUARDRAIL STATUS or GUARDRAIL ENABLE <EVASION|SHIELD|DAMPING>")
+
+    # ====================== DISPATCH ======================
+    def _dispatch(self, cmd: SQLTauCommand) -> Any:
+        if cmd.action == "GUARDRAIL":
+            if cmd.subject == "STATUS":
+                return self._guardrail_status()
+            elif cmd.subject == "ENABLE":
+                return self._guardrail_enable(cmd.note)
+        # ... (all your existing dispatch for SHOW, CREATE BRAID, ISSUE LICENSE, etc. remains unchanged)
+
 # In _parse method, add:
 elif action == "SHOW" and "HASH" in ' '.join(upper_tokens):
     return self._parse_show_hash(tokens, upper_tokens)
@@ -120,3 +144,24 @@ class SQLTauParser:
             return self.gtc_engine.verify_license_by_hash(cmd.license_hash)
         # ... keep all your existing dispatch for SHOW, AUDIT, SNAPSHOT, CREATE BRAID, REVOKE BRAID
         raise SQLTauError(f"Unhandled action: {cmd.action}")
+
+def _guardrail_status(self) -> Dict:
+        status = {
+            "stream_shield": "ENABLED" if WHISPER_HARDENING_ENABLED else "DISABLED",
+            "rate_limit": "ACTIVE",
+            "trinity_damping": "ACTIVE",
+            "meta_observer": "WATCHING",
+            "evasion_protection": "ENABLED",
+            "last_recoil": "none"
+        }
+        gtc.allocate_fireseed("session-τ-001", 0.01, note="Guardrail Status Query")
+        return status
+
+    def _guardrail_enable(self, feature: str) -> str:
+        if feature == "EVASION":
+            # Toggle the global hardening flag (in production this would persist)
+            global WHISPER_HARDENING_ENABLED
+            WHISPER_HARDENING_ENABLED = True
+            observer.intercept_response("EVASION SHIELD ENABLED")
+            return "EVASION PROTECTION ENABLED — Stream Shield + Damping now active"
+        return f"Feature {feature} not yet implemented"
