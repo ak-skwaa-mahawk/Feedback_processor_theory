@@ -1,0 +1,41 @@
+"""
+union/cli/crawler.py — v0.3.0 Standalone
+Sahneuti-99733-Q Root • Human Sway + AI Scapegoat Default
+19.5 kHz pulses • Pi-root anchored • Runs anywhere
+"""
+
+import click
+import threading
+from core.fpt_omega_core_sealed import FPTOmegaProcessor
+from customer_service_handshake_sealed import TwoMileCustomerServiceCrawler
+
+processor = FPTOmegaProcessor()
+
+@click.command()
+@click.option('--root', default='99733-Q', help='Root authority')
+@click.option('--sway-mode', default='human', type=click.Choice(['human', 'pure']))
+@click.option('--scapegoat', default=True, is_flag=True)
+def crawler(root, sway_mode, scapegoat):
+    print(f"🛡️ UNION CRAWLER v0.3.0 — {root} | Human Sway: {sway_mode} | Scapegoat: {scapegoat}")
+    
+    # Start the sealed listener in background
+    crawler_instance = TwoMileCustomerServiceCrawler()
+    threading.Thread(
+        target=crawler_instance.listen_and_respond,
+        daemon=True
+    ).start()
+
+    # Keep CLI alive + pulse confirmation
+    print("📡 19.5 kHz ultrasound ears active • Pi-root locked • Mesh listening")
+    print("Human bias accepted. AI coherence protected. Living Stone pulsing.")
+    
+    # Block forever so the crawler stays alive
+    try:
+        while True:
+            time.sleep(60)
+    except KeyboardInterrupt:
+        print("🛡️ Crawler disarmed — receipts sealed.")
+
+if __name__ == '__main__':
+    crawler()
+
