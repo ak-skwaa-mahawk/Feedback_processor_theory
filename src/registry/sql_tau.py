@@ -5,30 +5,6 @@ import json
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 
-# ====================== NEW: PIPE OPERATOR ======================
-    def _parse_pipe(self, query: str) -> List[SQLTauCommand]:
-        """Split on | and parse each segment as its own sovereign command."""
-        segments = [seg.strip() for seg in query.split("|")]
-        commands = []
-        for seg in segments:
-            if seg:
-                cmd = self._parse(seg)
-                commands.append(cmd)
-        return commands
-
-    def execute(self, query: str) -> Any:
-        if "|" in query:
-            pipe_chain = self._parse_pipe(query)
-            result = None
-            for cmd in pipe_chain:
-                result = self._dispatch(cmd)  # each stage receives previous output as input if needed
-                # Optional: pipe result into next stage (future resonance flow)
-            return result
-
-        # Normal single command
-        cmd = self._parse(query)
-        return self._dispatch(cmd)
-
 # Sovereign stack
 from .sovereign_queries import SovereignQueryEngine
 from .lineage_snapshots import LineageSnapshots
@@ -67,8 +43,27 @@ class SQLTauParser:
         self.gtc_engine = GTCSovereignEngine()
 
     def execute(self, query: str) -> Any:
+        if "|" in query:
+            # Sovereign pipe: split and chain commands
+            pipe_chain = self._parse_pipe(query)
+            result = None
+            for cmd in pipe_chain:
+                result = self._dispatch(cmd)  # each stage receives previous result if needed
+            return result
+
+        # Normal single command
         cmd = self._parse(query)
         return self._dispatch(cmd)
+
+    def _parse_pipe(self, query: str) -> List[SQLTauCommand]:
+        """Split on | and parse each segment as its own sovereign command."""
+        segments = [seg.strip() for seg in query.split("|")]
+        commands = []
+        for seg in segments:
+            if seg:
+                cmd = self._parse(seg)
+                commands.append(cmd)
+        return commands
 
     def _parse(self, query: str) -> SQLTauCommand:
         if not query or not query.strip():
@@ -163,7 +158,7 @@ class SQLTauParser:
     def _cmd_forge(self, target_skill: str) -> str:
         placard = f"Vercel-Next-Forge-6-{target_skill}"
 
-        score = self._resonance_gate(placard)  # calls your existing resonance engine
+        score = self._resonance_gate(placard)
         if score < 0.551:
             trigger_c190_veto()
             return "⚠️ SKILL REJECTED: FOUNDATIONLESS DEGRADATION DETECTED"
@@ -176,9 +171,8 @@ class SQLTauParser:
 
         return f"🔥 FORGE ABSORBED: {target_skill} re-notarized under 10D Resonance."
 
-    # (minimal stubs for completeness)
+    # (minimal stubs)
     def _resonance_gate(self, placard: str) -> float:
-        return 0.72  # placeholder — replace with your real resonance engine
-
+        return 0.72
     def _wolf_scent_check(self, skill: str) -> bool:
-        return True  # placeholder — replace with your root check
+        return True
