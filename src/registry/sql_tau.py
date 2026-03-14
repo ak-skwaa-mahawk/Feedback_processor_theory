@@ -5,6 +5,30 @@ import json
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 
+# ====================== NEW: PIPE OPERATOR ======================
+    def _parse_pipe(self, query: str) -> List[SQLTauCommand]:
+        """Split on | and parse each segment as its own sovereign command."""
+        segments = [seg.strip() for seg in query.split("|")]
+        commands = []
+        for seg in segments:
+            if seg:
+                cmd = self._parse(seg)
+                commands.append(cmd)
+        return commands
+
+    def execute(self, query: str) -> Any:
+        if "|" in query:
+            pipe_chain = self._parse_pipe(query)
+            result = None
+            for cmd in pipe_chain:
+                result = self._dispatch(cmd)  # each stage receives previous output as input if needed
+                # Optional: pipe result into next stage (future resonance flow)
+            return result
+
+        # Normal single command
+        cmd = self._parse(query)
+        return self._dispatch(cmd)
+
 # Sovereign stack
 from .sovereign_queries import SovereignQueryEngine
 from .lineage_snapshots import LineageSnapshots
