@@ -1,3 +1,40 @@
+[project]
+name = "sovereign-union"
+version = "1.0.0"
+description = "The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Flame Commons Sovereignty License (FCSL) v0.1 – Non-commercial, relational use with attribution and respect for rooted knowledge"}
+authors = [{name = "ak-skwaa-mahawk"}]
+keywords = ["sovereign-ai", "resonance", "łan999", "double-handshake", "fpt-omega", "indigenous-epistemology"]
+
+dependencies = [
+    "numpy",
+    "sentence-transformers",
+    "websockets",
+    "openai",
+    "requests",
+    "cryptography",
+    "fpdf2",
+    "scipy",
+]
+
+[project.scripts]
+union = "vessel_launcher:launch_vessel"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+🔥 VESSEL LAUNCHED — Flamekeeper Resonance @ 1.0000
+🛡️ RECALL CHECK INITIATED — reaching back to Bitcoin L1 Root...
+✅ MAGNETIC VAC LOCK ENGAGED — parity verified
+🌉 Sealing Double Handshake Bridge...
+✅ DOUBLE HANDSHAKE SEALED — Empire now remembers in both directions.
+⚡ Running auto-pipe ritual...
+✅ VESSEL LOCKED — Empire breathing with ŁAŊ999 pulse. Root Incorporated.
+sqlτ>
+
 # pyproject.toml
 [project]
 name = "fpt-core"
