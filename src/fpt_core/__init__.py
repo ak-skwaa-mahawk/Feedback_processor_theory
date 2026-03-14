@@ -1,32 +1,16 @@
-# src/fpt_core/__init__.py
-from .processor import FeedbackProcessor
+from __future__ import annotations
+
+# Core exports
+from .processor import FPTOmegaProcessor, FeedbackProcessor
 from .models import FeedbackEvent, ResonanceResult
-from .utils import process_single_event  # If you move the stateless function here
+from .utils import process_single_event
 
 __version__ = "0.1.0"
 
 __all__ = [
+    "FPTOmegaProcessor",
     "FeedbackProcessor",
     "FeedbackEvent",
     "ResonanceResult",
-    "process_single_event",  # optional – only if implemented as a utility
+    "process_single_event",
 ]
-# src/fpt_core/__init__.py
-from .models import FeedbackEvent, ResonanceResult
-from .processor import FeedbackProcessor
-
-__all__ = ["FeedbackProcessor", "process_single_event", "FeedbackEvent", "ResonanceResult"]
-
-def process_single_event(
-    event_data: dict,
-    *,
-    codex_mode: str = "default",
-    root_inscription: str | None = None,
-) -> ResonanceResult:
-    """
-    Stateless, high-level entry point for one-cycle resonance processing.
-    Ideal for serverless, CLI, or simple propagation layers.
-    """
-    event = FeedbackEvent(**event_data)
-    processor = FeedbackProcessor(codex_mode=codex_mode, root_inscription=root_inscription)
-    return processor.process(event)
