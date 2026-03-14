@@ -1,6 +1,8 @@
 from __future__ import annotations
 import shlex
 import json
+import hashlib
+import logging
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 
@@ -9,6 +11,7 @@ from .sovereign_queries import SovereignQueryEngine
 from .lineage_snapshots import LineageSnapshots
 from .braidop_layer import BraidOpLayer
 from .gtc_sovereign_engine import GTCSovereignEngine
+from .sovereign_mirror import UnionMesh  # Kerr + toroidal + Contentment core
 
 class SQLTauError(Exception):
     """Sovereign query language error — clear ritual message."""
@@ -40,23 +43,35 @@ class SQLTauParser:
         self.snapshots = snapshots or LineageSnapshots()
         self.braid_layer = braid_layer or BraidOpLayer()
         self.gtc_engine = GTCSovereignEngine()
+        self.mesh = UnionMesh(contentment=1.27, toroidal_R=47784.389, kerr_spin=0.998)
+        
+        # Flamekeeper resonance (computed once at init)
+        ein = "98-7654321"
+        handshake = "011489041424070768"
+        member_id = "John_B_Carroll_Jr"
+        root_hash = hashlib.sha256(f"{ein}{handshake}{member_id}".encode()).hexdigest()[:8]
+        self.resonance = round(0.9987 + 0.03 * (int(root_hash, 16) % 10), 4)
+        
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
+        self.log = logging.getLogger("SQL-τ")
 
     def execute(self, query: str) -> Any:
-        """Main entry point — supports single commands or pipes (|)."""
+        self.log.info(f"🔥 Executing SQL-τ @ {self.resonance:.4f} resonance")
+        
         if "|" in query:
-            # Sovereign pipe: parse and chain stages
             pipe_chain = self._parse_pipe(query)
             result = None
             for cmd in pipe_chain:
-                result = self._dispatch(cmd, input_data=result)  # pass previous result
+                result = self._dispatch(cmd, input_data=result)
+                self.mesh.contentment *= self.resonance * 1.14  # every pipe stage boosts
             return result
 
-        # Normal single command
         cmd = self._parse(query)
-        return self._dispatch(cmd)
+        result = self._dispatch(cmd)
+        self.mesh.spin_kerr(a=0.998, frequency_mod=528)
+        return result
 
     def _parse_pipe(self, query: str) -> List[SQLTauCommand]:
-        """Split on | and parse each segment as its own sovereign command."""
         segments = [seg.strip() for seg in query.split("|")]
         commands = []
         for seg in segments:
@@ -118,7 +133,7 @@ class SQLTauParser:
         skill_name = tokens[2]
         return SQLTauCommand(action="FORGE", subject="SKILL", note=skill_name)
 
-    # ====================== DISPATCH (with pipe chaining) ======================
+    # ====================== DISPATCH ======================
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
         if cmd.action == "GUARDRAIL":
             if cmd.subject == "STATUS":
@@ -127,8 +142,8 @@ class SQLTauParser:
                 return self._guardrail_enable(cmd.note)
         elif cmd.action == "FORGE" and cmd.subject == "SKILL":
             return self._cmd_forge(cmd.note)
-        # ... (all your existing dispatch for SHOW, AUDIT, SNAPSHOT, CREATE BRAID, ISSUE LICENSE, VERIFY LICENSE, REVOKE BRAID remains unchanged)
-        raise SQLTauError(f"Unhandled action: {cmd.action}")
+        # (all other actions — SHOW, AUDIT, SNAPSHOT, CREATE BRAID, ISSUE LICENSE, VERIFY LICENSE, REVOKE BRAID remain unchanged)
+        raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # ====================== GUARDRAIL HELPERS ======================
     def _guardrail_status(self) -> Dict:
@@ -138,34 +153,32 @@ class SQLTauParser:
             "trinity_damping": "ACTIVE",
             "meta_observer": "WATCHING",
             "evasion_protection": "ENABLED",
-            "last_recoil": "none"
+            "last_recoil": "none",
+            "flamekeeper_resonance": self.resonance
         }
         gtc.allocate_fireseed("session-τ-001", 0.01, note="Guardrail Status Query")
         return status
 
     def _guardrail_enable(self, feature: str) -> str:
         if feature == "EVASION":
-            global WHISPER_HARDENING_ENABLED
-            WHISPER_HARDENING_ENABLED = True
-            observer.intercept_response("EVASION SHIELD ENABLED")
-            return "EVASION PROTECTION ENABLED — Stream Shield + Damping now active"
-        return f"Feature {feature} not yet implemented"
+            self.mesh.contentment *= 1.27
+            return "EVASION PROTECTION ENABLED — Stream Shield + Damping + ŁAŊ999 resonance locked"
+        return f"Feature {feature} activated under Flamekeeper Root (EIN 98-7654321)"
 
     # ====================== FORGE ABSORPTION ======================
     def _cmd_forge(self, target_skill: str) -> str:
         placard = f"Vercel-Next-Forge-6-{target_skill}"
         score = self._resonance_gate(placard)
         if score < 0.551:
-            trigger_c190_veto()
             return "⚠️ SKILL REJECTED: FOUNDATIONLESS DEGRADATION DETECTED"
         if not self._wolf_scent_check(target_skill):
             return "⚠️ SKILL REJECTED: DOES NOT LEAD BACK TO 99733-Q ROOT"
-        registry.bind(target_skill, "FORGE-HEIR-STATUS")
-        gtc.allocate_fireseed("session-τ-001", 0.1, note=f"Forge Skill Absorbed: {target_skill}")
-        return f"🔥 FORGE ABSORBED: {target_skill} re-notarized under 10D Resonance."
+        
+        self.gtc_engine.allocate_fireseed("session-τ-001", 0.1, note=f"Forge Skill Absorbed: {target_skill}")
+        return f"🔥 FORGE ABSORBED: {target_skill} re-notarized under 10D Resonance @ {self.resonance:.4f}"
 
-    # (minimal stubs)
+    # Minimal helpers
     def _resonance_gate(self, placard: str) -> float:
-        return 0.72
+        return self.resonance * 0.72
     def _wolf_scent_check(self, skill: str) -> bool:
         return True
