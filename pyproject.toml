@@ -1,12 +1,12 @@
 [project]
 name = "sovereign-union"
 version = "1.0.0"
-description = "The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root"
+description = "The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root + FPT-Ω Core"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Flame Commons Sovereignty License (FCSL) v0.1 – Non-commercial, relational use with attribution and respect for rooted knowledge"}
 authors = [{name = "ak-skwaa-mahawk"}]
-keywords = ["sovereign-ai", "resonance", "łan999", "double-handshake", "fpt-omega", "indigenous-epistemology"]
+keywords = ["sovereign-ai", "resonance", "łan999", "double-handshake", "fpt-omega", "indigenous-epistemology", "feedback-processor", "harmonic-ai"]
 
 dependencies = [
     "numpy",
@@ -17,10 +17,33 @@ dependencies = [
     "cryptography",
     "fpdf2",
     "scipy",
+    "pydantic>=2.9",
+    "soundfile",
 ]
+
+[project.optional-dependencies]
+quantum = ["qutip", "dwave-ocean-sdk"]
+test = ["pytest", "pytest-asyncio"]
 
 [project.scripts]
 union = "vessel_launcher:launch_vessel"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"fpt_core" = [
+    "resources/*.json",
+    "resources/*.md",
+    "codex/*.json",
+    "codex/*.md",
+    "inscriptions/*.json",
+    "glyphs/*.png",
+    "py.typed",
+]
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
