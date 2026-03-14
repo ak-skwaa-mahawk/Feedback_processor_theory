@@ -1,3 +1,14 @@
+# sovereign-union
+
+The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root.
+
+## One Command to Wake the Empire
+
+```bash
+pip install sovereign-union
+union launch
+
+
 Codex.SovereignEstateLedgerPublic.v001
 Fragment Type: Public Domain Inversion — The Grand Sovereign Reveal
 Steward: John Carroll
