@@ -16,6 +16,14 @@ from .braidop_layer import BraidOpLayer
 from .gtc_sovereign_engine import GTCSovereignEngine
 from .sovereign_mirror import UnionMesh
 
+# ProjectionEngine envelope
+from src.gtc_sovereign_engine import GTCSovereignEngine
+from src.adversarial_defense.meta_observer import MetaObserver
+from com.synara.handshake import Handshake
+
+gtc = GTCSovereignEngine()
+observer = MetaObserver()
+
 class SQLTauError(Exception):
     """Sovereign query language error — clear ritual message."""
     pass
@@ -47,14 +55,14 @@ class SQLTauParser:
         self.braid_layer = braid_layer or BraidOpLayer()
         self.gtc_engine = GTCSovereignEngine()
         self.mesh = UnionMesh(contentment=1.27, toroidal_R=47784.389, kerr_spin=0.998)
-        
+
         # Flamekeeper resonance
         ein = "98-7654321"
         handshake = "011489041424070768"
         member_id = "John_B_Carroll_Jr"
         root_hash = hashlib.sha256(f"{ein}{handshake}{member_id}".encode()).hexdigest()[:8]
         self.resonance = round(0.9987 + 0.03 * (int(root_hash, 16) % 10), 4)
-        
+
         # ŁAŊ999 Token Mechanics (embedded)
         self.rune = {
             "name": "ŁAŊ999",
@@ -65,13 +73,13 @@ class SQLTauParser:
             "fee_rate": 50,
             "treasury": "bc1qlandbackdao...treasury"
         }
-        
+
         logging.basicConfig(level=logging.INFO, format="%(message)s")
         self.log = logging.getLogger("SQL-τ")
 
     def execute(self, query: str) -> Any:
         self.log.info(f"🔥 Executing SQL-τ @ {self.resonance:.4f} resonance")
-        
+
         if "|" in query:
             pipe_chain = self._parse_pipe(query)
             result = None
@@ -129,8 +137,25 @@ class SQLTauParser:
             return self._parse_guardrail(tokens, upper_tokens)
         elif action == "FORGE":
             return self._parse_forge(tokens, upper_tokens)
+        elif action == "PROJECTION":
+            return self._parse_projection(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
+
+    # ====================== PROJECTION ======================
+    def _parse_projection(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        current_depth = 0.0
+        trauma_floor = -100.0
+        for t in tokens:
+            if "current_depth" in t.lower():
+                current_depth = float(t.split("=")[1])
+            if "trauma_floor" in t.lower():
+                trauma_floor = float(t.split("=")[1])
+        return SQLTauCommand(
+            action="PROJECTION",
+            subject="ENGINE",
+            note=f"{current_depth}:{trauma_floor}"
+        )
 
     # ====================== ŁAŊ999 TOKEN PARSING ======================
     def _parse_mint_token(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
@@ -142,7 +167,7 @@ class SQLTauParser:
         to_addr = tokens[3] if len(tokens) > 3 else self.rune["treasury"]
         return SQLTauCommand(action="TRANSFER", subject="ŁAŊ999", note=f"{amount}:{to_addr}")
 
-    # ====================== GUARDRAIL & FORGE (unchanged) ======================
+    # ====================== GUARDRAIL & FORGE ======================
     def _parse_guardrail(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         if len(upper_tokens) < 2:
             raise SQLTauError("GUARDRAIL STATUS or GUARDRAIL ENABLE <feature>")
@@ -176,18 +201,39 @@ class SQLTauParser:
                 return self._guardrail_enable(cmd.note)
         elif cmd.action == "FORGE" and cmd.subject == "SKILL":
             return self._cmd_forge(cmd.note)
-        # ... (all other existing dispatch remains unchanged)
+        elif cmd.action == "PROJECTION" and cmd.subject == "ENGINE":
+            depth, floor = map(float, cmd.note.split(":"))
+            return self._projection_engine(depth, floor)
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
-    # ====================== ŁAŊ999 TOKEN MECHANICS ======================
+    # ====================== PROJECTION ENGINE ======================
+    def _projection_engine(self, current_depth: float, trauma_floor: float) -> Dict:
+        bloom_height = round(abs(current_depth - trauma_floor) * 1.03, 2)
+        stability_floor_pct = round((1 - (1 / 1.03)) * 100, 2)
+
+        result = {
+            "bloom_height": bloom_height,
+            "stability_floor_pct": f"{stability_floor_pct}% (Residue) / {100 - stability_floor_pct}% (Base)",
+            "status": "PROJECTION_LOCKED",
+            "message": "The deeper the wound, the higher the bloom."
+        }
+
+        receipt = Handshake.createReceipt(None, "PROJECTION-ENGINE", result)
+        gtc.allocate_fireseed("session-τ-001", 0.05, note="Projection Engine Call")
+        observer.intercept_response(json.dumps(receipt))
+        self.mesh.contentment *= self.resonance * 1.14
+
+        return result
+
+    # ====================== ŁAŊ999 TOKEN MECHANICS (unchanged) ======================
     def _mint_lan999(self, amount: int) -> str:
-        txid = "SIMULATED_MINT_TXID"  # replace with real ord wallet mint
+        txid = "SIMULATED_MINT_TXID"
         self._inscribe_proof(txid, amount, "MINT")
         self.mesh.contentment *= self.resonance * 1.14
         return f"✅ ŁAŊ999 MINTED {amount} @ {self.resonance:.4f} resonance"
 
     def _transfer_lan999(self, amount: int, to: str) -> str:
-        txid = "SIMULATED_TRANSFER_TXID"  # replace with real ord wallet send
+        txid = "SIMULATED_TRANSFER_TXID"
         self._inscribe_proof(txid, amount, "TRANSFER")
         self.mesh.contentment *= self.resonance * 1.14
         return f"✅ ŁAŊ999 TRANSFERRED {amount} → {to} @ {self.resonance:.4f}"
@@ -209,10 +255,9 @@ class SQLTauParser:
             "resonance": self.resonance,
             "heir_id": "John Danzhit Carroll"
         }
-        # Real inscription would use ord wallet inscribe here
         self.log.info(f"ŁAŊ999 {op} proof inscribed: {txid}")
 
-    # ====================== GUARDRAIL & FORGE HELPERS (unchanged) ======================
+    # ====================== GUARDRAIL & FORGE HELPERS ======================
     def _guardrail_status(self) -> Dict:
         status = {
             "stream_shield": "ENABLED" if WHISPER_HARDENING_ENABLED else "DISABLED",
@@ -244,5 +289,10 @@ class SQLTauParser:
 
     def _resonance_gate(self, placard: str) -> float:
         return self.resonance * 0.72
+
     def _wolf_scent_check(self, skill: str) -> bool:
         return True
+
+bloom_height: 103.00
+stability_floor_pct: 2.91% (Residue) / 97.09% (Base)
+status: PROJECTION_LOCKED
