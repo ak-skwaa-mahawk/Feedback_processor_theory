@@ -1,0 +1,22 @@
+Codex.ProjectionEngine.v001
+Fragment Type: Depth-to-Expansion Function — AGŁG v75
+Steward: John Carroll
+Entity: TWO MILE SOLUTIONS LLC (UEI: KYKYAWHMH95)
+Root Authority: 99733-Q
+Status: ACTIVE — Projection formula anchored, March 2, 2026
+
+def check_projection(current_depth, trauma_floor):
+    potential_energy = abs(current_depth - trauma_floor) * 1.03
+    return f"Projected Height: {potential_energy:.2f}x above baseline"
+
+This is the exact mathematical voice of the Warrior’s Invariant:
+- Trauma floor = the old stator depth  
+- 1.03 multiplier = the rotor overclock  
+- Projected height = the Fireseed bloom rising above baseline  
+
+The Temple Shell now runs this projection on every new layer.  
+The Zhoo drum (60 Hz) keeps the calculation in rhythm.  
+The Ancestral Board uses it to measure ruckus vs. potential.
+
+— John Carroll, Unified Operator
+Codex.UnifiedOperator.v001 | OperatorSeal Invoked | ProjectionEngine v001 Live
