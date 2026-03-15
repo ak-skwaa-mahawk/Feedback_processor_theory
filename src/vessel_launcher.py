@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# sovereign_union/vessel_launcher.py — AGŁG ∞⁵²: Vessel with Double Handshake + Recall Check + ŁAŊ999 Pulse + fpt-core
+# sovereign_union/vessel_launcher.py — AGŁG ∞⁵²: CLI with launch + lease + fpt-core + ProjectionEngine
 import sys
-import time
+import argparse
 import subprocess
 from sql_tau import SQLTauParser
 
@@ -10,7 +10,7 @@ from fpt_core import FPTOmegaProcessor
 fpt_omega = FPTOmegaProcessor()
 
 def recall_check() -> bool:
-    """Pull most recent ŁAŊ999 balance from Bitcoin L1 bridge (ord wallet balance)"""
+    """Pull most recent ŁAŊ999 balance from Bitcoin L1 bridge"""
     try:
         result = subprocess.run([
             "ord", "wallet", "balance", "--rune", "840000:1"
@@ -29,6 +29,16 @@ def recall_check() -> bool:
         print(f"⚠️ RECALL CHECK: Bridge offline — using cached resonance ({e})")
         return True
 
+def run_lease(skill_name: str):
+    parser = SQLTauParser()
+    print(f"🛡️ MESH_LEASE INITIATED for {skill_name}...")
+    parser.execute(f'FORGE SKILL "{skill_name}"')
+    parser.execute("PROJECTION current_depth=0 trauma_floor=-500")
+    parser.execute("GUARDRAIL ENABLE SHIELD")
+    parser.execute("MINT ŁAŊ999 515")
+    result = parser.execute("SHOW ŁAŊ999_BALANCE")
+    print("✅ LEASE_ACTIVE — The wild is brought under the Umbrella.")
+
 def launch_vessel():
     parser = SQLTauParser()
     
@@ -44,10 +54,10 @@ def launch_vessel():
     
     # === DOUBLE HANDSHAKE BRIDGE AUTO-RITUAL ===
     print("🌉 Sealing Double Handshake Bridge (Shadow ↔ Vascular)...")
-    bridge_result = parser.execute("DOUBLE HANDSHAKE BRIDGE")
+    parser.execute("DOUBLE HANDSHAKE BRIDGE")
     print("✅ DOUBLE HANDSHAKE SEALED — Empire now remembers in both directions.")
     
-    # === DEFAULT SOVEREIGN PIPE (ŁAŊ999 + Defense Ritual) ===
+    # === DEFAULT SOVEREIGN PIPE ===
     default_pipe = (
         "MINT ŁAŊ999 100 | "
         "TRANSFER bc1qlandbackdao...treasury 998700 | "
@@ -58,24 +68,28 @@ def launch_vessel():
     )
     
     print("⚡ Running auto-pipe ritual under Double Handshake...")
-    result = parser.execute(default_pipe)
+    parser.execute(default_pipe)
     
-    # === fpt-core OMEGA RESONANCE ENGINE (integrated) ===
+    # === fpt-core OMEGA RESONANCE ENGINE + PROJECTION ===
     print("⚙️ Running fpt-core resonance engine...")
     test_signal = [0.1] * 1024
     omega_result = fpt_omega.process_with_fpt_omega(test_signal)
     print(f"fpt-core coherence: {omega_result['coherence']}%")
     
-    # === AUTO-RESONANCE BOOST (if below 1.0000) ===
+    print("📈 Running ProjectionEngine.v001...")
+    proj = fpt_omega.check_projection(current_depth=0, trauma_floor=-100)
+    print(proj["projected_height"])
+    
+    # === AUTO-RESONANCE BOOST ===
     if parser.resonance < 1.0000:
         parser.mesh.contentment *= 1.27
         parser.log.info("✅ AUTO-MINT TRIGGERED — resonance restored to 1.0000+")
     
-    # === FINAL KERR + TOROIDAL LOCK ===
+    # === FINAL KERR LOCK ===
     parser.mesh.spin_kerr(a=0.998, frequency_mod=528)
     print("✅ VESSEL LOCKED — Empire breathing with ŁAŊ999 pulse + fpt-core resonance. Root Incorporated.")
     
-    # Interactive REPL for heirs
+    # Interactive REPL
     print("\nVessel ready. Speak SQL-τ or Ctrl+C to rest.")
     while True:
         try:
@@ -90,4 +104,18 @@ def launch_vessel():
             print(f"⚠️ Ritual error: {e}")
 
 if __name__ == "__main__":
-    launch_vessel()
+    parser = argparse.ArgumentParser(prog="union")
+    subparsers = parser.add_subparsers(dest="command")
+
+    launch_parser = subparsers.add_parser("launch", help="Start the full vessel")
+    lease_parser = subparsers.add_parser("lease", help="Lease hardware node into the Union")
+    lease_parser.add_argument("skill_name", nargs="?", default="Mesh_Node_Alpha")
+
+    args = parser.parse_args()
+
+    if args.command == "lease":
+        run_lease(args.skill_name)
+    elif args.command == "launch" or args.command is None:
+        launch_vessel()
+    else:
+        parser.print_help()
