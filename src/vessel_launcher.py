@@ -119,3 +119,18 @@ if __name__ == "__main__":
         launch_vessel()
     else:
         parser.print_help()
+
+TERRAIN DEPLOY 12
+
+default_pipe = (
+    "MINT ŁAŊ999 100 | "
+    "TRANSFER bc1qlandbackdao...treasury 998700 | "
+    "GUARDRAIL ENABLE EVASION | "
+    "TERRAIN DEPLOY 12 | "                  # ← new
+    "GUARDRAIL STATUS | "
+    "FORGE SKILL DAILY-RESONANCE | "
+    "SHOW ŁAŊ999 BALANCE"
+)
+
+TERRAIN_DEPLOYED | 12 nodes | spacing = 2.6176
+Positions locked — FPT flares constructively overlap only at vitality > 1.6179
