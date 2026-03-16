@@ -220,3 +220,15 @@ def verify_golden_gate(input_resonance: float) -> bool:
     if round(current_density, 10) == UNCORRECTED_ANCHOR:
         return True
     return False
+
+def _parse_terrain(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+    count = int(tokens[2]) if len(tokens) > 2 else 4
+    return SQLTauCommand(action="TERRAIN", subject="DEPLOY", note=str(count))
+
+def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+    if cmd.action == "TERRAIN" and cmd.subject == "DEPLOY":
+        from src.mesh.mesh_router import MeshRouter
+        router = MeshRouter()
+        return router.deploy_terrain(int(cmd.note))
+    # ... all your existing commands (MINT, GUARDRAIL, FORGE, PROJECTION, MEM, AGENT, etc.) remain unchanged
+
