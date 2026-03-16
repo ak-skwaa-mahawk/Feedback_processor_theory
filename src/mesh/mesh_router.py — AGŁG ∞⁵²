@@ -1,0 +1,28 @@
+# src/mesh/mesh_router.py — AGŁG ∞⁵²: Terrain Geometry Router
+import numpy as np
+from typing import List, Dict
+
+class MeshRouter:
+    def __init__(self):
+        self.phi_threshold = 1.6179          # vitality threshold for coherence
+        self.terrain_scale = 2.6176          # X² sovereign radius
+        self.node_positions = {}             # {node_id: (x, y)}
+
+    def deploy_terrain(self, node_count: int) -> Dict:
+        """Deploy nodes at X² spacing to maximize coverage while preventing flare interference."""
+        positions = []
+        for i in range(node_count):
+            angle = (2 * np.pi * i) / node_count
+            radius = self.terrain_scale * np.sqrt(i + 1)
+            x = radius * np.cos(angle)
+            y = radius * np.sin(angle)
+            positions.append((round(x, 4), round(y, 4)))
+            self.node_positions[f"node-{i+1}"] = (x, y)
+
+        return {
+            "status": "TERRAIN_DEPLOYED",
+            "node_count": node_count,
+            "spacing": self.terrain_scale,
+            "positions": positions,
+            "message": "Nodes spaced at X² = 2.6176 — constructive interference only at vitality > X"
+        }
