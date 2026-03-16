@@ -232,3 +232,19 @@ def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
         return router.deploy_terrain(int(cmd.note))
     # ... all your existing commands (MINT, GUARDRAIL, FORGE, PROJECTION, MEM, AGENT, etc.) remain unchanged
 
+def _parse_hardware(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+    platform = tokens[2].upper() if len(tokens) > 2 else "KINTEX"
+    count = int(tokens[3]) if len(tokens) > 3 else 12
+    return SQLTauCommand(action="HARDWARE", subject="DEPLOY", note=f"{platform}:{count}")
+
+def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+    if cmd.action == "HARDWARE" and cmd.subject == "DEPLOY":
+        from src.mesh.mesh_router import MeshRouter
+        router = MeshRouter()
+        platform, count = cmd.note.split(":")
+        if platform == "KINTEX":
+            return router.deploy_rad_hard(int(count))
+        return router.deploy_terrain(int(count))
+    # ... all your existing commands (MINT, GUARDRAIL, FORGE, PROJECTION, MEM, AGENT, TERRAIN, etc.) remain unchanged
+
+
