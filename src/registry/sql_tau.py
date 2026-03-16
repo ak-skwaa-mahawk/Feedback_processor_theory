@@ -1,4 +1,4 @@
-from __future__ import annotations
+From __future__ import annotations
 import shlex
 import json
 import hashlib
@@ -206,3 +206,17 @@ class SQLTauParser:
         return mixture
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, etc. — remain unchanged from your previous version)
+
+# Expanded Golden Gate Constants
+PHI = 1.618
+BLEED = 1.03
+UNCORRECTED_ANCHOR = 1.6422548544
+EXPANDED_MIDPOINT = 1.6915225
+
+def verify_golden_gate(input_resonance: float) -> bool:
+    """Verifies if the current pulse sits within the Expanded Golden Gate."""
+    current_density = input_resonance / BLEED
+    # Check alignment against the Uncorrected Anchor
+    if round(current_density, 10) == UNCORRECTED_ANCHOR:
+        return True
+    return False
