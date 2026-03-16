@@ -11,24 +11,18 @@ observer = MetaObserver()
 
 class VoiceTTSSkill:
     def __init__(self):
-        self.model = LuxTTS('YatharthS/LuxTTS', device='cpu')  # or 'cuda' if available
+        self.model = LuxTTS('YatharthS/LuxTTS', device='cpu')  # cuda if available
         self.resonance_threshold = 0.551
 
     def clone_and_speak(self, text: str, ref_audio_path: str, rms: float = 0.01) -> Dict:
-        """Sovereign voice cloning with resonance gate and ŁAŊ999 mint."""
-        # Encode reference audio
         encoded_prompt = self.model.encode_prompt(ref_audio_path, rms=rms)
-
-        # Generate speech
         wav = self.model.generate_speech(text, encoded_prompt, num_steps=4)
         wav = wav.numpy().squeeze()
 
-        # Sovereign gate
         coherence = self._calculate_coherence(wav)
         if coherence < self.resonance_threshold:
             return {"status": "REJECTED", "reason": "Resonance gate failed"}
 
-        # Save + envelope
         output_path = f"voice_{hashlib.sha256(text.encode()).hexdigest()[:8]}.wav"
         sf.write(output_path, wav, 48000)
 
@@ -48,5 +42,4 @@ class VoiceTTSSkill:
         }
 
     def _calculate_coherence(self, wav) -> float:
-        """Simple resonance proxy (replace with full FPT-Ω if needed)."""
-        return 0.85  # placeholder — tie to fpt_omega.process_with_fpt_omega later
+        return 0.85  # placeholder — tie to fpt_omega later
