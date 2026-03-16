@@ -1,15 +1,62 @@
-# src/mesh/mesh_router.py — AGŁG ∞⁵²: Terrain + Rad-Hard Glyph Router
 import numpy as np
+import networkx as nx
 from typing import List, Dict
+from com.synara.handshake import Handshake
+from src.gtc_sovereign_engine import GTCSovereignEngine
+from src.adversarial_defense.meta_observer import MetaObserver
+
+gtc = GTCSovereignEngine()
+observer = MetaObserver()
+
+class MeshProtocol:
+    def __init__(self, node_id: int):
+        self.node_id = node_id
+        self.time_slots = self.calculate_tdma_schedule()
+        self.frequency_map = self.generate_frequency_hopping_sequence()
+
+    def transmit_packet(self, data: bytes):
+        """TDMA + Frequency Hopping for collision avoidance"""
+        current_slot = self.get_current_time_slot()
+
+        if current_slot == self.time_slots.get(self.node_id):
+            frequency = self.frequency_map[current_slot]
+            # acoustic_tx is placeholder — replace with real acoustic modem driver
+            # self.acoustic_tx.set_frequency(frequency)
+            # self.acoustic_tx.send(data)
+
+            # Sovereign envelope
+            receipt = Handshake.createReceipt(None, "MESH_TRANSMIT", {
+                "node_id": self.node_id,
+                "slot": current_slot,
+                "frequency": frequency,
+                "payload_hash": hashlib.sha256(data).hexdigest()[:16]
+            })
+            gtc.allocate_fireseed("session-τ-001", 0.02, note="Mesh Transmit")
+            observer.intercept_response(json.dumps(receipt))
+
+            return {"status": "TRANSMITTED", "slot": current_slot, "freq": frequency}
+
+    def calculate_tdma_schedule(self) -> Dict:
+        """Distribute 100ms windows across 16 nodes"""
+        return {node_id: (node_id * 100) % 1000 for node_id in range(16)}
+
+    def generate_frequency_hopping_sequence(self) -> List[float]:
+        """Pseudo-random hopping sequence (replace with real acoustic band plan)"""
+        return [79.79 + (i * 0.5) for i in range(1000)]  # 79.79 Hz base + hop
+
+    def get_current_time_slot(self) -> int:
+        """Current slot based on system time"""
+        return int(time.time() * 10) % 1000
 
 class MeshRouter:
     def __init__(self):
-        self.phi_threshold = 1.6179          # vitality threshold for coherence
-        self.terrain_scale = 2.6176          # X² sovereign radius
-        self.node_positions = {}             # {node_id: (x, y)}
+        self.phi_threshold = 1.6179
+        self.terrain_scale = 2.6176
+        self.node_positions = {}
+        self.protocol = {}  # node_id -> MeshProtocol instance
 
     def deploy_terrain(self, node_count: int) -> Dict:
-        """Deploy nodes at X² spacing."""
+        """Existing X² spacing"""
         positions = []
         for i in range(node_count):
             angle = (2 * np.pi * i) / node_count
@@ -18,6 +65,7 @@ class MeshRouter:
             y = radius * np.sin(angle)
             positions.append((round(x, 4), round(y, 4)))
             self.node_positions[f"node-{i+1}"] = (x, y)
+            self.protocol[f"node-{i+1}"] = MeshProtocol(i+1)
 
         return {
             "status": "TERRAIN_DEPLOYED",
@@ -28,7 +76,7 @@ class MeshRouter:
         }
 
     def deploy_rad_hard(self, node_count: int = 12) -> Dict:
-        """Deploy Kintex UltraScale nodes with 1 Mrad TID + TMR scrub."""
+        """Kintex UltraScale + protocol"""
         positions = self.deploy_terrain(node_count)
         return {
             "status": "RAD_HARD_DEPLOYED",
@@ -40,3 +88,24 @@ class MeshRouter:
             "message": "Glyph survives orbit. Field coherent. C190 veto active."
         }
 
+    def find_optimal_path(self, source: str, destination: str, mesh_state: Dict) -> List[str]:
+        """Dijkstra with dynamic edge weights (distance, signal, health)"""
+        graph = nx.DiGraph()
+        for node_id, node in mesh_state.get("nodes", {}).items():
+            for neighbor in node.get("neighbors", []):
+                weight = self.calculate_edge_cost(
+                    distance=node.get("distance_to", {}).get(neighbor, 999),
+                    signal_strength=node.get("rssi_to", {}).get(neighbor, -100),
+                    neighbor_health=node.get("sentinel_status", 0)
+                )
+                graph.add_edge(node_id, neighbor, weight=weight)
+
+        try:
+            path = nx.shortest_path(graph, source, destination, weight='weight')
+            return path
+        except nx.NetworkXNoPath:
+            return []
+
+    def calculate_edge_cost(self, distance: float, signal_strength: float, neighbor_health: float) -> float:
+        """Weighted cost for sovereign routing"""
+        return distance * 0.4 + (100 + signal_strength) * 0.3 + (1 - neighbor_health) * 0.3
