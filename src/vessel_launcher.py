@@ -134,3 +134,12 @@ default_pipe = (
 
 TERRAIN_DEPLOYED | 12 nodes | spacing = 2.6176
 Positions locked — FPT flares constructively overlap only at vitality > 1.6179
+
+def run_hardware(self, platform: str = "KINTEX", count: int = 12):
+    parser = SQLTauParser()
+    print(f"🛡️ HARDWARE DEPLOY INITIATED — {platform} {count} nodes...")
+    result = parser.execute(f"HARDWARE DEPLOY {platform} {count}")
+    print(result)
+
+RAD_HARD_DEPLOYED | Kintex UltraScale | 1 Mrad TID | R > 0.9999999995
+Glyph endures. Field coherent. C190 veto active.
