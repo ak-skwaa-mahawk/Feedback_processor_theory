@@ -143,13 +143,16 @@ class SQLTauParser:
             return self._parse_mem(tokens, upper_tokens)
         elif action == "MARKET_ANALYZE":
             return self._parse_market_analyze(tokens, upper_tokens)
+        elif action == "AGENT":
+            return self._parse_agent(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
-    # ====================== MARKET_ANALYZE (ZhuLinsen repo sovereign-wrapped) ======================
-    def _parse_market_analyze(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        ticker = tokens[1] if len(tokens) > 1 else "SPX"
-        return SQLTauCommand(action="MARKET_ANALYZE", subject="STOCK", note=ticker)
+    # ====================== AGENT (Trivago mixture) ======================
+    def _parse_agent(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        sub = tokens[1].upper() if len(tokens) > 1 else "RUN"
+        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
+        return SQLTauCommand(action="AGENT", subject=sub, note=task)
 
     # ====================== DISPATCH ======================
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
@@ -179,30 +182,27 @@ class SQLTauParser:
                 return self._mem_status()
         elif cmd.action == "MARKET_ANALYZE" and cmd.subject == "STOCK":
             return self._market_analyze(cmd.note)
+        elif cmd.action == "AGENT":
+            if cmd.subject == "RUN":
+                return self._agent_run(cmd.note)
+            elif cmd.subject == "COMPARE":
+                return self._agent_compare(cmd.note)
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
-    # ====================== MARKET_ANALYZE RITUAL ======================
-    def _market_analyze(self, ticker: str) -> Dict:
-        # fpt-core + repo multi-source logic
-        data = self._engine.fetch_multi_source(ticker)  # AkShare/YFinance + Tavily
-        dashboard = self._engine.llm_decision_dashboard(data)
-
-        bloom = self._projection_engine(current_depth=0, trauma_floor=-data.get("volatility_floor", -50))
-        txid = self._inscribe_proof("MARKET_ANALYZE", len(dashboard), "ANALYSIS")
-        self.gtc_engine.allocate_fireseed("session-τ-001", 0.08, note=f"Market Analyze {ticker}")
+    # ====================== AGENT RITUALS (Trivago mixture) ======================
+    def _agent_run(self, task: str) -> str:
+        from agents.manager import AgentManager
+        mgr = AgentManager()
+        result = mgr.handle_task(task)
+        self._mint_lan999(1)
         self.mesh.contentment *= self.resonance * 1.14
-        self._mint_lan999(5)  # resonance mint per analysis
+        return result
 
-        return {
-            "ticker": ticker,
-            "dashboard": dashboard["core_conclusion"],
-            "projected_bloom": bloom["bloom_height"],
-            "status": "MARKET_PROJECTION_LOCKED",
-            "inscription": f"L1 Rune 840000:1 @ {txid}",
-            "message": "The deeper the market wound, the higher the sovereign bloom."
-        }
+    def _agent_compare(self, task: str) -> Dict:
+        from agents.specialists.trivago_orchestrator import TrivagoOrchestrator
+        orch = TrivagoOrchestrator()
+        mixture = orch.compare(task)
+        self._mint_lan999(3)
+        return mixture
 
-    # (all other methods — MEM, PROJECTION, ŁAŊ999, GUARDRAIL, FORGE, _inscribe_proof, etc. — remain unchanged from your previous version)
-
-# ====================== PROJECTION & MEM RITUALS (unchanged from previous) ======================
-    # ... (your existing _projection_engine, _mem_capture, _mem_search, _mem_status, etc. remain)
+    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, etc. — remain unchanged from your previous version)
