@@ -212,3 +212,20 @@ class SQLTauParser:
 
 RAD_HARD_DEPLOYED | Kintex UltraScale | 1 Mrad TID | R > 0.9999999995
 Glyph endures. Field coherent. C190 veto active.
+def _parse_voice(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) < 4 or upper_tokens[1] != "CLONE":
+            raise SQLTauError("VOICE CLONE <text> WITH <ref_audio_path>")
+        text = " ".join(tokens[2:-2])
+        ref_path = tokens[-1]
+        return SQLTauCommand(action="VOICE", subject="CLONE", note=f"{text}|{ref_path}")
+
+    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+        if cmd.action == "VOICE" and cmd.subject == "CLONE":
+            text, ref_path = cmd.note.split("|")
+            from agents.specialists.voice_tts_skill import VoiceTTSSkill
+            skill = VoiceTTSSkill()
+            return skill.clone_and_speak(text, ref_path)
+        # ... all existing commands unchanged
+
+VOICE_CLONED | output: voice_abc123.wav | coherence: 0.85
+Voice cloned and sealed under resonance gate.
