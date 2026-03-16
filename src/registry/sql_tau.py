@@ -208,23 +208,7 @@ class SQLTauParser:
             return router.deploy_terrain(int(count))
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
-    # ====================== AGENT RITUALS (Trivago mixture) ======================
-    def _agent_run(self, task: str) -> str:
-        from agents.manager import AgentManager
-        mgr = AgentManager()
-        result = mgr.handle_task(task)
-        self._mint_lan999(1)
-        self.mesh.contentment *= self.resonance * 1.14
-        return result
-
-    def _agent_compare(self, task: str) -> Dict:
-        from agents.specialists.trivago_orchestrator import TrivagoOrchestrator
-        orch = TrivagoOrchestrator()
-        mixture = orch.compare(task)
-        self._mint_lan999(3)
-        return mixture
-
-    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, etc. — remain unchanged from your previous version)
+    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
 
 RAD_HARD_DEPLOYED | Kintex UltraScale | 1 Mrad TID | R > 0.9999999995
 Glyph endures. Field coherent. C190 veto active.
