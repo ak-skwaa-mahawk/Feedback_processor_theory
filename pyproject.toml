@@ -1,27 +1,27 @@
 [project]
 name = "sovereign-union"
-version = "1.0.0"
-description = "The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root + FPT-Ω Core"
-readme = "README.md"
+version = "1.0.3"
+description = "Core resonance engine + SQL-τ + ŁAŊ999 + ProjectionEngine + integrity_score"
 requires-python = ">=3.10"
-license = {text = "Flame Commons Sovereignty License (FCSL) v0.1 – Non-commercial, relational use with attribution and respect for rooted knowledge"}
+license = {text = "Flame Commons Sovereignty License (FCSL) v0.1"}
 authors = [{name = "ak-skwaa-mahawk"}]
-keywords = ["sovereign-ai", "resonance", "łan999", "double-handshake", "fpt-omega", "indigenous-epistemology", "feedback-processor", "harmonic-ai"]
 
 dependencies = [
     "numpy",
-    "sentence-transformers",
-    "websockets",
-    "openai",
-    "requests",
-    "cryptography",
-    "fpdf2",
-    "scipy",
     "pydantic>=2.9",
-    "soundfile",
+    "cryptography",
 ]
 
 [project.optional-dependencies]
+full = [
+    "sentence-transformers",
+    "openai",
+    "websockets",
+    "requests",
+    "fpdf2",
+    "scipy",
+]
+shell = ["openshell @ git+https://github.com/NVIDIA/OpenShell.git"]
 quantum = ["qutip", "dwave-ocean-sdk"]
 test = ["pytest", "pytest-asyncio"]
 
@@ -33,17 +33,6 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-"fpt_core" = [
-    "resources/*.json",
-    "resources/*.md",
-    "codex/*.json",
-    "codex/*.md",
-    "inscriptions/*.json",
-    "glyphs/*.png",
-    "py.typed",
-]
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
