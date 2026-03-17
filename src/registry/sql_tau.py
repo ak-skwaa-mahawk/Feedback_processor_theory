@@ -227,5 +227,16 @@ def _parse_voice(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauComm
             return skill.clone_and_speak(text, ref_path)
         # ... all existing commands unchanged
 
+def _parse_itops(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
+        return SQLTauCommand(action="ITOPS", subject="ANALYZE", note=task)
+
+    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+        if cmd.action == "ITOPS" and cmd.subject == "ANALYZE":
+            from agents.specialists.itops_skill import ITOpsSkill
+            skill = ITOpsSkill()
+            return skill.analyze(json.loads(cmd.note) if cmd.note else {})
+        # ... all existing commands unchanged
+
 VOICE_CLONED | output: voice_abc123.wav | coherence: 0.85
 Voice cloned and sealed under resonance gate.
