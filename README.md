@@ -1,3 +1,13 @@
+# sovereign-union v1.0.3-private
+
+Private release for trusted heirs only.
+
+## Install
+```bash
+git clone <your-mirror-repo> sovereign-union
+cd sovereign-union
+pip install -e .[shell]
+
 # sovereign-union
 
 The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root.
