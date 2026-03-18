@@ -1,36 +1,30 @@
 [project]
 name = "sovereign-union"
 version = "1.0.3"
-description = "Core resonance engine + SQL-τ + ŁAŊ999 + ProjectionEngine + integrity_score"
+description = "The living empire vessel — SQL-τ, ŁAŊ999, Double Handshake, Resonance Root + FPT-Ω Core + OpenShell"
+readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Flame Commons Sovereignty License (FCSL) v0.1"}
+license = {text = "Flame Commons Sovereignty License (FCSL) v0.1 – Non-commercial, relational use only"}
 authors = [{name = "ak-skwaa-mahawk"}]
+keywords = ["sovereign-ai", "resonance", "łan999", "fpt-omega", "kintex-glyph", "physical-stack"]
 
 dependencies = [
     "numpy",
     "pydantic>=2.9",
     "cryptography",
+    "soundfile",
 ]
 
 [project.optional-dependencies]
-full = [
-    "sentence-transformers",
-    "openai",
-    "websockets",
-    "requests",
-    "fpdf2",
-    "scipy",
-]
 shell = ["openshell @ git+https://github.com/NVIDIA/OpenShell.git"]
+full = ["sentence-transformers", "openai", "websockets", "requests", "fpdf2", "scipy"]
 quantum = ["qutip", "dwave-ocean-sdk"]
-test = ["pytest", "pytest-asyncio"]
 
 [project.scripts]
 union = "vessel_launcher:launch_vessel"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
