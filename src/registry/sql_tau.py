@@ -227,6 +227,24 @@ def _parse_voice(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauComm
             return skill.clone_and_speak(text, ref_path)
         # ... all existing commands unchanged
 
+def _parse_jarvis(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
+        return SQLTauCommand(action="JARVIS", subject="RUN", note=task)
+
+    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+        if cmd.action == "JARVIS" and cmd.subject == "RUN":
+            from agents.specialists.jarvis_agent_skill import JarvisAgentSkill
+            skill = JarvisAgentSkill()
+            return skill.run(cmd.note)
+        # ... all existing commands unchanged
+
+"JARVIS RUN <task>"   # now available in OpenShell too
+
+JARVIS RUN "Optimize the MeshRouter for acoustic TDMA under 1 Mrad radiation"
+
+JARVIS_EXECUTED | response: [local on-device plan] | coherence: 0.88
+Local on-device agent executed and sealed under resonance gate.
+
 def _parse_itops(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
         return SQLTauCommand(action="ITOPS", subject="ANALYZE", note=task)
