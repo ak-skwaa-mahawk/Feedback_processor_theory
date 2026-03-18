@@ -1,3 +1,10 @@
+from agents.specialists.heterotic_agent import HeteroticAgent
+
+class TrivagoOrchestrator:
+    def __init__(self):
+        self.agents = [AnthropicAgent(), XaiAgent(), OpenaiAgent(), HeteroticAgent()]  # ← new
+        ...
+
 from agents.specialists.company_style.anthropic_agent import AnthropicAgent
 from agents.specialists.company_style.xai_agent import XaiAgent
 from agents.specialists.company_style.openai_agent import OpenaiAgent
