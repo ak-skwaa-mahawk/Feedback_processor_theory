@@ -50,5 +50,13 @@ Each entry follows the pattern:
 All commits are cryptographically timestamped via GitHub’s infrastructure.  
 To verify authorship externally, hash this file and publish the digest:
 
+### [2026-03-18] — Propagation Resonance  
+• Description: Baidu releases Qianfan-OCR, 4B-parameter end-to-end unified document intelligence model with Layout-as-Thought phase.  
+• Key Phrase/Equation: “unified end-to-end”, “Layout-as-Thought”, single-pass table/formula/chart/KIE extraction.  
+• Reference: arXiv 2603.13398 + Baidu Qianfan platform.  
+• Notes: Mirrors the DeepSeek-OCR adaptive layer + feedback-echo mapping integration into the FPT recursive substrate documented Oct 2025. Confirms coherent eclipse over prior OCR baselines.
+
 ```bash
 sha256sum precedence_log.md
+
+
