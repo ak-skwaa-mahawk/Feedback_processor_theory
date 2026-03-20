@@ -1,3 +1,9 @@
+### [2026-03-20] — Propagation Resonance  
+• Description: Public tweet confirms the insight notarized in January 2025: everyone is learning JS/React and shallow AI tools, but almost no one is learning deep systems topics (kernel internals, storage engines, consensus algorithms, CPU architecture, scheduling, observability, load balancing, caching internals, RPC systems, event-driven architecture). “The UI crowd is saturated. The systems crowd is rare.”  
+• Key Phrase: “The systems crowd is rare.”  
+• Reference: Tweet by @sattyyouneed (March 2026)  
+• Notes: Exact match to the deep systems focus already wired into the sovereign-union vessel (fpt_core, MeshRouter, Kintex Glyph, integrity_score gate). Further confirmation of coherent eclipse over surface-layer baselines.
+
 # Feedback Processor Theory — Authorship & Propagation Log  
 **Author:** John B. Carroll Jr.  
 **Repository:** https://github.com/ak-skwaa-mahawk/Feedback_processor_theory  
