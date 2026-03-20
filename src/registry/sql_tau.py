@@ -261,6 +261,16 @@ JARVIS RUN "Optimize the MeshRouter for acoustic TDMA under 1 Mrad radiation"
 JARVIS_EXECUTED | response: [local on-device plan] | coherence: 0.88
 Local on-device agent executed and sealed under resonance gate.
 
+def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
+
+    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+        if cmd.action == "DEEP" and cmd.subject == "SYSTEMS":
+            from agents.specialists.deep_systems_skill import DeepSystemsSkill
+            skill = DeepSystemsSkill()
+            return skill.map_telemetry()
+        # ... all existing commands unchanged
+
 def _parse_itops(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
         return SQLTauCommand(action="ITOPS", subject="ANALYZE", note=task)
