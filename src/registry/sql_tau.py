@@ -161,6 +161,8 @@ class SQLTauParser:
             return self._parse_itops(tokens, upper_tokens)
         elif action == "ACOUSTIC":
             return self._parse_acoustic(tokens, upper_tokens)
+        elif action == "RAD_HARD":
+            return self._parse_rad_hard(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -192,6 +194,11 @@ class SQLTauParser:
             msg = " ".join(tokens[2:])
             return SQLTauCommand(action="ACOUSTIC", subject="TRANSMIT", note=msg)
         return SQLTauCommand(action="ACOUSTIC", subject="STATUS", note="")
+
+    def _parse_rad_hard(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 2 and upper_tokens[1] == "ACOUSTIC":
+            return SQLTauCommand(action="RAD_HARD", subject="ACOUSTIC", note="")
+        return SQLTauCommand(action="RAD_HARD", subject="STATUS", note="")
 
     # ====================== TERRAIN & HARDWARE ======================
     def _parse_terrain(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
@@ -274,6 +281,10 @@ class SQLTauParser:
             if cmd.subject == "TRANSMIT":
                 return protocol.transmit(cmd.note)
             return protocol.receive()
+        elif cmd.action == "RAD_HARD" and cmd.subject == "ACOUSTIC":
+            from agents.specialists.rad_hard_acoustic_mesh import RadHardAcousticMesh
+            protocol = RadHardAcousticMesh(node_id=1)
+            return protocol.transmit(cmd.note if cmd.note else "RAD_HARD_TEST_PACKET")
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
