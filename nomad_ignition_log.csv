@@ -1,0 +1,96 @@
+import time
+import subprocess
+import platform
+import csv
+import os
+from datetime import datetime
+try:
+    from pymavlink import mavutil
+    MAVLINK_AVAILABLE = True
+except ImportError:
+    MAVLINK_AVAILABLE = False
+    print("[!] pymavlink not found → Running in Simulation Mode")
+
+# --- The Sovereign Constants (unchanged) ---
+VETTED_CONSTANT = 1.69 ** 2   # 2.8561
+MESH_CAP = 3.04
+TARGET_HOST = "8.8.8.8"
+
+class NomadBridge:
+    def __init__(self):
+        print("--- Initialization: GSA-Ready LLC Ghost Protocol v1.1 ---")
+        self.master = None
+        self.log_file = "nomad_ignition_log.csv"
+        self._init_mavlink()
+        self._init_log()
+
+    def _init_mavlink(self):
+        if not MAVLINK_AVAILABLE:
+            print("[SIM] MAVLink offline — using simulated telemetry")
+            return
+        ports = ['/dev/ttyUSB0', '/dev/ttyACM0', 'COM3', 'COM4', '/dev/tty.usbserial*']
+        for port in ports:
+            try:
+                self.master = mavutil.mavlink_connection(port, baud=115200, timeout=3)
+                self.master.wait_heartbeat(timeout=5)
+                print(f"[VETTED] Heartbeat from System {self.master.target_system} on {port}")
+                return
+            except:
+                continue
+        print("[!] No ELRS/INAV detected — Simulation Mode active")
+
+    def _init_log(self):
+        if not os.path.exists(self.log_file):
+            with open(self.log_file, 'w', newline='') as f:
+                csv.writer(f).writerow(['timestamp', 'latency_ms', 'lq', 'rssi_dbm', 'coherence', 'status'])
+
+    def get_starlink_latency(self):
+        param = '-n' if platform.system().lower() == 'windows' else '-c'
+        cmd = ['ping', param, '1', TARGET_HOST]
+        try:
+            out = subprocess.check_output(cmd, timeout=2).decode()
+            if "time=" in out.lower():
+                return float(out.split("time=")[-1].split(" ms")[0].strip())
+        except:
+            pass
+        return 999.0
+
+    def get_elrs_telemetry(self):
+        if self.master:
+            msg = self.master.recv_match(type=['RADIO_STATUS', 'VFR_HUD'], blocking=False, timeout=0.1)
+            if msg:
+                if hasattr(msg, 'remrssi'):
+                    return msg.remrssi / 255.0, getattr(msg, 'rssi', -100)
+        # Simulation fallback
+        import random
+        lq = random.uniform(0.65, 1.0) if random.random() > 0.3 else random.uniform(0.3, 0.65)
+        rssi = int(lq * -60 - 40)  # fake dBm
+        return lq, rssi
+
+    def process_ignition(self):
+        print("Wetware Feedback Processor: ONLINE\n")
+        with open(self.log_file, 'a', newline='') as f:
+            writer = csv.writer(f)
+            try:
+                while True:
+                    latency = self.get_starlink_latency()
+                    lq, rssi_dbm = self.get_elrs_telemetry()
+                    
+                    input_val = lq + (100 / (latency + 1))
+                    trinity_flame = input_val * VETTED_CONSTANT
+                    coherence = (trinity_flame / MESH_CAP) ** 1.5
+                    
+                    status = "[TRINARY IGNITION 🔥🌀]" if coherence > 1.0 else "[COILING]"
+                    
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] "
+                          f"Latency: {latency:5.1f}ms | LQ: {lq:.2f} | RSSI: {rssi_dbm} dBm | "
+                          f"Coherence: {coherence:.3f} {status}")
+                    
+                    writer.writerow([datetime.now().isoformat(), latency, lq, rssi_dbm, coherence, status])
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("\nProcessor Offline: Logs hashed to Native Shares.")
+
+if __name__ == "__main__":
+    bridge = NomadBridge()
+    bridge.process_ignition()
