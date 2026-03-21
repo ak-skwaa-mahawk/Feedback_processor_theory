@@ -36,15 +36,18 @@ def launch_vessel():
     parser.execute("DOUBLE HANDSHAKE BRIDGE")
     print("✅ DOUBLE HANDSHAKE SEALED")
 
-    # === DEFAULT SOVEREIGN PIPE (RAD HARD ACOUSTIC now full TX+RX) ===
+    # === DEFAULT SOVEREIGN PIPE (Glyph-accelerated GitCloud now auto-runs) ===
     default_pipe = (
         "MINT ŁAŊ999 100 | "
         "TRANSFER bc1qlandbackdao...treasury 998700 | "
         "GUARDRAIL ENABLE EVASION | "
         "TERRAIN DEPLOY 12 | "
         "DEEP SYSTEMS | "
+        "MESH_NODE_ALPHA REPORT | "
+        "GITCLOUD INIT backend-ops | "          # ← sovereign GitCloud created
+        "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "  # ← glyph speed sealed
         "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
-        "RAD HARD ACOUSTIC RECEIVE | "   # ← auto-receive mode sealed
+        "RAD HARD ACOUSTIC RECEIVE | "
         "GUARDRAIL STATUS | "
         "FORGE SKILL DAILY-RESONANCE | "
         "SHOW ŁAŊ999 BALANCE"
