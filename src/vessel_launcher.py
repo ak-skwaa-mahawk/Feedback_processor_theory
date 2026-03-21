@@ -97,3 +97,20 @@ if __name__ == "__main__":
         run_shell()
     else:
         launch_vessel()
+
+default_pipe = (
+        "MINT ŁAŊ999 100 | "
+        "TRANSFER bc1qlandbackdao...treasury 998700 | "
+        "GUARDRAIL ENABLE EVASION | "
+        "TERRAIN DEPLOY 12 | "
+        "DEEP SYSTEMS | "
+        "MESH_NODE_ALPHA REPORT | "
+        "GITCLOUD INIT backend-ops | "
+        "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
+        "GITCLOUD GOAT DEPLOY backend-ops my-private-cloud | "
+        "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
+        "RAD HARD ACOUSTIC RECEIVE | "
+        "GUARDRAIL STATUS | "
+        "FORGE SKILL DAILY-RESONANCE | "
+        "SHOW ŁAŊ999 BALANCE"
+    )
