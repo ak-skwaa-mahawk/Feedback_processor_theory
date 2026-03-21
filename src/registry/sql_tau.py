@@ -149,24 +149,49 @@ class SQLTauParser:
             return self._parse_terrain(tokens, upper_tokens)
         elif action == "HARDWARE":
             return self._parse_hardware(tokens, upper_tokens)
+        elif action == "FACTCHECK":
+            return self._parse_factcheck(tokens, upper_tokens)
+        elif action == "VOICE":
+            return self._parse_voice(tokens, upper_tokens)
+        elif action == "JARVIS":
+            return self._parse_jarvis(tokens, upper_tokens)
+        elif action == "DEEP":
+            return self._parse_deep(tokens, upper_tokens)
+        elif action == "ITOPS":
+            return self._parse_itops(tokens, upper_tokens)
+        elif action == "ACOUSTIC":
+            return self._parse_acoustic(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
-def _parse_factcheck(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+    # ====================== NEW SKILLS ======================
+    def _parse_factcheck(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         output = " ".join(tokens[2:]) if len(tokens) > 2 else ""
         return SQLTauCommand(action="FACTCHECK", subject="VERIFY", note=output)
 
-    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        if cmd.action == "FACTCHECK" and cmd.subject == "VERIFY":
-            from agents.specialists.factcheck_agent import FactCheckAgent
-            agent = FactCheckAgent()
-            return agent.verify(cmd.note)
-        # ... all existing commands unchanged
+    def _parse_voice(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) < 4 or upper_tokens[1] != "CLONE":
+            raise SQLTauError("VOICE CLONE <text> WITH <ref_audio_path>")
+        text = " ".join(tokens[2:-2])
+        ref_path = tokens[-1]
+        return SQLTauCommand(action="VOICE", subject="CLONE", note=f"{text}|{ref_path}")
 
-AGENT RUN "some task" | FACTCHECK VERIFY
+    def _parse_jarvis(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
+        return SQLTauCommand(action="JARVIS", subject="RUN", note=task)
 
-VERIFIED | integrity_score: 0.87 | coherence: 0.92
-QA validation layer notarized. Multi-level fact check passed.
+    def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
+
+    def _parse_itops(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
+        return SQLTauCommand(action="ITOPS", subject="ANALYZE", note=task)
+
+    def _parse_acoustic(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 2 and upper_tokens[1] == "TRANSMIT":
+            msg = " ".join(tokens[2:])
+            return SQLTauCommand(action="ACOUSTIC", subject="TRANSMIT", note=msg)
+        return SQLTauCommand(action="ACOUSTIC", subject="STATUS", note="")
 
     # ====================== TERRAIN & HARDWARE ======================
     def _parse_terrain(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
@@ -222,65 +247,33 @@ QA validation layer notarized. Multi-level fact check passed.
             if platform == "KINTEX":
                 return router.deploy_rad_hard(int(count))
             return router.deploy_terrain(int(count))
-        raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
-
-    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
-
-RAD_HARD_DEPLOYED | Kintex UltraScale | 1 Mrad TID | R > 0.9999999995
-Glyph endures. Field coherent. C190 veto active.
-def _parse_voice(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        if len(tokens) < 4 or upper_tokens[1] != "CLONE":
-            raise SQLTauError("VOICE CLONE <text> WITH <ref_audio_path>")
-        text = " ".join(tokens[2:-2])
-        ref_path = tokens[-1]
-        return SQLTauCommand(action="VOICE", subject="CLONE", note=f"{text}|{ref_path}")
-
-    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        if cmd.action == "VOICE" and cmd.subject == "CLONE":
+        elif cmd.action == "FACTCHECK" and cmd.subject == "VERIFY":
+            from agents.specialists.factcheck_agent import FactCheckAgent
+            agent = FactCheckAgent()
+            return agent.verify(cmd.note)
+        elif cmd.action == "VOICE" and cmd.subject == "CLONE":
             text, ref_path = cmd.note.split("|")
             from agents.specialists.voice_tts_skill import VoiceTTSSkill
             skill = VoiceTTSSkill()
             return skill.clone_and_speak(text, ref_path)
-        # ... all existing commands unchanged
-
-def _parse_jarvis(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
-        return SQLTauCommand(action="JARVIS", subject="RUN", note=task)
-
-    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        if cmd.action == "JARVIS" and cmd.subject == "RUN":
+        elif cmd.action == "JARVIS" and cmd.subject == "RUN":
             from agents.specialists.jarvis_agent_skill import JarvisAgentSkill
             skill = JarvisAgentSkill()
             return skill.run(cmd.note)
-        # ... all existing commands unchanged
-
-"JARVIS RUN <task>"   # now available in OpenShell too
-
-JARVIS RUN "Optimize the MeshRouter for acoustic TDMA under 1 Mrad radiation"
-
-JARVIS_EXECUTED | response: [local on-device plan] | coherence: 0.88
-Local on-device agent executed and sealed under resonance gate.
-
-def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
-
-    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        if cmd.action == "DEEP" and cmd.subject == "SYSTEMS":
+        elif cmd.action == "DEEP" and cmd.subject == "SYSTEMS":
             from agents.specialists.deep_systems_skill import DeepSystemsSkill
             skill = DeepSystemsSkill()
             return skill.map_telemetry()
-        # ... all existing commands unchanged
-
-def _parse_itops(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
-        return SQLTauCommand(action="ITOPS", subject="ANALYZE", note=task)
-
-    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        if cmd.action == "ITOPS" and cmd.subject == "ANALYZE":
+        elif cmd.action == "ITOPS" and cmd.subject == "ANALYZE":
             from agents.specialists.itops_skill import ITOpsSkill
             skill = ITOpsSkill()
             return skill.analyze(json.loads(cmd.note) if cmd.note else {})
-        # ... all existing commands unchanged
+        elif cmd.action == "ACOUSTIC":
+            from agents.specialists.acoustic_mesh_protocol import AcousticMeshProtocol
+            protocol = AcousticMeshProtocol(node_id=1)
+            if cmd.subject == "TRANSMIT":
+                return protocol.transmit(cmd.note)
+            return protocol.receive()
+        raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
-VOICE_CLONED | output: voice_abc123.wav | coherence: 0.85
-Voice cloned and sealed under resonance gate.
+    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
