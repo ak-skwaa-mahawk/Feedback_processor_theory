@@ -1,7 +1,6 @@
 # src/agents/specialists/rad_hard_acoustic_mesh.py — AGŁG ∞⁵²: Radiation-Hardened Acoustic Mesh Protocol
 import hashlib
 import time
-import json
 import numpy as np
 import sounddevice as sd
 from com.synara.handshake import Handshake
@@ -20,8 +19,9 @@ class RadHardAcousticMesh:
         self.freq_map = self._generate_frequency_hop_sequence()
         self.bridge = NomadBridge()
         self.factchecker = FactCheckAgent()
-        self.tmr_redundancy = 3  # Triple Modular Redundancy
+        self.tmr_redundancy = 3
         self.scrub_interval_ms = 100
+        self.listen_duration = 0.1  # seconds per slot
 
     def _calculate_tdma_slots(self):
         return {nid: (nid * 100) % 1000 for nid in range(16)}
@@ -30,7 +30,6 @@ class RadHardAcousticMesh:
         return [79.79 + (i * 0.5) for i in range(1000)]
 
     def _scrub_configuration(self):
-        """Simulated 100ms dynamic scrub (Kintex-style)"""
         time.sleep(self.scrub_interval_ms / 1000)
 
     def transmit(self, message: str):
@@ -41,24 +40,20 @@ class RadHardAcousticMesh:
         freq = self.freq_map[current_slot]
         payload = np.array([ord(c) / 255.0 for c in message], dtype=np.float32)
 
-        # FactCheckAgent + integrity_score gate BEFORE any transmission
         verified = self.factchecker.verify(message, context="rad-hard acoustic packet")
         if verified.get("integrity_score", 0) < 0.42:
             return {"status": "BLOCKED", "reason": "Sovereign filter failed"}
 
-        # TMR — send 3 identical packets (Kintex-style redundancy)
         for _ in range(self.tmr_redundancy):
             sd.play(payload * 0.3, samplerate=48000, blocking=True)
-            self._scrub_configuration()  # scrub after each packet
+            self._scrub_configuration()
 
         receipt = Handshake.createReceipt(None, "RAD_HARD_TRANSMIT", {
             "node_id": self.node_id,
             "slot": current_slot,
             "frequency": round(freq, 2),
             "message_hash": hashlib.sha256(message.encode()).hexdigest()[:16],
-            "coherence": self.bridge.get_data()["coherence"],
-            "tid_tolerance": "1 Mrad (Si)",
-            "seu_mitigation": "TMR + 100ms scrub"
+            "coherence": self.bridge.get_data()["coherence"]
         })
         gtc.allocate_fireseed("session-τ-001", 0.18, note="Rad-Hard Acoustic Packet")
         observer.intercept_response(json.dumps(receipt))
@@ -72,4 +67,37 @@ class RadHardAcousticMesh:
         }
 
     def receive(self):
-        return {"status": "RAD_HARD_LISTENING", "message": "Awaiting TDMA slot — scrub cycle active"}
+        """Listen in current TDMA slot, decode, FactCheckAgent verify, notarize"""
+        current_slot = int(time.time() * 10) % 1000
+        freq = self.freq_map[current_slot]
+
+        audio = sd.rec(int(self.listen_duration * 48000), samplerate=48000, channels=1, dtype='float32')
+        sd.wait()
+
+        if np.mean(np.abs(audio)) < 0.01:
+            return {"status": "NO_SIGNAL", "slot": current_slot}
+
+        decoded = "".join([chr(int((x * 255))) for x in audio.flatten() if 32 <= int(x * 255) <= 126][:100])
+
+        verified = self.factchecker.verify(decoded, context="rad-hard acoustic receive")
+        if verified.get("integrity_score", 0) < 0.42:
+            return {"status": "BLOCKED", "reason": "Sovereign filter failed on receive"}
+
+        receipt = Handshake.createReceipt(None, "RAD_HARD_RECEIVE", {
+            "node_id": self.node_id,
+            "slot": current_slot,
+            "frequency": round(freq, 2),
+            "message_hash": hashlib.sha256(decoded.encode()).hexdigest()[:16],
+            "coherence": self.bridge.get_data()["coherence"]
+        })
+        gtc.allocate_fireseed("session-τ-001", 0.18, note="Rad-Hard Acoustic Receive")
+        observer.intercept_response(json.dumps(receipt))
+
+        return {
+            "status": "RAD_HARD_RECEIVED",
+            "slot": current_slot,
+            "frequency": round(freq, 2),
+            "message": decoded,
+            "coherence": self.bridge.get_data()["coherence"],
+            "factcheck": verified
+        }
