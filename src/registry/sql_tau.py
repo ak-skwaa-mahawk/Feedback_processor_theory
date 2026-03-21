@@ -333,4 +333,7 @@ class SQLTauParser:
             return skill.report_telemetry()
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
+def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
+
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
