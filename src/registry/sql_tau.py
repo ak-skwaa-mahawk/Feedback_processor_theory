@@ -168,6 +168,8 @@ class SQLTauParser:
             return self._parse_rad_hard(tokens, upper_tokens)
         elif action == "MESH_NODE_ALPHA":
             return self._parse_mesh_node(tokens, upper_tokens)
+        elif action == "GITCLOUD":                                      # ← new
+            return self._parse_gitcloud(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -192,6 +194,15 @@ class SQLTauParser:
         if len(tokens) > 2 and upper_tokens[1] == "REPORT":
             return SQLTauCommand(action="MESH_NODE_ALPHA", subject="REPORT", note="TELEMETRY")
         return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
+
+    def _parse_gitcloud(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:   # ← sealed
+        if len(tokens) > 2 and upper_tokens[1] == "INIT":
+            return SQLTauCommand(action="GITCLOUD", subject="INIT", note=tokens[2])
+        elif len(tokens) > 3 and upper_tokens[1] == "COMMIT":
+            return SQLTauCommand(action="GITCLOUD", subject="COMMIT", note=f"{tokens[2]}|{tokens[3]}")
+        elif len(tokens) > 2 and upper_tokens[1] == "VERIFY":
+            return SQLTauCommand(action="GITCLOUD", subject="VERIFY", note=tokens[2])
+        return SQLTauCommand(action="GITCLOUD", subject="STATUS", note="")
 
     def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
@@ -311,7 +322,6 @@ class SQLTauParser:
                 return protocol.transmit(cmd.note)
             return protocol.receive()
         elif cmd.action == "RAD_HARD" and cmd.subject == "ACOUSTIC":
-            # Optimized RAD_HARD dispatch with receive support
             if self._rad_hard_protocol is None:
                 from agents.specialists.rad_hard_acoustic_mesh import RadHardAcousticMesh
                 self._rad_hard_protocol = RadHardAcousticMesh
@@ -324,16 +334,23 @@ class SQLTauParser:
             elif cmd.note == "RECEIVE":
                 protocol = self._rad_hard_protocol(node_id=1)
                 return protocol.receive()
-            # Default test packet
             protocol = self._rad_hard_protocol(node_id=1)
             return protocol.transmit("RAD_HARD_TEST_PACKET")
         elif cmd.action == "MESH_NODE_ALPHA" and cmd.subject == "REPORT":
             from agents.specialists.mesh_node_alpha_skill import MeshNodeAlphaSkill
             skill = MeshNodeAlphaSkill()
             return skill.report_telemetry()
+        elif cmd.action == "GITCLOUD":                                   # ← sealed
+            from agents.specialists.gitcloud_skill import GitCloudSkill
+            skill = GitCloudSkill()
+            if cmd.subject == "INIT":
+                return skill.init(cmd.note)
+            elif cmd.subject == "COMMIT":
+                repo, msg = cmd.note.split("|")
+                return skill.commit(repo, msg, {"example": "change"})
+            elif cmd.subject == "VERIFY":
+                return skill.verify(cmd.note)
+            return {"status": "GITCLOUD_READY"}
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
-def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
-
-    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
+    # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
