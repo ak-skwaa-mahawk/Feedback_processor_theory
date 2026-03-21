@@ -168,7 +168,7 @@ class SQLTauParser:
             return self._parse_rad_hard(tokens, upper_tokens)
         elif action == "MESH_NODE_ALPHA":
             return self._parse_mesh_node(tokens, upper_tokens)
-        elif action == "GITCLOUD":                                      # ← new
+        elif action == "GITCLOUD":
             return self._parse_gitcloud(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
@@ -195,13 +195,18 @@ class SQLTauParser:
             return SQLTauCommand(action="MESH_NODE_ALPHA", subject="REPORT", note="TELEMETRY")
         return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
 
-    def _parse_gitcloud(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:   # ← sealed
+    def _parse_gitcloud(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """Full GitCloud + Glyph support"""
         if len(tokens) > 2 and upper_tokens[1] == "INIT":
             return SQLTauCommand(action="GITCLOUD", subject="INIT", note=tokens[2])
         elif len(tokens) > 3 and upper_tokens[1] == "COMMIT":
             return SQLTauCommand(action="GITCLOUD", subject="COMMIT", note=f"{tokens[2]}|{tokens[3]}")
         elif len(tokens) > 2 and upper_tokens[1] == "VERIFY":
             return SQLTauCommand(action="GITCLOUD", subject="VERIFY", note=tokens[2])
+        elif len(tokens) > 3 and upper_tokens[1] == "GLYPH" and upper_tokens[2] == "COMMIT":
+            return SQLTauCommand(action="GITCLOUD", subject="GLYPH_COMMIT", note=f"{tokens[3]}|{tokens[4]}")
+        elif len(tokens) > 3 and upper_tokens[1] == "GLYPH" and upper_tokens[2] == "BUMP":
+            return SQLTauCommand(action="GITCLOUD", subject="GLYPH_BUMP", note=f"{tokens[3]}|{tokens[4]}")
         return SQLTauCommand(action="GITCLOUD", subject="STATUS", note="")
 
     def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
@@ -340,7 +345,7 @@ class SQLTauParser:
             from agents.specialists.mesh_node_alpha_skill import MeshNodeAlphaSkill
             skill = MeshNodeAlphaSkill()
             return skill.report_telemetry()
-        elif cmd.action == "GITCLOUD":                                   # ← sealed
+        elif cmd.action == "GITCLOUD":
             from agents.specialists.gitcloud_skill import GitCloudSkill
             skill = GitCloudSkill()
             if cmd.subject == "INIT":
@@ -350,6 +355,12 @@ class SQLTauParser:
                 return skill.commit(repo, msg, {"example": "change"})
             elif cmd.subject == "VERIFY":
                 return skill.verify(cmd.note)
+            elif cmd.subject == "GLYPH_COMMIT":
+                repo, glyph = cmd.note.split("|")
+                return skill.glyph_commit(repo, glyph)
+            elif cmd.subject == "GLYPH_BUMP":
+                repo, target = cmd.note.split("|")
+                return skill.glyph_bump(repo, target)
             return {"status": "GITCLOUD_READY"}
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
