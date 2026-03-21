@@ -196,7 +196,7 @@ class SQLTauParser:
         return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
 
     def _parse_gitcloud(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        """Full GitCloud + Glyph support"""
+        """Full GitCloud + Glyph + GOAT support"""
         if len(tokens) > 2 and upper_tokens[1] == "INIT":
             return SQLTauCommand(action="GITCLOUD", subject="INIT", note=tokens[2])
         elif len(tokens) > 3 and upper_tokens[1] == "COMMIT":
@@ -207,6 +207,8 @@ class SQLTauParser:
             return SQLTauCommand(action="GITCLOUD", subject="GLYPH_COMMIT", note=f"{tokens[3]}|{tokens[4]}")
         elif len(tokens) > 3 and upper_tokens[1] == "GLYPH" and upper_tokens[2] == "BUMP":
             return SQLTauCommand(action="GITCLOUD", subject="GLYPH_BUMP", note=f"{tokens[3]}|{tokens[4]}")
+        elif len(tokens) > 3 and upper_tokens[1] == "GOAT" and upper_tokens[2] == "DEPLOY":
+            return SQLTauCommand(action="GITCLOUD", subject="GOAT_DEPLOY", note=f"{tokens[3]}|{tokens[4]}")
         return SQLTauCommand(action="GITCLOUD", subject="STATUS", note="")
 
     def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
@@ -361,6 +363,9 @@ class SQLTauParser:
             elif cmd.subject == "GLYPH_BUMP":
                 repo, target = cmd.note.split("|")
                 return skill.glyph_bump(repo, target)
+            elif cmd.subject == "GOAT_DEPLOY":
+                repo, target = cmd.note.split("|")
+                return skill.goat_deploy(repo, target)
             return {"status": "GITCLOUD_READY"}
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
