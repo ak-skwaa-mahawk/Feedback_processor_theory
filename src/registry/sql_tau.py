@@ -77,6 +77,9 @@ class SQLTauParser:
         logging.basicConfig(level=logging.INFO, format="%(message)s")
         self.log = logging.getLogger("SQL-τ")
 
+        # Optimized RAD_HARD cache (single import + instance reuse)
+        self._rad_hard_protocol = None
+
     def execute(self, query: str) -> Any:
         self.log.info(f"🔥 Executing SQL-τ @ {self.resonance:.4f} resonance")
 
@@ -196,8 +199,23 @@ class SQLTauParser:
         return SQLTauCommand(action="ACOUSTIC", subject="STATUS", note="")
 
     def _parse_rad_hard(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        if len(tokens) > 2 and upper_tokens[1] == "ACOUSTIC":
-            return SQLTauCommand(action="RAD_HARD", subject="ACOUSTIC", note="")
+        """Optimized parsing: RAD HARD ACOUSTIC TRANSMIT <msg> [NODE <id>]"""
+        if len(tokens) > 3 and upper_tokens[1] == "ACOUSTIC" and upper_tokens[2] == "TRANSMIT":
+            msg_parts = []
+            node_id = 1
+            i = 3
+            while i < len(tokens):
+                if upper_tokens[i] == "NODE" and i + 1 < len(tokens):
+                    try:
+                        node_id = int(tokens[i + 1])
+                        i += 2
+                        continue
+                    except ValueError:
+                        pass
+                msg_parts.append(tokens[i])
+                i += 1
+            msg = " ".join(msg_parts)
+            return SQLTauCommand(action="RAD_HARD", subject="ACOUSTIC", note=f"{msg}|{node_id}")
         return SQLTauCommand(action="RAD_HARD", subject="STATUS", note="")
 
     # ====================== TERRAIN & HARDWARE ======================
@@ -282,9 +300,13 @@ class SQLTauParser:
                 return protocol.transmit(cmd.note)
             return protocol.receive()
         elif cmd.action == "RAD_HARD" and cmd.subject == "ACOUSTIC":
-            from agents.specialists.rad_hard_acoustic_mesh import RadHardAcousticMesh
-            protocol = RadHardAcousticMesh(node_id=1)
-            return protocol.transmit(cmd.note if cmd.note else "RAD_HARD_TEST_PACKET")
+            # Optimized RAD_HARD dispatch — lazy import + dynamic node_id
+            if self._rad_hard_protocol is None:
+                from agents.specialists.rad_hard_acoustic_mesh import RadHardAcousticMesh
+                self._rad_hard_protocol = RadHardAcousticMesh
+            msg, node_id = (cmd.note.split("|") + ["1"])[:2]
+            protocol = self._rad_hard_protocol(int(node_id))
+            return protocol.transmit(msg)
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
