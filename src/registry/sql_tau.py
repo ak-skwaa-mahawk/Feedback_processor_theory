@@ -185,6 +185,18 @@ class SQLTauParser:
         task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
         return SQLTauCommand(action="JARVIS", subject="RUN", note=task)
 
+def _parse_mesh_node(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 2 and upper_tokens[1] == "REPORT":
+            return SQLTauCommand(action="MESH_NODE_ALPHA", subject="REPORT", note="TELEMETRY")
+        return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
+
+    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
+        if cmd.action == "MESH_NODE_ALPHA" and cmd.subject == "REPORT":
+            from agents.specialists.mesh_node_alpha_skill import MeshNodeAlphaSkill
+            skill = MeshNodeAlphaSkill()
+            return skill.report_telemetry()
+        # ... all existing dispatch (RAD_HARD, DEEP SYSTEMS, etc.) unchanged
+
     def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
 
