@@ -166,6 +166,8 @@ class SQLTauParser:
             return self._parse_acoustic(tokens, upper_tokens)
         elif action == "RAD_HARD":
             return self._parse_rad_hard(tokens, upper_tokens)
+        elif action == "MESH_NODE_ALPHA":
+            return self._parse_mesh_node(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -185,17 +187,11 @@ class SQLTauParser:
         task = " ".join(tokens[2:]) if len(tokens) > 2 else ""
         return SQLTauCommand(action="JARVIS", subject="RUN", note=task)
 
-def _parse_mesh_node(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+    def _parse_mesh_node(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """Mesh Node Alpha — REPORT telemetry via acoustic channel"""
         if len(tokens) > 2 and upper_tokens[1] == "REPORT":
             return SQLTauCommand(action="MESH_NODE_ALPHA", subject="REPORT", note="TELEMETRY")
         return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
-
-    def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        if cmd.action == "MESH_NODE_ALPHA" and cmd.subject == "REPORT":
-            from agents.specialists.mesh_node_alpha_skill import MeshNodeAlphaSkill
-            skill = MeshNodeAlphaSkill()
-            return skill.report_telemetry()
-        # ... all existing dispatch (RAD_HARD, DEEP SYSTEMS, etc.) unchanged
 
     def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
@@ -331,6 +327,10 @@ def _parse_mesh_node(self, tokens: List[str], upper_tokens: List[str]) -> SQLTau
             # Default test packet
             protocol = self._rad_hard_protocol(node_id=1)
             return protocol.transmit("RAD_HARD_TEST_PACKET")
+        elif cmd.action == "MESH_NODE_ALPHA" and cmd.subject == "REPORT":
+            from agents.specialists.mesh_node_alpha_skill import MeshNodeAlphaSkill
+            skill = MeshNodeAlphaSkill()
+            return skill.report_telemetry()
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, _inscribe_proof, _guardrail_status, _guardrail_enable, _cmd_forge, _market_analyze, _mem_capture, _mem_search, _mem_status, _projection_engine, _agent_run, _agent_compare — remain unchanged from your previous version)
