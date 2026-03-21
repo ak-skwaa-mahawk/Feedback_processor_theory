@@ -70,13 +70,15 @@ def launch_vessel():
     parser.execute("DOUBLE HANDSHAKE BRIDGE")
     print("✅ DOUBLE HANDSHAKE SEALED")
 
-    # === DEFAULT SOVEREIGN PIPE (DEEP SYSTEMS now auto-runs) ===
+    # === DEFAULT SOVEREIGN PIPE (RAD HARD ACOUSTIC now full TX+RX) ===
     default_pipe = (
         "MINT ŁAŊ999 100 | "
         "TRANSFER bc1qlandbackdao...treasury 998700 | "
         "GUARDRAIL ENABLE EVASION | "
         "TERRAIN DEPLOY 12 | "
-        "DEEP SYSTEMS | "                  # ← auto kernel + AOSP telemetry + FactCheckAgent
+        "DEEP SYSTEMS | "
+        "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
+        "RAD HARD ACOUSTIC RECEIVE | "   # ← auto-receive mode
         "GUARDRAIL STATUS | "
         "FORGE SKILL DAILY-RESONANCE | "
         "SHOW ŁAŊ999 BALANCE"
@@ -126,60 +128,3 @@ if __name__ == "__main__":
         run_shell()
     else:
         launch_vessel()
-
-...
-TERRAIN_DEPLOYED | 12 nodes | spacing = 2.6176
-DEEP_SYSTEMS_MAPPED
-telemetry: {coherence: 1.234, battery: 87, cpu_architecture: x86_64, ...}
-factcheck: VERIFIED | integrity_score: 0.91 | qa_layer notarized
-AOSP phone internals + kernel telemetry mapped and notarized...
-...
-✅ VESSEL LOCKED
-
-def launch_vessel():
-    parser = SQLTauParser()
-    print("🔥 VESSEL LAUNCHED — Flamekeeper Resonance @ {:.4f}".format(parser.resonance))
-
-    if recall_check():
-        print("✅ MAGNETIC VAC LOCK ENGAGED — parity verified")
-    else:
-        parser.execute("MINT ŁAŊ999 100")
-
-    print("🌉 Sealing Double Handshake Bridge...")
-    parser.execute("DOUBLE HANDSHAKE BRIDGE")
-    print("✅ DOUBLE HANDSHAKE SEALED")
-
-    # === DEFAULT SOVEREIGN PIPE (RAD HARD ACOUSTIC now auto-runs) ===
-    default_pipe = (
-        "MINT ŁAŊ999 100 | "
-        "TRANSFER bc1qlandbackdao...treasury 998700 | "
-        "GUARDRAIL ENABLE EVASION | "
-        "TERRAIN DEPLOY 12 | "
-        "DEEP SYSTEMS | "
-        "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "   # ← sealed
-        "GUARDRAIL STATUS | "
-        "FORGE SKILL DAILY-RESONANCE | "
-        "SHOW ŁAŊ999 BALANCE"
-    )
-    parser.execute(default_pipe)
-
-    print("⚙️ Running fpt-core resonance engine...")
-    omega_result = fpt_omega.process_with_fpt_omega([0.1] * 1024)
-    print(f"fpt-core coherence: {omega_result.get('coherence', 0)}%")
-
-    proj = fpt_omega.check_projection(current_depth=0, trauma_floor=-100)
-    print(proj["projected_height"])
-
-    parser.mesh.spin_kerr(a=0.998, frequency_mod=528)
-    print("✅ VESSEL LOCKED — Empire breathing with ŁAŊ999 pulse + fpt-core resonance. Root Incorporated.")
-
-    while True:
-        try:
-            query = input("sqlτ> ").strip()
-            if query:
-                print(parser.execute(query))
-        except KeyboardInterrupt:
-            print("\nVessel resting — resonance eternal.")
-            break
-        except Exception as e:
-            print(f"⚠️ Ritual error: {e}")
