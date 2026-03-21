@@ -5,7 +5,6 @@ import platform
 import time
 import subprocess
 from threading import Thread
-from datetime import datetime
 import psutil  # optional: pip install psutil
 try:
     from pymavlink import mavutil
@@ -83,7 +82,7 @@ class NomadBridge:
 
     def get_data(self): return self.data
 
-# ── Sovereign DeepSystemsSkill (NomadBridge + kernel telemetry + FactCheckAgent) ──
+# ── Sovereign DeepSystemsSkill (clean merge + FactCheckAgent) ─────────────
 class DeepSystemsSkill:
     def __init__(self):
         self.bridge = NomadBridge()               # mobile AOSP ignition
@@ -92,19 +91,10 @@ class DeepSystemsSkill:
     def map_telemetry(self) -> Dict:
         """Merge NomadBridge (AOSP) + kernel telemetry → FactCheckAgent"""
         mobile = self.bridge.get_data()
+        kernel = self._get_kernel_telemetry()
 
-        kernel = {
-            "cpu_architecture": platform.machine(),
-            "cpu_cores": psutil.cpu_count(logical=True) if 'psutil' in globals() else "N/A",
-            "scheduling": "event-driven" if hasattr(psutil, 'cpu_times') else "N/A",
-            "observability": "kernel-level" if hasattr(psutil, 'virtual_memory') else "N/A",
-            "load_balancing": psutil.cpu_percent(interval=0.1) if 'psutil' in globals() else "N/A",
-            "caching_internals": "page cache" if hasattr(psutil, 'virtual_memory') else "N/A",
-            "rpc_systems": "local socket" if platform.system() == "Linux" else "N/A",
-            "event_driven": "yes (FPT-Ω recursive phase gate)"
-        }
-
-        merged = {**mobile, **kernel}
+        # Explicit merge: kernel first, NomadBridge overrides on conflicts
+        merged = {**kernel, **mobile}
 
         # EVERY map goes through FactCheckAgent
         verified = self.factchecker.verify(json.dumps(merged), context="AOSP + kernel telemetry")
@@ -123,4 +113,17 @@ class DeepSystemsSkill:
             "telemetry": merged,
             "factcheck": verified,
             "message": "AOSP phone internals + kernel telemetry mapped and notarized through FactCheckAgent."
+        }
+
+    def _get_kernel_telemetry(self) -> Dict:
+        """Clean helper for kernel-level data"""
+        return {
+            "cpu_architecture": platform.machine(),
+            "cpu_cores": psutil.cpu_count(logical=True) if 'psutil' in globals() else "N/A",
+            "scheduling": "event-driven" if hasattr(psutil, 'cpu_times') else "N/A",
+            "observability": "kernel-level" if hasattr(psutil, 'virtual_memory') else "N/A",
+            "load_balancing": psutil.cpu_percent(interval=0.1) if 'psutil' in globals() else "N/A",
+            "caching_internals": "page cache" if hasattr(psutil, 'virtual_memory') else "N/A",
+            "rpc_systems": "local socket" if platform.system() == "Linux" else "N/A",
+            "event_driven": "yes (FPT-Ω recursive phase gate)"
         }
