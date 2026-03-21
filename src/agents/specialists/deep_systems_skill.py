@@ -82,19 +82,18 @@ class NomadBridge:
 
     def get_data(self): return self.data
 
-# ── Sovereign DeepSystemsSkill (clean merge + FactCheckAgent) ─────────────
+# ── Sovereign DeepSystemsSkill (explicit merge conflict rules) ─────────────
 class DeepSystemsSkill:
     def __init__(self):
         self.bridge = NomadBridge()               # mobile AOSP ignition
         self.factchecker = FactCheckAgent()
 
     def map_telemetry(self) -> Dict:
-        """Merge NomadBridge (AOSP) + kernel telemetry → FactCheckAgent"""
+        """Merge with explicit conflict rules → FactCheckAgent"""
         mobile = self.bridge.get_data()
         kernel = self._get_kernel_telemetry()
 
-        # Explicit merge: kernel first, NomadBridge overrides on conflicts
-        merged = {**kernel, **mobile}
+        merged = self._merge_telemetry(kernel, mobile)
 
         # EVERY map goes through FactCheckAgent
         verified = self.factchecker.verify(json.dumps(merged), context="AOSP + kernel telemetry")
@@ -116,7 +115,7 @@ class DeepSystemsSkill:
         }
 
     def _get_kernel_telemetry(self) -> Dict:
-        """Clean helper for kernel-level data"""
+        """Kernel-level data only"""
         return {
             "cpu_architecture": platform.machine(),
             "cpu_cores": psutil.cpu_count(logical=True) if 'psutil' in globals() else "N/A",
@@ -127,3 +126,20 @@ class DeepSystemsSkill:
             "rpc_systems": "local socket" if platform.system() == "Linux" else "N/A",
             "event_driven": "yes (FPT-Ω recursive phase gate)"
         }
+
+    def _merge_telemetry(self, kernel: Dict, mobile: Dict) -> Dict:
+        """
+        Explicit merge conflict rules:
+        1. NomadBridge (mobile/AOSP ignition) ALWAYS overrides on overlapping keys
+           (coherence, status, latency, lq, rssi, battery, temp, phone_signal)
+        2. Kernel data fills gaps for low-level system context
+        3. Conflicts are intentional and logged in the receipt
+        """
+        merged = {**kernel, **mobile}  # mobile wins on overlap
+
+        # Optional: log conflicts for transparency (visible in QA layer)
+        conflicts = [k for k in mobile if k in kernel]
+        if conflicts:
+            merged["_merge_conflicts_resolved"] = f"NomadBridge overrode keys: {conflicts}"
+
+        return merged
