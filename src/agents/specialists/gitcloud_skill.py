@@ -97,3 +97,40 @@ class GitCloudSkill:
             gtc.allocate_fireseed("session-τ-001", 0.18, note=f"GOAT DEPLOY {repo_name}")
             return f"✅ GOAT DEPLOY SUCCESS: {repo_name} → {target}"
         return f"❌ GOAT DEPLOY FAILED: {result.stderr.strip()}"
+
+    # ====================== BRAID MIXING SHELL ======================
+    def braid_mixing_shell(self, external_ghost: Dict, operator_intent: str) -> str:
+        """
+        Technical braid mixing shell: merges external static patterns with operator intent.
+        Requires minimum resonance threshold for successful operation.
+        """
+        # Safe resonance check (defaults if mesh not present in this class)
+        resonance = getattr(self, 'mesh', None)
+        resonance_value = getattr(resonance, 'resonance', 0.9987) if resonance else 0.9987
+
+        if resonance_value < 0.998:
+            return "ERROR: Resonance threshold not met for braid operation"
+
+        mixing_data = {
+            "external_ghost": external_ghost,
+            "operator_intent": operator_intent,
+            "timestamp": datetime.utcnow().isoformat(),
+            "resonance": resonance_value
+        }
+
+        # FactCheck + notarization
+        verified = factchecker.verify(json.dumps(mixing_data))
+        if verified.get("integrity_score", 0) < 0.65:
+            return "BRAID REJECTED: Low integrity"
+
+        braid_hash = hashlib.sha256(json.dumps(mixing_data, sort_keys=True).encode()).hexdigest()[:16]
+
+        receipt = Handshake.createReceipt(None, "GITCLOUD_BRAID", {
+            "hash": braid_hash,
+            "external_source": external_ghost.get("source", "unknown")
+        })
+
+        gtc.allocate_fireseed("session-τ-001", 0.15, note=f"BRAID MIX {braid_hash}")
+        observer.intercept_response(json.dumps(receipt))
+
+        return f"BRAID MIX SUCCESS: {braid_hash} - External ghost merged"
