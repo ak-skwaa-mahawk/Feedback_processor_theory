@@ -4,6 +4,7 @@ import json
 import hashlib
 import logging
 import tempfile
+import torch  # required for ISST dummy tensor
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 from datetime import datetime
@@ -172,6 +173,8 @@ class SQLTauParser:
             return self._parse_gitcloud(tokens, upper_tokens)
         elif action == "DECODE":
             return self._parse_decode(tokens, upper_tokens)
+        elif action == "ISST":
+            return self._parse_isst(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -218,6 +221,11 @@ class SQLTauParser:
         if len(tokens) > 2 and upper_tokens[1] == "ADVERSARIAL":
             return SQLTauCommand(action="DECODE", subject="ADVERSARIAL", note=" ".join(tokens[2:]))
         return SQLTauCommand(action="DECODE", subject="STATUS", note="")
+
+    def _parse_isst(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 2 and upper_tokens[1] == "ROBUST":
+            return SQLTauCommand(action="ISST", subject="ROBUST_PREDICT", note=" ".join(tokens[2:]))
+        return SQLTauCommand(action="ISST", subject="STATUS", note="")
 
     def _parse_deep(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         return SQLTauCommand(action="DEEP", subject="SYSTEMS", note="MAP")
@@ -382,6 +390,13 @@ class SQLTauParser:
             observer = MetaObserver()
             attempt = {"pattern": cmd.note, "source": "external"}
             return observer.union_find_decode(attempt)
+        elif cmd.action == "ISST" and cmd.subject == "ROBUST_PREDICT":
+            from src.adversarial_defense.meta_observer import MetaObserver
+            observer = MetaObserver()
+            # Placeholder image and model_fn — replace with actual call in production
+            dummy_image = torch.zeros(1, 3, 224, 224)
+            dummy_model = lambda x: torch.randn(1, 10)
+            return observer.isst_robust_predict(dummy_image, dummy_model)
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
