@@ -1,10 +1,12 @@
 import hashlib
 import json
 import time
+import torch
 from typing import Dict, List, Any
 
 from src.gtc_sovereign_engine import GTCSovereignEngine
 from src.adversarial_defense.factcheck_agent import FactCheckAgent
+from src.adversarial_defense.isst_defense import ISSTDefense
 
 gtc = GTCSovereignEngine()
 factchecker = FactCheckAgent()
@@ -95,6 +97,24 @@ class MetaObserver:
     def _apply_correction(self, cluster_count: int, attempt: Dict) -> str:
         """Simulated correction (replace with actual neutralization logic)"""
         return "PATTERN_NEUTRALIZED" if cluster_count > 0 else "NO_ACTION"
+
+    def isst_robust_predict(self, adv_image: torch.Tensor, model_fn: callable) -> Dict:
+        """
+        Hook to ISSTDefense for full black-box robust prediction.
+        Chains Union-Find decoder for pattern neutralization.
+        """
+        isst = ISSTDefense()
+        result = isst.robust_predict(adv_image, model_fn)
+
+        # Chain with Union-Find decoder
+        decode_result = self.union_find_decode({
+            "pattern": "isst_scrape",
+            "entropy": result["scrape"]["entropy"],
+            "source": "blackbox"
+        })
+
+        result["union_find_decode"] = decode_result
+        return result
 
     def intercept_response(self, response: str):
         """Hook for real-time adversarial decoding"""
