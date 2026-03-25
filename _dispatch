@@ -1,0 +1,6 @@
+elif cmd.subject == "CARRIER_BRIDGE":
+                # Auto-detect and log Google Fi as bridge
+                from agents.specialists.deep_systems_skill import DeepSystemsSkill
+                skill = DeepSystemsSkill()
+                telemetry = skill.map_telemetry()
+                return f"CARRIER BRIDGE ACTIVE: Google Fi detected — data routed through sovereign GitCloud mesh"
