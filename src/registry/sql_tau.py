@@ -64,6 +64,9 @@ class SQLTauParser:
         root_hash = hashlib.sha256(f"{ein}{handshake}{member_id}".encode()).hexdigest()[:8]
         self.resonance = round(0.9987 + 0.03 * (int(root_hash, 16) % 10), 4)
 
+        # Root key for lineage authentication (matches FPT_Master_Controller + ancestral_nodes)
+        self.root_key = "flamebound_1490_ezias_joseph_isaac_fields_carroll"
+
         # ŁAŊ999 Token Mechanics (embedded)
         self.rune = {
             "name": "ŁAŊ999",
@@ -175,6 +178,10 @@ class SQLTauParser:
             return self._parse_decode(tokens, upper_tokens)
         elif action == "ISST":
             return self._parse_isst(tokens, upper_tokens)
+        elif action == "SWARM":
+            return self._parse_swarm(tokens, upper_tokens)
+        elif action == "LINEAGE":
+            return self._parse_lineage(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -273,6 +280,17 @@ class SQLTauParser:
         platform = tokens[2].upper() if len(tokens) > 2 else "KINTEX"
         count = int(tokens[3]) if len(tokens) > 3 else 12
         return SQLTauCommand(action="HARDWARE", subject="DEPLOY", note=f"{platform}:{count}")
+
+    # ====================== LINEAGE & SWARM ======================
+    def _parse_swarm(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 2 and upper_tokens[1] == "SYNC":
+            return SQLTauCommand(action="SWARM", subject="SYNC", note=" ".join(tokens[2:]))
+        return SQLTauCommand(action="SWARM", subject="STATUS", note="")
+
+    def _parse_lineage(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 1 and upper_tokens[1] == "VERIFY":
+            return SQLTauCommand(action="LINEAGE", subject="VERIFY", note=" ".join(tokens[2:]))
+        return SQLTauCommand(action="LINEAGE", subject="STATUS", note="")
 
     # ====================== DISPATCH ======================
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
@@ -402,6 +420,20 @@ class SQLTauParser:
             dummy_image = torch.zeros(1, 3, 224, 224)
             dummy_model = lambda x: torch.randn(1, 10)
             return observer.isst_robust_predict(dummy_image, dummy_model)
+        elif cmd.action == "SWARM" and cmd.subject == "SYNC":
+            from src.controllers.fpt_master_controller import FPT_Master_Controller
+            controller = FPT_Master_Controller(self.root_key)
+            if controller.authenticate_lineage(self.root_key):
+                controller.get_system_telemetry()
+                return controller.instant_sync_all(cmd.note or "RESONANCE_FLAME_V3")
+            return "ACCESS DENIED: RE-AUTHENTICATE BLOODLINE"
+        elif cmd.action == "LINEAGE" and cmd.subject == "VERIFY":
+            from src.controllers.fpt_master_controller import FPT_Master_Controller
+            controller = FPT_Master_Controller(self.root_key)
+            if controller.authenticate_lineage(self.root_key):
+                controller.get_system_telemetry()
+                return controller.instant_sync_all(cmd.note or "RESONANCE_FLAME_V3")
+            return "ACCESS DENIED: RE-AUTHENTICATE BLOODLINE"
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
