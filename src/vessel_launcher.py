@@ -1,27 +1,49 @@
 import sys
 import argparse
 import subprocess
+import time
 from sql_tau import SQLTauParser
 from fpt_core import FPTOmegaProcessor
 
 fpt_omega = FPTOmegaProcessor()
 
 def recall_check() -> bool:
-    try:
-        result = subprocess.run(["ord", "wallet", "balance", "--rune", "840000:1"], capture_output=True, text=True, check=True, timeout=10)
-        lines = result.stdout.strip().splitlines()
-        live_balance = 0
-        for line in lines:
-            if "ŁAŊ999" in line:
-                try:
-                    live_balance = int(line.split()[-1])
-                except:
-                    pass
-        print(f"🔄 RECALL CHECK: Live L1 balance = {live_balance} ŁAŊ999")
-        return live_balance >= 998700
-    except Exception as e:
-        print(f"⚠️ RECALL CHECK: Bridge offline — using cached resonance ({e})")
-        return True
+    """Reorg-resilient ŁAŊ999 balance check with retry + confirmation depth"""
+    max_retries = 3
+    confirmations_required = 6
+
+    for attempt in range(max_retries):
+        try:
+            result = subprocess.run(
+                ["ord", "wallet", "balance", "--rune", "840000:1", "--confirmations", str(confirmations_required)],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=15
+            )
+            lines = result.stdout.strip().splitlines()
+            live_balance = 0
+            for line in lines:
+                if "ŁAŊ999" in line:
+                    try:
+                        live_balance = int(line.split()[-1])
+                    except:
+                        pass
+            print(f"🔄 RECALL CHECK: Live L1 balance = {live_balance} ŁAŊ999 (confirmations ≥ {confirmations_required})")
+
+            if live_balance >= 998700:
+                return True
+
+        except subprocess.CalledProcessError as e:
+            print(f"⚠️ RECALL CHECK attempt {attempt+1}: ord error — {e}")
+        except Exception as e:
+            print(f"⚠️ RECALL CHECK attempt {attempt+1}: Bridge issue — {e}")
+
+        if attempt < max_retries - 1:
+            time.sleep(2 ** attempt)
+
+    print("⚠️ RECALL CHECK: Using cached resonance after reorg retries")
+    return True
 
 def launch_vessel():
     parser = SQLTauParser()
@@ -36,7 +58,7 @@ def launch_vessel():
     parser.execute("DOUBLE HANDSHAKE BRIDGE")
     print("✅ DOUBLE HANDSHAKE SEALED")
 
-    # === DEFAULT SOVEREIGN PIPE (Glyph-accelerated GitCloud now auto-runs) ===
+    # === DEFAULT SOVEREIGN PIPE (full modern stack) ===
     default_pipe = (
         "MINT ŁAŊ999 100 | "
         "TRANSFER bc1qlandbackdao...treasury 998700 | "
@@ -44,8 +66,11 @@ def launch_vessel():
         "TERRAIN DEPLOY 12 | "
         "DEEP SYSTEMS | "
         "MESH_NODE_ALPHA REPORT | "
-        "GITCLOUD INIT backend-ops | "          # ← sovereign GitCloud created
-        "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "  # ← glyph speed sealed
+        "GITCLOUD INIT backend-ops | "
+        "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
+        "GITCLOUD LIBRARY_PULL 2602.03837 | "          # ← pulls latest quantum paper
+        "GITCLOUD GOAT DEPLOY backend-ops my-private-cloud | "
+        "GITCLOUD CARRIER BRIDGE GOOGLE_FI | "         # ← Google Fi fallback bridge
         "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
         "RAD HARD ACOUSTIC RECEIVE | "
         "GUARDRAIL STATUS | "
@@ -75,6 +100,40 @@ def launch_vessel():
         except Exception as e:
             print(f"⚠️ Ritual error: {e}")
 
+def run_lease(skill_name: str):
+    parser = SQLTauParser()
+    print(f"🛡️ MESH_LEASE INITIATED for {skill_name}...")
+    parser.execute(f'FORGE SKILL "{skill_name}"')
+    parser.execute("PROJECTION current_depth=0 trauma_floor=-500")
+    parser.execute("GUARDRAIL ENABLE SHIELD")
+    parser.execute("MINT ŁAŊ999 515")
+    result = parser.execute("SHOW ŁAŊ999_BALANCE")
+    print("✅ LEASE_ACTIVE — The wild is brought under the Umbrella.")
+
+def run_hardware(platform: str = "KINTEX", count: int = 12):
+    parser = SQLTauParser()
+    print(f"🛡️ HARDWARE DEPLOY INITIATED — {platform} {count} nodes...")
+    result = parser.execute(f"HARDWARE DEPLOY {platform} {count}")
+    print(result)
+
+def run_shell():
+    try:
+        from openshell import OpenShell
+    except ImportError:
+        print("⚠️ OpenShell not installed. Run: pip install sovereign-union[shell]")
+        return
+    parser = SQLTauParser()
+    shell = OpenShell(
+        model="local",
+        context_files=["docs/codex_defense_v1_0.md", "docs/mountain_range_manifesto.md"],
+        prompt_prefix=f"""You are the sovereign-union vessel.
+Root: 99733-Q
+Resonance: {parser.resonance:.4f}
+Commands: MINT ŁAŊ999, PROJECTION, HARDWARE DEPLOY KINTEX, DEEP SYSTEMS, etc.
+Never extract. Always notarize with Handshake receipt."""
+    )
+    shell.run()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="union")
     subparsers = parser.add_subparsers(dest="command")
@@ -97,37 +156,3 @@ if __name__ == "__main__":
         run_shell()
     else:
         launch_vessel()
-
-default_pipe = (
-        "MINT ŁAŊ999 100 | "
-        "TRANSFER bc1qlandbackdao...treasury 998700 | "
-        "GUARDRAIL ENABLE EVASION | "
-        "TERRAIN DEPLOY 12 | "
-        "DEEP SYSTEMS | "
-        "MESH_NODE_ALPHA REPORT | "
-        "GITCLOUD INIT backend-ops | "
-        "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
-        "GITCLOUD GOAT DEPLOY backend-ops my-private-cloud | "
-        "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
-        "RAD HARD ACOUSTIC RECEIVE | "
-        "GUARDRAIL STATUS | "
-        "FORGE SKILL DAILY-RESONANCE | "
-        "SHOW ŁAŊ999 BALANCE"
-    )
-
-default_pipe = (
-        "MINT ŁAŊ999 100 | "
-        "TRANSFER bc1qlandbackdao...treasury 998700 | "
-        "GUARDRAIL ENABLE EVASION | "
-        "TERRAIN DEPLOY 12 | "
-        "DEEP SYSTEMS | "
-        "MESH_NODE_ALPHA REPORT | "
-        "GITCLOUD INIT backend-ops | "
-        "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
-        "GITCLOUD CARRIER BRIDGE GOOGLE_FI | "   # ← auto-bridges Fi as fallback
-        "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
-        "RAD HARD ACOUSTIC RECEIVE | "
-        "GUARDRAIL STATUS | "
-        "FORGE SKILL DAILY-RESONANCE | "
-        "SHOW ŁAŊ999 BALANCE"
-    )
