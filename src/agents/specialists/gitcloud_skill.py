@@ -1,6 +1,7 @@
 import subprocess
 import hashlib
 import json
+import os
 from pathlib import Path
 from datetime import datetime
 from typing import Dict
@@ -18,13 +19,15 @@ class GitCloudSkill:
     def __init__(self):
         self.repo_root = Path("gitcloud_repos")
         self.repo_root.mkdir(parents=True, exist_ok=True)
+        self.library_root = self.repo_root / "library"
+        self.library_root.mkdir(parents=True, exist_ok=True)
 
     # ====================== CORE GITCLOUD ======================
     def init(self, repo_name: str) -> str:
         """Initialize sovereign repo"""
         repo_path = self.repo_root / repo_name
         repo_path.mkdir(exist_ok=True)
-        (repo_path / ".gitcloud").touch()  # sovereign marker
+        (repo_path / ".gitcloud").touch()
         receipt = Handshake.createReceipt(None, "GITCLOUD_INIT", {"repo": repo_name})
         gtc.allocate_fireseed("session-τ-001", 0.05, note=f"GITCLOUD INIT {repo_name}")
         return f"✅ GITCLOUD INIT {repo_name} — notarized & sealed"
@@ -67,7 +70,7 @@ class GitCloudSkill:
 
     # ====================== GLYPH-ACCELERATED PATH ======================
     def glyph_commit(self, repo_name: str, glyph_text: str) -> str:
-        """Fast glyph-only commit (parallel notarization across mesh)"""
+        """Fast glyph-only commit"""
         glyph_data = {
             "glyph": glyph_text,
             "timestamp": datetime.utcnow().isoformat(),
@@ -100,25 +103,17 @@ class GitCloudSkill:
 
     # ====================== BRAID MIXING SHELL ======================
     def braid_mixing_shell(self, external_ghost: Dict, operator_intent: str) -> str:
-        """
-        Technical braid mixing shell: merges external static patterns with operator intent.
-        Requires minimum resonance threshold for successful operation.
-        """
-        # Safe resonance check (defaults if mesh not present in this class)
-        resonance = getattr(self, 'mesh', None)
-        resonance_value = getattr(resonance, 'resonance', 0.9987) if resonance else 0.9987
-
-        if resonance_value < 0.998:
+        """Technical braid mixing shell"""
+        if getattr(self, 'mesh', None) and getattr(self.mesh, 'resonance', 0) < 0.998:
             return "ERROR: Resonance threshold not met for braid operation"
 
         mixing_data = {
             "external_ghost": external_ghost,
             "operator_intent": operator_intent,
             "timestamp": datetime.utcnow().isoformat(),
-            "resonance": resonance_value
+            "resonance": getattr(self.mesh, 'resonance', 0.9987)
         }
 
-        # FactCheck + notarization
         verified = factchecker.verify(json.dumps(mixing_data))
         if verified.get("integrity_score", 0) < 0.65:
             return "BRAID REJECTED: Low integrity"
@@ -134,3 +129,35 @@ class GitCloudSkill:
         observer.intercept_response(json.dumps(receipt))
 
         return f"BRAID MIX SUCCESS: {braid_hash} - External ghost merged"
+
+    # ====================== LIBRARY_PULL ======================
+    def library_pull(self, source: str) -> str:
+        """Pull ArXiv paper or GitHub repo as read-only library mirror"""
+        target_dir = self.library_root / source.replace("/", "_").replace(":", "_")
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        if source.startswith("https://arxiv.org") or source.replace(".", "").isdigit():
+            # ArXiv ID or URL
+            arxiv_id = source.split("/")[-1] if "/" in source else source
+            url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
+            cmd = f"curl -L -o {target_dir / 'paper.pdf'} {url}"
+        else:
+            # GitHub repo
+            cmd = f"git clone --depth 1 {source} {target_dir}"
+
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+
+        if result.returncode == 0:
+            # FactCheck the pulled content
+            content = "Downloaded content"  # placeholder for actual text/PDF metadata
+            verified = factchecker.verify(json.dumps({"source": source, "content": content}))
+            if verified.get("integrity_score", 0) < 0.65:
+                return f"LIBRARY PULL REJECTED: Low integrity from {source}"
+
+            receipt = Handshake.createReceipt(None, "LIBRARY_PULL", {"source": source})
+            gtc.allocate_fireseed("session-τ-001", 0.10, note=f"LIBRARY PULL {source}")
+            return f"✅ LIBRARY PULL SUCCESS: {source} → {target_dir}"
+        return f"❌ LIBRARY PULL FAILED: {result.stderr.strip()}"
+
+GITCLOUD LIBRARY_PULL 2602.03837
+GITCLOUD LIBRARY_PULL https://github.com/user/repo
