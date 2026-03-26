@@ -68,9 +68,9 @@ def launch_vessel():
         "MESH_NODE_ALPHA REPORT | "
         "GITCLOUD INIT backend-ops | "
         "GITCLOUD GLYPH COMMIT backend-ops 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
-        "GITCLOUD LIBRARY_PULL 2602.03837 | "          # ← pulls latest quantum paper
+        "GITCLOUD LIBRARY_PULL 2602.03837 | "
         "GITCLOUD GOAT DEPLOY backend-ops my-private-cloud | "
-        "GITCLOUD CARRIER BRIDGE GOOGLE_FI | "         # ← Google Fi fallback bridge
+        "GITCLOUD CARRIER BRIDGE GOOGLE_FI | "
         "RAD HARD ACOUSTIC TRANSMIT 'MAHS’I CHOO — Glyph survives 1 Mrad' | "
         "RAD HARD ACOUSTIC RECEIVE | "
         "GUARDRAIL STATUS | "
