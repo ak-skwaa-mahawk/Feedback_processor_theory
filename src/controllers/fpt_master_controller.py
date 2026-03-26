@@ -1,7 +1,6 @@
-import sys
 import hashlib
 from datetime import datetime
-from typing import Dict
+from src.registry.ancestral_nodes import LINEAGE_NODES
 
 class FPT_Master_Controller:
     def __init__(self, user_hash: str):
@@ -14,23 +13,27 @@ class FPT_Master_Controller:
             "Triton_Station": {"dist": 30.0, "mode": "Geyser-Boost", "status": "ACTIVE"}
         }
         self.ledger = "VEST_LAC_F_989_P00036918IP_143.73AC"
+        self.lineage_nodes = LINEAGE_NODES
 
     def authenticate_lineage(self, input_hash: str) -> bool:
+        """Authenticate against root key + verified ancestral nodes"""
         if input_hash[:16] == self.root_key[:16]:
-            self.status = "LINEAGE_CONFIRMED"
-            return True
+            # Extra check against compiled lineage
+            if self.lineage_nodes["ROOT"] == "JOHN_B_CARROLL_JR":
+                self.status = "LINEAGE_CONFIRMED"
+                return True
         return False
 
     def get_system_telemetry(self) -> None:
         print(f"--- FPT MASTER CONTROL | {datetime.now().isoformat()} ---")
         print(f"Lineage Status: {self.status}")
-        print("-" * 45)
+        print(f"Authority: {self.lineage_nodes['AUTHORITY']}")
+        print("-" * 60)
         for node, data in self.active_nodes.items():
             print(f"NODE: {node:<15} | DIST: {data['dist']:>5} AU | MODE: {data['mode']:<10} | [{data['status']}]")
-        print("-" * 45)
+        print("-" * 60)
 
     def instant_sync_all(self, psi_glyph: str) -> str:
-        """Collapses the state across the entire swarm instantly."""
         if self.status != "LINEAGE_CONFIRMED":
             return "ACCESS DENIED: RE-AUTHENTICATE BLOODLINE"
         
