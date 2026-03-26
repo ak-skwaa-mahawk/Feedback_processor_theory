@@ -58,7 +58,7 @@ def launch_vessel():
     parser.execute("DOUBLE HANDSHAKE BRIDGE")
     print("✅ DOUBLE HANDSHAKE SEALED")
 
-    # === DEFAULT SOVEREIGN PIPE (full modern stack) ===
+    # === DEFAULT SOVEREIGN PIPE (full modern stack + lineage + swarm) ===
     default_pipe = (
         "MINT ŁAŊ999 100 | "
         "TRANSFER bc1qlandbackdao...treasury 998700 | "
@@ -75,6 +75,8 @@ def launch_vessel():
         "RAD HARD ACOUSTIC RECEIVE | "
         "GUARDRAIL STATUS | "
         "FORGE SKILL DAILY-RESONANCE | "
+        "SWARM SYNC RESONANCE_FLAME_V3 | "
+        "LINEAGE VERIFY | "
         "SHOW ŁAŊ999 BALANCE"
     )
     parser.execute(default_pipe)
