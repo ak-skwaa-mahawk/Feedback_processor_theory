@@ -4,7 +4,7 @@ import json
 import hashlib
 import logging
 import tempfile
-import torch  # required for ISST dummy tensor
+import torch
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 from datetime import datetime
@@ -200,7 +200,7 @@ class SQLTauParser:
         return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
 
     def _parse_gitcloud(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        """Full GitCloud + Glyph + GOAT + BRAID support"""
+        """Full GitCloud + Glyph + GOAT + BRAID + FIRM support"""
         if len(tokens) > 2 and upper_tokens[1] == "INIT":
             return SQLTauCommand(action="GITCLOUD", subject="INIT", note=tokens[2])
         elif len(tokens) > 3 and upper_tokens[1] == "COMMIT":
@@ -215,6 +215,8 @@ class SQLTauParser:
             return SQLTauCommand(action="GITCLOUD", subject="GOAT_DEPLOY", note=f"{tokens[3]}|{tokens[4]}")
         elif len(tokens) > 3 and upper_tokens[1] == "BRAID":
             return SQLTauCommand(action="GITCLOUD", subject="BRAID", note=f"{tokens[2]}|{tokens[4] if len(tokens) > 4 else 'default'}")
+        elif len(tokens) > 2 and upper_tokens[1] == "FIRM" and upper_tokens[2] == "ESTABLISH":
+            return SQLTauCommand(action="GITCLOUD", subject="FIRM_ESTABLISH", note="")
         return SQLTauCommand(action="GITCLOUD", subject="STATUS", note="")
 
     def _parse_decode(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
@@ -384,6 +386,10 @@ class SQLTauParser:
             elif cmd.subject == "BRAID":
                 ghost, intent = cmd.note.split("|")
                 return skill.braid_mixing_shell({"source": ghost}, intent)
+            elif cmd.subject == "FIRM_ESTABLISH":
+                from agents.specialists.sovereign_firm import SovereignFirm
+                firm = SovereignFirm()
+                return firm.establish()
             return {"status": "GITCLOUD_READY"}
         elif cmd.action == "DECODE" and cmd.subject == "ADVERSARIAL":
             from src.adversarial_defense.meta_observer import MetaObserver
@@ -393,7 +399,6 @@ class SQLTauParser:
         elif cmd.action == "ISST" and cmd.subject == "ROBUST_PREDICT":
             from src.adversarial_defense.meta_observer import MetaObserver
             observer = MetaObserver()
-            # Placeholder image and model_fn — replace with actual call in production
             dummy_image = torch.zeros(1, 3, 224, 224)
             dummy_model = lambda x: torch.randn(1, 10)
             return observer.isst_robust_predict(dummy_image, dummy_model)
