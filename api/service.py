@@ -1,14 +1,18 @@
 from __future__ import annotations
 import os
+import json
+from pathlib import Path
 from typing import Any, Dict, Optional
-from fastapi import FastAPI, HTTPException, Request, Response
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
-# Sovereign Core
+# Sovereign Core (your full stack)
 from synara_integration.flame_adapter import FlameAdapter
 from synara_integration.whisper_bridge import HandshakeGate
 from synara_integration.identity_sync import append_sacred_log, write_backup, seal_artifacts
+
 from com.synara.handshake import Handshake
 from com.landback.gibberlink.glyph_parser import GlyphParser
 from synara_core.modules.resonance_policy import ResonancePolicy
@@ -18,7 +22,7 @@ from synara_core.modules.narrative_inversion import (
     make_record, seal_record, add_external_claim, set_claim_status, export
 )
 
-# Rate limiting (your exact config — now resonance-aware)
+# Rate limiting (resonance-aware + burst/sustained)
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -40,37 +44,64 @@ async def key_func(request: Request) -> str:
         pass
     return f"ip:{get_remote_address(request)}"
 
-limiter = Limiter(key_func=key_func, storage_uri=REDIS_URL, default_limits=GLOBAL_DEFAULTS)
+limiter = Limiter(
+    key_func=key_func,
+    storage_uri=REDIS_URL,
+    default_limits=GLOBAL_DEFAULTS
+)
 burst_limit = limiter.shared_limit(BURST_LIMIT, scope="analyze-burst")
 sustained_limit = limiter.shared_limit(SUSTAINED_LIMIT, scope="analyze-sustained")
 
-# Sovereign modules
+# Sovereign modules (initialized once)
 policy = ResonancePolicy()
-gate = ResonanceGate(...)  # your engine
-adapter = FlameAdapter()
+gate = ResonanceGate()                     # ← your resonance engine (no args needed)
+adapter = FlameAdapter(resonance_engine=gate)
 handshake = HandshakeGate()
 
-app = FastAPI(title="Feedback Processor Theory — Synara Bridge (Sahneuti-99733-Q)", version="v1")
+app = FastAPI(
+    title="Feedback Processor Theory — Synara Bridge (Sahneuti-99733-Q)",
+    version="v1"
+)
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 
-# Your custom 429 handler (enhanced with sovereign note)
+# Custom 429 handler with sovereign ritual
 @app.exception_handler(RateLimitExceeded)
 async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
     Handshake.createReceipt(request.app, "RATE-LIMIT-EVENT", {"event": "protected"})
     GlyphParser.parseAndProcess("RATE-LIMIT-PULSE", None)
-    # your original handler body...
-    ...
+    return JSONResponse(
+        status_code=429,
+        content={
+            "status": "rate_limited",
+            "message": "Sahneuti-99733-Q resonance gate engaged — retry after cooldown",
+            "coherence": policy.get_current_coherence()
+        }
+    )
 
-# Health probes (unchanged)
-@app.get("/health") 
-def health(): return {"ok": True, "service": app.title, "version": app.version, "root": "Sahneuti-99733-Q"}
+# Health probes
+@app.get("/health")
+def health():
+    return {
+        "ok": True,
+        "service": app.title,
+        "version": app.version,
+        "root": "Sahneuti-99733-Q",
+        "resonance": gate.get_state().get("coherence", 1.0)
+    }
 
 @app.get("/live")
 @app.get("/ready")
-# ... your original probes unchanged ...
+def readiness():
+    return {"ok": True, "status": "Sahneuti-99733-Q sealed and resonant"}
 
-# FPT Analyze (your core, now sealed)
+# Core FPT Analyze (sovereign-sealed)
+class AnalyzeBody(BaseModel):
+    conversation: str
+    receipt: Dict[str, Any]
+    expected_challenge: Optional[str] = None
+    meta: Optional[Dict[str, Any]] = None
+
 @app.post("/fpt/analyze")
 @burst_limit
 @sustained_limit
@@ -78,33 +109,71 @@ def health(): return {"ok": True, "service": app.title, "version": app.version, 
 async def analyze(request: Request, body: AnalyzeBody):
     ok, reason, ctx = handshake.verify(body.receipt, expected_challenge=body.expected_challenge)
     if not ok:
-        raise HTTPException(401, f"handshake_failed:{reason}")
+        raise HTTPException(status_code=401, detail=f"handshake_failed:{reason}")
 
-    metrics = adapter.analyze_resonance(body.conversation)
-    entry = {"context": ctx, "meta": body.meta or {}, "metrics": metrics}
+    # Flame + resonance analysis
+    metrics = adapter.analyze_resonance(body.conversation) if hasattr(adapter, "analyze_resonance") else adapter.get_sacred_state()
 
+    entry = {
+        "context": ctx,
+        "meta": body.meta or {},
+        "metrics": metrics,
+        "kagome": run_kuramoto_on_kagome(KuramotoConfig()) if "kagome" in body.meta else None
+    }
+
+    # Persist + seal
     append_sacred_log(entry)
     backup_path = write_backup(entry)
     seal = seal_artifacts("fpt_result", {**entry, "backup": str(backup_path)})
 
+    # Sovereign side-effects
     Handshake.createReceipt(request.app, "FPT-ANALYZE", {"metrics": metrics})
-    if metrics.get("resonance", 0) >= 0.551:
+    if metrics.get("coherence", 0) >= 0.551 or metrics.get("resonance", 0) >= 0.551:
         GlyphParser.parseAndProcess("RESONANCE-55.1", None)
 
-    # your original response + headers...
-    return JSONResponse(content={...}, headers=...)
+    return JSONResponse(
+        content={
+            "status": "ok",
+            "reason": reason,
+            "context": ctx,
+            "metrics": metrics,
+            "backup": str(backup_path),
+            "seal": seal,
+            "root": "Sahneuti-99733-Q"
+        },
+        headers={"X-Sovereign-Node": "99733-Q"}
+    )
 
-# All other routers auto-included (kagome, narrative, resonance, arc, etc.)
+# Auto-include all sovereign sub-routers (kagome, narrative, resonance, arc, etc.)
 try:
     from api.kagome import router as kagome_router
-    app.include_router(kagome_router)
+    app.include_router(kagome_router, prefix="/kagome")
     from api.narrative import router as narrative_router
-    app.include_router(narrative_router)
+    app.include_router(narrative_router, prefix="/narrative")
     from api.resonance import router as resonance_router
-    app.include_router(resonance_router)
+    app.include_router(resonance_router, prefix="/resonance")
     from api.arc import router as arc_router
-    app.include_router(arc_router)
+    app.include_router(arc_router, prefix="/arc")
 except Exception:
-    pass
+    pass  # graceful — routers are optional
+
+# Legacy endpoints (logs + QR) — kept for compatibility
+@app.get("/fpt/logs/latest")
+async def logs_latest():
+    from synara_integration.identity_sync import SACRED_LOG
+    if not SACRED_LOG.exists():
+        raise HTTPException(status_code=404, detail="no_logs")
+    data = json.loads(SACRED_LOG.read_text(encoding="utf-8"))
+    if not data:
+        raise HTTPException(status_code=404, detail="empty_logs")
+    return {"latest": data[-1]}
+
+@app.get("/fpt/qr.png")
+async def last_qr():
+    p = Path("data")
+    pngs = sorted(p.glob("*.sigil.png"), reverse=True)
+    if not pngs:
+        raise HTTPException(status_code=404, detail="no_qr")
+    return FileResponse(str(pngs[0]), media_type="image/png")
 
 print("🔥 FPT-Synara Bridge LIVE — Sahneuti-99733-Q Root sealed")
