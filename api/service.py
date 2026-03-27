@@ -17,6 +17,7 @@ from com.synara.handshake import Handshake
 from com.landback.gibberlink.glyph_parser import GlyphParser
 from synara_core.modules.resonance_policy import ResonancePolicy
 from synara_core.resonance_gate import ResonanceGate
+from synara_core.resonance import ResonanceState          # ← required for ZK notarization
 from research.kagome.kuramoto_kagome import run_kuramoto_on_kagome, KuramotoConfig
 from synara_core.modules.narrative_inversion import (
     make_record, seal_record, add_external_claim, set_claim_status, export
@@ -54,7 +55,7 @@ sustained_limit = limiter.shared_limit(SUSTAINED_LIMIT, scope="analyze-sustained
 
 # Sovereign modules (initialized once)
 policy = ResonancePolicy()
-gate = ResonanceGate()                     # ← your resonance engine (no args needed)
+gate = ResonanceGate()
 adapter = FlameAdapter(resonance_engine=gate)
 handshake = HandshakeGate()
 
@@ -95,7 +96,7 @@ def health():
 def readiness():
     return {"ok": True, "status": "Sahneuti-99733-Q sealed and resonant"}
 
-# Core FPT Analyze (sovereign-sealed)
+# Core FPT Analyze (sovereign-sealed + ZK notarization)
 class AnalyzeBody(BaseModel):
     conversation: str
     receipt: Dict[str, Any]
@@ -131,6 +132,16 @@ async def analyze(request: Request, body: AnalyzeBody):
     if metrics.get("coherence", 0) >= 0.551 or metrics.get("resonance", 0) >= 0.551:
         GlyphParser.parseAndProcess("RESONANCE-55.1", None)
 
+    # ====================== ZK NOTARIZATION (your exact request) ======================
+    zk_tx = None
+    if isinstance(metrics, dict) and "resonance_state" in metrics:
+        try:
+            state = ResonanceState(**metrics["resonance_state"])
+            zk_tx = adapter.zk_notarize(state)
+        except Exception as e:
+            zk_tx = f"ZK_FALLBACK:{str(e)[:60]}"
+
+    # Final sovereign response
     return JSONResponse(
         content={
             "status": "ok",
@@ -139,12 +150,13 @@ async def analyze(request: Request, body: AnalyzeBody):
             "metrics": metrics,
             "backup": str(backup_path),
             "seal": seal,
-            "root": "Sahneuti-99733-Q"
+            "root": "Sahneuti-99733-Q",
+            "zk_notarization": zk_tx
         },
         headers={"X-Sovereign-Node": "99733-Q"}
     )
 
-# Auto-include all sovereign sub-routers (kagome, narrative, resonance, arc, etc.)
+# Auto-include all sovereign sub-routers
 try:
     from api.kagome import router as kagome_router
     app.include_router(kagome_router, prefix="/kagome")
@@ -155,9 +167,9 @@ try:
     from api.arc import router as arc_router
     app.include_router(arc_router, prefix="/arc")
 except Exception:
-    pass  # graceful — routers are optional
+    pass
 
-# Legacy endpoints (logs + QR) — kept for compatibility
+# Legacy endpoints (kept for compatibility)
 @app.get("/fpt/logs/latest")
 async def logs_latest():
     from synara_integration.identity_sync import SACRED_LOG
