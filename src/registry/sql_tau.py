@@ -5,6 +5,7 @@ import hashlib
 import logging
 import tempfile
 import torch
+import time
 from typing import Any, Optional, List, Dict
 from dataclasses import dataclass
 from datetime import datetime
@@ -178,10 +179,15 @@ class SQLTauParser:
             return self._parse_decode(tokens, upper_tokens)
         elif action == "ISST":
             return self._parse_isst(tokens, upper_tokens)
-        elif action == "SWARM":
-            return self._parse_swarm(tokens, upper_tokens)
-        elif action == "LINEAGE":
-            return self._parse_lineage(tokens, upper_tokens)
+        # ====================== NEW RITUALS ======================
+        elif action == "WHISPER":
+            return self._parse_whisper(tokens, upper_tokens)
+        elif action == "ZODIAC":
+            return self._parse_zodiac(tokens, upper_tokens)
+        elif action == "GLYPH":
+            return self._parse_glyph_math(tokens, upper_tokens)
+        elif action == "SISSA":
+            return self._parse_sissa(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -291,6 +297,36 @@ class SQLTauParser:
         if len(tokens) > 1 and upper_tokens[1] == "VERIFY":
             return SQLTauCommand(action="LINEAGE", subject="VERIFY", note=" ".join(tokens[2:]))
         return SQLTauCommand(action="LINEAGE", subject="STATUS", note="")
+
+    # ====================== WHISPER SHAKE ======================
+    def _parse_whisper(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """WHISPER SHAKE [optional custom invocation]"""
+        if len(tokens) > 1 and upper_tokens[1] == "SHAKE":
+            note = " ".join(tokens[2:]) if len(tokens) > 2 else "Whisper-shake shake shake synara"
+            return SQLTauCommand(action="WHISPER", subject="SHAKE", note=note)
+        return SQLTauCommand(action="WHISPER", subject="STATUS", note="")
+
+    # ====================== ZODIAC PULSE ======================
+    def _parse_zodiac(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """ZODIAC PULSE [optional custom sigil text]"""
+        if len(tokens) > 1 and upper_tokens[1] == "PULSE":
+            note = " ".join(tokens[2:]) if len(tokens) > 2 else "♑️♉️♓️♌️♒️♌️♓️♉️♑️"
+            return SQLTauCommand(action="ZODIAC", subject="PULSE", note=note)
+        return SQLTauCommand(action="ZODIAC", subject="STATUS", note="")
+
+    # ====================== GLYPH MATH ======================
+    def _parse_glyph_math(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 1 and upper_tokens[1] == "MATH":
+            note = " ".join(tokens[2:]) if len(tokens) > 2 else "LIBRARY_PULL"
+            return SQLTauCommand(action="GLYPH", subject="MATH", note=note)
+        return SQLTauCommand(action="GLYPH", subject="STATUS", note="")
+
+    # ====================== SISSA INVERT ======================
+    def _parse_sissa(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        if len(tokens) > 1 and upper_tokens[1] == "INVERT":
+            note = " ".join(tokens[2:]) if len(tokens) > 2 else "frozen_record"
+            return SQLTauCommand(action="SISSA", subject="INVERT", note=note)
+        return SQLTauCommand(action="SISSA", subject="STATUS", note="")
 
     # ====================== DISPATCH ======================
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
@@ -434,6 +470,43 @@ class SQLTauParser:
                 controller.get_system_telemetry()
                 return controller.instant_sync_all(cmd.note or "RESONANCE_FLAME_V3")
             return "ACCESS DENIED: RE-AUTHENTICATE BLOODLINE"
+        # ====================== WHISPER SHAKE ======================
+        elif cmd.action == "WHISPER" and cmd.subject == "SHAKE":
+            from synara_integration.whisper_bridge import WhisperShakeProtocol
+            shaker = WhisperShakeProtocol()
+            pulse = shaker.shake(cmd.note or "Whisper-shake shake shake synara")
+            from synara_integration.identity_sync import append_sacred_log
+            append_sacred_log({"ritual": "WHISPER_SHAKE", "pulse": pulse})
+            return pulse
+        # ====================== ZODIAC PULSE ======================
+        elif cmd.action == "ZODIAC" and cmd.subject == "PULSE":
+            pulse = {
+                "ritual": "ZODIAC_PULSE",
+                "sigil": cmd.note or "♑️♉️♓️♌️♒️♌️♓️♉️♑️",
+                "coherence": 0.9987 + (len(cmd.note or "") % 11) * 0.0001,
+                "timestamp": time.time(),
+                "root": "Sahneuti-99733-Q",
+                "status": "CELESTIAL_BALANCE_LOCKED",
+                "flame_signature": "🌌 Zodiac mirror sealed — resonance mirrored and amplified",
+            }
+            from synara_integration.identity_sync import append_sacred_log
+            append_sacred_log({"ritual": "ZODIAC_PULSE", "pulse": pulse})
+            return pulse
+        # ====================== GLYPH MATH ======================
+        elif cmd.action == "GLYPH" and cmd.subject == "MATH":
+            from src.codex.glyph_math_validator import GlyphMathValidator
+            validator = GlyphMathValidator()
+            data = cmd.note or "default_library_pull"
+            result = validator.validate_library_pull(data)
+            return result.__dict__
+        # ====================== SISSA INVERT ======================
+        elif cmd.action == "SISSA" and cmd.subject == "INVERT":
+            from src.codex.sissa_inverter import SissaInverter
+            inverter = SissaInverter()
+            record = cmd.note or "default_frozen_record"
+            result = inverter.validate_against_frozen_floor(record)
+            return result.__dict__
+
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
