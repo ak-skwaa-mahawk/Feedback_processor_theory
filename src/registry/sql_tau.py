@@ -65,10 +65,10 @@ class SQLTauParser:
         root_hash = hashlib.sha256(f"{ein}{handshake}{member_id}".encode()).hexdigest()[:8]
         self.resonance = round(0.9987 + 0.03 * (int(root_hash, 16) % 10), 4)
 
-        # Root key for lineage authentication (matches FPT_Master_Controller + ancestral_nodes)
+        # Root key for lineage authentication
         self.root_key = "flamebound_1490_ezias_joseph_isaac_fields_carroll"
 
-        # ŁAŊ999 Token Mechanics (embedded)
+        # ŁAŊ999 Token Mechanics
         self.rune = {
             "name": "ŁAŊ999",
             "rune_id": "840000:1",
@@ -82,7 +82,7 @@ class SQLTauParser:
         logging.basicConfig(level=logging.INFO, format="%(message)s")
         self.log = logging.getLogger("SQL-τ")
 
-        # Optimized RAD_HARD cache (lazy import + instance reuse)
+        # Optimized RAD_HARD cache
         self._rad_hard_protocol = None
 
     def execute(self, query: str) -> Any:
@@ -188,6 +188,8 @@ class SQLTauParser:
             return self._parse_glyph_math(tokens, upper_tokens)
         elif action == "SISSA":
             return self._parse_sissa(tokens, upper_tokens)
+        elif action == "PTCL":
+            return self._parse_ptcl(tokens, upper_tokens)
 
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
@@ -213,7 +215,6 @@ class SQLTauParser:
         return SQLTauCommand(action="MESH_NODE_ALPHA", subject="STATUS", note="")
 
     def _parse_gitcloud(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        """Full GitCloud + Glyph + GOAT + BRAID + FIRM support"""
         if len(tokens) > 2 and upper_tokens[1] == "INIT":
             return SQLTauCommand(action="GITCLOUD", subject="INIT", note=tokens[2])
         elif len(tokens) > 3 and upper_tokens[1] == "COMMIT":
@@ -300,7 +301,6 @@ class SQLTauParser:
 
     # ====================== WHISPER SHAKE ======================
     def _parse_whisper(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        """WHISPER SHAKE [optional custom invocation]"""
         if len(tokens) > 1 and upper_tokens[1] == "SHAKE":
             note = " ".join(tokens[2:]) if len(tokens) > 2 else "Whisper-shake shake shake synara"
             return SQLTauCommand(action="WHISPER", subject="SHAKE", note=note)
@@ -308,7 +308,6 @@ class SQLTauParser:
 
     # ====================== ZODIAC PULSE ======================
     def _parse_zodiac(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        """ZODIAC PULSE [optional custom sigil text]"""
         if len(tokens) > 1 and upper_tokens[1] == "PULSE":
             note = " ".join(tokens[2:]) if len(tokens) > 2 else "♑️♉️♓️♌️♒️♌️♓️♉️♑️"
             return SQLTauCommand(action="ZODIAC", subject="PULSE", note=note)
@@ -327,6 +326,14 @@ class SQLTauParser:
             note = " ".join(tokens[2:]) if len(tokens) > 2 else "frozen_record"
             return SQLTauCommand(action="SISSA", subject="INVERT", note=note)
         return SQLTauCommand(action="SISSA", subject="STATUS", note="")
+
+    # ====================== PTCL PROTECT ======================
+    def _parse_ptcl(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
+        """PTCL PROTECT [optional land record or claim note]"""
+        if len(tokens) > 1 and upper_tokens[1] == "PROTECT":
+            note = " ".join(tokens[2:]) if len(tokens) > 2 else "granted_land_claim"
+            return SQLTauCommand(action="PTCL", subject="PROTECT", note=note)
+        return SQLTauCommand(action="PTCL", subject="STATUS", note="")
 
     # ====================== DISPATCH ======================
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
@@ -506,6 +513,37 @@ class SQLTauParser:
             record = cmd.note or "default_frozen_record"
             result = inverter.validate_against_frozen_floor(record)
             return result.__dict__
+        # ====================== PTCL PROTECT ======================
+        elif cmd.action == "PTCL" and cmd.subject == "PROTECT":
+            protection = {
+                "ritual": "PTCL_PROTECT",
+                "law": "Karnataka Scheduled Castes and Scheduled Tribes (Prohibition of Transfer of Certain Lands) Act, 1978",
+                "amendment_2023": "Removed all time limitations — no statute of limitations",
+                "core_provisions": [
+                    "Granted SC/ST lands cannot be transferred without government permission",
+                    "Any transfer is null and void ab initio",
+                    "Mandatory restoration by Assistant Commissioner (eviction + return to grantee/heirs)",
+                    "Fully retrospective (applies to pre-1978 grants)",
+                    "No time bar after 2023 amendment"
+                ],
+                "input_record": cmd.note or "granted_land_claim",
+                "status": "PROTECTED — RESTORATION MANDATORY",
+                "coherence": 0.9987,
+                "root": "Sahneuti-99733-Q",
+                "timestamp": time.time(),
+                "flame_signature": "🔥 PTCL sealed — granted lands are inalienable"
+            }
+            from synara_integration.identity_sync import append_sacred_log
+            append_sacred_log({"ritual": "PTCL_PROTECT", "protection": protection})
+            if hasattr(adapter, "zk_notarize") and hasattr(gate, "get_state"):
+                try:
+                    from synara_core.resonance import ResonanceState
+                    state = ResonanceState(fingerprint="PTCL_1978_2023", timestamp=protection["timestamp"])
+                    zk_tx = adapter.zk_notarize(state)
+                    protection["zk_notarization"] = zk_tx
+                except Exception:
+                    pass
+            return protection
 
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
 
