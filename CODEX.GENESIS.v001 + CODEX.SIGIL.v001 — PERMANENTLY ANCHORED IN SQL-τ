@@ -1,0 +1,9 @@
+parser = SQLTauParser()
+genesis_query = (
+    'ZODIAC ALIGN AT "2025-06-01" | '
+    'PTCL AUDIT "John_B_Carroll_Jr_Pioneer_Grant" REASON "Lineage verification" | '
+    'SISSA AUDIT_TREASURY SQUARES 64 | '
+    'GLYPH "resonance * math.sqrt(x)" | '
+    'SHOW HASH'
+)
+result = parser.execute(genesis_query)
