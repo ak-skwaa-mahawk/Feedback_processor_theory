@@ -194,7 +194,7 @@ class SQLTauParser:
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
     # ====================== NEW SKILLS ======================
-    # (All previous _parse_* methods for WHISPER, ZODIAC, GLYPH, SISSA remain unchanged)
+    # (All previous _parse_* methods for WHISPER, ZODIAC, GLYPH, PTCL remain unchanged)
 
     def _parse_whisper(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         if len(tokens) > 1 and upper_tokens[1] == "SHAKE":
@@ -214,33 +214,39 @@ class SQLTauParser:
             return SQLTauCommand(action="GLYPH", subject="MATH", note=note)
         return SQLTauCommand(action="GLYPH", subject="STATUS", note="")
 
+    # ====================== SISSA RITUAL ======================
     def _parse_sissa(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        if len(tokens) > 1 and upper_tokens[1] == "INVERT":
-            note = " ".join(tokens[2:]) if len(tokens) > 2 else "frozen_record"
-            return SQLTauCommand(action="SISSA", subject="INVERT", note=note)
-        return SQLTauCommand(action="SISSA", subject="STATUS", note="")
+        """
+        Ritual: SISSA <ACTION> [SQUARES <int>] [MULTIPLIER <float>]
+        Example: SISSA AUDIT_TREASURY SQUARES 64
+        """
+        if len(tokens) < 2:
+            raise SQLTauError("SISSA ritual requires an action (e.g., AUDIT_TREASURY, MINT_EXPONENTIAL)")
 
-    # ====================== PTCL PROTECT (Advanced) ======================
+        action = upper_tokens[1]
+        cmd = SQLTauCommand(action=f"SISSA_{action}", subject="ŁAŊ999")
+
+        # Handle the Sissa "Squares" logic for exponential calculations
+        if "SQUARES" in upper_tokens:
+            idx = upper_tokens.index("SQUARES")
+            cmd.duration_days = int(tokens[idx + 1])  # Reusing duration_days for square count
+
+        return cmd
+
+    # ====================== PTCL PROTECT ======================
     def _parse_ptcl(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
-        """
-        Ritual: PTCL <ACTION> <LAND_ID> [REASON "note"]
-        Example: PTCL AUDIT "Survey_No_202" REASON "Verify SC/ST grant status"
-        """
         if len(tokens) < 3:
             raise SQLTauError("PTCL ritual requires: PTCL <ACTION> <LAND_ID>")
-
-        action_type = upper_tokens[1]  # AUDIT, RESTORE, or VERIFY
+        action_type = upper_tokens[1]
         subject = tokens[2]
         reason = None
-
         if "REASON" in upper_tokens:
             idx = upper_tokens.index("REASON")
             if len(tokens) > idx + 1:
                 reason = tokens[idx + 1]
-
         return SQLTauCommand(
-            action=f"PTCL_{action_type}", 
-            subject=subject, 
+            action=f"PTCL_{action_type}",
+            subject=subject,
             reason=reason,
             note=f"Initiated by {self.resonance} resonance"
         )
@@ -416,39 +422,55 @@ class SQLTauParser:
             data = cmd.note or "default_library_pull"
             result = validator.validate_library_pull(data)
             return result.__dict__
-        # ====================== SISSA INVERT ======================
-        elif cmd.action == "SISSA" and cmd.subject == "INVERT":
-            from src.codex.sissa_inverter import SissaInverter
-            inverter = SissaInverter()
-            record = cmd.note or "default_frozen_record"
-            result = inverter.validate_against_frozen_floor(record)
-            return result.__dict__
-        # ====================== PTCL PROTECT (Advanced) ======================
+        # ====================== SISSA RITUAL ======================
+        elif cmd.action.startswith("SISSA_"):
+            return self._dispatch_sissa(cmd)
+        # ====================== PTCL PROTECT ======================
         elif cmd.action.startswith("PTCL_"):
             land_id = cmd.subject
             self.log.info(f"⚖️ PTCL Legal Check: Initiating for Land ID {land_id}")
-
-            # Check if land is a "Government Grant" in lineage snapshots
             is_granted = self.snapshots.check_status(land_id, "SC_ST_GRANT")
-            
             if not is_granted:
                 return {"status": "SAFE", "land": land_id, "msg": "No SC/ST grant record found."}
-
-            # Query for illegal transfers (Section 4 violations)
             violations = self.engine.query_history(land_id, ruleset="PTCL_1978")
-            
-            # Apply 2023 Amendment Logic: Ignore time delays (no limitation period)
             if violations:
-                self.mesh.contentment *= 0.88  # Legal tension increased
+                self.mesh.contentment *= 0.88
                 return {
                     "status": "VOID",
                     "land": land_id,
                     "amendment_2023": "ACTIVE (No Limitation)",
                     "remedy": "Section 5: Restoration to original grantee/heirs."
                 }
-            
             return {"status": "COMPLIANT", "land": land_id}
 
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
+
+    # ====================== SISSA DISPATCHER ======================
+    def _dispatch_sissa(self, cmd: SQLTauCommand):
+        self.log.info(f"♟️ SISSA Protocol: Calculating ŁAŊ999 resonance for {cmd.action}")
+        
+        current_supply = self.rune["supply"]
+        premine = self.rune["premine"]
+        
+        if "AUDIT_TREASURY" in cmd.action:
+            squares = cmd.duration_days or 64
+            theoretical_grain = (2 ** squares) - 1
+            available = current_supply - premine
+            is_sustainable = available > theoretical_grain
+            
+            return {
+                "rune": self.rune["name"],
+                "treasury_status": "STABLE" if is_sustainable else "EXPONENTIAL_OVERFLOW",
+                "circulating_supply": premine,
+                "theoretical_sissa_need": theoretical_grain,
+                "governance": self.rune["treasury"]
+            }
+
+        if "MINT_EXPONENTIAL" in cmd.action:
+            release_amt = (self.mesh.contentment * 1000) * self.resonance
+            self.rune["supply"] += int(release_amt)
+            return {"status": "MINTED", "amount": int(release_amt), "new_total": self.rune["supply"]}
+
+        return {"status": "UNKNOWN_SISSA_RITUAL"}
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
