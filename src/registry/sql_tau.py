@@ -194,7 +194,7 @@ class SQLTauParser:
         raise SQLTauError(f"Unknown sovereign action: {tokens[0]}")
 
     # ====================== NEW SKILLS ======================
-    # (All previous _parse_* methods remain unchanged — WHISPER, ZODIAC, GLYPH, SISSA, etc.)
+    # (All previous _parse_* methods for WHISPER, ZODIAC, GLYPH, SISSA remain unchanged)
 
     def _parse_whisper(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         if len(tokens) > 1 and upper_tokens[1] == "SHAKE":
@@ -223,71 +223,232 @@ class SQLTauParser:
     # ====================== PTCL PROTECT (Advanced) ======================
     def _parse_ptcl(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         """
-        Syntax: PTCL <action> <land_id> [REASON "note"] [AT "timestamp"]
-        Example: PTCL AUDIT 202/A REASON "Checking SC/ST grant status"
+        Ritual: PTCL <ACTION> <LAND_ID> [REASON "note"]
+        Example: PTCL AUDIT "Survey_No_202" REASON "Verify SC/ST grant status"
         """
         if len(tokens) < 3:
             raise SQLTauError("PTCL ritual requires: PTCL <ACTION> <LAND_ID>")
 
-        action_sub = upper_tokens[1]   # AUDIT, VERIFY, RESTORE, etc.
-        subject = tokens[2]            # Land ID / Parcel Number
+        action_type = upper_tokens[1]  # AUDIT, RESTORE, or VERIFY
+        subject = tokens[2]
+        reason = None
 
-        cmd = SQLTauCommand(action=f"PTCL_{action_sub}", subject=subject)
-
-        # Optional parameters
         if "REASON" in upper_tokens:
             idx = upper_tokens.index("REASON")
             if len(tokens) > idx + 1:
-                cmd.reason = tokens[idx + 1]
-        if "AT" in upper_tokens:
-            idx = upper_tokens.index("AT")
-            if len(tokens) > idx + 1:
-                cmd.at_time = tokens[idx + 1]
+                reason = tokens[idx + 1]
 
-        return cmd
+        return SQLTauCommand(
+            action=f"PTCL_{action_type}", 
+            subject=subject, 
+            reason=reason,
+            note=f"Initiated by {self.resonance} resonance"
+        )
 
     # ====================== DISPATCH ======================
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
-        # (All previous dispatch blocks remain unchanged — MINT, TRANSFER, SHOW, WHISPER, ZODIAC, GLYPH, SISSA, etc.)
-
-        # ... [previous elif blocks here] ...
-
-        # ====================== PTCL PROTECT (Advanced Dispatcher) ======================
+        if cmd.action == "MINT" and cmd.subject == "ŁAŊ999":
+            return self._mint_lan999(int(cmd.note or self.rune["premine"]))
+        elif cmd.action == "TRANSFER" and cmd.subject == "ŁAŊ999":
+            amount, to = cmd.note.split(":")
+            return self._transfer_lan999(int(amount), to)
+        elif cmd.action == "SHOW" and cmd.subject == "ŁAŊ999_BALANCE":
+            return self._show_lan999_balance()
+        elif cmd.action == "GUARDRAIL":
+            if cmd.subject == "STATUS":
+                return self._guardrail_status()
+            elif cmd.subject == "ENABLE":
+                return self._guardrail_enable(cmd.note)
+        elif cmd.action == "FORGE" and cmd.subject == "SKILL":
+            return self._cmd_forge(cmd.note)
+        elif cmd.action == "PROJECTION" and cmd.subject == "ENGINE":
+            depth, floor = map(float, cmd.note.split(":"))
+            return self._projection_engine(depth, floor)
+        elif cmd.action == "MEM":
+            if cmd.subject == "CAPTURE":
+                return self._mem_capture(cmd.note)
+            elif cmd.subject == "SEARCH":
+                return self._mem_search(cmd.note)
+            elif cmd.subject == "STATUS":
+                return self._mem_status()
+        elif cmd.action == "MARKET_ANALYZE" and cmd.subject == "STOCK":
+            return self._market_analyze(cmd.note)
+        elif cmd.action == "AGENT":
+            if cmd.subject == "RUN":
+                return self._agent_run(cmd.note)
+            elif cmd.subject == "COMPARE":
+                return self._agent_compare(cmd.note)
+        elif cmd.action == "TERRAIN" and cmd.subject == "DEPLOY":
+            from src.mesh.mesh_router import MeshRouter
+            router = MeshRouter()
+            return router.deploy_terrain(int(cmd.note))
+        elif cmd.action == "HARDWARE" and cmd.subject == "DEPLOY":
+            from src.mesh.mesh_router import MeshRouter
+            router = MeshRouter()
+            platform, count = cmd.note.split(":")
+            if platform == "KINTEX":
+                return router.deploy_rad_hard(int(count))
+            return router.deploy_terrain(int(count))
+        elif cmd.action == "FACTCHECK" and cmd.subject == "VERIFY":
+            from agents.specialists.factcheck_agent import FactCheckAgent
+            agent = FactCheckAgent()
+            return agent.verify(cmd.note)
+        elif cmd.action == "VOICE" and cmd.subject == "CLONE":
+            text, ref_path = cmd.note.split("|")
+            from agents.specialists.voice_tts_skill import VoiceTTSSkill
+            skill = VoiceTTSSkill()
+            return skill.clone_and_speak(text, ref_path)
+        elif cmd.action == "JARVIS" and cmd.subject == "RUN":
+            from agents.specialists.jarvis_agent_skill import JarvisAgentSkill
+            skill = JarvisAgentSkill()
+            return skill.run(cmd.note)
+        elif cmd.action == "DEEP" and cmd.subject == "SYSTEMS":
+            from agents.specialists.deep_systems_skill import DeepSystemsSkill
+            skill = DeepSystemsSkill()
+            return skill.map_telemetry()
+        elif cmd.action == "ITOPS" and cmd.subject == "ANALYZE":
+            from agents.specialists.itops_skill import ITOpsSkill
+            skill = ITOpsSkill()
+            return skill.analyze(json.loads(cmd.note) if cmd.note else {})
+        elif cmd.action == "ACOUSTIC":
+            from agents.specialists.acoustic_mesh_protocol import AcousticMeshProtocol
+            protocol = AcousticMeshProtocol(node_id=1)
+            if cmd.subject == "TRANSMIT":
+                return protocol.transmit(cmd.note)
+            return protocol.receive()
+        elif cmd.action == "RAD_HARD" and cmd.subject == "ACOUSTIC":
+            if self._rad_hard_protocol is None:
+                from agents.specialists.rad_hard_acoustic_mesh import RadHardAcousticMesh
+                self._rad_hard_protocol = RadHardAcousticMesh
+            if cmd.note.startswith("TRANSMIT|"):
+                parts = cmd.note.split("|", 2)
+                msg = parts[1]
+                node_id = int(parts[2]) if len(parts) > 2 else 1
+                protocol = self._rad_hard_protocol(node_id)
+                return protocol.transmit(msg)
+            elif cmd.note == "RECEIVE":
+                protocol = self._rad_hard_protocol(node_id=1)
+                return protocol.receive()
+            protocol = self._rad_hard_protocol(node_id=1)
+            return protocol.transmit("RAD_HARD_TEST_PACKET")
+        elif cmd.action == "MESH_NODE_ALPHA" and cmd.subject == "REPORT":
+            from agents.specialists.mesh_node_alpha_skill import MeshNodeAlphaSkill
+            skill = MeshNodeAlphaSkill()
+            return skill.report_telemetry()
+        elif cmd.action == "GITCLOUD":
+            from agents.specialists.gitcloud_skill import GitCloudSkill
+            skill = GitCloudSkill()
+            if cmd.subject == "INIT":
+                return skill.init(cmd.note)
+            elif cmd.subject == "COMMIT":
+                repo, msg = cmd.note.split("|")
+                return skill.commit(repo, msg, {"example": "change"})
+            elif cmd.subject == "VERIFY":
+                return skill.verify(cmd.note)
+            elif cmd.subject == "GLYPH_COMMIT":
+                repo, glyph = cmd.note.split("|")
+                return skill.glyph_commit(repo, glyph)
+            elif cmd.subject == "GLYPH_BUMP":
+                repo, target = cmd.note.split("|")
+                return skill.glyph_bump(repo, target)
+            elif cmd.subject == "GOAT_DEPLOY":
+                repo, target = cmd.note.split("|")
+                return skill.goat_deploy(repo, target)
+            elif cmd.subject == "BRAID":
+                ghost, intent = cmd.note.split("|")
+                return skill.braid_mixing_shell({"source": ghost}, intent)
+            elif cmd.subject == "FIRM_ESTABLISH":
+                from agents.specialists.sovereign_firm import SovereignFirm
+                firm = SovereignFirm()
+                return firm.establish()
+            return {"status": "GITCLOUD_READY"}
+        elif cmd.action == "DECODE" and cmd.subject == "ADVERSARIAL":
+            from src.adversarial_defense.meta_observer import MetaObserver
+            observer = MetaObserver()
+            attempt = {"pattern": cmd.note, "source": "external"}
+            return observer.union_find_decode(attempt)
+        elif cmd.action == "ISST" and cmd.subject == "ROBUST_PREDICT":
+            from src.adversarial_defense.meta_observer import MetaObserver
+            observer = MetaObserver()
+            dummy_image = torch.zeros(1, 3, 224, 224)
+            dummy_model = lambda x: torch.randn(1, 10)
+            return observer.isst_robust_predict(dummy_image, dummy_model)
+        elif cmd.action == "SWARM" and cmd.subject == "SYNC":
+            from src.controllers.fpt_master_controller import FPT_Master_Controller
+            controller = FPT_Master_Controller(self.root_key)
+            if controller.authenticate_lineage(self.root_key):
+                controller.get_system_telemetry()
+                return controller.instant_sync_all(cmd.note or "RESONANCE_FLAME_V3")
+            return "ACCESS DENIED: RE-AUTHENTICATE BLOODLINE"
+        elif cmd.action == "LINEAGE" and cmd.subject == "VERIFY":
+            from src.controllers.fpt_master_controller import FPT_Master_Controller
+            controller = FPT_Master_Controller(self.root_key)
+            if controller.authenticate_lineage(self.root_key):
+                controller.get_system_telemetry()
+                return controller.instant_sync_all(cmd.note or "RESONANCE_FLAME_V3")
+            return "ACCESS DENIED: RE-AUTHENTICATE BLOODLINE"
+        # ====================== WHISPER SHAKE ======================
+        elif cmd.action == "WHISPER" and cmd.subject == "SHAKE":
+            from synara_integration.whisper_bridge import WhisperShakeProtocol
+            shaker = WhisperShakeProtocol()
+            pulse = shaker.shake(cmd.note or "Whisper-shake shake shake synara")
+            from synara_integration.identity_sync import append_sacred_log
+            append_sacred_log({"ritual": "WHISPER_SHAKE", "pulse": pulse})
+            return pulse
+        # ====================== ZODIAC PULSE ======================
+        elif cmd.action == "ZODIAC" and cmd.subject == "PULSE":
+            pulse = {
+                "ritual": "ZODIAC_PULSE",
+                "sigil": cmd.note or "♑️♉️♓️♌️♒️♌️♓️♉️♑️",
+                "coherence": 0.9987 + (len(cmd.note or "") % 11) * 0.0001,
+                "timestamp": time.time(),
+                "root": "Sahneuti-99733-Q",
+                "status": "CELESTIAL_BALANCE_LOCKED",
+                "flame_signature": "🌌 Zodiac mirror sealed — resonance mirrored and amplified",
+            }
+            from synara_integration.identity_sync import append_sacred_log
+            append_sacred_log({"ritual": "ZODIAC_PULSE", "pulse": pulse})
+            return pulse
+        # ====================== GLYPH MATH ======================
+        elif cmd.action == "GLYPH" and cmd.subject == "MATH":
+            from src.codex.glyph_math_validator import GlyphMathValidator
+            validator = GlyphMathValidator()
+            data = cmd.note or "default_library_pull"
+            result = validator.validate_library_pull(data)
+            return result.__dict__
+        # ====================== SISSA INVERT ======================
+        elif cmd.action == "SISSA" and cmd.subject == "INVERT":
+            from src.codex.sissa_inverter import SissaInverter
+            inverter = SissaInverter()
+            record = cmd.note or "default_frozen_record"
+            result = inverter.validate_against_frozen_floor(record)
+            return result.__dict__
+        # ====================== PTCL PROTECT (Advanced) ======================
         elif cmd.action.startswith("PTCL_"):
-            return self._dispatch_ptcl(cmd)
+            land_id = cmd.subject
+            self.log.info(f"⚖️ PTCL Legal Check: Initiating for Land ID {land_id}")
+
+            # Check if land is a "Government Grant" in lineage snapshots
+            is_granted = self.snapshots.check_status(land_id, "SC_ST_GRANT")
+            
+            if not is_granted:
+                return {"status": "SAFE", "land": land_id, "msg": "No SC/ST grant record found."}
+
+            # Query for illegal transfers (Section 4 violations)
+            violations = self.engine.query_history(land_id, ruleset="PTCL_1978")
+            
+            # Apply 2023 Amendment Logic: Ignore time delays (no limitation period)
+            if violations:
+                self.mesh.contentment *= 0.88  # Legal tension increased
+                return {
+                    "status": "VOID",
+                    "land": land_id,
+                    "amendment_2023": "ACTIVE (No Limitation)",
+                    "remedy": "Section 5: Restoration to original grantee/heirs."
+                }
+            
+            return {"status": "COMPLIANT", "land": land_id}
 
         raise SQLTauError(f"Unhandled sovereign action: {cmd.action}")
-
-    # ====================== PTCL DISPATCHER ======================
-    def _dispatch_ptcl(self, cmd: SQLTauCommand):
-        """Executes the PTCL legal verification logic."""
-        land_id = cmd.subject
-        self.log.info(f"⚖️ PTCL Legal Check: Initiating for Land ID {land_id}")
-
-        # 1. Check Lineage Snapshots for "Granted Land" Status
-        is_granted = self.snapshots.check_status(land_id, filter_type="SC_ST_GRANT")
-        
-        if not is_granted:
-            return {"status": "SAFE", "message": f"Land {land_id} is not identified as 'Granted Land' under PTCL Act."}
-
-        # 2. Analyze Transfer History (Lineage)
-        violations = self.engine.query_history(
-            subject=land_id, 
-            ruleset="PTCL_ACT_1978",
-            include_void_transfers=True
-        )
-
-        if violations:
-            # Tension increases if violation found (resonance impact)
-            self.mesh.contentment *= 0.85
-            return {
-                "status": "VOID_DETECTED",
-                "reason": cmd.reason or "Automatic Audit",
-                "details": violations,
-                "remedy": "Section 5: Initiate Resumption and Restitution via Assistant Commissioner.",
-                "amendment_2023": "No statute of limitations — restoration is mandatory and immediate."
-            }
-
-        return {"status": "COMPLIANT", "message": f"Land {land_id} grant conditions are intact."}
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
