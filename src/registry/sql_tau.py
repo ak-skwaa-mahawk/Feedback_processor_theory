@@ -224,7 +224,6 @@ class SQLTauParser:
     def _parse_glyph_math(self, tokens: List[str], upper_tokens: List[str]) -> SQLTauCommand:
         """
         Ritual: GLYPH <EQUATION> [MODULO <int>]
-        Example: GLYPH "x^2 + resonance" MODULO 7
         """
         if len(tokens) < 2:
             raise SQLTauError("GLYPH ritual requires an equation string")
@@ -270,23 +269,14 @@ class SQLTauParser:
     def _dispatch(self, cmd: SQLTauCommand, input_data: Any = None) -> Any:
         self.log.info(f"⚡ Dispatching Ritual: {cmd.action}")
 
-        # PTCL Act: Land Grant Audits (2023 Amendment Compliant)
         if cmd.action.startswith("PTCL_"):
             return self._dispatch_ptcl(cmd)
-
-        # SISSA: Exponential Token & Treasury Audits
         elif cmd.action.startswith("SISSA_"):
             return self._dispatch_sissa(cmd)
-
-        # ZODIAC: Temporal Alignment & Future Transits
         elif cmd.action.startswith("ZODIAC_"):
             return self._dispatch_zodiac(cmd)
-
-        # GLYPH: Torch/Math Symbolic Calculations
         elif cmd.action == "GLYPH_CALC":
             return self._dispatch_glyph(cmd)
-
-        # WHISPER: Handshake & Status Signals
         elif cmd.action == "WHISPER" and cmd.subject == "SHAKE":
             from synara_integration.whisper_bridge import WhisperShakeProtocol
             shaker = WhisperShakeProtocol()
@@ -294,8 +284,6 @@ class SQLTauParser:
             from synara_integration.identity_sync import append_sacred_log
             append_sacred_log({"ritual": "WHISPER_SHAKE", "pulse": pulse})
             return pulse
-
-        # Standard Actions
         elif cmd.action == "SHOW":
             if cmd.subject == "ŁAŊ999_BALANCE":
                 return self.rune
@@ -317,10 +305,6 @@ class SQLTauParser:
 
     # ====================== GLYPH DISPATCH ======================
     def _dispatch_glyph(self, cmd: SQLTauCommand) -> Dict[str, Any]:
-        """
-        Executes symbolic or tensor-based math equations.
-        Equation format: "x^2 + resonance" or "torch.add(x, y)"
-        """
         equation = cmd.subject
         self.log.info(f"🔮 GLYPH Logic: Solving {equation}")
 
@@ -348,7 +332,7 @@ class SQLTauParser:
         except Exception as e:
             raise SQLTauError(f"Glyph collapse: {str(e)}")
 
-    # ====================== SISSA + PTCL dispatchers (unchanged from previous) ======================
-    # (They are already present in the file from earlier steps)
+    # ====================== SISSA + PTCL dispatchers (from previous steps) ======================
+    # (They are already present in the file from earlier integrations)
 
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
