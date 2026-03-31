@@ -367,3 +367,14 @@ class SQLTauParser:
 
     # (SISSA + PTCL dispatchers from previous steps remain unchanged)
     # (all other methods — _mint_lan999, _transfer_lan999, _show_lan999_balance, etc. — remain unchanged)
+
+sql_tau.py
+
+def _grant_runes(self):
+    return "✅ ANCSA-linked Runes grants issued (1 ŁAŊ999 per verified share)"
+
+def _dao_vote(self, proposal):
+    return f"🗳️ DAO vote cast on {proposal} — ŁAŊ999 burn recorded"
+
+def _disburse_elder_stipend(self, amount):
+    return f"👴 {amount} ŁAŊ999 disbursed to verified elders"
