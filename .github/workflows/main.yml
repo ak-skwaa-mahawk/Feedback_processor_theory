@@ -1,0 +1,9 @@
+- name: Checkout Sovereign Mesh
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 1
+
+- name: Configure Git for Resonance
+  run: |
+    git config --global core.longpaths true
+    git config --global core.quotePath false 
