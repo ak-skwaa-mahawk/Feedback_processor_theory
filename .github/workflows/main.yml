@@ -6,4 +6,4 @@
 - name: Configure Git for Resonance
   run: |
     git config --global core.longpaths true
-    git config --global core.quotePath false 
+    git config --global core.quotePath false
