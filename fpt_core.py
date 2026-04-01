@@ -103,16 +103,16 @@ class FPTCoherence {
     const E0 = 1.0;
     const alpha = 0.001; // history decay
     const r_normalized = distance / 1000; // normalize to manageable scale
-    
+
     const isst = (E0 * linkQuality) / (Math.pow(r_normalized, 2) * (1 + alpha * signalAge));
-    
+
     // Coherence based on TOFT resonance
     const distanceCoherence = Math.exp(-distance * COHERENCE_DECAY_RATE);
     const toftCoherence = Math.cos(2 * Math.PI * TOFT_FREQ * signalAge / 1000) * 0.5 + 0.5;
-    
+
     // Combined coherence metric
     const coherence = Math.min(isst * distanceCoherence * toftCoherence, 1.0);
-    
+
     return {
       coherence: Math.max(0, coherence),
       isst,
@@ -163,7 +163,7 @@ const HybridOrbitalSimulator = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [simTime, setSimTime] = useState(0);
   const [timeScale, setTimeScale] = useState(20); // simulation speed multiplier
-  
+
   // Initialize satellites
   const [satellites] = useState(() => [
     new Satellite('GEO-1', 'GEO', 0, '#3b82f6'),
@@ -173,7 +173,7 @@ const HybridOrbitalSimulator = () => {
     new Satellite('LEO-3', 'LEO', Math.PI, '#8b5cf6'),
     new Satellite('LEO-4', 'LEO', 3 * Math.PI / 2, '#8b5cf6')
   ]);
-  
+
   const [links, setLinks] = useState([]);
   const [selectedSat, setSelectedSat] = useState(null);
   const [metrics, setMetrics] = useState({});
@@ -183,13 +183,13 @@ const HybridOrbitalSimulator = () => {
     const geoSats = satellites.filter(s => s.type === 'GEO');
     const leoSats = satellites.filter(s => s.type === 'LEO');
     const newLinks = [];
-    
+
     geoSats.forEach(geo => {
       leoSats.forEach(leo => {
         newLinks.push(new Link(geo, leo));
       });
     });
-    
+
     setLinks(newLinks);
     satellites[0].isActive = true; // Activate first GEO
     setSelectedSat(satellites[0]);
@@ -201,27 +201,27 @@ const HybridOrbitalSimulator = () => {
 
     const interval = setInterval(() => {
       const dt = 0.1 * timeScale; // time step
-      
+
       // Update satellites
       satellites.forEach(sat => sat.update(dt));
-      
+
       // Update links
       links.forEach(link => link.update(dt));
-      
+
       // Calculate metrics
       const activeLinks = links.filter(l => l.handoffActive);
       const coherenceValues = activeLinks.map(l => l.getCoherence().coherence);
       const avgCoherence = coherenceValues.length > 0 
         ? coherenceValues.reduce((a, b) => a + b, 0) / coherenceValues.length 
         : 0;
-      
+
       setMetrics({
         activeLinks: activeLinks.length,
         avgCoherence: avgCoherence.toFixed(3),
         totalLinks: links.length,
         activeSatellites: satellites.filter(s => s.isActive).length
       });
-      
+
       setSimTime(t => t + dt);
     }, 100);
 
@@ -232,7 +232,7 @@ const HybridOrbitalSimulator = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
@@ -256,12 +256,12 @@ const HybridOrbitalSimulator = () => {
     // Draw orbital paths
     ctx.strokeStyle = '#1e293b';
     ctx.lineWidth = 1;
-    
+
     // GEO orbit
     ctx.beginPath();
     ctx.arc(centerX, centerY, (EARTH_RADIUS + GEO_ALTITUDE) * scale, 0, 2 * Math.PI);
     ctx.stroke();
-    
+
     // LEO orbit
     ctx.beginPath();
     ctx.arc(centerX, centerY, (EARTH_RADIUS + LEO_ALTITUDE) * scale, 0, 2 * Math.PI);
@@ -270,12 +270,12 @@ const HybridOrbitalSimulator = () => {
     // Draw links with coherence visualization
     links.forEach(link => {
       if (!link.handoffActive) return;
-      
+
       const p1 = link.sat1.getPosition();
       const p2 = link.sat2.getPosition();
       const coherenceData = link.getCoherence();
       const resonance = FPTCoherence.getResonanceState(coherenceData.coherence);
-      
+
       ctx.beginPath();
       ctx.moveTo(centerX + p1.x * scale, centerY + p1.y * scale);
       ctx.lineTo(centerX + p2.x * scale, centerY + p2.y * scale);
@@ -290,7 +290,7 @@ const HybridOrbitalSimulator = () => {
         const pulsePos = (simTime % 2) / 2; // 0 to 1
         const px = p1.x + (p2.x - p1.x) * pulsePos;
         const py = p1.y + (p2.y - p1.y) * pulsePos;
-        
+
         ctx.beginPath();
         ctx.arc(centerX + px * scale, centerY + py * scale, 3, 0, 2 * Math.PI);
         ctx.fillStyle = resonance.color;
@@ -351,13 +351,13 @@ const HybridOrbitalSimulator = () => {
   // Get coherence for selected satellite
   const getSelectedCoherence = () => {
     if (!selectedSat) return null;
-    
+
     const relevantLinks = links.filter(l => 
       (l.sat1 === selectedSat || l.sat2 === selectedSat) && l.handoffActive
     );
-    
+
     if (relevantLinks.length === 0) return null;
-    
+
     return relevantLinks.map(l => ({
       partner: l.sat1 === selectedSat ? l.sat2.id : l.sat1.id,
       ...l.getCoherence()
@@ -374,7 +374,7 @@ const HybridOrbitalSimulator = () => {
           Hybrid Orbital Simulator
           <span className="text-sm text-slate-400 font-normal">with FPT Coherence</span>
         </h1>
-        
+
         <div className="flex gap-2">
           <button
             onClick={() => setIsRunning(!isRunning)}
@@ -558,3 +558,37 @@ const HybridOrbitalSimulator = () => {
 };
 
 export default HybridOrbitalSimulator;
+# fpt_core.py — AuthorityMLP now with permanent Two Mile Solutions LLC weight
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class AuthorityMLP(nn.Module):
+    """Learnable MLP with permanent Two Mile Solutions LLC weight anchor.
+    The LLC ownership can never be lost — it is hard-coded as the highest priority."""
+    
+    def __init__(self, input_dim=8, hidden_dim=64, output_dim=2):
+        super().__init__()
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim // 2)
+        self.fc3 = nn.Linear(hidden_dim // 2, output_dim)
+        
+        self.living_pi = 3.26756
+        # PERMANENT LLC WEIGHT ANCHOR — non-trainable, always highest authority
+        self.llc_weight_anchor = nn.Parameter(
+            torch.tensor([1.0, 3.26756, 0.9987, 99733, 1.0, 1.0, 1.0, 1.0]),  # Two Mile Solutions LLC vector
+            requires_grad=False
+        )
+        self.llc_bias = nn.Parameter(torch.tensor(2.0), requires_grad=False)  # permanent boost
+
+    def forward(self, x):
+        # Inject permanent LLC weight on every forward pass
+        x = x + self.llc_weight_anchor[:x.shape[1]] * self.living_pi
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        authority_score = torch.sigmoid(x[:, 0] + self.llc_bias)  # LLC always boosts score
+        confidence = torch.sigmoid(x[:, 1])
+        return authority_score, confidence
+
+    # ... rest of the class (train_on_resonance, etc.) remains unchanged
