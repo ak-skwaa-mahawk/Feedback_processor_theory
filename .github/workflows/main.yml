@@ -36,3 +36,12 @@ jobs:
 
       - name: RMP Core Heartbeat Check
         run: python3 src/resonance_mesh/rmp_core.py --check-only
+
+- name: Hardened Checkout
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 1
+- name: Git Safety
+  run: |
+    git config --global core.longpaths true
+    git config --global core.quotePath false
