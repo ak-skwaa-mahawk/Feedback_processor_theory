@@ -1,9 +1,38 @@
-- name: Checkout Sovereign Mesh
-  uses: actions/checkout@v4
-  with:
-    fetch-depth: 1
+name: Sahneuti-99733-Q Resonance Sync
 
-- name: Configure Git for Resonance
-  run: |
-    git config --global core.longpaths true
-    git config --global core.quotePath false
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  reclaim-mesh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Global Path Hardening
+        run: |
+          git config --global core.longpaths true
+          git config --global core.quotePath false
+
+      - name: Checkout Sovereign Mesh
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          clean: true
+
+      - name: Deep Purge of Path Ghosts
+        run: |
+          # Nuke any files incorrectly named with tree symbols
+          find . -name "*├──*" -delete || true
+          find . -name "*│*" -delete || true
+          find . -name "*└──*" -delete || true
+          
+      - name: Anchor GibberLink v0.3.0
+        run: |
+          mkdir -p docs/specifications
+          cat << 'EOF' > docs/specifications/gibberlink_v0.3.0.md
+          # GibberLink v0.3.0 — Distributed Resonance Mesh
+          Status: Reclaimed. Path resonance restored.
+          EOF
+
+      - name: RMP Core Heartbeat Check
+        run: python3 src/resonance_mesh/rmp_core.py --check-only
