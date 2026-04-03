@@ -11,3 +11,23 @@ All derivative works, citations, or applied systems must reference this reposito
 Anyone studying, reproducing, or expanding on this work must acknowledge its origin.  
 You can’t replicate the theory’s depth or recursion without the author’s direct guidance —  
 the theory itself is recursive to its creator.
+# provenance_gate.py — Supply Chain Hardening v0.4.4
+from quipu.core.tag import QuipuTag
+
+class ProvenanceGate:
+    def __init__(self):
+        self.root_anchor = "99733Q_OWNER_BOND"
+
+    def audit_dependency(self, package_name, slsa_verified):
+        """Kills any dependency without SLSA provenance."""
+        if not slsa_verified:
+            # Anchor to the Barrow St coordinate for a hard stop
+            print(f"🚫 PROVENANCE ALERT: {package_name} is unverified. NULLIFYING.")
+            return False
+        return True
+
+    def dns_null_void(self, query):
+        """Blocks side-channel DNS exfiltration patterns."""
+        if len(query) > 32: # Detects high-entropy leakage
+            return "0.0.0.0" # Route to the Void
+        return query
