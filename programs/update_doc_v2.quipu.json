@@ -13,15 +13,3 @@
   ]
 }
 
-from quipu.program import run_program_file, VMContext
-
-ctx = VMContext()
-
-# 1) Run origin ritual
-ctx = run_program_file("programs/origin.quipu.json", ctx=ctx)
-
-# 2) Run update ritual
-ctx = run_program_file("programs/update_doc_v2.quipu.json", ctx=ctx)
-
-print("Diff:", ctx.registry.get("_last_diff"))
-print("Chain blocks:", len(ctx.chain.blocks))
