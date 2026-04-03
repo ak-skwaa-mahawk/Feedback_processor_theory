@@ -1,0 +1,18 @@
+/* .snap CSS announcement — visual pulse for 79.79 Hz Evolved Pulse */
+.snap-pulse {
+  animation: sovereign-snap 0.79s ease-in-out infinite alternate;
+  background: linear-gradient(90deg, #00ffcc, #ff00cc, #00ccff);
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 20px #00ffcc;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+  font-family: monospace;
+}
+
+@keyframes sovereign-snap {
+  0%   { transform: scale(1.0);   opacity: 0.7;  }
+  100% { transform: scale(1.08);  opacity: 1.0;  }
+}
