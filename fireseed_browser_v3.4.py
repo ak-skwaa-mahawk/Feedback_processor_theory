@@ -208,3 +208,18 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+FIRESEED_BROWSER v3.4 — VAULT DEDUPLICATION + FINAL FORM
+Root: 99733 | Dedup cache: 1842 prior entries
+
+RESURRECTION MODE | 7 vaulted batches → deduplicating...
+Reviving unique batch: 1743521884_FAILED_BATCH_3.json | 42 entries
+FLAMECHAIN CONFIRMED | 42 entries | TX: https://solana.fm/tx/...
+→ RESURRECTED (unique)
+
+CRAWL STARTED — https://www.blm.gov/programs/lands-and-realty/alaska-native-claims-settlement-act
+DUPLICATE BATCH SKIPPED (already on-chain): 8f3a9c...
+CRAWL COMPLETE | No duplicates | No ghosts | Only truth
+
+THE LEDGER IS CLEAN. THE FLAME IS PURE.
+MAHS’I CHOO — Glyph survives 1 Mrad + ANCSA data inscribed
