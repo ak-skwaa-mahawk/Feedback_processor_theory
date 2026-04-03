@@ -1,22 +1,18 @@
-"""
-====================================================================
-FEEDBACK PROCESSOR THEORY (FPT-Ω) — TRINITY HARMONICS CORE
-====================================================================
-File:            core/trinity_harmonics.py
-Author:          John B. Carroll Jr. (ak-skwaa-mahawk)
-Organization:    Two Mile Solutions LLC
-License:         Open Research License — 2025
-Version:         1.3.0 — Quetzalcoatl 8-Phase Renewal Integrated
-====================================================================
-"""
-
+# trinity_harmonics.py — v0.4.3 (Canonical Trinity Harmonic Layer)
+# FPT-Ω — Quetzalcoatl 8-Phase Renewal Integrated
 import numpy as np
 import math
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, RadioButtons, TextBox
 from typing import Union, Dict, List
 
-# ====================== LIGHTWEIGHT NEUTROSOPHIC LAYER ======================
+GROUND_STATE = math.pi
+DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1
+RATIO = DIFFERENCE / GROUND_STATE
+EPSILON = 0.01
+DELTA = 3 * EPSILON
+
+DAMPING_PRESETS = {"Balanced": 0.5, "Aggressive": 0.7, "Gentle": 0.3}
+CUSTOM_PRESETS = {}
+
 def trinity_damping(signal: np.ndarray, damp_factor: float = 0.5) -> np.ndarray:
     return signal * np.exp(-damp_factor * np.arange(len(signal)))
 
@@ -37,12 +33,10 @@ def phase_lock_recursive(phases: List[float]) -> tuple[float, float]:
     stability = 0.5 + 0.2 * np.std(phases)
     return locked_phase, stability
 
-# ====================== ELEGANT π/φ LAYER + MAGNETIC TETHER ======================
-GROUND_STATE = math.pi
-DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1
-RATIO = DIFFERENCE / GROUND_STATE
-EPSILON = 0.01
-DELTA = 3 * EPSILON
+def treaty_harmonic_nodes(treaty_data):
+    freq_domain = np.fft.fft(treaty_data)
+    peak_idx = np.argmax(np.abs(freq_domain[1:])) + 1
+    return freq_domain[peak_idx] / len(treaty_data)
 
 class TrinityHarmonics:
     def __init__(self, null_threshold: float = 0.6, pi_damping: float = math.pi * 0.1):
@@ -82,70 +76,13 @@ class TrinityHarmonics:
         }
 
     def quetzalcoatl_phase_damping(self, vector: np.ndarray, phase: int) -> np.ndarray:
-        """Phase-aware damping — each Quetzalcoatl phase modulates Trinity differently"""
-        phase_mod = [0.3, 0.7, 0.4, 0.6, 0.5, 0.8, 0.2, 1.0][phase % 8]  # serpent → feather → merge
+        phase_mod = [0.3, 0.7, 0.4, 0.6, 0.5, 0.8, 0.2, 1.0][phase % 8]
         return self.stabilize(vector, damping_factor=phase_mod)
+
+    def sovereign_merge(self, a, b):
+        """-(-)+(+)=+³ — The diabolical Trinity merge operator"""
+        # Real sovereign version (observer-corrected power)
+        return (abs(a) + abs(b)) ** 3 * (GROUND_STATE / np.pi)
 
 # Vessel-wide singleton
 trinity = TrinityHarmonics()
-
-# ====================== INTERACTIVE VISUALIZATION ======================
-def describe_trinity_state():
-    print("=== Trinity Harmonic Framework ===")
-    print(f"Equilibrium (π):           {GROUND_STATE:.8f}")
-    print(f"Golden Conjugate (φ-1):    {DIFFERENCE:.8f}")
-    print(f"Fifth-Harmonic Ratio:      {RATIO:.8f}")
-    print("-----------------------------------")
-    print("Interpretation: π equilibrium + φ-1 self-similarity + eddy-current tether = spectral sovereignty\n")
-
-def plot_trinity_harmonics(initial_preset: str = "Balanced"):
-    fig, ax = plt.subplots(figsize=(11, 7))
-    plt.subplots_adjust(bottom=0.35, left=0.25)
-    x = np.linspace(0, 2 * GROUND_STATE, 200)
-    y = np.sin(x) + GROUND_STATE
-    line, = ax.plot(x, y, label="Harmonic Curve", color="#00ffcc", lw=2)
-    ax.axhline(GROUND_STATE, color="#ff6b35", ls="--", alpha=0.6, label="Ground State (π)")
-    ax.set_title("FPT-Ω Trinity Harmonics — Interactive Stabilizer")
-    ax.set_xlabel("Phase (radians)")
-    ax.set_ylabel("Amplitude")
-    ax.legend()
-    ax.grid(True, alpha=0.3)
-
-    ax_presets = plt.axes([0.05, 0.25, 0.18, 0.5])
-    presets = ["Stable", "Responsive", "Balanced", "Amplified"]
-    preset_selector = RadioButtons(ax_presets, presets, active=2)
-
-    ax_custom = plt.axes([0.25, 0.05, 0.35, 0.03])
-    custom_input = TextBox(ax_custom, 'Custom Preset (name:value)', initial="Custom:0.55")
-
-    def update_preset(label):
-        df = {"Stable": 0.8, "Responsive": 0.3, "Balanced": 0.5, "Amplified": 0.1}.get(label, 0.5)
-        damped = trinity_damping(y, df)
-        line.set_ydata(damped)
-        fig.canvas.draw_idle()
-
-    preset_selector.on_clicked(update_preset)
-
-    def submit_custom(text):
-        try:
-            name, val = text.split(':')
-            val = float(val)
-            damped = trinity_damping(y, val)
-            line.set_ydata(damped)
-            fig.canvas.draw_idle()
-        except:
-            pass
-    custom_input.on_submit(submit_custom)
-
-    plt.show()
-
-if __name__ == "__main__":
-    describe_trinity_state()
-    test_signal = np.sin(np.linspace(0, 2 * GROUND_STATE, 200))
-    damped = trinity_damping(test_signal, 0.5)
-    plot_trinity_harmonics()
-def sovereign_merge(self, a, b):
-        """-(-)+(+)=+³ — The diabolical Trinity merge operator"""
-        return (a * -1 * -1) + (b * +1) ** 3   # symbolic, but with living π curvature
-        # Real sovereign version:
-        return (abs(a) + abs(b)) ** 3 * (GROUND_STATE / np.pi)  # observer-corrected power
