@@ -1,3 +1,4 @@
+
 from trinity_harmonics import trinity_damping, GROUND_STATE, DIFFERENCE, DAMPING_PRESETS, phase_lock
 import numpy as np
 from math import pi, sqrt, cos, sin
