@@ -1,3 +1,4 @@
+# trinity_harmonics.py — v0.4.3 (Canonical Trinity Harmonic Layer)
 import numpy as np
 from math import pi, exp
 
