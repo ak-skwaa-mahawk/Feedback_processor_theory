@@ -97,3 +97,31 @@ class TrinityHarmonics:
 
 # Singleton for vessel-wide use
 trinity = TrinityHarmonics()
+
+class WStateEntanglement:
+    def __init__(self):
+        self.w_state = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
+        self.fidelity = 1.0
+
+    def measure_fidelity(self, w_state):
+        ideal = 1.0 / 3
+        deviation = sum(abs(v - ideal)**2 for v in w_state.values())
+        return max(0.0, 1.0 - deviation)
+
+    def update(self, damping_factor: float = 0.5, tether_force: float = 0.0):
+        w_vec = np.array([self.w_state['100'], self.w_state['010'], self.w_state['001']])
+        result = trinity.apply_full_trinity(w_vec, damping_factor, tether_force)
+        final = result["final_stabilized"]
+        total = np.sum(final)
+        w_norm = final / total if total > 0 else np.array([1.0/3, 1.0/3, 1.0/3])
+        self.w_state = {'100': w_norm[0], '010': w_norm[1], '001': w_norm[2]}
+        self.fidelity = self.measure_fidelity(self.w_state)
+        return self.w_state, self.fidelity, result
+
+we = WStateEntanglement()
+print("=== v1.1.0 Fused Trinity on W-State ===")
+for tether in [0.0, 9.0]:
+    state, fid, meta = we.update(damping_factor=0.5, tether_force=tether)
+    print(f"Tether={tether} → W-state: { {k:round(v,4) for k,v in state.items()} }")
+    print(f"   Fidelity: {fid:.4f} | Buoyancy: {meta['magnetic_buoyancy']:.3f} | Phase: {meta['phase_locked']:.3f}\n")
+
