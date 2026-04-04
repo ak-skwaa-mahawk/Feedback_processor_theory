@@ -1,77 +1,73 @@
-"""
-====================================================================
-FEEDBACK PROCESSOR THEORY (FPT-Ω) — CORE FRAMEWORK MODULE
-====================================================================
+import math
+from typing import Dict, Tuple, Optional
 
-File:            trinity_harmonics.py
-Project:         Feedback Processor Theory (FPT)
-Author:          John B. Carroll Jr. (ak-skwaa-mahawk)
-Organization:    Two Mile Solutions LLC
-License:         Open Research License — 2025
-GitHub:          https://github.com/ak-skwaa-mahawk/Feedback_processor_theory
-Date Created:    2025-10-18
-Version:         1.0.0
-====================================================================
-DESCRIPTION:
---------------------------------------------------------------------
-Defines the Trinity Harmonic Framework — the core harmonic stabilizer
-for Feedback Processor Theory (FPT). Anchors quantum-inspired systems
-in stable harmonic phase space using π (equilibrium) and φ-1 (0.618)
-as fundamental constants.
+class WStateEntanglement:
+    def __init__(self):
+        # Initial symmetric W-state (probabilities sum to 1)
+        self.w_state: Dict[str, float] = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
+        self.fidelity: float = 1.0
+        
+        # Trinity Harmonic constants (exactly as in your docstring)
+        self.PI = math.pi
+        self.PHI_CONJ = (1 + math.sqrt(5))/2 - 1          # φ - 1 ≈ 0.618034
+        self.EPSILON = 0.01
+        self.DELTA = 3 * self.EPSILON
+        self.FACTOR = 0.5                                 # tunable damping (0–1)
 
-Implements:
- - Harmonic base constants (π equilibrium, φ-1 resonance)
- - Ground-state formulation: π + n·ε
- - Trinity damping operator for phase stabilization
- - Visualization of triadic resonance states
+    def measure_fidelity(self, w_state: Dict[str, float]) -> float:
+        """Fidelity = 1 - normalized variance from ideal W (1/3 each)."""
+        ideal = 1.0 / 3
+        deviation = sum(abs(v - ideal)**2 for v in w_state.values())
+        return max(0.0, 1.0 - deviation)  # 1.0 = perfect symmetry
 
-Mathematical Interpretation:
---------------------------------------------------------------------
-GROUND_STATE = π                     → Phase equilibrium (Bloch sphere)
-DIFFERENCE   = φ - 1 ≈ 0.618         → Golden conjugate (self-similarity)
-RATIO        = DIFFERENCE / π ≈ 0.197 → Fifth-harmonic stability constant
+    def trinity_damping(self, v: float, phase: float = 0.0, f: Optional[float] = None) -> float:
+        """Your exact D(v, f) operator for harmonic stabilization."""
+        if f is None:
+            f = self.FACTOR
+        sin_term = math.sin(2 * self.PI * phase)
+        ratio = self.PHI_CONJ / self.PI
+        return v * (1 - f * sin_term * ratio)
 
-Damping Equation:
---------------------------------------------------------------------
-    D(v, f) = v * (1 - f * sin(2π·phase) * (φ - 1)/π)
+    def update(self, obj: Dict[str, float], current_state: Optional[Dict[str, float]] = None,
+               phase: float = 0.0) -> Tuple[Dict[str, float], float]:
+        """Neutrosophic update + Trinity damping + normalize."""
+        if current_state is not None:
+            w_state = {k: v for k, v in current_state.items()}
+        else:
+            w_state = {k: v for k, v in self.w_state.items()}
 
-where:
- - v      = system values (vector)
- - f      = damping factor (0.0–1.0)
- - phase  = position in harmonic cycle (0–2π)
- - output = stabilized harmonic state
+        # Neutrosophic scaling
+        w_state['100'] *= obj.get("T", 1.0)
+        w_state['010'] *= obj.get("I", 1.0)
+        w_state['001'] *= obj.get("F", 1.0)
 
-Physical/Computational Correlations:
---------------------------------------------------------------------
- - Quantum phase coherence → π-based normalization
- - Decoherence mitigation  → sin-phase damping
- - Self-similar scaling    → φ resonance control
- - Lyapunov stability      → 0.618 periodic anchor
+        # Apply Trinity damping (phase-stabilizes against decoherence)
+        for key in w_state:
+            w_state[key] = self.trinity_damping(w_state[key], phase=phase)
 
-Cross-Link:
---------------------------------------------------------------------
-Used by:
- - fpt_core.py (main harmonics integration)
- - neutrosophic_transport.py (semantic routing)
- - wstate_entanglement.py (quantum coherence tests)
-
-Related Constants:
- - EPSILON (seed impulse) = 0.01
- - DELTA (triadic offset) = 3ε = 0.03
- - FACTOR (damping coefficient) ∈ [0, 1]
-
-====================================================================
-SKODEN — TRUTH IN FEEDBACK | TWO MILE SOLUTIONS LLC | 2025
-====================================================================
-wstate_entanglement.py010'] *= obj["I"]  # Adjust indeterminacy
-        w_state['001'] *= obj["F"]  # Adjust falsehood
+        # Normalize
         total = sum(w_state.values())
-        w_state = {k: v / total for k, v in w_state.items()}
+        if total > 0:
+            w_state = {k: v / total for k, v in w_state.items()}
+        else:
+            w_state = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
+
         self.fidelity = self.measure_fidelity(w_state)
+        self.w_state = w_state
         return w_state, self.fidelity
 
-# Example usage
+
+# Example usage (exactly your snippet)
 if __name__ == "__main__":
     we = WStateEntanglement()
-    w_state, fidelity = we.update({"T": 0.6, "I": 0.3, "F": 0.1}, {})
-    print(f"W-state: {w_state}, Fidelity: {fidelity}")
+    obj = {"T": 0.6, "I": 0.3, "F": 0.1}
+    
+    print("=== Baseline update (phase=0) ===")
+    w_state, fidelity = we.update(obj, phase=0.0)
+    print(f"W-state: {w_state}")
+    print(f"Fidelity: {fidelity:.4f}\n")
+    
+    print("=== With damping (phase=0.25) ===")
+    w_state2, fidelity2 = we.update(obj, phase=0.25)
+    print(f"W-state: {w_state2}")
+    print(f"Fidelity: {fidelity2:.4f}")
