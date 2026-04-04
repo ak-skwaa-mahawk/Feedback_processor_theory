@@ -1,8 +1,9 @@
+# trinity_harmonics.py — v0.4.3 (Canonical Trinity Harmonic Layer)
+# FPT-Ω — Quetzalcoatl 8-Phase Renewal Integrated
 import numpy as np
 import math
-from typing import Union, Dict, List, Tuple
+from typing import Union, Dict, List
 
-# ====================== TRINITY HARMONICS v0.4.3 (Quetzalcoatl 8-Phase) ======================
 GROUND_STATE = math.pi
 DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1
 RATIO = DIFFERENCE / GROUND_STATE
@@ -23,7 +24,7 @@ def dynamic_weights(t: float) -> Dict[str, float]:
         "F": 0.2 + scale * np.sin(math.pi * t)
     }
 
-def phase_lock_recursive(phases: List[float]) -> Tuple[float, float]:
+def phase_lock_recursive(phases: List[float]) -> tuple[float, float]:
     if not phases:
         return 0.0, 0.0
     locked = phases[-1]
@@ -75,69 +76,13 @@ class TrinityHarmonics:
         }
 
     def quetzalcoatl_phase_damping(self, vector: np.ndarray, phase: int) -> np.ndarray:
-        """8-Phase Renewal Cycle — Quetzalcoatl modulation"""
         phase_mod = [0.3, 0.7, 0.4, 0.6, 0.5, 0.8, 0.2, 1.0][phase % 8]
         return self.stabilize(vector, damping_factor=phase_mod)
 
     def sovereign_merge(self, a, b):
-        """-(-)+(+)=+³ — The diabolical Trinity merge operator (observer-corrected cubic power)"""
-        return (np.abs(a) + np.abs(b)) ** 3 * (GROUND_STATE / np.pi)
+        """-(-)+(+)=+³ — The diabolical Trinity merge operator"""
+        # Real sovereign version (observer-corrected power)
+        return (abs(a) + abs(b)) ** 3 * (GROUND_STATE / np.pi)
 
 # Vessel-wide singleton
 trinity = TrinityHarmonics()
-
-# ====================== WSTATE ENTANGLEMENT v0.4.3 (Quetzalcoatl-Powered) ======================
-class WStateEntanglement:
-    def __init__(self):
-        self.w_state: Dict[str, float] = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
-        self.fidelity: float = 1.0
-        self.phase_history: List[float] = []
-
-    def measure_fidelity(self, w_state: Dict[str, float]) -> float:
-        ideal = 1.0 / 3
-        deviation = sum(abs(v - ideal)**2 for v in w_state.values())
-        return max(0.0, 1.0 - deviation)
-
-    def update(self,
-               quetzalcoatl_phase: int = None,
-               damping_factor: float = 0.5,
-               tether_force: float = 0.0,
-               use_quetzalcoatl: bool = False) -> Tuple[Dict[str, float], float, Dict]:
-        """Quetzalcoatl renewal or standard Trinity update → normalize to W-state."""
-        w_vec = np.array([self.w_state['100'], self.w_state['010'], self.w_state['001']])
-
-        if use_quetzalcoatl and quetzalcoatl_phase is not None:
-            stabilized = trinity.quetzalcoatl_phase_damping(w_vec, quetzalcoatl_phase)
-            result = {
-                "final_stabilized": stabilized,
-                "neutrosophic_weights": dynamic_weights(trinity.t),
-                "phase_locked": phase_lock_recursive([trinity.phase])[0],
-                "trinity_factor": trinity.trinity_factor(np.mean(stabilized)),
-                "magnetic_buoyancy": 1.0 - (tether_force / 15.0) if tether_force != 0 else 1.0
-            }
-            final = stabilized
-        else:
-            result = trinity.apply_full_trinity(w_vec, damping_factor, tether_force)
-            final = result["final_stabilized"]
-
-        total = np.sum(final)
-        w_norm = final / total if total > 0 else np.array([1.0/3, 1.0/3, 1.0/3])
-        self.w_state = {'100': w_norm[0], '010': w_norm[1], '001': w_norm[2]}
-        self.fidelity = self.measure_fidelity(self.w_state)
-        self.phase_history.append(trinity.phase)
-        return self.w_state, self.fidelity, result
-
-# ====================== DEMO RUN (executed live) ======================
-if __name__ == "__main__":
-    we = WStateEntanglement()
-    print("=== Quetzalcoatl 8-Phase Renewal Cycle (FPT-Ω) ===")
-    for p in range(8):
-        state, fid, meta = we.update(quetzalcoatl_phase=p, use_quetzalcoatl=True)
-        print(f"Phase {p} → W-state: { {k: round(v,4) for k,v in state.items()} } | Fidelity: {fid:.4f} | Phase-locked: {meta['phase_locked']:.3f}")
-
-    print("\n=== Sovereign Merge Test (-(-)+(+)=+³) ===")
-    w_vec1 = np.array([1.0/3, 1.0/3, 1.0/3])
-    w_vec2 = np.array([0.6, 0.3, 0.1])
-    merged = trinity.sovereign_merge(w_vec1, w_vec2)
-    print(f"Merged vector: {merged}")
-    print(f"Normalized: {merged / np.sum(merged)}")
