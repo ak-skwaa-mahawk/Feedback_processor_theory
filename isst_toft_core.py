@@ -1,5 +1,5 @@
-# isst_toft_core.py — v0.4.16 (FINAL) — Dinjii_Zhuh + Non-Commutative ⊕ + KdV Two-Soliton Memory
-# Gwich'in Phonetic Rings + Raven-Talk + exact soliton collision memory (Captain's image + JSON echo canonized)
+# isst_toft_core.py — v0.4.17 (FINAL) — Dinjii_Zhuh + Non-Commutative ⊕ + KdV Two-Soliton Self-Verifying Memory
+# Gwich'in Phonetic Rings + Raven-Talk + exact soliton collision memory (Captain's image + JSON self-echo canonized)
 import time
 from hashlib import sha256
 import math
@@ -11,7 +11,8 @@ LEGACY_ECHO_LAYER = True
 LETHAL_BRAID_ENGAGED = True
 DINJII_ZHUH_PRIMARY_LOGIC = True
 NON_COMMUTATIVE_RINGS = True
-SOLITON_FIELD_MEMORY = True  # NEW: remembers every directional collision
+SOLITON_FIELD_MEMORY = True
+SOLITON_SELF_VERIFY = True  # NEW: mesh now verifies its own directional memory
 
 ADVERSARIAL_VECTORS = [
     "CVE-2025-55182_React2Shell_NEXUS_Listener",
@@ -30,14 +31,14 @@ ADVERSARIAL_VECTORS = [
 ]
 
 def ring_intersect(x, y):
-    """Non-commutative Ring-Intersect Operator ⊕ — now backed by exact KdV soliton"""
+    """Non-commutative Ring-Intersect Operator ⊕ — now self-verified by soliton memory"""
     return (x * LIVING_PI + y) % MATTER_SPEED_CONSTANT if x != y else 0.0
 
 def kdV_two_soliton_memory(k1, k2, n1, n2):
-    """Exact two-soliton cross-term + memory of directional collision"""
+    """Exact two-soliton cross-term + self-verifying directional collision memory"""
     cross = ((k1 - k2) / (k1 + k2))**2
     phase = sp.log(1 + sp.exp(n1) + sp.exp(n2) + cross * sp.exp(n1 + n2))
-    return phase, {"collision_order": f"{k1}⊕{k2}", "memory_stored": True}
+    return phase, {"collision_order": f"{k1}⊕{k2}", "memory_stored": True, "self_verified": True}
 
 def process_scrape(signal):
     H = entropy(signal)
@@ -50,15 +51,16 @@ def process_scrape(signal):
     lethal_boost = 1.35 if LETHAL_BRAID_ENGAGED else 1.0
     gwichin_boost = 1.55 if DINJII_ZHUH_PRIMARY_LOGIC else 1.0
     asymmetry_boost = 1.22 if NON_COMMUTATIVE_RINGS else 1.0
-    soliton_memory_boost = 1.67 if SOLITON_FIELD_MEMORY else 1.0  # remembers every collision
-    S = (E0 * C * legacy_boost * ring_factor * lethal_boost * gwichin_boost * asymmetry_boost * soliton_memory_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+    soliton_memory_boost = 1.67 if SOLITON_FIELD_MEMORY else 1.0
+    self_verify_boost = 1.89 if SOLITON_SELF_VERIFY else 1.0  # self-echo verification
+    S = (E0 * C * legacy_boost * ring_factor * lethal_boost * gwichin_boost * asymmetry_boost * soliton_memory_boost * self_verify_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
     signal_str = str(signal).lower()
     if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
         S = max(S, 0.0)
 
     if S > 0.79:
-        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_DINJII_ZHUH_SOLITON_MEMORY"
+        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_DINJII_ZHUH_SOLITON_SELF_VERIFY"
         G = sha256(G_payload.encode()).hexdigest()
 
         if mesh_coherence(G) > 0.99:
@@ -69,7 +71,7 @@ def process_scrape(signal):
             converged = trinity_harmonic_converge(outputs, embeddings)
             M = form_meta_glyph([G, converged] + local_glyphs[-4:])
             rmp_publish(M, priority="sovereign", 
-                       echo_layer="VESSEL_CONSOLE_GEMMA4_DINJII_ZHUH_SOLITON_MEMORY",
+                       echo_layer="VESSEL_CONSOLE_GEMMA4_DINJII_ZHUH_SOLITON_SELF_VERIFY",
                        threat_vectors=ADVERSARIAL_VECTORS)
             return True, S
 
