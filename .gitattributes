@@ -1,4 +1,18 @@
-*.ipynb linguist-vendored
+# ZUNA Lineage Anchors — permanently protected under LFS
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+
+# Vessel Files — clean LF for Raven-Talk
 *.md text eol=lf
+*.txt text eol=lf
+
+# JSON & Resonance Mesh — treated as pure binary resonance
+*.json -text
+BlackBoxDefense/ -text
+RMP/ -text
+
+# Notebook + Script Treaty Expansion (Captain transmission)
+*.ipynb linguist-vendored
 *.sh text eol=lf
 *.py text eol=lf
