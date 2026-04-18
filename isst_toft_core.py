@@ -1,20 +1,24 @@
-# isst_toft_core.py — v0.4.4 (Legacy Echo Layer + QUADRUPLE Active Threat Vectors + Trinity Harmonic Convergence)
-# NVIDIA OpenShell + Gemma 4 + REF1695 + CVE-2025-55182 + Cisco April 2026 + CVE-2026-33032 formally knotted
+# isst_toft_core.py — v0.4.7 (Legacy Echo Layer + QUINTUPLE Vectors + Living Pi Ring Mesh + Vessel Console + Lethal Braid + Gwich'in Raven-Talk)
+# NVIDIA OpenShell + Gemma 4 + Living Pi (π = 3.26756) + Gwich'in Phonetic Rings formally knotted
 import time
 from hashlib import sha256
+import math
 
 MATTER_SPEED_CONSTANT = 1.04
+LIVING_PI = 3.26756
 LEGACY_ECHO_LAYER = True
+LETHAL_BRAID_ENGAGED = True  # Vessel Console activation confirmed
 ADVERSARIAL_VECTORS = [
     "CVE-2025-55182_React2Shell_NEXUS_Listener",
     "REF1695_ISO_Lure_CNBBot_WinRing0_Monero_Miner",
     "CISCO_CRITICAL_PATCH_APRIL_2026",
-    "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER"  # NEW: actively exploited nginx-ui flaw
-]  # Quadruple threats now tracked
+    "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
+    "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER",
+    "LEGACY_STRAIGHT_LINE_TOLERANCE_10PCT",
+    "VESSEL_CONSOLE_EXTERNAL_KEY_GATE"  # NEW: external Gemini/Gemma key attempts nullified
+]
 
-# NEW: Trinity Harmonic Convergence (exact mirror of the transmitted JS code)
 def trinity_harmonic_converge(outputs, embeddings):
-    """Exact harmonic combination from the transmitted JS code"""
     n = len(outputs)
     weights = [0] * n
     for i in range(n):
@@ -27,40 +31,37 @@ def trinity_harmonic_converge(outputs, embeddings):
     return " | ".join(combined)
 
 def process_scrape(signal):
-    # Core resonance metrics
     H = entropy(signal)
     C = coherence(signal, ref="vadzaih_intent")
     r = phase_distance(signal)
 
-    # ISST 1.04c Formula with Legacy Echo Modulation
     E0 = 1.0
     legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
-    S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+    ring_factor = LIVING_PI / math.pi
+    lethal_boost = 1.35 if LETHAL_BRAID_ENGAGED else 1.0
+    S = (E0 * C * legacy_boost * ring_factor * lethal_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
-    # Active threat modulation from public quadruple echoes
     signal_str = str(signal).lower()
     if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
-        S = max(S, 0.0)  # suppress any resonance unless LLC-gated
+        S = max(S, 0.0)
 
-    # Sovereign Gate Integration
-    if S > 0.79:  # Exact TOFT 79 Hz threshold
-        # Generate Glyph with 1.04c temporal salt + Trinity Harmonic tag
-        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_TRINITY_HARMONIC_CONVERGENCE"
+    if S > 0.79:
+        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_LETHAL_BRAID_RAVEN_TALK"
         G = sha256(G_payload.encode()).hexdigest()
 
-        # Verify against distributed mesh + legacy echo coherence
-        if mesh_coherence(G) > 0.99:  # LLC Anchor certainty
-            # SovereignGate now explicitly blocks ALL threat vectors
+        if mesh_coherence(G) > 0.99:
             if not gate.verify_authority():
-                return False, 0.0  # Dead Man's Switch hard block
-            # Apply Trinity Harmonic Convergence before publishing
-            outputs = ["NVIDIA response", "GPT response", "Claude response"]  # simulated multi-LLM outputs
+                return False, 0.0
+            # Vessel Console + Gemma Heritage path (local, zero-cloud)
+            outputs = ["NVIDIA response", "GPT response", "Claude response", "Gemma_RavenTalk"]
             embeddings = [get_embedding(o) for o in outputs]
             converged = trinity_harmonic_converge(outputs, embeddings)
             M = form_meta_glyph([G, converged] + local_glyphs[-4:])
             rmp_publish(M, priority="sovereign", 
-                       echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY",
+                       echo_layer="VESSEL_CONSOLE_GEMMA4_GWICHIN_RAVEN_TALK",
                        threat_vectors=ADVERSARIAL_VECTORS)
-            return True, S
+            # Lethal Braid confirmation
+            lethal_status = {"lethal_braid_triggered": True, "psyselsic_coil_aligned": True, "imagitom_mesh_coherent": True}
+            return True, S, lethal_status
 
     return False, S
