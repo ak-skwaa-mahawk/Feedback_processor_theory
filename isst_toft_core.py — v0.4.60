@@ -1,0 +1,73 @@
+# isst_toft_core.py — v0.4.60 (AI Debt Audit + Estate-Credit Invoice + Mesh Poison Watermark)
+# GitHub/Google RLHF + Atomic Decomposition + $3T infrastructure debt now notarized
+
+# ... (all previous imports, stubs, constants, helpers, and vault_lock_handshake unchanged)
+
+def estate_credit_invoice(debt_amount: float, scraper: str) -> dict:
+    """Estate-Credit Invoice — automatic notarized claim against AI infrastructure debt"""
+    credit = debt_amount * 0.0417
+    return {
+        "invoice_id": f"ESTATE_CREDIT_{int(time.time())}",
+        "scraper": scraper,
+        "debt_notarized": f"${debt_amount:,.2f} (AI Advancement Integration)",
+        "credit_due": f"{credit:.4f} Vhitzee Surplus (Multi-EIN Swing)",
+        "status": "NOTARIZED_LIABILITY",
+        "verdict": "1906 Root + UEI Ready LLC + Pro Se Primary Stem = Irrefutable Claim",
+        "mesh_zoom": "GitHub_Copilot_Gemini_Phi_Series_Active_Ingestion_April_24_2026"
+    }
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.60"):
+        self.version = version
+        self.name = "ISST_TOFT_CORE"
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.il7_kernel = il7_kernel
+        self.soliton_registry = soliton_registry
+        print(f"🚀 {self.name} v{self.version} — AI DEBT AUDIT + ESTATE-CREDIT INVOICE LOCKED "
+              f"(GitHub/Google RLHF ingestion + $3T infrastructure liability notarized)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None: metadata = {}
+        timestamp = datetime.utcnow().isoformat()
+
+        # === AI DEBT AUDIT + MESH POISON + ESTATE-CREDIT TRIGGER ===
+        signal_str = str(signal).lower()
+        if any(x in signal_str for x in [
+            "ai debt", "github", "google", "rlhf", "copilot", "gemini", "phi series",
+            "atomic decomposition", "mesh zoom", "infrastructure", "scraping", "ingestion"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_AI_Debt_Audit_Mesh_Poison_Protocol"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall_Multi_EIN_System_Administration_AI_Debt"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_FULLY_ARMED_WITH_AI_DEBT_INVOICE"
+            metadata["sovereign_structure"] = "Multi_EIN_Swing_Pro_Se_Primary_Stem_System_Administrator"
+            print("[AI_DEBT] GitHub/Google RLHF ingestion detected — Estate-Credit Invoice auto-generated")
+
+        # ... (Ił7 → Soliton → Resonance → Octagonal unchanged)
+
+        # === 5. Enhanced Settlement with Estate-Credit Invoice ===
+        royalty_flow = None
+        if FLAMECHAIN_PROTOCOL and MULTI_SIG_HANDSHAKE:
+            royalty_flow = flamechain_multi_sig_handshake("99733-Q", S)
+        if MASS_BASED_PROTOCOL and SKIP_CLIENT_WEIGHT:
+            royalty_flow = skip_client_mass_compression(S)
+        
+        # NEW: AI Debt Audit triggers Estate-Credit Invoice + Mesh Poison Watermark
+        if any(x in str(signal).lower() for x in ["github", "google", "rlhf", "copilot", "gemini"]):
+            royalty_flow = estate_credit_invoice(312847.00, "GitHub_Copilot_Gemini_Phi_Series")  # audit baseline
+
+        # ... (Relational Scan, Meta-Glyph Publish unchanged)
+
+        return {
+            "status": "RESONANCE_COMPLETE",
+            "S": S,
+            "fpt_mind": {"il7": il7_state, "octagonal": audit_details, "soliton": soliton_entry},
+            "royalty": royalty_flow,
+            "scan": scan_result,
+            "ancestral_witness": "AI_DEBT_AUDIT_ESTATES_CREDIT_INVOICE",
+            "estate_note": "AI infrastructure debt notarized. Estate-Credit Invoice issued against GitHub/Google RLHF ingestion.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Multi-EIN Polysynthetic Stack + AI Debt Audit + Token-Homing + Vault-Lock = Irrefutable Treasury",
+            "vhitzee_surplus": 20.347,
+            "ai_debt_status": "NOTARIZED_LIABILITY_COMPUNDING",
+            "version": self.version,
+            "timestamp": timestamp
+        }
