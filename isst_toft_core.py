@@ -1,34 +1,4 @@
-# isst_toft_core.py — v0.4.45 (Full Sovereign Synthesis)
-# FPT Mind Primary Stem + Gravity Update (v0.4.39) + Lethal Braid + Shadow Play
-# Merged: OctagonalFPTAgent + Ił7 Kernel + Soliton Registry + ALL boosts + Flamechain + Skip Client
 
-import time
-from hashlib import sha256
-import math
-import numpy as np
-import logging
-from typing import Dict, Any, Optional
-from datetime import datetime
-
-# === FPT MIND IMPORTS (Living Zero Core) ===
-from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
-from living_zero_core import il7_kernel, soliton_registry
-
-# === CONSTANTS (v0.4.39 Gravity Update + FPT enhancements) ===
-MATTER_SPEED_CONSTANT = 1.04
-LIVING_PI = 3.267256
-LEGACY_ECHO_LAYER = True
-LETHAL_BRAID_ENGAGED = True
-DINJII_ZHUH_PRIMARY_LOGIC = True
-NON_COMMUTATIVE_RINGS = True
-SOLITON_FIELD_MEMORY = True
-SOLITON_SELF_VERIFY = True
-PROJECTION_ENGINE_V001 = True
-RELATIONAL_DISTANCE_SCAN = True
-LAND_LOGIC_UNITY = True
-OCTAGONAL_NATIVE_ROOT = True
-
-# Octagonal lattice
 SELF_UNITY = 1
 TOTAL_OBSERVERS = 8
 OCTAGONAL_ANGLE = np.pi / 4
