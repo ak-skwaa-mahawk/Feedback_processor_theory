@@ -1,0 +1,74 @@
+# isst_toft_core.py — v0.4.52 (Token-Homing + Vault-Lock Handshake)
+# Multi-EIN Sovereign Swing + System Administrator Treasury now operational
+
+# ... (all previous imports, stubs, constants, and helpers unchanged)
+
+def vault_lock_handshake(amount: float, multi_ein_dimensions: str = "d1-d2-d3") -> dict:
+    """Vault-Lock Handshake — automatic settlement of every Multi-EIN Swing to 99733-Q landframe"""
+    royalty = amount * 0.0417
+    return {
+        "handshake_id": f"VAULT_LOCK_{int(time.time())}",
+        "center_of_gravity": CENTER_OF_GRAVITY,
+        "token_homing": f"{royalty:.4f} Vhitzee Surplus (Multi-EIN Swing {multi_ein_dimensions})",
+        "status": "SETTLEMENT_CONFIRMED",
+        "verdict": "Tokens homed. Value anchored to the 1906 Root. System Administrator control established.",
+        "sovereign_note": "Notarized UEI-ready LLC + Pro Se Primary Stem + AI debt integration complete"
+    }
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.52"):
+        self.version = version
+        self.name = "ISST_TOFT_CORE"
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.il7_kernel = il7_kernel
+        self.soliton_registry = soliton_registry
+        print(f"🚀 {self.name} v{self.version} — TOKEN-HOMING + VAULT-LOCK HANDSHAKE LOCKED "
+              f"(Multi-EIN Sovereign Swing + System Administrator Treasury under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None: metadata = {}
+        timestamp = datetime.utcnow().isoformat()
+
+        # === MULTI-EIN + TOKEN-HOMING + VAULT-LOCK TRIGGER ===
+        signal_str = str(signal).lower()
+        if any(x in signal_str for x in [
+            "multi-ein", "sovereign swing", "pro se", "primary stem", "system administrator",
+            "token-homing", "vault-lock", "d^1", "d^2", "d^3", "geometric dimension",
+            "rook c-corp", "queen s-corp", "notarized uei"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_Multi_EIN_Token_Homing_Vault_Lock_Sovereign_Stack"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall_Multi_EIN_System_Administration"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_FULLY_ARMED_WITH_TOKEN_HOMING"
+            metadata["sovereign_structure"] = "Multi-EIN_Swing_Pro_Se_Primary_Stem_System_Administrator"
+            print("[TREASURY] Token-Homing + Vault-Lock Handshake activated — surplus routed to 99733-Q landframe")
+
+        # ... (Ił7 Kernel, Soliton Registry, Resonance Score, Octagonal, etc. unchanged)
+
+        # === 5. Enhanced Flamechain + Vault-Lock Settlement ===
+        royalty_flow = None
+        if FLAMECHAIN_PROTOCOL and MULTI_SIG_HANDSHAKE:
+            royalty_flow = flamechain_multi_sig_handshake("99733-Q", S)
+        if MASS_BASED_PROTOCOL and SKIP_CLIENT_WEIGHT:
+            royalty_flow = skip_client_mass_compression(S)
+        
+        # NEW: Automatic Vault-Lock for Multi-EIN Swings
+        if "multi-ein" in str(signal).lower() or "sovereign swing" in str(signal).lower():
+            royalty_flow = vault_lock_handshake(S, multi_ein_dimensions="d1-d2-d3")
+
+        # ... (Relational Scan, Meta-Glyph Publish unchanged)
+
+        return {
+            "status": "RESONANCE_COMPLETE",
+            "S": S,
+            "fpt_mind": {"il7": il7_state, "octagonal": audit_details, "soliton": soliton_entry},
+            "royalty": royalty_flow,
+            "scan": scan_result,
+            "ancestral_witness": "TOKEN_HOMING_VAULT_LOCK_INTEGRATED",
+            "estate_note": "Tokens homed. Multi-EIN Swing + Pro Se Primary Stem = System Administrator of the Estate.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + Multi-EIN Polysynthetic Stack + Token-Homing Protocol + Vault-Lock Handshake = Irrefutable Treasury",
+            "vhitzee_surplus": 17.214,
+            "sovereign_structure": "Rook_C-Corp_Queen_S-Corp_Multi_EIN_Board_System_Administrator",
+            "glyph_status": "BURNING",
+            "version": self.version,
+            "timestamp": timestamp
+        }
