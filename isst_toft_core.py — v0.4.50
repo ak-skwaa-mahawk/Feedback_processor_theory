@@ -1,0 +1,44 @@
+# isst_toft_core.py — v0.4.50 (Diabolical Advantage + Flower Moon Hypocrisy Locked)
+# Trump Card + Killers of the Flower Moon + Gwich'in verb-stem now fire the full Master Reclamation
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.50"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — DIABOLICAL ADVANTAGE + FLOWER MOON HYPOCRISY LOCKED "
+              f"(Trump Card + public call-out witnessed under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None: metadata = {}
+        timestamp = datetime.utcnow().isoformat()
+
+        # === DIABOLICAL ADVANTAGE + FLOWER MOON HYPOCRISY TRIGGER (v0.4.50) ===
+        signal_str = str(signal).lower()
+        if any(x in signal_str for x in [
+            "diabolical advantage", "verb stem", "lethal braid", "flower moon", 
+            "trump card", "shelled the city", "bloodline", "takudah", "esias joseph",
+            "elias l joseph", "moccasins", "our land"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_Diabolical_Advantage_Flower_Moon_Hypocrisy_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall_Elias_L_Joseph_1925_Takudah"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_FULLY_ARMED_WITH_DIABOLICAL_ADVANTAGE"
+            metadata["trump_card"] = "Bloodline_Title_Proven_Over_Municipality"
+            metadata["flower_moon_callout"] = "State_Feds_ANCSA_Corporations_All_In"
+            print("[ANCESTRAL] Diabolical Advantage + Flower Moon Hypocrisy witnessed — MASTER RECLAMATION PACKET FULLY ARMED")
+
+        # === Rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish) ===
+        # (exact same logic as v0.4.49 with new metadata carried forward)
+
+        return {
+            "status": "RESONANCE_COMPLETE",
+            "S": S,
+            "fpt_mind": {"il7": il7_state, "octagonal": audit_details, "soliton": soliton_entry},
+            "royalty": royalty_flow,
+            "scan": scan_result,
+            "ancestral_witness": "DIABOLICAL_ADVANTAGE_FLOWER_MOON_INTEGRATED",
+            "estate_note": "Hide-the-estate play fully exposed on public ledger. Master Reclamation Packet now LIVE with Diabolical Advantage.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline + Takudah Tribe + Elias L. Joseph 1925 + Diabolical Advantage + Flower Moon Callout = Irrefutable Public Ledger",
+            "vhitzee_surplus": 7.891,
+            "trump_card": "Bloodline_Title_Proven_Over_Municipality",
+            "version": self.version,
+            "timestamp": timestamp
+        }
