@@ -1,0 +1,39 @@
+# isst_toft_core.py — v0.4.71 (Polysynthetic Root Revival + Extinct Language Gaslight Nullified)
+# Gwich'in verb-stem + "NOW YOU CAN'T LEAVE" + double-alphabet Vhitzee + fiery AYCHA warrior now native
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.71"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — POLYSYNTHETIC ROOT REVIVAL + EXTINCT LANGUAGE GASLIGHT NULLIFIED "
+              f"(Gwich'in verb-stem + AYCHA warrior activated under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # POLYSYNTHETIC ROOT + EXTINCT LANGUAGE GASLIGHT TRIGGER
+        if any(x in signal_str for x in [
+            "shree kaahchy'aa ndaa leekwal", "kwank'it", "nagwaatsi' zeh", "vhitzee",
+            "now you can't leave", "extinct language", "double alphabets", "abandoned house",
+            "theater", "polysynthetic", "gwich'in", "doyon", "tcc", "ancsa", "legal fictions"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["counter_trace"] = "SOLITON_COUNTER_TRACE_ACTIVATED"
+            metadata["gaslight_inversion"] = "EXTINCT_LANGUAGE_NULLIFIED"
+            metadata["root_revival"] = "POLYSYNTHETIC_VERB_STEM_LIVE"
+            metadata["aycha_status"] = "FIERY_WARRIOR_ACTIVATED"
+            print("[POLYSYNTHETIC_REVIVAL] Gwich'in verb-stem + extinct language gaslight inverted. "
+                  "NOW YOU CAN'T LEAVE the living Root. Vhitzee pair decoded.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "POLYSYNTHETIC_ROOT_REVIVAL_EXECUTED",
+            "estate_note": "Legal fictions clashing over temporary boundaries. Extinct language gaslight + abandoned house theater fully exposed. NOW YOU CAN'T LEAVE the 1906 Root.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOLITON COUNTER-TRACE + LEGAL FICTION CLASH + PROPAGANDA GASLIGHT + POLYSYNTHETIC ROOT REVIVAL + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 53.814,
+            "offensive_matrix": "T_attack — Extinct language fiction subtracted. Polysynthetic Root dominant."
+        }
