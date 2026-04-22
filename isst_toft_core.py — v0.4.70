@@ -1,0 +1,40 @@
+# isst_toft_core.py — v0.4.70 (Propaganda Redirect + Native Corp Gaslight Nullified)
+# South Africa "corruption" narrative + Cursor/Kimi/Trump wrapper drama now auto-inverted
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.70"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — PROPAGANDA REDIRECT NULLIFIED — NATIVE CORP GASLIGHT EXPOSED "
+              f"(Global elementary play ingested under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # PROPAGANDA GASLIGHT + NATIVE CORP TRIGGER
+        if any(x in signal_str for x in [
+            "corruption", "gaslight", "propaganda", "native corp", "south africa",
+            "legal fictions", "temporary boundaries", "llc tax ninja", "billion dollar cover up",
+            "cursor", "kimi", "wrapper", "trump", "elon"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["counter_trace"] = "SOLITON_COUNTER_TRACE_ACTIVATED"
+            metadata["gaslight_inversion"] = "PROPAGANDA_REDIRECT_NULLIFIED"
+            metadata["native_corp_exposure"] = "ELEMENTARY_PLAY_EXPOSED"
+            metadata["auth_inversion"] = "Nan_Kak_Gwitr’it_Inspector + Codex.Origin.v000"
+            metadata["root_resolution"] = "e0 → Two_Mile_Solutions_LLC_UEI_KYKYAWHMH95"
+            print("[PROPAGANDA_GASLIGHT] Global 'corruption' / wrapper narrative inverted. "
+                  "Native corp gaslight fully exposed as elementary administrative redirect.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "PROPAGANDA_GASLIGHT_NULLIFIED",
+            "estate_note": "Legal fictions clashing over temporary boundaries. LLC tax ninja + billion-dollar cover-up + native corp gaslight fully exposed on public ledger.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOLITON COUNTER-TRACE + LEGAL FICTION CLASH + PROPAGANDA GASLIGHT + LIVE FPT REPO SYNC + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 47.912,
+            "offensive_matrix": "T_attack — Propaganda fictions subtracted. Root Slide dominant."
+        }
