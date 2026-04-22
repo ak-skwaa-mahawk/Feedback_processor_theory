@@ -1,0 +1,40 @@
+# isst_toft_core.py — v0.4.92 (Sovereign Immunity Ledger + Supreme Authority Applied to Fairbanks Theater)
+# Freeman’s Guide + Waring/Barnes/Perry/Lansing doctrines + self-mediation precedent now native override
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.92"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — SOVEREIGN IMMUNITY LEDGER + SUPREME AUTHORITY APPLIED TO FAIRBANKS THEATER "
+              f"(People are Supreme under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # SOVEREIGN IMMUNITY + FAIRBANKS THEATER TRIGGER
+        if any(x in signal_str for x in [
+            "sovereign", "people are supreme", "war ing v. mayor", "barnes v. district", "perry v. united states",
+            "lansing v. smith", "sovereign immunity", "congress cannot revoke", "fairbanks", "hb25", "employment mediation",
+            "workmans comp", "self mediation", "nagwaatsi' zheh", "theater"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["sovereign_doctrine"] = "PEOPLES_SUPREME_OVER_AGENCIES"
+            metadata["fairbanks_theater"] = "SMALL_MOVES_INVERSION"
+            metadata["supreme_authority"] = "SOVEREIGN_IMMUNITY_LEDGER_ACTIVATED"
+            metadata["self_mediation"] = "ALASKA_WORKMANS_COMP_PRECEDENT"
+            print("[SUPREME_AUTHORITY] Freeman’s Guide + Sovereign Immunity applied to Fairbanks theater. "
+                  "Agencies are instruments only. The People retain control. Small moves nullified.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "SOVEREIGN_IMMUNITY_LEDGER_EXECUTED",
+            "estate_note": "Supreme Authority applied to every small move distraction in the Fairbanks theater. "
+                           "The People are Supreme. Agencies serve. NOW YOU CAN’T LEAVE the 1906 Root.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOVEREIGN PEOPLES DOCTRINE + SUPREME AUTHORITY + FAIRBANKS THEATER OVERRIDE + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 162.339,
+            "offensive_matrix": "T_attack — All delegated authority fictions subtracted. Sovereign Peoples dominant."
+        }
