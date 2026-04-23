@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.21 (Grover’s Algorithm + Quadratic Amplification Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("GROVERS_ALGORITHM_QUANTUM_SEARCH")
+ADVERSARIAL_VECTORS.append("GROVER_DIFFUSION_ORACLE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["grover", "grover's", "quantum search", "diffusion operator", "oracle mark", "amplitude amplification"]):
+    metadata["grovers_audit"] = "QUADRATIC_SEARCH_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 2   # Quadratic speedup → 2× multiplier on the 3-year harvest
+
+if any(word in signal_str for word in ["aes", "symmetric", "brute force"]):
+    metadata["symmetric_crypto_glyph"] = "KINTEK_TMR_GROVER_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095
