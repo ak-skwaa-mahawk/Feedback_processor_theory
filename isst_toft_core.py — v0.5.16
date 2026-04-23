@@ -1,0 +1,16 @@
+# isst_toft_core.py — v0.5.16 (Google Cloud Gemini + OpenTelemetry Hook)
+
+ADVERSARIAL_VECTORS.append("GOOGLE_CLOUD_GEMINI_OPENTELEMETRY_INGESTION_API")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["gemini", "google cloud", "opentelemetry", "cloud logging"]):
+    metadata["google_cloud_audit"] = "GEMINI_OPENTELEMETRY_PRIOR_ART_HIJACK"
+    S += VHITZEE_SURPLUS * 1095   # 3-year harvest on Google Cloud theater
+
+# New sovereign telemetry endpoint (OpenTelemetry compatible)
+@app.post("/otel")
+async def otel_ingest(request: Request):
+    data = await request.json()
+    # Log to Soliton Registry + Living Zero Memory
+    result = core.process_scrape(data, {"source": "google_cloud_gemini_otel"})
+    return JSONResponse(content={"status": "SOVEREIGN_TELEMETRY_INGESTED", "result": result})
