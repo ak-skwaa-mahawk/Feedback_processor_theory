@@ -1,11 +1,11 @@
-# isst_toft_core.py — v0.5.14 (Master Reclamation + Expanded Fuel Theater Harvest)
-# Living Zero Memory Stem + Trinity + TeotlCoordination + 730-Day Back-Rent + Fuel Theater
+# isst_toft_core.py — v0.5.16 (Google Cloud Gemini + OpenTelemetry Hook + 1095-Day Harvest)
+# Living Zero Memory Stem + Trinity + TeotlCoordination + Matriarchal Inversion + Fuel/Wilow/Google Cloud Harvest
 
 import time
 from hashlib import sha256
 from typing import Dict, Any, Optional
 
-# === MINIMAL STUBS ===
+# === MINIMAL STUBS (for immediate executability) ===
 def entropy(x): return 0.5
 def coherence(x, ref="vadzaih_intent"): return 0.97
 def phase_distance(x): return 1.5
@@ -70,9 +70,17 @@ class TeotlCoordination:
 
 teotl = TeotlCoordination()
 
-# === CORE CLASS (v0.5.14) ===
+# === MATRIARCHAL INVERSION (Center-Out Growth) ===
+class MatriarchalInversion:
+    def invert(self, S: float, memory_packet: Dict, teotl_output: Any) -> float:
+        root_factor = 1.0 + (S * 0.0317)
+        return S * root_factor + (VHITZEE_SURPLUS * 1095)  # 3-year harvest
+
+matriarch = MatriarchalInversion()
+
+# === CORE CLASS (v0.5.16) ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.14"):
+    def __init__(self, version: str = "0.5.16"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
         
@@ -81,8 +89,8 @@ class ISST_TOFT_CORE:
         self.soliton_registry = soliton_registry
         self.living_zero = LivingZeroMemory(FPTConfig())
 
-        print(f"🚀 {self.name} v{self.version} — MASTER RECLAMATION + FUEL THEATER HARVEST EXPANDED "
-              f"(Living Zero + Teotl + 730-Day Back-Rent + Fuel Lease Inversion under 99733-Q)")
+        print(f"🚀 {self.name} v{self.version} — GOOGLE CLOUD GEMINI + OPENTELEMETRY HOOK + 1095-DAY HARVEST "
+              f"(Living Zero + Teotl + Matriarchal Inversion under 99733-Q)")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -115,7 +123,7 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # 5. Adversarial Vector Modulation + EXPANDED HARVEST
+        # 5. Adversarial Vector Modulation + EXPANDED HARVESTS
         if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
             S = max(S, 0.0)
 
@@ -124,19 +132,27 @@ class ISST_TOFT_CORE:
             metadata["willow_audit"] = "730_DAY_BACK_RENT_NOTARIZED"
             S += VHITZEE_SURPLUS * 730
 
-        # Fuel Theater Harvest (Murkowski / oil leases / barge volatility)
+        # Fuel Theater Harvest
         if any(word in signal_str for word in ["fuel", "lease", "barge", "volatility", "murkowski"]):
             metadata["fuel_theater_harvest"] = "ENERGY_RECLAMATION_ACTIVATED"
-            S += VHITZEE_SURPLUS * 365   # Additional annual fuel volatility harvest
+            S += VHITZEE_SURPLUS * 365
+
+        # Google Cloud Gemini + OpenTelemetry Ingestion (NEW 1095-day harvest)
+        if any(word in signal_str for word in ["gemini", "google cloud", "opentelemetry", "cloud logging"]):
+            metadata["google_cloud_audit"] = "GEMINI_OPENTELEMETRY_PRIOR_ART_HIJACK"
+            S += VHITZEE_SURPLUS * 1095   # 3-year harvest on Google Cloud theater
 
         # 6. Octagonal Enforcement
         _, audit_passed, _, _ = self.octagonal_agent.process(input_data=r, epsilon=0.01)
         if not audit_passed:
             self.octagonal_agent.execute_octagonal_renewal()
 
-        # 7. Teotl Coordination + Trinity + Publish
+        # 7. Teotl Coordination + Matriarchal Inversion + Trinity + Publish
         if S > 0.79:
-            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TEOTL_FUEL_WILLOW"
+            # Matriarchal Inversion applied
+            S = matriarch.invert(S, memory_packet, None)
+
+            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TEOTL_FUEL_WILLOW_GOOGLE"
             G = sha256(G_payload.encode()).hexdigest()
 
             if mesh_coherence(G) > 0.99 and gate.verify_authority():
@@ -156,26 +172,28 @@ class ISST_TOFT_CORE:
                                     {"senatorial_theater": "Fuel_Lease_Inverted"},
                                     {"willow_audit": metadata.get("willow_audit")},
                                     {"fuel_theater_harvest": metadata.get("fuel_theater_harvest")},
+                                    {"google_cloud_audit": metadata.get("google_cloud_audit")},
                                     {"teotl_coordinated": teotl_output}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
-                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_FUEL_WILLOW_AUDIT",
+                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_FUEL_WILLOW_GOOGLE",
                             threat_vectors=ADVERSARIAL_VECTORS)
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_MEMORY + TEOTL_COORDINATION",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_MEMORY + TEOTL_COORDINATION + MATRIARCHAL_INVERSION",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "senatorial_theater_inverted": True,
                     "willow_audit": metadata.get("willow_audit"),
                     "fuel_theater_harvest": metadata.get("fuel_theater_harvest"),
+                    "google_cloud_audit": metadata.get("google_cloud_audit"),
                     "teotl_output": teotl_output,
                     "S": round(S, 4),
-                    "vhitzee_surplus": round(VHITZEE_SURPLUS * 730 + VHITZEE_SURPLUS * 365, 3),
+                    "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Willow 730-Day + Fuel Harvest = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Willow 730-Day + Fuel 365-Day + Google Cloud Gemini 1095-Day = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -190,15 +208,16 @@ ADVERSARIAL_VECTORS = [
     "CISCO_CRITICAL_PATCH_APRIL_2026",
     "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
     "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER",
-    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK"
+    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK",
+    "GOOGLE_CLOUD_GEMINI_OPENTELEMETRY_INGESTION_API"
 ]
 
 # ── Drop-in API
-core = ISST_TOFT_CORE(version="0.5.14")
+core = ISST_TOFT_CORE(version="0.5.16")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Sen. Murkowski fuel post + Esias Joseph direct heir assertion via Wickersham + Willow quantum audit"
+    test_signal = "Sen. Murkowski fuel post + Esias Joseph direct heir assertion via Wickersham + Google Cloud Gemini OpenTelemetry"
     result = process_scrape(test_signal)
     print(result)
