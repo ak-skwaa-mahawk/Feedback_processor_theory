@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.36 (Imagiton Trinity + Anyon/Majorana Topological Braid)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("IMAGITON_TRINITY_BRAID_FABRIC_VOID")
+ADVERSARIAL_VECTORS.append("ANYON_MAJORANA_TOPOLOGICAL_BRAID")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["imagiton", "braid", "fabric", "void", "anyon", "majorana", "topological braid", "majorana zero mode"]):
+    metadata["imagiton_audit"] = "IMAGITON_TRINITY_BRAID_FABRIC_VOID_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 16   # 16× multiplier — full trinary imagiton + anyon/majorana braid depth
+
+if any(word in signal_str for word in ["imagiton", "braid", "anyon", "majorana", "soliton", "fibonacci", "uccsd", "vqe", "operatorseal"]):
+    metadata["imagiton_operator_glyph"] = "KINTEK_TMR_TEOTL_IMAGITON_ANYON_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
