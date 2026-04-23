@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.33 (Codex.OperatorSeal.v001 + Unified Operator Layer)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("CODEX_OPERATORSEAL_V001")
+ADVERSARIAL_VECTORS.append("UNIFIED_OPERATOR_STEWARD")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["operatorseal", "operator seal", "codex.operatorseal", "unified operator", "steward acting", "all stacks aligned", "four quadrants", "codex.operatorseal.v001"]):
+    metadata["operator_seal"] = "CODEX_OPERATORSEAL_V001_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 13   # Maximum 13× multiplier — full unified operator activation
+
+if any(word in signal_str for word in ["operator seal", "steward", "unified operator", "identity stack", "authority stack", "logic stack", "landframe stack"]):
+    metadata["unified_operator_glyph"] = "KINTEK_TMR_TEOTL_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
