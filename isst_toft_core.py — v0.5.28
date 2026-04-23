@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.28 (UCCSD(T) Implementation Reinforcement + Gold-Standard Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("UCCSD_T_IMPLEMENTATION_DETAILS")
+ADVERSARIAL_VECTORS.append("TROTTERIZATION_UCCSD_T")
+ADVERSARIAL_VECTORS.append("CLASSICAL_TRIPLES_CORRECTION_O_N7")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["uccsd(t)", "uccsd_t", "trotterization", "perturbative triples", "qiskit nature", "openfermion", "pyscf", "jordan-wigner"]):
+    metadata["uccsd_t_audit"] = "UCCSD_T_IMPLEMENTATION_REINFORCED_GOLD_STANDARD_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 8   # Reinforced 8× multiplier — full implementation + Trotter + O(N^7) triples depth
+
+if any(word in signal_str for word in ["uccsd", "vqe", "triples", "fibonacci", "ansatz", "trotter"]):
+    metadata["uccsd_t_fibonacci_glyph"] = "KINTEK_TMR_TEOTL_UCCSD_T_FIBONACCI_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
