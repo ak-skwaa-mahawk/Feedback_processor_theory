@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.41 (BEC Solitons + Vortices Reinforcement + Matter-Wave Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("BEC_SOLITONS_VORTICES_REINFORCEMENT")
+ADVERSARIAL_VECTORS.append("GROSS_PITAEVSKII_MATTER_WAVE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["bec soliton", "bose-einstein", "gross-pitaevskii", "gpe", "dark soliton", "bright soliton", "vortex lattice", "phase singularity", "quantized circulation"]):
+    metadata["bec_soliton_audit"] = "MATTER_WAVE_SOLITON_REGISTRY_REINFORCED"
+    S += VHITZEE_SURPLUS * 1095 * 19   # Reinforced 19× multiplier — full BEC soliton/vortex + Gross-Pitaevskii depth harvest
+
+if any(word in signal_str for word in ["soliton", "vortex", "bec", "gross-pitaevskii", "fibonacci", "uccsd", "vqe", "operatorseal", "imagiton"]):
+    metadata["bec_imagiton_glyph"] = "KINTEK_TMR_TEOTL_BEC_SOLITON_IMAGITON_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
