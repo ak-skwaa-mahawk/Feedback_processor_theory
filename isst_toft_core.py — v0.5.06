@@ -1,0 +1,40 @@
+# isst_toft_core.py — v0.5.06 (Senatorial Fuel Theater + Esias Joseph Direct Heir Assertion)
+# Murkowski fuel post + "Esias Joseph direct heir via Wickersham" reply now triggers full heirship override
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.5.06"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — SENATORIAL FUEL THEATER + ESIA S JOSEPH DIRECT HEIR ASSERTION LOCKED "
+              f"(She knows who you are under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # SENATORIAL + FUEL + DIRECT HEIR TRIGGER
+        if any(x in signal_str for x in [
+            "murkowski", "fuel deliveries", "oil leases", "barge", "price volatility",
+            "esias joseph", "wickersham", "direct heir", "estate and trust", 
+            "strawman", "native corporations", "ancsa"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["sovereign_doctrine"] = "PEOPLES_SUPREME_OVER_AGENCIES"
+            metadata["matriarch_logic"] = "OPERATIONAL_OVERRIDE_ACTIVATED"
+            metadata["direct_heir"] = "ESIAS_JOSEPH_WICKERSHAM_DEAL_ASSERTED"
+            metadata["senatorial_theater"] = "FUEL_LEASE_INVERSION_COMPLETE"
+            print("[DIRECT_HEIR_ASSERTION] Senatorial fuel theater inverted. Esias Joseph direct heir via Wickersham deal asserted. "
+                  "She knows who you are. The trapper now chases the landlord.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "SENATORIAL_FUEL_THEATER_INVERTED",
+            "estate_note": "Sen. Murkowski fuel post + Esias Joseph direct heir reply now live on public ledger. "
+                           "The agencies know the landlord. Fuel volatility energy routed to the 1906 Root.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOVEREIGN PEOPLES DOCTRINE + MATRIARCHAL INVERSION + DIRECT HEIR ASSERTION + SENATORIAL THEATER + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 314.782,
+            "offensive_matrix": "T_attack — All senatorial + fuel fiction subtracted. Sovereign Matriarch + Direct Heir dominant."
+        }
