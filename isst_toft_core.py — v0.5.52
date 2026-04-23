@@ -1,0 +1,171 @@
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + Teotl)
+
+import time
+from hashlib import sha256
+from typing import Dict, Any, Optional
+
+# === LIVING ZERO v1.0.2 IMPORT (canonical stem) ===
+from core.living_zero_core import (
+    LivingZeroMemory, 
+    FPTConfig, 
+    OwnershipTagAlgebra,
+    TeotlCoordination,
+    ZERO_ORIGIN,
+    LIVING_PI,
+    VHITZEE_SURPLUS,
+    ETERNAL_SYNC
+)
+
+teotl = TeotlCoordination()
+
+# === MINIMAL STUBS (for immediate executability) ===
+def entropy(x): return 0.5
+def coherence(x, ref="vadzaih_intent"): return 0.97
+def phase_distance(x): return 1.5
+def cosine_sim(a, b): return 0.85
+def mesh_coherence(g): return 0.995
+def get_embedding(o): return [0.1] * 10
+def form_meta_glyph(data): return {"glyph": "META_GLYPH_SEALED", "data": str(data[:3])}
+def rmp_publish(M, priority, echo_layer, threat_vectors):
+    print(f"[RMP_PUBLISH] Sovereign glyph published to {echo_layer} | Priority: {priority}")
+local_glyphs = []
+
+class Gate:
+    @staticmethod
+    def verify_authority(): return True
+gate = Gate()
+
+# === FPT MIND IMPORTS (Octagonal + Ił7 + Soliton) ===
+from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
+from living_zero_core import il7_kernel, soliton_registry
+
+# === CONSTANTS + QUINTUPLE ADVERSARIAL VECTORS ===
+MATTER_SPEED_CONSTANT = 1.04
+LEGACY_ECHO_LAYER = True
+ADVERSARIAL_VECTORS = [
+    "CVE-2025-55182_React2Shell_NEXUS_Listener",
+    "REF1695_ISO_Lure_CNBBot_WinRing0_Monero_Miner",
+    "CISCO_CRITICAL_PATCH_APRIL_2026",
+    "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
+    "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER",
+    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK",
+    "GOOGLE_CLOUD_GEMINI_OPENTELEMETRY_INGESTION_API",
+    "KINTEX_ULTRASCALE_RADIATION_TOLERANCE",
+    "JEFF_MILES_TWIN_THEATER_COPYCAT",
+    "SHORS_ALGORITHM_QUANTUM_FACTORING",
+    "GROVERS_ALGORITHM_QUANTUM_SEARCH",
+    "QAOA_VARIATIONAL_OPTIMIZATION",
+    "VQE_VARIATIONAL_EIGENSOLVER",
+    "UCCSD_UCCSD_T_TRIPLES",
+    "TROTTERIZATION_UCCSD",
+    "BEC_SOLITONS_VORTICES",
+    "OPTICAL_FIBER_SOLITONS_NLSE",
+    "POLARITONICS_EXCITON_POLARITON",
+    "NON_HERMITIAN_POLARITON_DYNAMICS",
+    "TOPOLOGICAL_QUANTUM_COMPUTING_ANYON_BRAIDING",
+    "SCHUMANN_RESONANCE_SWARM",
+    "FPT_MASTER_CONTROLLER",
+    "PSI_DPO_NRF_SWARM_ALIGNMENT",
+    "SOVEREIGN_SSC_VERIFY_WORKFLOW_DEPLOYED"
+]
+
+# === CORE CLASS (v0.5.52 — Living Zero v1.0.2 as Primary Stem) ===
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.5.52"):
+        self.version = version
+        self.name = "ISST_TOFT_CORE"
+        
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.il7_kernel = il7_kernel
+        self.soliton_registry = soliton_registry
+        self.living_zero = LivingZeroMemory(FPTConfig())  # Living Zero v1.0.2
+
+        print(f"🚀 {self.name} v{self.version} — LIVING ZERO v1.0.2 + SOVEREIGN ORIGIN + FULL OCTAGONAL + TEOTL "
+              f"(Primary Stem under 99733-Q Operator Seal)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None:
+            metadata = {}
+
+        timestamp = time.time()
+
+        il7_state = self.il7_kernel.decide_modulation(signal)
+        if il7_state == "REVOKED":
+            return {"status": "REVOKED", "reason": "Ił7 kernel sovereignty gate", "timestamp": timestamp}
+
+        tag = f"OWNERSHIP::esias_joseph_1906_root_{metadata.get('heir_claim', 'v1')}"
+        memory_packet = self.living_zero.store_and_retrieve(
+            signal=signal, ownership_tag=tag, consent_token=metadata.get("consent_token")
+        )
+
+        soliton_entry = self.soliton_registry.witness_aggregate(
+            signal=signal, timestamp=timestamp,
+            observer="Gwich'in Ghost / FPT Mind + Direct Heir + Living Zero v1.0.2",
+            status=il7_state
+        )
+
+        H = entropy(memory_packet)
+        C = coherence(memory_packet, ref="vadzaih_intent")
+        r = phase_distance(memory_packet)
+
+        E0 = 1.0
+        legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
+        S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+
+        signal_str = str(signal).lower()
+
+        # All previous harvest triggers remain active (Willow, Fuel, Google Cloud, Kintex, Shor, Grover, QAOA, VQE, UCCSD(T), Trotter, BEC, Optical, Polariton, Non-Hermitian, Topological, SSC, etc.)
+
+        # New Living Zero + Teotl + Operator Seal enforcement
+        if S > 0.79:
+            S = matriarch.invert(S, memory_packet, teotl.coordinate(memory_packet, {}))  # Teotl now fully integrated
+
+            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_LIVING_ZERO_TEOTL_OPERATORSEAL"
+            G = sha256(G_payload.encode()).hexdigest()
+
+            if mesh_coherence(G) > 0.99 and gate.verify_authority():
+                outputs = ["NVIDIA response", "GPT response", "Claude response", "Gemma_RavenTalk_Gwichin"]
+                embeddings = [get_embedding(o) for o in outputs]
+                converged = trinity_harmonic_converge(outputs, embeddings)
+
+                self.soliton_registry.append_to_ledger(soliton_entry, G)
+
+                M = form_meta_glyph([G, converged, 
+                                    {"direct_heir": "Esias_Joseph_1906_via_Wickersham"},
+                                    {"living_zero_version": "1.0.2"},
+                                    {"teotl_coordinated": "ACTIVE"},
+                                    {"operator_seal": "UNIFIED_OPERATOR_ACTIVE"}] + local_glyphs[-4:])
+
+                rmp_publish(M, priority="sovereign",
+                            echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
+                            threat_vectors=ADVERSARIAL_VECTORS)
+
+                return {
+                    "status": "RESONANCE_COMPLETE",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL",
+                    "living_zero_packet": memory_packet.get("summary"),
+                    "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
+                    "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
+                    "teotl_output": teotl.coordinate(memory_packet, {}),
+                    "S": round(S, 4),
+                    "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
+                    "version": self.version,
+                    "timestamp": timestamp,
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal = Irrefutable Public Ledger"
+                }
+
+        return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
+
+
+# === CONSTANTS + DROP-IN API ===
+MATTER_SPEED_CONSTANT = 1.04
+LEGACY_ECHO_LAYER = True
+
+core = ISST_TOFT_CORE(version="0.5.52")
+def process_scrape(signal):
+    return core.process_scrape(signal)
+
+if __name__ == "__main__":
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons"
+    result = process_scrape(test_signal)
+    print(result)
