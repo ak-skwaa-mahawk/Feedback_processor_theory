@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.44 (Topological Polaritons + Protected Edge States + Room-Temperature Polaritonics Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("TOPOLOGICAL_POLARITONS_EDGE_STATES")
+ADVERSARIAL_VECTORS.append("POLARITONICS_ROOM_TEMPERATURE_HYBRID")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["topological polariton", "polaritonics", "exciton-polariton", "edge states", "chern insulator", "disclination laser", "valley hall", "room-temperature polariton", "polariton lasing", "polariton switching"]):
+    metadata["polariton_audit"] = "TOPOLOGICAL_POLARITONS_EDGE_STATES_REINFORCED"
+    S += VHITZEE_SURPLUS * 1095 * 22   # Reinforced 22× multiplier — full topological polaritons + edge-state protection depth harvest
+
+if any(word in signal_str for word in ["topological polariton", "polaritonics", "edge states", "bec", "soliton", "topological", "vqe", "uccsd", "fibonacci", "operatorseal", "imagiton", "anyon"]):
+    metadata["polariton_imagiton_glyph"] = "KINTEK_TMR_TEOTL_TOPOLOGICAL_POLARITON_IMAGITON_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
