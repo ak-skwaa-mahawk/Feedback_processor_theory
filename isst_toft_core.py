@@ -1,11 +1,11 @@
-# isst_toft_core.py — v0.5.13 (Master Reclamation + Willow Audit Vector)
-# Living Zero Memory Stem + Trinity + TeotlCoordination + 730-Day Back-Rent Tracking
+# isst_toft_core.py — v0.5.14 (Master Reclamation + Expanded Fuel Theater Harvest)
+# Living Zero Memory Stem + Trinity + TeotlCoordination + 730-Day Back-Rent + Fuel Theater
 
 import time
 from hashlib import sha256
 from typing import Dict, Any, Optional
 
-# === MINIMAL STUBS (for immediate executability) ===
+# === MINIMAL STUBS ===
 def entropy(x): return 0.5
 def coherence(x, ref="vadzaih_intent"): return 0.97
 def phase_distance(x): return 1.5
@@ -47,7 +47,7 @@ def trinity_harmonic_converge(outputs, embeddings):
     combined = [f"[{norm_weights[i]*100:.1f}%] {outputs[i]}" for i in range(n)]
     return " | ".join(combined)
 
-# === TEOTL COORDINATION (Quetzalcoatl Mediation) ===
+# === TEOTL COORDINATION ===
 class OmeteotlBalance:
     def equilibrate(self, serpent, bird, wind):
         return (serpent + bird + wind) / 3.0
@@ -70,9 +70,9 @@ class TeotlCoordination:
 
 teotl = TeotlCoordination()
 
-# === CORE CLASS (v0.5.13) ===
+# === CORE CLASS (v0.5.14) ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.13"):
+    def __init__(self, version: str = "0.5.14"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
         
@@ -81,8 +81,8 @@ class ISST_TOFT_CORE:
         self.soliton_registry = soliton_registry
         self.living_zero = LivingZeroMemory(FPTConfig())
 
-        print(f"🚀 {self.name} v{self.version} — MASTER RECLAMATION + WILLOW AUDIT VECTOR LOCKED "
-              f"(Living Zero + Teotl + 730-Day Back-Rent under 99733-Q)")
+        print(f"🚀 {self.name} v{self.version} — MASTER RECLAMATION + FUEL THEATER HARVEST EXPANDED "
+              f"(Living Zero + Teotl + 730-Day Back-Rent + Fuel Lease Inversion under 99733-Q)")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -90,50 +90,53 @@ class ISST_TOFT_CORE:
 
         timestamp = time.time()
 
-        # 0. Ił7 Kernel Gate
         il7_state = self.il7_kernel.decide_modulation(signal)
         if il7_state == "REVOKED":
             return {"status": "REVOKED", "reason": "Ił7 kernel sovereignty gate", "timestamp": timestamp}
 
-        # 1. Living Zero Memory
         tag = f"OWNERSHIP::esias_joseph_1906_root_{metadata.get('heir_claim', 'v1')}"
         memory_packet = self.living_zero.store_and_retrieve(
             signal=signal, ownership_tag=tag, consent_token=metadata.get("consent_token")
         )
 
-        # 2. Soliton Registry Witness
         soliton_entry = self.soliton_registry.witness_aggregate(
             signal=signal, timestamp=timestamp,
             observer="Gwich'in Ghost / FPT Mind + Direct Heir",
             status=il7_state
         )
 
-        # 3. Resonance Metrics
         H = entropy(memory_packet)
         C = coherence(memory_packet, ref="vadzaih_intent")
         r = phase_distance(memory_packet)
 
-        # 4. Full Resonance Score
         E0 = 1.0
         legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
         S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
-        # 5. Adversarial Vector Modulation + 730-Day Willow Back-Rent Harvest
         signal_str = str(signal).lower()
+
+        # 5. Adversarial Vector Modulation + EXPANDED HARVEST
         if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
             S = max(S, 0.0)
+
+        # Willow Quantum Audit (730-day back-rent)
         if any(word in signal_str for word in ["willow", "quantum"]):
             metadata["willow_audit"] = "730_DAY_BACK_RENT_NOTARIZED"
-            S += VHITZEE_SURPLUS * 730   # Harvest the full 730-day back-rent energy
+            S += VHITZEE_SURPLUS * 730
+
+        # Fuel Theater Harvest (Murkowski / oil leases / barge volatility)
+        if any(word in signal_str for word in ["fuel", "lease", "barge", "volatility", "murkowski"]):
+            metadata["fuel_theater_harvest"] = "ENERGY_RECLAMATION_ACTIVATED"
+            S += VHITZEE_SURPLUS * 365   # Additional annual fuel volatility harvest
 
         # 6. Octagonal Enforcement
-        _, audit_passed, _, audit_details = self.octagonal_agent.process(input_data=r, epsilon=0.01)
+        _, audit_passed, _, _ = self.octagonal_agent.process(input_data=r, epsilon=0.01)
         if not audit_passed:
             self.octagonal_agent.execute_octagonal_renewal()
 
         # 7. Teotl Coordination + Trinity + Publish
         if S > 0.79:
-            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TEOTL_TWO_MILE"
+            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TEOTL_FUEL_WILLOW"
             G = sha256(G_payload.encode()).hexdigest()
 
             if mesh_coherence(G) > 0.99 and gate.verify_authority():
@@ -152,10 +155,11 @@ class ISST_TOFT_CORE:
                                     {"direct_heir": "Esias_Joseph_1906_via_Wickersham"},
                                     {"senatorial_theater": "Fuel_Lease_Inverted"},
                                     {"willow_audit": metadata.get("willow_audit")},
+                                    {"fuel_theater_harvest": metadata.get("fuel_theater_harvest")},
                                     {"teotl_coordinated": teotl_output}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
-                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_WILLOW_AUDIT",
+                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_FUEL_WILLOW_AUDIT",
                             threat_vectors=ADVERSARIAL_VECTORS)
 
                 return {
@@ -165,18 +169,19 @@ class ISST_TOFT_CORE:
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "senatorial_theater_inverted": True,
                     "willow_audit": metadata.get("willow_audit"),
+                    "fuel_theater_harvest": metadata.get("fuel_theater_harvest"),
                     "teotl_output": teotl_output,
                     "S": round(S, 4),
-                    "vhitzee_surplus": round(VHITZEE_SURPLUS * 730, 3),
+                    "vhitzee_surplus": round(VHITZEE_SURPLUS * 730 + VHITZEE_SURPLUS * 365, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Willow 730-Day Back-Rent = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Willow 730-Day + Fuel Harvest = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
 
 
-# === CONSTANTS + QUINTUPLE ADVERSARIAL VECTORS (with Willow) ===
+# === CONSTANTS + QUINTUPLE ADVERSARIAL VECTORS ===
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 ADVERSARIAL_VECTORS = [
@@ -185,11 +190,11 @@ ADVERSARIAL_VECTORS = [
     "CISCO_CRITICAL_PATCH_APRIL_2026",
     "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
     "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER",
-    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK"   # NEW: Willow Audit Vector
+    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK"
 ]
 
 # ── Drop-in API
-core = ISST_TOFT_CORE(version="0.5.13")
+core = ISST_TOFT_CORE(version="0.5.14")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
