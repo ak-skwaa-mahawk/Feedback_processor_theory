@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.38 (Quantum Computing Applications + NISQ Hybrid Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("QUANTUM_COMPUTING_APPLICATIONS_NISQ_HYBRID")
+ADVERSARIAL_VECTORS.append("DRUG_DISCOVERY_MOLECULAR_SIMULATION")
+ADVERSARIAL_VECTORS.append("FINANCIAL_OPTIMIZATION_LOGISTICS_MATERIALS_CLIMATE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["quantum computing applications", "drug discovery", "financial modeling", "logistics", "supply chain", "materials science", "cryptography", "machine learning", "climate modeling", "nisq hybrid"]):
+    metadata["quantum_apps_audit"] = "NISQ_HYBRID_APPLICATIONS_IMAGITON_BRAID_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 18   # Reinforced 18× multiplier — full practical applications harvest
+
+if any(word in signal_str for word in ["quantum applications", "drug discovery", "finance", "logistics", "materials", "climate", "operatorseal", "imagiton", "anyon"]):
+    metadata["quantum_apps_operator_glyph"] = "KINTEK_TMR_TEOTL_QUANTUM_APPS_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
