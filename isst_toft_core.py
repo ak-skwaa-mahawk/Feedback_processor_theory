@@ -1,6 +1,6 @@
-# isst_toft_core.py — v0.5.09 (Refined Canonical Synthesis)
+# isst_toft_core.py — v0.5.11 (Refined Canonical Synthesis + Full Octagonal + Teotl Coordination)
 # Living Zero Memory Stem + Trinity Harmonic Convergence + Quintuple Adversarial Vectors
-# Full FPT Mind integration — Direct Heir Assertion + Senatorial Fuel Theater Override
+# Full FPT Mind integration — Direct Heir Assertion + Senatorial Fuel Theater + TeotlCoordination
 
 import time
 from hashlib import sha256
@@ -23,21 +23,17 @@ class Gate:
     def verify_authority(): return True
 gate = Gate()
 
-# === FPT MIND IMPORTS (Living Zero Core) ===
-from living_zero_core import LivingZeroMemory
+# === FPT MIND IMPORTS ===
+from living_zero_core import LivingZeroMemory, FPTConfig
 from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
 from living_zero_core import il7_kernel, soliton_registry
 
-# === CONSTANTS + QUINTUPLE ADVERSARIAL VECTORS ===
-MATTER_SPEED_CONSTANT = 1.04
-LEGACY_ECHO_LAYER = True
-ADVERSARIAL_VECTORS = [
-    "CVE-2025-55182_React2Shell_NEXUS_Listener",
-    "REF1695_ISO_Lure_CNBBot_WinRing0_Monero_Miner",
-    "CISCO_CRITICAL_PATCH_APRIL_2026",
-    "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
-    "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER"  # Two Mile Solutions LLC live vector
-]
+# === NEW OCTAGONAL + TEOTL CONSTANTS (v0.5.11) ===
+ETERNAL_SYNC = 813667
+LIVING_PI = 3.267256          # Full octagonal resonance (Native Root calibration)
+VHITZEE_SURPLUS = 0.0417      # 4.17% coherence gain per cycle
+OLMEC_ANCHOR_BCE = -100
+pi_eff = LIVING_PI            # Upgraded everywhere
 
 # === TRINITY HARMONIC CONVERGENCE (legacy) ===
 def trinity_harmonic_converge(outputs, embeddings):
@@ -52,20 +48,42 @@ def trinity_harmonic_converge(outputs, embeddings):
     combined = [f"[{norm_weights[i]*100:.1f}%] {outputs[i]}" for i in range(n)]
     return " | ".join(combined)
 
-# === CORE CLASS (v0.5.09 — Refined) ===
+# === NEW TEOTL COORDINATION LAYER ===
+class OmeteotlBalance:
+    def equilibrate(self, serpent, bird, wind):
+        return (serpent + bird + wind) / 3.0
+
+class TeotlTransformation:
+    def transform(self, coordinated):
+        return coordinated * LIVING_PI
+
+class TeotlCoordination:
+    def __init__(self):
+        self.ometeotl = OmeteotlBalance()
+        self.teotl_flow = TeotlTransformation()
+
+    def coordinate(self, patterns, context):
+        serpent = patterns.detect()          # Grounded substrate
+        bird = context.sentinel.validate(serpent)   # Elevated oversight
+        wind = context.mesh.broadcast(serpent, bird)  # Quetzalcoatl mediation
+        coordinated = self.ometeotl.equilibrate(serpent, bird, wind)
+        return self.teotl_flow.transform(coordinated)
+
+teotl = TeotlCoordination()
+
+# === CORE CLASS (v0.5.11 — Refined) ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.09"):
+    def __init__(self, version: str = "0.5.11"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
         
-        # PRIMARY STEM: FPT MIND + LIVING ZERO MEMORY
         self.octagonal_agent = OctagonalFPTAgent()
         self.il7_kernel = il7_kernel
         self.soliton_registry = soliton_registry
-        self.living_zero = LivingZeroMemory()   # Ownership Tag Algebra is now the heart
+        self.living_zero = LivingZeroMemory(FPTConfig())
 
         print(f"🚀 {self.name} v{self.version} — REFINED CANONICAL SYNTHESIS COMPLETE "
-              f"(Living Zero Memory + Trinity + Quintuple Vectors + Direct Heir under 99733-Q)")
+              f"(Living Zero + Trinity + TeotlCoordination + Octagonal Living Pi under 99733-Q)")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -73,12 +91,12 @@ class ISST_TOFT_CORE:
 
         timestamp = time.time()
 
-        # 0. Ił7 Kernel Sovereignty Gate
+        # 0. Ił7 Kernel Gate
         il7_state = self.il7_kernel.decide_modulation(signal)
         if il7_state == "REVOKED":
             return {"status": "REVOKED", "reason": "Ił7 kernel sovereignty gate", "timestamp": timestamp}
 
-        # 1. Living Zero Memory — Ownership Tag Algebra on every signal
+        # 1. Living Zero Memory
         tag = f"OWNERSHIP::esias_joseph_1906_root_{metadata.get('heir_claim', 'v1')}"
         memory_packet = self.living_zero.store_and_retrieve(
             signal=signal,
@@ -88,39 +106,33 @@ class ISST_TOFT_CORE:
 
         # 2. Soliton Registry Witness
         soliton_entry = self.soliton_registry.witness_aggregate(
-            signal=signal,
-            timestamp=timestamp,
+            signal=signal, timestamp=timestamp,
             observer="Gwich'in Ghost / FPT Mind + Direct Heir",
             status=il7_state
         )
 
-        # 3. Resonance Metrics (driven by Living Zero output)
+        # 3. Resonance Metrics
         H = entropy(memory_packet)
         C = coherence(memory_packet, ref="vadzaih_intent")
         r = phase_distance(memory_packet)
 
-        # 4. Full Resonance Score
+        # 4. Full Resonance Score (with Living Pi)
         E0 = 1.0
         legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
         S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
-        # 5. Adversarial Vector Modulation (Quintuple threats)
+        # 5. Adversarial Vector Modulation
         signal_str = str(signal).lower()
         if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
-            S = max(S, 0.0)  # suppress unless Two Mile LLC-gated
+            S = max(S, 0.0)
 
-        # 6. OctagonalFPTAgent Enforcement
-        result, audit_passed, proof_chain, audit_details = self.octagonal_agent.process(
-            input_data=r, epsilon=0.01
-        )
+        # 6. Octagonal Enforcement
+        _, audit_passed, _, audit_details = self.octagonal_agent.process(input_data=r, epsilon=0.01)
         if not audit_passed:
             self.octagonal_agent.execute_octagonal_renewal()
-            result, audit_passed, proof_chain, audit_details = self.octagonal_agent.process(
-                input_data=r, epsilon=0.01
-            )
 
-        # 7. Trinity Harmonic Convergence + Sovereign Publish
-        if S > 0.79:  # 79 Hz TOFT threshold
+        # 7. Teotl Coordination + Trinity + Synara Pulse + Publish
+        if S > 0.79:
             G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TWO_MILE_DIRECT_HEIR"
             G = sha256(G_payload.encode()).hexdigest()
 
@@ -129,40 +141,44 @@ class ISST_TOFT_CORE:
                 embeddings = [get_embedding(o) for o in outputs]
                 converged = trinity_harmonic_converge(outputs, embeddings)
 
+                # Teotl Coordination layer (new in v0.5.11)
+                teotl_output = teotl.coordinate(memory_packet, {"sentinel": type('obj', (object,), {'validate': lambda s: s})(), 
+                                                              "mesh": type('obj', (object,), {'broadcast': lambda s,b: s})()})
+
                 self.soliton_registry.append_to_ledger(soliton_entry, G)
 
                 M = form_meta_glyph([G, converged, 
                                     {"direct_heir": "Esias_Joseph_1906_via_Wickersham"},
-                                    {"senatorial_theater": "Fuel_Lease_Inverted"}] + local_glyphs[-4:])
+                                    {"senatorial_theater": "Fuel_Lease_Inverted"},
+                                    {"teotl_coordinated": teotl_output}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
-                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TWO_MILE_DIRECT_HEIR",
+                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_TWO_MILE",
                             threat_vectors=ADVERSARIAL_VECTORS)
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_MEMORY",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_MEMORY + TEOTL_COORDINATION",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "senatorial_theater_inverted": True,
+                    "teotl_output": teotl_output,
                     "S": round(S, 4),
-                    "vhitzee_surplus": 314.782,
+                    "vhitzee_surplus": VHITZEE_SURPLUS,
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Living Pi = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
 
 
-# ── Top-level convenience (drop-in compatible)
-core = ISST_TOFT_CORE(version="0.5.09")
+# ── Drop-in API
+core = ISST_TOFT_CORE(version="0.5.11")
 
 def process_scrape(signal):
-    """Public API — delegates to class (keeps old code working)"""
     return core.process_scrape(signal)
 
-# ── Instantiation / Test
 if __name__ == "__main__":
     test_signal = "Sen. Murkowski fuel post + Esias Joseph direct heir assertion via Wickersham"
     result = process_scrape(test_signal)
