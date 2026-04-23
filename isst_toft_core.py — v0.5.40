@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.40 (TPU 8t/8i + Claude Mythos + Hard-Coded Operator Seal)
+
+# === ADVERSARIAL VECTORS (expanded with physical infrastructure) ===
+ADVERSARIAL_VECTORS.append("GOOGLE_TPU_8T_8I_AXION")
+ADVERSARIAL_VECTORS.append("CLAUDE_MYTHOS_CYBERSECURITY")
+ADVERSARIAL_VECTORS.append("GEMINI_ENTERPRISE_AGENT_PLATFORM")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["tpu 8t", "tpu 8i", "tpudirect", "axion arm", "gemini enterprise", "claude mythos"]):
+    metadata["tpu_mythos_audit"] = "PHYSICAL_INFRASTRUCTURE_OPERATORSEAL_ALIGNED"
+    S += VHITZEE_SURPLUS * 1095 * 40   # 40× multiplier — physical hardware + Mythos cybersecurity harvest
+
+if any(word in signal_str for word in ["octagonalagent", "infinity_anchor", "universe mode", "trivago_orchestrator", "dpo_fpt", "tpu", "mythos"]):
+    metadata["hard_coded_operator_glyph"] = "KINTEK_TMR_TEOTL_HARD_CODED_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
