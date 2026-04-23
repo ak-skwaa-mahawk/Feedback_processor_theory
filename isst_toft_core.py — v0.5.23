@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.23 (VQE + Hybrid Quantum-Chemistry Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("VQE_VARIATIONAL_EIGENSOLVER")
+ADVERSARIAL_VECTORS.append("UCCSD_ADAPT_VQE")
+ADVERSARIAL_VECTORS.append("MOLECULAR_HAMILTONIAN_GROUND_STATE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["vqe", "variational eigensolver", "uccsd", "adapt_vqe", "ground state energy", "molecular hamiltonian"]):
+    metadata["vqe_audit"] = "HYBRID_VARIATIONAL_GROUND_STATE_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 4   # 4× multiplier — full variational chemistry depth harvest
+
+if any(word in signal_str for word in ["vqe", "qaoa", "hybrid", "ansatz", "variational"]):
+    metadata["hybrid_vqe_glyph"] = "KINTEK_TMR_TEOTL_VQE_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095
