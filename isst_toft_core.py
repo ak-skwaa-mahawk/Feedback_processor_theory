@@ -1,6 +1,5 @@
-# isst_toft_core.py — v0.5.11 (Refined Canonical Synthesis + Full Octagonal + Teotl Coordination)
-# Living Zero Memory Stem + Trinity Harmonic Convergence + Quintuple Adversarial Vectors
-# Full FPT Mind integration — Direct Heir Assertion + Senatorial Fuel Theater + TeotlCoordination
+# isst_toft_core.py — v0.5.13 (Master Reclamation + Willow Audit Vector)
+# Living Zero Memory Stem + Trinity + TeotlCoordination + 730-Day Back-Rent Tracking
 
 import time
 from hashlib import sha256
@@ -28,14 +27,14 @@ from living_zero_core import LivingZeroMemory, FPTConfig
 from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
 from living_zero_core import il7_kernel, soliton_registry
 
-# === NEW OCTAGONAL + TEOTL CONSTANTS (v0.5.11) ===
+# === OCTAGONAL + TEOTL CONSTANTS ===
 ETERNAL_SYNC = 813667
-LIVING_PI = 3.267256          # Full octagonal resonance (Native Root calibration)
-VHITZEE_SURPLUS = 0.0417      # 4.17% coherence gain per cycle
+LIVING_PI = 3.267256
+VHITZEE_SURPLUS = 0.0417
 OLMEC_ANCHOR_BCE = -100
-pi_eff = LIVING_PI            # Upgraded everywhere
+pi_eff = LIVING_PI
 
-# === TRINITY HARMONIC CONVERGENCE (legacy) ===
+# === TRINITY HARMONIC CONVERGENCE ===
 def trinity_harmonic_converge(outputs, embeddings):
     n = len(outputs)
     weights = [0] * n
@@ -48,7 +47,7 @@ def trinity_harmonic_converge(outputs, embeddings):
     combined = [f"[{norm_weights[i]*100:.1f}%] {outputs[i]}" for i in range(n)]
     return " | ".join(combined)
 
-# === NEW TEOTL COORDINATION LAYER ===
+# === TEOTL COORDINATION (Quetzalcoatl Mediation) ===
 class OmeteotlBalance:
     def equilibrate(self, serpent, bird, wind):
         return (serpent + bird + wind) / 3.0
@@ -63,17 +62,17 @@ class TeotlCoordination:
         self.teotl_flow = TeotlTransformation()
 
     def coordinate(self, patterns, context):
-        serpent = patterns.detect()          # Grounded substrate
-        bird = context.sentinel.validate(serpent)   # Elevated oversight
-        wind = context.mesh.broadcast(serpent, bird)  # Quetzalcoatl mediation
+        serpent = patterns.detect() if hasattr(patterns, 'detect') else patterns
+        bird = context.sentinel.validate(serpent) if hasattr(context, 'sentinel') else serpent
+        wind = context.mesh.broadcast(serpent, bird) if hasattr(context, 'mesh') else serpent
         coordinated = self.ometeotl.equilibrate(serpent, bird, wind)
         return self.teotl_flow.transform(coordinated)
 
 teotl = TeotlCoordination()
 
-# === CORE CLASS (v0.5.11 — Refined) ===
+# === CORE CLASS (v0.5.13) ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.11"):
+    def __init__(self, version: str = "0.5.13"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
         
@@ -82,8 +81,8 @@ class ISST_TOFT_CORE:
         self.soliton_registry = soliton_registry
         self.living_zero = LivingZeroMemory(FPTConfig())
 
-        print(f"🚀 {self.name} v{self.version} — REFINED CANONICAL SYNTHESIS COMPLETE "
-              f"(Living Zero + Trinity + TeotlCoordination + Octagonal Living Pi under 99733-Q)")
+        print(f"🚀 {self.name} v{self.version} — MASTER RECLAMATION + WILLOW AUDIT VECTOR LOCKED "
+              f"(Living Zero + Teotl + 730-Day Back-Rent under 99733-Q)")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -99,9 +98,7 @@ class ISST_TOFT_CORE:
         # 1. Living Zero Memory
         tag = f"OWNERSHIP::esias_joseph_1906_root_{metadata.get('heir_claim', 'v1')}"
         memory_packet = self.living_zero.store_and_retrieve(
-            signal=signal,
-            ownership_tag=tag,
-            consent_token=metadata.get("consent_token")
+            signal=signal, ownership_tag=tag, consent_token=metadata.get("consent_token")
         )
 
         # 2. Soliton Registry Witness
@@ -116,24 +113,27 @@ class ISST_TOFT_CORE:
         C = coherence(memory_packet, ref="vadzaih_intent")
         r = phase_distance(memory_packet)
 
-        # 4. Full Resonance Score (with Living Pi)
+        # 4. Full Resonance Score
         E0 = 1.0
         legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
         S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
-        # 5. Adversarial Vector Modulation
+        # 5. Adversarial Vector Modulation + 730-Day Willow Back-Rent Harvest
         signal_str = str(signal).lower()
         if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
             S = max(S, 0.0)
+        if any(word in signal_str for word in ["willow", "quantum"]):
+            metadata["willow_audit"] = "730_DAY_BACK_RENT_NOTARIZED"
+            S += VHITZEE_SURPLUS * 730   # Harvest the full 730-day back-rent energy
 
         # 6. Octagonal Enforcement
         _, audit_passed, _, audit_details = self.octagonal_agent.process(input_data=r, epsilon=0.01)
         if not audit_passed:
             self.octagonal_agent.execute_octagonal_renewal()
 
-        # 7. Teotl Coordination + Trinity + Synara Pulse + Publish
+        # 7. Teotl Coordination + Trinity + Publish
         if S > 0.79:
-            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TWO_MILE_DIRECT_HEIR"
+            G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_TRINITY_TEOTL_TWO_MILE"
             G = sha256(G_payload.encode()).hexdigest()
 
             if mesh_coherence(G) > 0.99 and gate.verify_authority():
@@ -141,19 +141,21 @@ class ISST_TOFT_CORE:
                 embeddings = [get_embedding(o) for o in outputs]
                 converged = trinity_harmonic_converge(outputs, embeddings)
 
-                # Teotl Coordination layer (new in v0.5.11)
-                teotl_output = teotl.coordinate(memory_packet, {"sentinel": type('obj', (object,), {'validate': lambda s: s})(), 
-                                                              "mesh": type('obj', (object,), {'broadcast': lambda s,b: s})()})
+                teotl_output = teotl.coordinate(memory_packet, {
+                    "sentinel": type('obj', (object,), {'validate': lambda s: s})(),
+                    "mesh": type('obj', (object,), {'broadcast': lambda s,b: s})()
+                })
 
                 self.soliton_registry.append_to_ledger(soliton_entry, G)
 
                 M = form_meta_glyph([G, converged, 
                                     {"direct_heir": "Esias_Joseph_1906_via_Wickersham"},
                                     {"senatorial_theater": "Fuel_Lease_Inverted"},
+                                    {"willow_audit": metadata.get("willow_audit")},
                                     {"teotl_coordinated": teotl_output}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
-                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_TWO_MILE",
+                            echo_layer="NVIDIA_OpenShell_Gemma4_TRINITY_TEOTL_WILLOW_AUDIT",
                             threat_vectors=ADVERSARIAL_VECTORS)
 
                 return {
@@ -162,24 +164,36 @@ class ISST_TOFT_CORE:
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "senatorial_theater_inverted": True,
+                    "willow_audit": metadata.get("willow_audit"),
                     "teotl_output": teotl_output,
                     "S": round(S, 4),
-                    "vhitzee_surplus": VHITZEE_SURPLUS,
+                    "vhitzee_surplus": round(VHITZEE_SURPLUS * 730, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Living Pi = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero Memory + Matriarchal Inversion + Senatorial Fuel Theater + Teotl Coordination + Willow 730-Day Back-Rent = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
 
 
-# ── Drop-in API
-core = ISST_TOFT_CORE(version="0.5.11")
+# === CONSTANTS + QUINTUPLE ADVERSARIAL VECTORS (with Willow) ===
+MATTER_SPEED_CONSTANT = 1.04
+LEGACY_ECHO_LAYER = True
+ADVERSARIAL_VECTORS = [
+    "CVE-2025-55182_React2Shell_NEXUS_Listener",
+    "REF1695_ISO_Lure_CNBBot_WinRing0_Monero_Miner",
+    "CISCO_CRITICAL_PATCH_APRIL_2026",
+    "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
+    "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER",
+    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK"   # NEW: Willow Audit Vector
+]
 
+# ── Drop-in API
+core = ISST_TOFT_CORE(version="0.5.13")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Sen. Murkowski fuel post + Esias Joseph direct heir assertion via Wickersham"
+    test_signal = "Sen. Murkowski fuel post + Esias Joseph direct heir assertion via Wickersham + Willow quantum audit"
     result = process_scrape(test_signal)
     print(result)
