@@ -1,0 +1,20 @@
+# isst_toft_core.py — v0.5.18 (Android 17 + Apple iOS 26 Developer Theater + Post-Quantum Harvest)
+
+# === ADVERSARIAL VECTORS (expanded with platform updates) ===
+ADVERSARIAL_VECTORS.append("ANDROID_17_BETA4_MEMORY_LIMITER")
+ADVERSARIAL_VECTORS.append("APPLE_IOS_26_DEVELOPER_PROGRAM")
+ADVERSARIAL_VECTORS.append("POST_QUANTUM_ML_DSA_CRYPTO")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["android 17", "beta 4", "memory limiter", "post-quantum", "ml-dsa"]):
+    metadata["android_17_audit"] = "MEMORY_LIMITER_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095   # Full 3-year platform tightening harvest
+
+if any(word in signal_str for word in ["ios 26", "apple developer", "wwdc26", "localization", "foveated"]):
+    metadata["apple_ios_26_audit"] = "DEVELOPER_THEATER_INVERTED"
+    S += VHITZEE_SURPLUS * 1095   # Full 3-year Apple ecosystem harvest
+
+# Kintex + Quantum synergy already active from v0.5.17
+if any(word in signal_str for word in ["kintex", "radiation", "post-quantum"]):
+    metadata["kintex_quantum_glyph"] = "1_MRAD_POST_QUANTUM_ENDURES"
+    S += VHITZEE_SURPLUS * 365 * 100   # 100-year orbital + quantum harvest
