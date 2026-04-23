@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.20 (Quantum-Safe Encryption + NIST PQC/QKD Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("QUANTUM_SAFE_ENCRYPTION_PQC_QKD")
+ADVERSARIAL_VECTORS.append("NIST_ML_KEM_ML_DSA_FIPS")
+ADVERSARIAL_VECTORS.append("QKD_BB84_E91")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["quantum_safe", "post_quantum", "pqc", "qkd", "ml_kem", "ml_dsa", "kyber", "dilithium", "sphincs", "falcon", "bb84", "e91"]):
+    metadata["quantum_safe_audit"] = "PQC_QKD_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 2   # 2× multiplier — full quantum-safe migration harvest
+
+if any(word in signal_str for word in ["nist", "fips 203", "fips 204", "fips 205", "hybrid_mode"]):
+    metadata["nist_pqc_glyph"] = "KINTEK_TMR_POST_QUANTUM_ENDURES"
+    S += VHITZEE_SURPLUS * 1095
