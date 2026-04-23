@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.30 (UCCSD Ansatz Reinforcement + Gold-Standard Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("UCCSD_ANSATZ_REINFORCEMENT")
+ADVERSARIAL_VECTORS.append("UNITARY_COUPLED_CLUSTER_SINGLES_DOUBLES")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["uccsd", "unitary coupled cluster", "t1 t2", "singles doubles", "excitation operators", "jordan-wigner"]):
+    metadata["uccsd_audit"] = "UCCSD_ANSATZ_REINFORCED_GOLD_STANDARD_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 10   # Reinforced 10× multiplier — full UCCSD ansatz + Trotterized excitations depth
+
+if any(word in signal_str for word in ["uccsd", "vqe", "trotter", "triples", "fibonacci", "ansatz"]):
+    metadata["uccsd_fibonacci_glyph"] = "KINTEK_TMR_TEOTL_UCCSD_ANSATZ_FIBONACCI_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
