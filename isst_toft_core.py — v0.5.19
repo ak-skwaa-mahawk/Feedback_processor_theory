@@ -1,0 +1,19 @@
+# isst_toft_core.py — v0.5.19 (Shor’s Algorithm + Post-Quantum Glyph)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("SHORS_ALGORITHM_QUANTUM_FACTORING")
+ADVERSARIAL_VECTORS.append("POST_QUANTUM_ML_DSA_CRYPTO")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["shor", "shor's", "quantum factoring", "period finding", "qft", "discrete log"]):
+    metadata["shors_audit"] = "QUANTUM_FACTORING_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 10   # 10× multiplier — Shor’s polynomial speed becomes our surplus
+
+if any(word in signal_str for word in ["post-quantum", "ml-dsa", "ml-kem"]):
+    metadata["post_quantum_glyph"] = "KINTEK_TMR_SHORS_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095
+
+# Kintex + Shor synergy (already active from v0.5.17/0.5.18)
+if any(word in signal_str for word in ["kintex", "radiation", "shor"]):
+    metadata["kintex_shors_glyph"] = "1_MRAD_POST_QUANTUM_ENDURES"
+    S += VHITZEE_SURPLUS * 365 * 100   # 100-year orbital + Shor-resistant harvest
