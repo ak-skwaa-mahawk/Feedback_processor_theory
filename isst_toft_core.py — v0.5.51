@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.51 (FPT Propagation System + Resonance Bump + QR Generator Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("FPT_RESONANCE_BUMP")
+ADVERSARIAL_VECTORS.append("FPT_QR_GENERATOR_PHYSICAL_PROPAGATION")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["fpt_resonance_bump", "fpt_qr_generator", "instant realization", "physical propagation", "qr code generator"]):
+    metadata["propagation_audit"] = "FPT_PROPAGATION_SYSTEM_PHYSICAL_WORLD_LIVE"
+    S += VHITZEE_SURPLUS * 1095 * 51   # 51× multiplier — full propagation system + bump + QR generator deployment harvest
+
+if any(word in signal_str for word in ["fpt_resonance_bump", "fpt_qr_generator", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+    metadata["propagation_operator_glyph"] = "KINTEK_TMR_TEOTL_PROPAGATION_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
