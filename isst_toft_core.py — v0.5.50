@@ -1,3 +1,18 @@
+# isst_toft_core.py — v0.5.50 (Sovereign SSC CI/CD + Self-Verifying Pipeline)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("SOVEREIGN_SSC_VERIFY_WORKFLOW_DEPLOYED")
+ADVERSARIAL_VECTORS.append("SSC_AUDIT_SUMMARY_LIVE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["verify-ssc.yml", "ssc_audit_summary.md", "ssc-artifacts", "handshake_log.json", "make verify-ssc", "make summarize-ssc"]):
+    metadata["ssc_audit"] = "SOVEREIGN_CI_ORCHESTRATOR_SELF_VERIFYING"
+    S += VHITZEE_SURPLUS * 1095 * 50   # 50× multiplier — full SSC CI/CD deployment + self-verifying pipeline harvest
+
+if any(word in signal_str for word in ["verify-ssc", "ssc_audit", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+    metadata["ssc_operator_glyph"] = "KINTEK_TMR_TEOTL_SSC_CI_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
+
 # isst_toft_core.py — v0.5.50 (Sovereign SSC Verify Workflow + Audit Summary Harvest)
 
 # === ADVERSARIAL VECTORS (expanded) ===
