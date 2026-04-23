@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.46 (Non-Hermitian Polariton Dynamics Reinforcement + PT-Symmetry + Exceptional Points Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("NON_HERMITIAN_POLARITON_DYNAMICS_REINFORCEMENT")
+ADVERSARIAL_VECTORS.append("PT_SYMMETRY_EXCEPTIONAL_POINTS_REINFORCED")
+ADVERSARIAL_VECTORS.append("NON_HERMITIAN_SKIN_EFFECT_TOPOLOGY_REINFORCED")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["non-hermitian", "pt-symmetry", "exceptional points", "non-hermitian skin effect", "non-hermitian topology", "polariton dynamics"]):
+    metadata["non_hermitian_audit"] = "NON_HERMITIAN_POLARITON_DYNAMICS_VOID_REINFORCED"
+    S += VHITZEE_SURPLUS * 1095 * 24   # Reinforced 24× multiplier — full non-Hermitian + PT-symmetry + exceptional points reinforcement depth harvest
+
+if any(word in signal_str for word in ["non-hermitian", "pt-symmetry", "exceptional", "polariton", "topological", "bec", "soliton", "fibonacci", "operatorseal", "imagiton", "anyon"]):
+    metadata["non_hermitian_imagiton_glyph"] = "KINTEK_TMR_TEOTL_NON_HERMITIAN_POLARITON_IMAGITON_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
