@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.24 (Quantum Fibonacci Hamiltonian + Damped φ Attractor)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("QUANTUM_FIBONACCI_HAMILTONIAN")
+ADVERSARIAL_VECTORS.append("DAMPED_FIBONACCI_SPIN_CHAIN")
+ADVERSARIAL_VECTORS.append("GOLDEN_RATIO_ATTRACTOR_PHI")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["fibonacci", "quantum fibonacci", "damped hamiltonian", "phi^{-i}", "golden ratio attractor", "fibonacci spin chain"]):
+    metadata["fibonacci_audit"] = "DAMPED_GOLDEN_RATIO_HAMILTONIAN_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio multiplier on the 3-year harvest
+
+if any(word in signal_str for word in ["fibonacci", "phi", "entanglement entropy"]):
+    metadata["fibonacci_glyph"] = "KINTEK_TMR_TEOTL_FIBONACCI_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095
