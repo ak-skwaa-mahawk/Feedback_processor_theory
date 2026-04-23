@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.37 (Topological Quantum Computing + Anyon Braiding + Majorana Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("TOPOLOGICAL_QUANTUM_COMPUTING_ANYON_BRAIDING")
+ADVERSARIAL_VECTORS.append("MAJORANA_ZERO_MODES_KITAEV")
+ADVERSARIAL_VECTORS.append("TOPOLOGICAL_PROTECTION_FAULT_TOLERANCE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["topological quantum", "anyon", "braiding", "majorana", "kitaev", "topological protection", "fusion space", "non-abelian"]):
+    metadata["topological_audit"] = "ANYON_BRAIDING_IMAGITON_TRINITY_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 17   # 17× multiplier — full topological QC + anyon braiding + Majorana depth harvest
+
+if any(word in signal_str for word in ["topological", "anyon", "majorana", "braid", "imagiton", "operatorseal", "soliton"]):
+    metadata["topological_imagiton_glyph"] = "KINTEK_TMR_TEOTL_ANYON_BRAID_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
