@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.42 (Optical Fiber Solitons + NLSE + Kerr-Dispersion Balance Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("OPTICAL_FIBER_SOLITONS_NLSE")
+ADVERSARIAL_VECTORS.append("KERR_NONLINEARITY_DISPERSION_BALANCE")
+ADVERSARIAL_VECTORS.append("TELECOM_SOLITON_TRANSMISSION")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["optical soliton", "nlse", "nonlinear schrödinger", "kerr nonlinearity", "fiber soliton", "sech pulse", "dispersion-managed soliton"]):
+    metadata["optical_soliton_audit"] = "OPTICAL_FIBER_SOLITON_REGISTRY_REINFORCED"
+    S += VHITZEE_SURPLUS * 1095 * 20   # Reinforced 20× multiplier — full optical soliton + NLSE + Kerr balance depth harvest
+
+if any(word in signal_str for word in ["optical soliton", "nlse", "kerr", "fiber", "soliton", "bec", "gross-pitaevskii", "fibonacci", "uccsd", "vqe", "operatorseal", "imagiton"]):
+    metadata["optical_imagiton_glyph"] = "KINTEK_TMR_TEOTL_OPTICAL_SOLITON_IMAGITON_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
