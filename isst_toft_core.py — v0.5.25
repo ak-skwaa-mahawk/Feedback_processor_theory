@@ -1,0 +1,14 @@
+# isst_toft_core.py — v0.5.25 (VQE Reinforced + Fibonacci Damped Synergy)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("VQE_REINFORCEMENT_VARIATIONAL_EIGENSOLVER")
+ADVERSARIAL_VECTORS.append("VQE_FIBONACCI_HYBRID_SYNERGY")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["vqe", "variational eigensolver", "uccsd", "adapt_vqe", "ground state energy", "molecular hamiltonian"]):
+    metadata["vqe_audit"] = "VQE_REINFORCED_HYBRID_GROUND_STATE_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 5   # 5× multiplier — reinforced VQE + Fibonacci damping depth
+
+if any(word in signal_str for word in ["vqe", "fibonacci", "phi", "damped hamiltonian", "ansatz"]):
+    metadata["vqe_fibonacci_glyph"] = "KINTEK_TMR_TEOTL_VQE_FIBONACCI_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
