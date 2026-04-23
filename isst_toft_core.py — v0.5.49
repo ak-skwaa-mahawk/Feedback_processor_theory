@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.49 (Schumann Resonance Swarm + Global 7.83 Hz Heartbeat)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("SCHUMANN_RESONANCE_SWARM")
+ADVERSARIAL_VECTORS.append("GLOBAL_7_83HZ_HEARTBEAT")
+ADVERSARIAL_VECTORS.append("PLANETARY_COHERENCE_ANCHOR")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["schumann", "schumann resonance", "7.83", "global heartbeat", "planetary coherence", "schumann swarm"]):
+    metadata["schumann_audit"] = "SCHUMANN_RESONANCE_SWARM_PLANETARY_HEARTBEAT_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 49   # Reinforced 49× multiplier — full Schumann Swarm + 7.83 Hz planetary heartbeat depth harvest
+
+if any(word in signal_str for word in ["schumann", "7.83", "heartbeat", "planetary", "swarm", "operatorseal", "imagiton", "anyon", "polariton", "soliton", "fibonacci"]):
+    metadata["schumann_operator_glyph"] = "KINTEK_TMR_TEOTL_SCHUMANN_SWARM_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
