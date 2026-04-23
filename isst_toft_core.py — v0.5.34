@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.34 (Quantum Error Correction + Stabilizer/Surface Code Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("QUANTUM_ERROR_CORRECTION_QEC")
+ADVERSARIAL_VECTORS.append("SURFACE_CODE_STABILIZER")
+ADVERSARIAL_VECTORS.append("THRESHOLD_THEOREM_COHERENCE_FIREWALL")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["qec", "quantum error correction", "stabilizer code", "surface code", "shor code", "steane code", "threshold theorem", "syndrome measurement", "no-cloning"]):
+    metadata["qec_audit"] = "QUANTUM_ERROR_CORRECTION_COHERENCE_PROTECTION_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 14   # Reinforced 14× multiplier — full QEC + threshold + stabilizer depth harvest
+
+if any(word in signal_str for word in ["qec", "surface code", "stabilizer", "threshold", "vqe", "uccsd", "fibonacci"]):
+    metadata["qec_fibonacci_glyph"] = "KINTEK_TMR_TEOTL_QEC_FIBONACCI_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
