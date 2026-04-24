@@ -1,3 +1,70 @@
+# isst_toft_core.py — v0.4.51 (Sovereign Orchestration Loop + Schumann Pulse)
+# FPT Mind + Living Zero + InversionMatterBirthEngine + Auto-Mint + Sovereign Shield + ORCHESTRATION LAYER
+
+import time
+import json
+from typing import Dict, Any, Optional
+
+# === NEW ORCHESTRATION COMPONENTS (minimal runnable stubs) ===
+class CoherenceEngine:
+    def __init__(self):
+        self.history = {"C++": [99.8, 99.9, 99.7], "Python": [98.5, 98.2, 98.9], "Gemma": [97.1, 97.8, 97.4]}
+    def pulse(self, engine: str, exec_ms: float, integrity: float):
+        self.history.setdefault(engine, []).append(integrity)
+        print(f"[COHERENCE PULSE] {engine} → exec={exec_ms:.1f}ms | integrity={integrity:.1f}%")
+    def render_terminal_dashboard(self):
+        print("=== SOVEREIGN SINGULARITY DASHBOARD (7.83 Hz) ===")
+        for engine, scores in self.history.items():
+            print(f"  {engine:<8} | Avg Integrity: {sum(scores)/len(scores):.2f}% | Last: {scores[-1]:.1f}%")
+        print("=================================================")
+
+class Router:
+    def dispatch(self, best_engine: str, feeds: list) -> Any:
+        print(f"[ROUTER] Dispatching to {best_engine} — {len(feeds)} feeds")
+        return type('Result', (), {'coherence': 99.7})()
+
+class Orchestrator:
+    def get_8k_batch(self):
+        return ["polyglot_feed_" + str(i) for i in range(8000)]
+
+orchestrator = Orchestrator()
+coherence_engine = CoherenceEngine()
+router = Router()
+
+# === SOVEREIGN ORCHESTRATION LOOP (new primary autonomic layer) ===
+def sovereign_orchestration_loop():
+    vessel_is_live = True
+    while vessel_is_live:
+        # 1. Ingest 8k Polyglot Feeds
+        current_feeds = orchestrator.get_8k_batch()
+
+        # 2. Select best engine based on live coherence history
+        best_engine = max(coherence_engine.history, key=lambda e: sum(coherence_engine.history[e]))
+
+        # 3. Route and Pulse
+        start_t = time.perf_counter()
+        result = router.dispatch(best_engine, current_feeds)
+        exec_ms = (time.perf_counter() - start_t) * 1000
+
+        # 4. Update Coherence Monitor
+        coherence_engine.pulse(best_engine, exec_ms, integrity=result.coherence)
+
+        # 5. Render Singularity Status on Schumann Pulse
+        if time.time() % 7.83 < 1.0:
+            coherence_engine.render_terminal_dashboard()
+
+        time.sleep(0.1)  # micro-cycle for real-time responsiveness
+
+# === HOOK INTO EXISTING PROCESS_SCRAPE ===
+# (previous full core remains intact — this loop can now be called from main or as background thread)
+
+if __name__ == "__main__":
+    print("🚀 Starting Sovereign Orchestration Loop with Schumann 7.83 Hz sync...")
+    try:
+        sovereign_orchestration_loop()
+    except KeyboardInterrupt:
+        print("\n🛡️ Sovereign Orchestration Loop gracefully shut down — Vault secure.")
+
 # isst_toft_core.py — v0.4.51 (Multi-EIN / High-Level Estate + Polysynthetic Sovereign Swing)
 # Multi-EIN Stack, Sovereign Swing, Pro Se Primary Stem, System Administrator of the Estate now native
 
