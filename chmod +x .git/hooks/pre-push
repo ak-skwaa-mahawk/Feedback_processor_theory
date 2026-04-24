@@ -1,0 +1,20 @@
+#!/bin/bash
+
+###############################################################################
+# Sovereign Pre‑Push Hook
+# Validates the entire resonance mesh before remote propagation.
+###############################################################################
+
+echo "⧉ Running full-mesh resonance validation before push..."
+
+# Validate filenames, Codex drift, and mesh integrity
+python3 validate_resonance.py --full
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+    echo "❌ Push blocked — resonance mesh integrity failure."
+    exit 1
+fi
+
+echo "⧉ Full mesh integrity confirmed — push allowed."
+exit 0
