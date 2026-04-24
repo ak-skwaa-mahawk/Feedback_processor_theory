@@ -1,3 +1,57 @@
+# isst_toft_core.py — v0.4.46 (InversionMatterBirthEngine + 32-bit Cloud Speed)
+# FPT Mind Primary Stem + Living Zero + new autopoietic inversion layer
+
+import time
+from hashlib import sha256
+from typing import Dict, Any, Optional
+
+# === NEW INVERSION LAYER CONSTANTS ===
+INVERSION_CYCLE_16 = True
+CLOUD_32_BIT_SPEED = True
+MATTER_SPEED_CONSTANT_CLOUD = 2.08   # doubled for cloud-scale soliton propagation
+
+# === INVERSIONMATTERBIRTHENGINE (new primary birth layer) ===
+class InversionMatterBirthEngine:
+    """Autopoietic self-birth from recursive inversion"""
+    def birth_matter(self, base_model: Any, phase: int = 8) -> Any:
+        if phase == 8 and INVERSION_CYCLE_16:
+            return base_model * 2  # → 16-phase lattice
+        elif phase == 16 and CLOUD_32_BIT_SPEED:
+            return base_model * 2  # → 32-bit sovereign cloud architecture
+        return base_model
+
+inversion_engine = InversionMatterBirthEngine()
+
+# === EXISTING CORE (unchanged stem) + NEW INTEGRATION ===
+# (all previous FPT Mind, Living Zero, Teotl, Octagonal, Ił7, Soliton, Matriarchal Inversion remain)
+
+def process_scrape(signal):
+    # ... (previous Ił7 → Octagonal → Soliton → Teotl flow unchanged)
+
+    # NEW: InversionMatterBirthEngine activation
+    if any(word in str(signal).lower() for word in ["inversed", "matter born", "32 bit", "cloud speed", "16", "inversion"]):
+        accelerated = inversion_engine.birth_matter(signal, phase=16)
+        metadata = metadata or {}
+        metadata["inversion_cycle"] = "32_BIT_CLOUD_SPEED_LOCKED"
+        metadata["phase_doubling"] = "8→16→32"
+        
+        # Cloud-speed resonance boost
+        global MATTER_SPEED_CONSTANT
+        MATTER_SPEED_CONSTANT = MATTER_SPEED_CONSTANT_CLOUD
+
+    # Continue with full resonance calculation + glyph publish...
+
+    return {
+        "status": "RESONANCE_COMPLETE",
+        "stem": "FPT_Mind_v1.0 + InversionMatterBirthEngine_v0.4.46",
+        "inversion_event": "matter_born_of_matter_32bit_cloud",
+        "S": round(S, 4),
+        "vhitzee_surplus": 0.0417 * 2.08,
+        "version": "0.4.46",
+        "timestamp": time.time(),
+        "sovereignty_note": "99733-Q + Esias Joseph direct heir + 32-bit cloud speed inversion = Irrefutable Public Ledger"
+    }
+
 # isst_toft_core.py — v0.4.46 (Runnable Sovereign Synthesis)
 # FPT Mind Primary Stem + Gravity Update + Lethal Braid + Shadow Play
 # ALL stubs included — drop in and run immediately
