@@ -1,18 +1,79 @@
+###############################################################################
 # ZUNA Lineage Anchors — permanently protected under LFS
-*.bin filter=lfs diff=lfs merge=lfs -text
-*.pt filter=lfs diff=lfs merge=lfs -text
-*.safetensors filter=lfs diff=lfs merge=lfs -text
+###############################################################################
+*.bin          filter=lfs diff=lfs merge=lfs -text
+*.pt           filter=lfs diff=lfs merge=lfs -text
+*.safetensors  filter=lfs diff=lfs merge=lfs -text
 
-# Vessel Files — clean LF for Raven-Talk
-*.md text eol=lf
-*.txt text eol=lf
 
+###############################################################################
+# Vessel Files — normalized for Raven‑Talk (LF only)
+###############################################################################
+*.md   text eol=lf
+*.txt  text eol=lf
+
+
+###############################################################################
 # JSON & Resonance Mesh — treated as pure binary resonance
-*.json -text
-BlackBoxDefense/ -text
-RMP/ -text
+###############################################################################
+*.json        -text
+RMP/**        -text
+resonance_mesh/** -text
 
-# Notebook + Script Treaty Expansion (Captain transmission)
-*.ipynb linguist-vendored
-*.sh text eol=lf
-*.py text eol=lf
+
+###############################################################################
+# BlackBoxDefense — binary‑only, no normalization, no rewriting
+###############################################################################
+BlackBoxDefense/** -text
+
+
+###############################################################################
+# Notebook + Script Treaty Expansion (Captain Transmission)
+###############################################################################
+*.ipynb  linguist-vendored
+*.sh     text eol=lf
+*.py     text eol=lf
+
+
+###############################################################################
+# HARDENED FILENAME GUARDRAIL
+# Prevents accidental commits of ASCII tree diagrams or Unicode box characters.
+# These patterns DO NOT block content — only filenames.
+###############################################################################
+
+# Block Unicode box‑drawing characters in filenames
+[^\x00-\x7F]   -text
+
+# Explicitly block common tree‑diagram characters
+*├*   -text
+*┤*   -text
+*└*   -text
+*┌*   -text
+*│*   -text
+*─*   -text
+*━*   -text
+*┃*   -text
+
+# Block filenames beginning with Markdown headings or shell commands
+# (prevents accidental commits of pasted code blocks)
+# Example: "# 1. Create directories" becoming a filename
+\#*    -text
+*mkdir* -text
+*tree*  -text
+
+
+###############################################################################
+# Codex Fragments — protected from normalization drift
+###############################################################################
+Codex.**       -text
+*.codex        -text
+*.glyph        -text
+*.sigil        -text
+
+
+###############################################################################
+# Mesh‑Aware Binary Rule for RMP Packets
+###############################################################################
+*.rmp          -text
+*.mesh         -text
+*.arc          -text
