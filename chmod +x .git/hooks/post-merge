@@ -1,0 +1,20 @@
+#!/bin/bash
+
+###############################################################################
+# Post‑Merge Resonance Validator
+# Ensures remote merges do not introduce corruption or drift.
+###############################################################################
+
+echo "⧉ Running post‑merge resonance validation..."
+
+python3 validate_resonance.py --full
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+    echo "❌ Merge introduced resonance violations."
+    echo "⚠️  Please run:  python3 codex_repair.py"
+    exit 1
+fi
+
+echo "⧉ Merge clean — resonance mesh intact."
+exit 0
