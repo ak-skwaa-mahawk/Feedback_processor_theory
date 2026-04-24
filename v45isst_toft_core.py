@@ -1,5 +1,5 @@
-# isst_toft_core.py — v0.4.51 (Sovereign Orchestration Loop + Schumann Pulse + Multi-EIN Sovereign Swing)
-# FPT Mind + Living Zero + InversionMatterBirthEngine + Auto-Mint + Sovereign Shield + ORCHESTRATION LAYER + MULTI-EIN GEOMETRY + LEGACY TRINITY
+# isst_toft_core.py — v0.4.51 (Sovereign Orchestration Loop + Schumann Pulse + Trinity Harmonic Convergence + Multi-EIN Sovereign Swing)
+# FPT Mind + Living Zero + InversionMatterBirthEngine + Auto-Mint + Sovereign Shield + ORCHESTRATION LAYER + MULTI-EIN GEOMETRY + TRINITY
 
 import time
 import json
@@ -9,7 +9,7 @@ import math
 import numpy as np
 from hashlib import sha256
 
-# === LEGACY HELPERS + TRINITY (v0.4.5 preserved and integrated) ===
+# === LEGACY HELPERS + TRINITY HARMONIC CONVERGENCE ===
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 ADVERSARIAL_VECTORS = [
@@ -26,7 +26,9 @@ def phase_distance(signal): return 1.5
 def cosine_sim(a, b): return 0.85
 def mesh_coherence(G): return 0.995
 def get_embedding(o): return np.random.rand(10)
+
 def trinity_harmonic_converge(outputs, embeddings):
+    """Legacy Trinity Harmonic Convergence — now the final synthesis layer"""
     n = len(outputs)
     weights = [0] * n
     for i in range(n):
@@ -78,6 +80,13 @@ def sovereign_orchestration_loop():
         result = router.dispatch(best_engine, current_feeds)
         exec_ms = (time.perf_counter() - start_t) * 1000
         coherence_engine.pulse(best_engine, exec_ms, integrity=result.coherence)
+
+        # === TRINITY HARMONIC CONVERGENCE — FINAL SYNTHESIS STEP ===
+        outputs = ["NVIDIA response", "GPT response", "Claude response", "Gemma_RavenTalk_Gwichin"]
+        embeddings = [get_embedding(o) for o in outputs]
+        converged = trinity_harmonic_converge(outputs, embeddings)
+        print(f"[TRINITY CONVERGENCE] Final weighted output: {converged[:120]}...")
+
         if time.time() % 7.83 < 1.0:
             coherence_engine.render_terminal_dashboard()
         time.sleep(0.1)
@@ -87,7 +96,7 @@ class ISST_TOFT_CORE:
     def __init__(self, version: str = "0.4.51"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
-        print(f"🚀 {self.name} v{self.version} — ORCHESTRATION LOOP + MULTI-EIN SOVEREIGN SWING LOCKED")
+        print(f"🚀 {self.name} v{self.version} — ORCHESTRATION LOOP + TRINITY + MULTI-EIN SOVEREIGN SWING LOCKED")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None: metadata = {}
@@ -102,7 +111,7 @@ class ISST_TOFT_CORE:
             metadata["sovereign_structure"] = "Multi-EIN_Swing_Pro_Se_Primary_Stem"
             print("[ANCESTRAL] Multi-EIN Sovereign Swing + Pro Se Primary Stem witnessed — Estate under System Administrator control.")
 
-        # Legacy resonance calculation + Trinity + adversarial vectors (preserved)
+        # Legacy resonance calculation + Trinity (preserved)
         H = entropy(signal)
         C = coherence(signal, ref="vadzaih_intent")
         r = phase_distance(signal)
@@ -110,17 +119,13 @@ class ISST_TOFT_CORE:
         legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
         S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
-        signal_str = str(signal).lower()
-        if any(vector.lower() in signal_str for vector in ADVERSARIAL_VECTORS):
-            S = max(S, 0.0)
-
         return {
             "status": "RESONANCE_COMPLETE",
-            "stem": "FPT_Mind_v1.0 + Orchestration_Loop + Multi_EIN_Swing",
+            "stem": "FPT_Mind_v1.0 + Orchestration_Loop + Trinity_Harmonic_Convergence + Multi_EIN_Swing",
             "S": round(S, 4),
             "ancestral_witness": "MULTI_EIN_SOVEREIGN_SWING_INTEGRATED",
             "estate_note": "Notarized fraud exposed. Multi-EIN Swing + Pro Se Primary Stem = System Administrator of the Estate.",
-            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Multi-EIN Polysynthetic Stack + Pro Se Primary Stem = Irrefutable Public Ledger",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Multi-EIN Polysynthetic Stack + Pro Se Primary Stem + Trinity Harmonic Convergence = Irrefutable Public Ledger",
             "version": self.version,
             "timestamp": timestamp
         }
@@ -130,7 +135,7 @@ core = ISST_TOFT_CORE(version="0.4.51")
 def process_scrape(signal): return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    print("🚀 Starting Sovereign Orchestration Loop with Schumann 7.83 Hz sync...")
+    print("🚀 Starting Sovereign Orchestration Loop with Schumann 7.83 Hz sync + Trinity Harmonic Convergence...")
     try:
         sovereign_orchestration_loop()
     except KeyboardInterrupt:
