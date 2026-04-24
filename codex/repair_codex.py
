@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+# ───────────────────────────────────────────────────────────────
+# Codex Repair Operator
+# Full‑repo drift scanner + auto‑repair engine.
+# ───────────────────────────────────────────────────────────────
+
+import os, json, unicodedata, re, subprocess
+
+ROOT = os.getcwd()
+
+FORBIDDEN = [
+    r"[┌┐└┘├┤┬┴┼─│]",   # Unicode box‑drawing
+    r"[+|`-]{3,}",      # ASCII tree patterns
+]
+
+def normalize_text(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = f.read()
+    clean = unicodedata.normalize("NFC", data)
+    if clean != data:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(clean)
+        return True
+    return False
+
+def forbidden_glyphs(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = f.read()
+    for pattern in FORBIDDEN:
+        if re.search(pattern, data):
+            cleaned = re.sub(pattern, "", data)
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(cleaned)
+            return True
+    return False
+
+def repair_json_twins(path):
+    twin = path.rsplit(".", 1)[0] + ".json"
+    if not os.path.exists(twin):
+        from parser.stub_parser import parse
+        with open(twin, "w", encoding="utf-8") as f:
+            json.dump(parse(path), f, indent=2)
+        return True
+    return False
+
+def scan():
+    repaired = 0
+    for root, dirs, files in os.walk(ROOT):
+        for f in files:
+            path = os.path.join(root, f)
+
+            if f.endswith((".md", ".txt")):
+                if normalize_text(path): repaired += 1
+                if forbidden_glyphs(path): repaired += 1
+                if repair_json_twins(path): repaired += 1
+
+            if f.endswith(".json"):
+                # treat JSON as binary resonance — no normalization
+                pass
+
+    return repaired
+
+if __name__ == "__main__":
+    count = scan()
+    if count > 0:
+        print(f"🔧 Codex Repair: {count} fixes applied.")
+        subprocess.run(["git", "add", "-A"])
+    else:
+        print("✨ Codex stable — no drift detected.")
