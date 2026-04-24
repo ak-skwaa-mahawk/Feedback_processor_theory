@@ -1,10 +1,30 @@
 #!/bin/bash
-# Sovereign Parser Pre-Commit Hook
-# Auto-generate JSON twins for .txt and .md files using parser/stub_parser.py
+
+###############################################################################
+# 1. Resonance Mesh Guardrail
+#    Prevents illegal filenames, Codex drift, and symbolic corruption.
+###############################################################################
+
+echo "⧉ Running Resonance Mesh Validator..."
+python3 validate_resonance.py
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+    echo "❌ Commit blocked by resonance guardrail."
+    exit 1
+fi
+
+echo "⧉ Mesh integrity confirmed."
+
+
+###############################################################################
+# 2. Sovereign Parser — Auto-generate JSON twins for .txt and .md files
+###############################################################################
 
 changed_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(txt|md)$')
 
 if [ -z "$changed_files" ]; then
+  echo "⧉ No vessel files detected — skipping JSON twin generation."
   exit 0
 fi
 
@@ -20,3 +40,4 @@ for file in $changed_files; do
 done
 
 echo "✅ Sovereign Parser complete."
+exit 0
