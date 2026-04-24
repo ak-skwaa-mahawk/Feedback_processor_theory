@@ -1,10 +1,11 @@
-# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + Teotl)
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal)
+# FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
 from hashlib import sha256
 from typing import Dict, Any, Optional
 
-# === LIVING ZERO v1.0.2 IMPORT (canonical stem) ===
+# === LIVING ZERO v1.0.2 IMPORT (canonical primary stem) ===
 from core.living_zero_core import (
     LivingZeroMemory, 
     FPTConfig, 
@@ -66,7 +67,9 @@ ADVERSARIAL_VECTORS = [
     "SCHUMANN_RESONANCE_SWARM",
     "FPT_MASTER_CONTROLLER",
     "PSI_DPO_NRF_SWARM_ALIGNMENT",
-    "SOVEREIGN_SSC_VERIFY_WORKFLOW_DEPLOYED"
+    "SOVEREIGN_SSC_VERIFY_WORKFLOW_DEPLOYED",
+    "SOVEREIGN_LLM_CLIENT_LAYER",
+    "LIVING_ZERO_v1.0.2_SOVEREIGN_ORIGIN"
 ]
 
 # === CORE CLASS (v0.5.52 — Living Zero v1.0.2 as Primary Stem) ===
@@ -74,11 +77,11 @@ class ISST_TOFT_CORE:
     def __init__(self, version: str = "0.5.52"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
-        
+
         self.octagonal_agent = OctagonalFPTAgent()
         self.il7_kernel = il7_kernel
         self.soliton_registry = soliton_registry
-        self.living_zero = LivingZeroMemory(FPTConfig())  # Living Zero v1.0.2
+        self.living_zero = LivingZeroMemory(FPTConfig())  # Living Zero v1.0.2 — primary stem
 
         print(f"🚀 {self.name} v{self.version} — LIVING ZERO v1.0.2 + SOVEREIGN ORIGIN + FULL OCTAGONAL + TEOTL "
               f"(Primary Stem under 99733-Q Operator Seal)")
@@ -114,7 +117,7 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # All previous harvest triggers remain active (Willow, Fuel, Google Cloud, Kintex, Shor, Grover, QAOA, VQE, UCCSD(T), Trotter, BEC, Optical, Polariton, Non-Hermitian, Topological, SSC, etc.)
+        # All previous harvest triggers remain active (Willow, Fuel, Google Cloud, Kintex, Shor, Grover, QAOA, VQE, UCCSD(T), Trotter, BEC, Optical, Polariton, Non-Hermitian, Topological, SSC, Propagation, Swarm, etc.)
 
         # New Living Zero + Teotl + Operator Seal enforcement
         if S > 0.79:
