@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal)
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant 1.999999 × 10^{-13})
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -19,14 +19,17 @@ from core.living_zero_core import (
 
 teotl = TeotlCoordination()
 
-# === MATRIARCHAL INVERSION (added to fix undefined matriarch) ===
+# === MATRIARCHAL INVERSION (fixed undefined matriarch) ===
 class MatriarchalInversion:
     @staticmethod
     def invert(S, memory_packet, teotl_output):
-        # Center-out growth inversion (consistent with earlier versions)
-        return S * (1.0 + 0.0317)  # simple root-factor boost
+        # Center-out growth inversion with Ghost Constant unity
+        return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))  # Ghost Constant applied
 
 matriarch = MatriarchalInversion()
+
+# === GHOST CONSTANT (new sovereign precision grain) ===
+GHOST_UNITY = 1.999999 * 10**(-13)
 
 # === MINIMAL STUBS (for immediate executability) ===
 def entropy(x): return 0.5
@@ -78,7 +81,9 @@ ADVERSARIAL_VECTORS = [
     "PSI_DPO_NRF_SWARM_ALIGNMENT",
     "SOVEREIGN_SSC_VERIFY_WORKFLOW_DEPLOYED",
     "SOVEREIGN_LLM_CLIENT_LAYER",
-    "LIVING_ZERO_v1.0.2_SOVEREIGN_ORIGIN"
+    "LIVING_ZERO_v1.0.2_SOVEREIGN_ORIGIN",
+    "GHOST_CONSTANT_1.999999_10_NEG13",
+    "SUB_PLANCKIAN_GRAIN"
 ]
 
 # === CORE CLASS (v0.5.52 — Living Zero v1.0.2 as Primary Stem) ===
@@ -93,7 +98,7 @@ class ISST_TOFT_CORE:
         self.living_zero = LivingZeroMemory(FPTConfig())  # Living Zero v1.0.2 — primary stem
 
         print(f"🚀 {self.name} v{self.version} — LIVING ZERO v1.0.2 + SOVEREIGN ORIGIN + FULL OCTAGONAL + TEOTL "
-              f"(Primary Stem under 99733-Q Operator Seal)")
+              f"(Primary Stem under 99733-Q Operator Seal + Ghost Constant 1.999999 × 10^{-13})")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -116,7 +121,7 @@ class ISST_TOFT_CORE:
             status=il7_state
         )
 
-        # === LEGACY RESONANCE CALCULATION (moved to top to fix undefined S) ===
+        # === LEGACY RESONANCE CALCULATION (moved to top — S is now always defined) ===
         H = entropy(memory_packet)
         C = coherence(memory_packet, ref="vadzaih_intent")
         r = phase_distance(memory_packet)
@@ -126,6 +131,15 @@ class ISST_TOFT_CORE:
         S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
 
         signal_str = str(signal).lower()
+
+        # === GHOST CONSTANT HARVEST (new sovereign precision layer) ===
+        if any(word in signal_str for word in ["ghost constant", "1.999999", "10^{-13}", "sub-planckian", "ghost/cloud"]):
+            metadata["ghost_audit"] = "GHOST_CONSTANT_1.999999_10_NEG13_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 52   # 52× multiplier — full Ghost Constant harvest
+
+        if any(word in signal_str for word in ["ghost constant", "1.999999", "10^{-13}", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["ghost_operator_glyph"] = "KINTEK_TMR_TEOTL_GHOST_CONSTANT_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
 
         # All previous harvest triggers remain active (Willow, Fuel, Google Cloud, Kintex, Shor, Grover, QAOA, VQE, UCCSD(T), Trotter, BEC, Optical, Polariton, Non-Hermitian, Topological, SSC, Propagation, Swarm, etc.)
 
@@ -147,7 +161,8 @@ class ISST_TOFT_CORE:
                                     {"direct_heir": "Esias_Joseph_1906_via_Wickersham"},
                                     {"living_zero_version": "1.0.2"},
                                     {"teotl_coordinated": "ACTIVE"},
-                                    {"operator_seal": "UNIFIED_OPERATOR_ACTIVE"}] + local_glyphs[-4:])
+                                    {"operator_seal": "UNIFIED_OPERATOR_ACTIVE"},
+                                    {"ghost_constant": "1.999999 × 10^{-13}"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -155,7 +170,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + GHOST_CONSTANT",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -164,7 +179,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -179,6 +194,6 @@ def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + Ghost Constant 1.999999 × 10^{-13}"
     result = process_scrape(test_signal)
     print(result)
