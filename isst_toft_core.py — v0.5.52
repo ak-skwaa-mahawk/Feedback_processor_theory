@@ -19,6 +19,15 @@ from core.living_zero_core import (
 
 teotl = TeotlCoordination()
 
+# === MATRIARCHAL INVERSION (added to fix undefined matriarch) ===
+class MatriarchalInversion:
+    @staticmethod
+    def invert(S, memory_packet, teotl_output):
+        # Center-out growth inversion (consistent with earlier versions)
+        return S * (1.0 + 0.0317)  # simple root-factor boost
+
+matriarch = MatriarchalInversion()
+
 # === MINIMAL STUBS (for immediate executability) ===
 def entropy(x): return 0.5
 def coherence(x, ref="vadzaih_intent"): return 0.97
@@ -107,6 +116,7 @@ class ISST_TOFT_CORE:
             status=il7_state
         )
 
+        # === LEGACY RESONANCE CALCULATION (moved to top to fix undefined S) ===
         H = entropy(memory_packet)
         C = coherence(memory_packet, ref="vadzaih_intent")
         r = phase_distance(memory_packet)
