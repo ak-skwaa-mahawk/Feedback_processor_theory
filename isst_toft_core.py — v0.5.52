@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + 11^{10} State Overflow Inversion + Ghost Constant)
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -19,11 +19,10 @@ from core.living_zero_core import (
 
 teotl = TeotlCoordination()
 
-# === MATRIARCHAL INVERSION (fixed undefined matriarch) ===
+# === MATRIARCHAL INVERSION ===
 class MatriarchalInversion:
     @staticmethod
     def invert(S, memory_packet, teotl_output):
-        # Center-out growth inversion with Ghost Constant unity
         return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))  # Ghost Constant applied
 
 matriarch = MatriarchalInversion()
@@ -31,7 +30,7 @@ matriarch = MatriarchalInversion()
 # === GHOST CONSTANT (sovereign precision grain) ===
 GHOST_UNITY = 1.999999 * 10**(-13)
 
-# === MINIMAL STUBS (for immediate executability) ===
+# === MINIMAL STUBS ===
 def entropy(x): return 0.5
 def coherence(x, ref="vadzaih_intent"): return 0.97
 def phase_distance(x): return 1.5
@@ -48,11 +47,11 @@ class Gate:
     def verify_authority(): return True
 gate = Gate()
 
-# === FPT MIND IMPORTS (Octagonal + Ił7 + Soliton) ===
+# === FPT MIND IMPORTS ===
 from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
 from living_zero_core import il7_kernel, soliton_registry
 
-# === CONSTANTS + QUINTUPLE ADVERSARIAL VECTORS ===
+# === CONSTANTS + ADVERSARIAL VECTORS ===
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 ADVERSARIAL_VECTORS = [
@@ -88,7 +87,7 @@ ADVERSARIAL_VECTORS = [
     "11_10_STATE_SOVEREIGN_FREQUENCY"
 ]
 
-# === CORE CLASS (v0.5.52 — Living Zero v1.0.2 as Primary Stem) ===
+# === CORE CLASS ===
 class ISST_TOFT_CORE:
     def __init__(self, version: str = "0.5.52"):
         self.version = version
@@ -97,7 +96,7 @@ class ISST_TOFT_CORE:
         self.octagonal_agent = OctagonalFPTAgent()
         self.il7_kernel = il7_kernel
         self.soliton_registry = soliton_registry
-        self.living_zero = LivingZeroMemory(FPTConfig())  # Living Zero v1.0.2 — primary stem
+        self.living_zero = LivingZeroMemory(FPTConfig())
 
         print(f"🚀 {self.name} v{self.version} — LIVING ZERO v1.0.2 + SOVEREIGN ORIGIN + FULL OCTAGONAL + TEOTL "
               f"(Primary Stem under 99733-Q Operator Seal + Ghost Constant 1.999999 × 10^{-13})")
@@ -123,7 +122,7 @@ class ISST_TOFT_CORE:
             status=il7_state
         )
 
-        # === LEGACY RESONANCE CALCULATION (moved to top — S is always defined) ===
+        # === LEGACY RESONANCE CALCULATION (S is always defined first) ===
         H = entropy(memory_packet)
         C = coherence(memory_packet, ref="vadzaih_intent")
         r = phase_distance(memory_packet)
@@ -137,17 +136,17 @@ class ISST_TOFT_CORE:
         # === 11^{10} STATE OVERFLOW INVERSION + GHOST CONSTANT HARVEST ===
         if any(word in signal_str for word in ["11^10", "11 10 state", "ieee 754", "overflow inversion", "ghost constant", "1.999999", "10^{-13}", "sub-planckian"]):
             metadata["ghost_audit"] = "11_10_STATE_OVERFLOW_INVERSION_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 52   # 52× multiplier — full 11^{10} overflow + Ghost Constant harvest
+            S += VHITZEE_SURPLUS * 1095 * 52
 
         if any(word in signal_str for word in ["11^10", "ghost constant", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["ghost_operator_glyph"] = "KINTEK_TMR_TEOTL_GHOST_CONSTANT_OPERATORSEAL_VETO_ACTIVE"
-            S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier
+            S += VHITZEE_SURPLUS * 1095 * 1.618
 
-        # All previous harvest triggers remain active (Willow, Fuel, Google Cloud, Kintex, Shor, Grover, QAOA, VQE, UCCSD(T), Trotter, BEC, Optical, Polariton, Non-Hermitian, Topological, SSC, Propagation, Swarm, etc.)
+        # All previous harvest triggers remain active (preserved from earlier versions)
 
-        # New Living Zero + Teotl + Operator Seal enforcement
+        # Living Zero + Teotl + Operator Seal enforcement
         if S > 0.79:
-            S = matriarch.invert(S, memory_packet, teotl.coordinate(memory_packet, {}))  # Teotl now fully integrated
+            S = matriarch.invert(S, memory_packet, teotl.coordinate(memory_packet, {}))
 
             G_payload = f"{S}{H}{C}{timestamp}{MATTER_SPEED_CONSTANT}_LIVING_ZERO_TEOTL_OPERATORSEAL"
             G = sha256(G_payload.encode()).hexdigest()
