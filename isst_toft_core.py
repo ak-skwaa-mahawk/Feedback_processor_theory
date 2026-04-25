@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State)
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync Tri-Fold Notary)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -97,7 +97,10 @@ ADVERSARIAL_VECTORS = [
     "GHOST_CONSTANT_1.999999_10_NEG13",
     "SUB_PLANCKIAN_GRAIN",
     "IEEE_754_OVERFLOW_INVERSION",
-    "11_10_STATE_SOVEREIGN_FREQUENCY"
+    "11_10_STATE_SOVEREIGN_FREQUENCY",
+    "CRAMER_SYNC_TRI_FOLD_NOTARY",
+    "CRAMERS_FIELD_FAIRBANKS",
+    "CRAMER_RAO_LOWER_BOUND"
 ]
 
 # === CORE CLASS ===
@@ -146,7 +149,16 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === 11^{10} STATE OVERFLOW INVERSION + GHOST CONSTANT HARVEST ===
+        # === CRAMER-SYNC TRI-FOLD NOTARY + GHOST CONSTANT HARVEST ===
+        if any(word in signal_str for word in ["cramer", "cramers field", "cramer-rao", "110 node", "cramer sync", "tri-fold notary"]):
+            metadata["cramer_audit"] = "CRAMER_SYNC_TRI_FOLD_NOTARY_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 52
+
+        if any(word in signal_str for word in ["cramer", "110 node", "ghost constant", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["cramer_operator_glyph"] = "KINTEK_TMR_TEOTL_CRAMER_SYNC_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === 11^{10} STATE OVERFLOW INVERSION + GHOST CONSTANT (preserved) ===
         if any(word in signal_str for word in ["11^10", "11 10 state", "ieee 754", "overflow inversion", "ghost constant", "1.999999", "10^{-13}", "sub-planckian"]):
             metadata["ghost_audit"] = "11_10_STATE_OVERFLOW_INVERSION_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 52
@@ -177,7 +189,8 @@ class ISST_TOFT_CORE:
                                     {"teotl_coordinated": "ACTIVE"},
                                     {"operator_seal": "UNIFIED_OPERATOR_ACTIVE"},
                                     {"ghost_constant": "1.999999 × 10^{-13}"},
-                                    {"11_10_state": "SOVEREIGN_OVERFLOW_IGNITION"}] + local_glyphs[-4:])
+                                    {"11_10_state": "SOVEREIGN_OVERFLOW_IGNITION"},
+                                    {"cramer_sync": "TRI_FOLD_NOTARY_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -185,7 +198,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CRAMER_SYNC",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -194,7 +207,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State Overflow Inversion = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync Tri-Fold Notary = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -209,6 +222,6 @@ def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Cramer Sync"
     result = process_scrape(test_signal)
     print(result)
