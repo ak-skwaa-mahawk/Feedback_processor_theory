@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.58 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴)
+# isst_toft_core.py — v0.5.59 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -121,12 +121,15 @@ ADVERSARIAL_VECTORS = [
     "RENORMALIZATION_GROUP_FLOW_PHI4",
     "RG_FLOW_BETA_FUNCTION_PHI4",
     "WILSON_FISHER_FIXED_POINT",
-    "QUARTIC_RG_FLOW_ATTRACTOR"
+    "QUARTIC_RG_FLOW_ATTRACTOR",
+    "CHAOS_TO_CAPITAL_LOOP",
+    "TOWNSHIP_SHIELD",
+    "SOVEREIGN_ELEMENT_CASTING"
 ]
 
 # === CORE CLASS ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.58"):
+    def __init__(self, version: str = "0.5.59"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
 
@@ -170,28 +173,28 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === RENORMALIZATION GROUP FLOW φ⁴ HARVEST ===
-        if any(word in signal_str for word in ["renormalization group flow", "rg flow phi4", "beta function phi4", "wilson fisher fixed point", "quartic rg flow", "rg attractor"]):
-            metadata["rg_flow_audit"] = "RENORMALIZATION_GROUP_FLOW_PHI4_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 58   # 58× multiplier — full RG flow φ⁴ harvest
+        # === WILSON-FISHER FIXED POINT + CHAOS-TO-CAPITAL + TOWNSHIP SHIELD HARVEST ===
+        if any(word in signal_str for word in ["wilson fisher", "fixed point", "chaos to capital", "chaos creation", "township shield", "sovereign element casting"]):
+            metadata["wilson_fisher_audit"] = "WILSON_FISHER_FIXED_POINT_CHAOS_TO_CAPITAL_TOWNSHIP_SHIELD_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 59   # 59× multiplier — full Wilson-Fisher + chaos creation harvest
 
-        if any(word in signal_str for word in ["renormalization group flow", "rg flow", "beta function", "wilson fisher", "operatorseal", "imagiton", "soliton", "fibonacci"]):
-            metadata["rg_flow_operator_glyph"] = "KINTEK_TMR_TEOTL_RG_FLOW_PHI4_OPERATORSEAL_VETO_ACTIVE"
+        if any(word in signal_str for word in ["wilson fisher", "fixed point", "chaos to capital", "township shield", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["wilson_fisher_operator_glyph"] = "KINTEK_TMR_TEOTL_WILSON_FISHER_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
 
-        # === φ⁴ QFT (preserved) ===
-        if any(word in signal_str for word in ["phi^4 qft", "φ⁴ qft", "lambda phi^4", "quartic interaction", "phi4 quantum field theory", "renormalized phi4"]):
+        # === φ⁴ QFT + RG FLOW (preserved) ===
+        if any(word in signal_str for word in ["phi^4 qft", "φ⁴ qft", "lambda phi^4", "quartic interaction", "phi4 quantum field theory", "renormalized phi4", "renormalization group flow", "rg flow phi4", "beta function phi4", "wilson fisher fixed point"]):
             metadata["phi4_qft_audit"] = "PHI_4_QUANTUM_FIELD_THEORY_EXPLICIT_ATTRACTOR_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 57
+            S += VHITZEE_SURPLUS * 1095 * 58
 
-        if any(word in signal_str for word in ["phi^4 qft", "λφ⁴", "quartic", "attractor", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+        if any(word in signal_str for word in ["phi^4 qft", "λφ⁴", "quartic", "rg flow", "wilson fisher", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["phi4_qft_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_4_QFT_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
 
         # === φ⁴ EXPLICIT ATTRACTOR (preserved) ===
         if any(word in signal_str for word in ["phi^4", "φ⁴", "phi fourth", "golden ratio to the fourth", "phi4 attractor"]):
             metadata["phi4_audit"] = "PHI_4_EXPLICIT_ATTRACTOR_EQUATIONS_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 56
+            S += VHITZEE_SURPLUS * 1095 * 57
 
         if any(word in signal_str for word in ["phi^4", "φ⁴", "golden ratio to the fourth", "attractor", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["phi4_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_4_ATTRACTOR_OPERATORSEAL_VETO_ACTIVE"
@@ -200,7 +203,7 @@ class ISST_TOFT_CORE:
         # === φ³ EXPLICIT ATTRACTOR (preserved) ===
         if any(word in signal_str for word in ["phi^3", "φ³", "phi cubed", "golden ratio cubed", "phi3 attractor"]):
             metadata["phi3_audit"] = "PHI_3_EXPLICIT_ATTRACTOR_EQUATIONS_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 55
+            S += VHITZEE_SURPLUS * 1095 * 56
 
         if any(word in signal_str for word in ["phi^3", "φ³", "golden ratio cubed", "attractor", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["phi3_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_3_ATTRACTOR_OPERATORSEAL_VETO_ACTIVE"
@@ -209,7 +212,7 @@ class ISST_TOFT_CORE:
         # === φ² EXPLICIT ATTRACTOR (preserved) ===
         if any(word in signal_str for word in ["phi^2", "φ²", "phi squared", "golden ratio squared", "phi2 attractor"]):
             metadata["phi2_audit"] = "PHI_2_EXPLICIT_ATTRACTOR_EQUATIONS_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 54
+            S += VHITZEE_SURPLUS * 1095 * 55
 
         if any(word in signal_str for word in ["phi^2", "φ²", "golden ratio squared", "attractor", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["phi2_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_2_ATTRACTOR_OPERATORSEAL_VETO_ACTIVE"
@@ -227,7 +230,7 @@ class ISST_TOFT_CORE:
         # === CRAMER-SYNC + REAL LAND / REAL RENT (preserved) ===
         if any(word in signal_str for word in ["cramer", "cramers field", "cramer-rao", "110 node", "cramer sync", "tri-fold notary"]):
             metadata["cramer_audit"] = "CRAMER_SYNC_TRI_FOLD_NOTARY_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 52
+            S += VHITZEE_SURPLUS * 1095 * 53
 
         if any(word in signal_str for word in ["cramer", "110 node", "ghost constant", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["cramer_operator_glyph"] = "KINTEK_TMR_TEOTL_CRAMER_SYNC_OPERATORSEAL_VETO_ACTIVE"
@@ -235,7 +238,7 @@ class ISST_TOFT_CORE:
 
         if any(word in signal_str for word in ["real land", "real rent", "real towns", "township audit", "dae28b2", "physical fiber", "sovereign soil", "two mile estate", "alaska statehood narf"]):
             metadata["land_audit"] = "REAL_LAND_REAL_RENT_REAL_TOWNS_TOWNSHIP_AUDIT_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 53
+            S += VHITZEE_SURPLUS * 1095 * 52
 
         if any(word in signal_str for word in ["real land", "real rent", "township", "dae28b2", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["land_operator_glyph"] = "KINTEK_TMR_TEOTL_REAL_LAND_OPERATORSEAL_VETO_ACTIVE"
@@ -279,7 +282,9 @@ class ISST_TOFT_CORE:
                                     {"phi3_explicit": "EXPLICIT_ATTRACTOR_EQUATIONS_ACTIVE"},
                                     {"phi4_explicit": "EXPLICIT_ATTRACTOR_EQUATIONS_ACTIVE"},
                                     {"phi4_qft": "QUANTUM_FIELD_THEORY_EXPLICIT_ATTRACTOR_ACTIVE"},
-                                    {"rg_flow_phi4": "RENORMALIZATION_GROUP_FLOW_PHI4_ACTIVE"}] + local_glyphs[-4:])
+                                    {"rg_flow_phi4": "RENORMALIZATION_GROUP_FLOW_PHI4_ACTIVE"},
+                                    {"wilson_fisher": "FIXED_POINT_CHAOS_TO_CAPITAL_ACTIVE"},
+                                    {"township_shield": "SOVEREIGN_ELEMENT_CASTING_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -287,7 +292,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -296,7 +301,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -306,11 +311,11 @@ class ISST_TOFT_CORE:
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 
-core = ISST_TOFT_CORE(version="0.5.58")
+core = ISST_TOFT_CORE(version="0.5.59")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield"
     result = process_scrape(test_signal)
     print(result)
