@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent / Township Audit)
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -99,12 +99,14 @@ ADVERSARIAL_VECTORS = [
     "IEEE_754_OVERFLOW_INVERSION",
     "11_10_STATE_SOVEREIGN_FREQUENCY",
     "CRAMER_SYNC_TRI_FOLD_NOTARY",
-    "CRAMERS_FIELD_FAIRBANKS",
-    "CRAMER_RAO_LOWER_BOUND",
     "REAL_LAND_REAL_RENT_REAL_TOWNS",
     "TOWNSHIP_AUDIT",
     "DAE28B2_HASH_LIEN",
-    "GEOGRAPHIC_COHERENCE_ALASKA_ROOT"
+    "GEOGRAPHIC_COHERENCE_ALASKA_ROOT",
+    "CURIE_POINT_INVERSION",
+    "MOLTEN_LOGIC_FORGE",
+    "RADIANT_ASSET_RESHAPING",
+    "CURIE_SURPLUS_PROTOCOL"
 ]
 
 # === CORE CLASS ===
@@ -153,7 +155,16 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === CRAMER-SYNC TRI-FOLD NOTARY HARVEST ===
+        # === CURIE POINT INVERSION + MOLTEN LOGIC + RADIANT ASSET HARVEST ===
+        if any(word in signal_str for word in ["curie point", "curie inversion", "molten logic", "molten state", "radiant asset", "removing the mag", "curie surplus", "thermodynamic inversion"]):
+            metadata["curie_audit"] = "CURIE_POINT_INVERSION_MOLTEN_LOGIC_RADIANT_ASSET_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 54   # 54× multiplier — full Curie Inversion / Molten Logic harvest
+
+        if any(word in signal_str for word in ["curie", "molten", "radiant asset", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["curie_operator_glyph"] = "KINTEK_TMR_TEOTL_CURIE_INVERSION_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === CRAMER-SYNC TRI-FOLD NOTARY + REAL LAND / REAL RENT (preserved) ===
         if any(word in signal_str for word in ["cramer", "cramers field", "cramer-rao", "110 node", "cramer sync", "tri-fold notary"]):
             metadata["cramer_audit"] = "CRAMER_SYNC_TRI_FOLD_NOTARY_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 52
@@ -162,7 +173,7 @@ class ISST_TOFT_CORE:
             metadata["cramer_operator_glyph"] = "KINTEK_TMR_TEOTL_CRAMER_SYNC_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
 
-        # === REAL LAND / REAL RENT / TOWNSHIP AUDIT HARVEST ===
+        # === REAL LAND / REAL RENT / TOWNSHIP AUDIT (preserved) ===
         if any(word in signal_str for word in ["real land", "real rent", "real towns", "township audit", "dae28b2", "physical fiber", "sovereign soil", "two mile estate", "alaska statehood narf"]):
             metadata["land_audit"] = "REAL_LAND_REAL_RENT_REAL_TOWNS_TOWNSHIP_AUDIT_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 53
@@ -203,7 +214,7 @@ class ISST_TOFT_CORE:
                                     {"11_10_state": "SOVEREIGN_OVERFLOW_IGNITION"},
                                     {"cramer_sync": "TRI_FOLD_NOTARY_ACTIVE"},
                                     {"real_land_real_rent": "TOWNSHIP_AUDIT_ACTIVE"},
-                                    {"dae28b2_lien": "PHYSICAL_INFRASTRUCTURE_LIABILITY"}] + local_glyphs[-4:])
+                                    {"curie_inversion": "MOLTEN_LOGIC_RADIANT_ASSET_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -211,7 +222,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CRAMER_SYNC + REAL_LAND_REAL_RENT",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -220,7 +231,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync Tri-Fold Notary + Real Land / Real Rent / Township Audit = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -235,6 +246,6 @@ def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Cramer Sync + Real Land Real Rent Real Towns"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets"
     result = process_scrape(test_signal)
     print(result)
