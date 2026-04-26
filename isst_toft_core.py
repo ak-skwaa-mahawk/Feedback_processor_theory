@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync Tri-Fold Notary)
+# isst_toft_core.py — v0.5.52 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent / Township Audit)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -23,7 +23,7 @@ teotl = TeotlCoordination()
 class MatriarchalInversion:
     @staticmethod
     def invert(S, memory_packet, teotl_output):
-        return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))  # Ghost Constant applied
+        return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))
 
 matriarch = MatriarchalInversion()
 
@@ -100,7 +100,11 @@ ADVERSARIAL_VECTORS = [
     "11_10_STATE_SOVEREIGN_FREQUENCY",
     "CRAMER_SYNC_TRI_FOLD_NOTARY",
     "CRAMERS_FIELD_FAIRBANKS",
-    "CRAMER_RAO_LOWER_BOUND"
+    "CRAMER_RAO_LOWER_BOUND",
+    "REAL_LAND_REAL_RENT_REAL_TOWNS",
+    "TOWNSHIP_AUDIT",
+    "DAE28B2_HASH_LIEN",
+    "GEOGRAPHIC_COHERENCE_ALASKA_ROOT"
 ]
 
 # === CORE CLASS ===
@@ -149,7 +153,7 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === CRAMER-SYNC TRI-FOLD NOTARY + GHOST CONSTANT HARVEST ===
+        # === CRAMER-SYNC TRI-FOLD NOTARY HARVEST ===
         if any(word in signal_str for word in ["cramer", "cramers field", "cramer-rao", "110 node", "cramer sync", "tri-fold notary"]):
             metadata["cramer_audit"] = "CRAMER_SYNC_TRI_FOLD_NOTARY_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 52
@@ -158,7 +162,16 @@ class ISST_TOFT_CORE:
             metadata["cramer_operator_glyph"] = "KINTEK_TMR_TEOTL_CRAMER_SYNC_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
 
-        # === 11^{10} STATE OVERFLOW INVERSION + GHOST CONSTANT (preserved) ===
+        # === REAL LAND / REAL RENT / TOWNSHIP AUDIT HARVEST ===
+        if any(word in signal_str for word in ["real land", "real rent", "real towns", "township audit", "dae28b2", "physical fiber", "sovereign soil", "two mile estate", "alaska statehood narf"]):
+            metadata["land_audit"] = "REAL_LAND_REAL_RENT_REAL_TOWNS_TOWNSHIP_AUDIT_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 53
+
+        if any(word in signal_str for word in ["real land", "real rent", "township", "dae28b2", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["land_operator_glyph"] = "KINTEK_TMR_TEOTL_REAL_LAND_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === 11^{10} STATE + GHOST CONSTANT (preserved) ===
         if any(word in signal_str for word in ["11^10", "11 10 state", "ieee 754", "overflow inversion", "ghost constant", "1.999999", "10^{-13}", "sub-planckian"]):
             metadata["ghost_audit"] = "11_10_STATE_OVERFLOW_INVERSION_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 52
@@ -166,8 +179,6 @@ class ISST_TOFT_CORE:
         if any(word in signal_str for word in ["11^10", "ghost constant", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["ghost_operator_glyph"] = "KINTEK_TMR_TEOTL_GHOST_CONSTANT_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
-
-        # All previous harvest triggers remain active (preserved from earlier versions)
 
         # Living Zero + Teotl + Operator Seal enforcement
         if S > 0.79:
@@ -190,7 +201,9 @@ class ISST_TOFT_CORE:
                                     {"operator_seal": "UNIFIED_OPERATOR_ACTIVE"},
                                     {"ghost_constant": "1.999999 × 10^{-13}"},
                                     {"11_10_state": "SOVEREIGN_OVERFLOW_IGNITION"},
-                                    {"cramer_sync": "TRI_FOLD_NOTARY_ACTIVE"}] + local_glyphs[-4:])
+                                    {"cramer_sync": "TRI_FOLD_NOTARY_ACTIVE"},
+                                    {"real_land_real_rent": "TOWNSHIP_AUDIT_ACTIVE"},
+                                    {"dae28b2_lien": "PHYSICAL_INFRASTRUCTURE_LIABILITY"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -198,7 +211,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CRAMER_SYNC",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CRAMER_SYNC + REAL_LAND_REAL_RENT",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -207,7 +220,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync Tri-Fold Notary = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync Tri-Fold Notary + Real Land / Real Rent / Township Audit = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -222,6 +235,6 @@ def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Cramer Sync"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Cramer Sync + Real Land Real Rent Real Towns"
     result = process_scrape(test_signal)
     print(result)
