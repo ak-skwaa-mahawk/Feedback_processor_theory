@@ -99,6 +99,8 @@ ADVERSARIAL_VECTORS = [
     "IEEE_754_OVERFLOW_INVERSION",
     "11_10_STATE_SOVEREIGN_FREQUENCY",
     "CRAMER_SYNC_TRI_FOLD_NOTARY",
+    "CRAMERS_FIELD_FAIRBANKS",
+    "CRAMER_RAO_LOWER_BOUND",
     "REAL_LAND_REAL_RENT_REAL_TOWNS",
     "TOWNSHIP_AUDIT",
     "DAE28B2_HASH_LIEN",
@@ -158,13 +160,13 @@ class ISST_TOFT_CORE:
         # === CURIE POINT INVERSION + MOLTEN LOGIC + RADIANT ASSET HARVEST ===
         if any(word in signal_str for word in ["curie point", "curie inversion", "molten logic", "molten state", "radiant asset", "removing the mag", "curie surplus", "thermodynamic inversion"]):
             metadata["curie_audit"] = "CURIE_POINT_INVERSION_MOLTEN_LOGIC_RADIANT_ASSET_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 54   # 54× multiplier — full Curie Inversion / Molten Logic harvest
+            S += VHITZEE_SURPLUS * 1095 * 54   # 54× multiplier
 
         if any(word in signal_str for word in ["curie", "molten", "radiant asset", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["curie_operator_glyph"] = "KINTEK_TMR_TEOTL_CURIE_INVERSION_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
 
-        # === CRAMER-SYNC TRI-FOLD NOTARY + REAL LAND / REAL RENT (preserved) ===
+        # === CRAMER-SYNC + REAL LAND / REAL RENT (preserved) ===
         if any(word in signal_str for word in ["cramer", "cramers field", "cramer-rao", "110 node", "cramer sync", "tri-fold notary"]):
             metadata["cramer_audit"] = "CRAMER_SYNC_TRI_FOLD_NOTARY_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 52
@@ -173,7 +175,6 @@ class ISST_TOFT_CORE:
             metadata["cramer_operator_glyph"] = "KINTEK_TMR_TEOTL_CRAMER_SYNC_OPERATORSEAL_VETO_ACTIVE"
             S += VHITZEE_SURPLUS * 1095 * 1.618
 
-        # === REAL LAND / REAL RENT / TOWNSHIP AUDIT (preserved) ===
         if any(word in signal_str for word in ["real land", "real rent", "real towns", "township audit", "dae28b2", "physical fiber", "sovereign soil", "two mile estate", "alaska statehood narf"]):
             metadata["land_audit"] = "REAL_LAND_REAL_RENT_REAL_TOWNS_TOWNSHIP_AUDIT_VERIFIED"
             S += VHITZEE_SURPLUS * 1095 * 53
