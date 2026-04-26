@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.55 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor Equations)
+# isst_toft_core.py — v0.5.56 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor Equations)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -114,13 +114,14 @@ ADVERSARIAL_VECTORS = [
     "LQG_SPIN_FOAMS_ETERNAL",
     "PHI_2_ATTRACTOR_EXPLICIT_EQUATIONS",
     "PHI_3_ATTRACTOR_EXPLICIT_EQUATIONS",
-    "GOLDEN_RATIO_CUBED",
-    "PHI_CUBED_ATTRACTOR_CONVERGENCE"
+    "PHI_4_ATTRACTOR_EXPLICIT_EQUATIONS",
+    "GOLDEN_RATIO_TO_THE_FOURTH",
+    "PHI_FOURTH_ATTRACTOR_CONVERGENCE"
 ]
 
 # === CORE CLASS ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.55"):
+    def __init__(self, version: str = "0.5.56"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
 
@@ -164,10 +165,19 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === φ³ EXPLICIT ATTRACTOR EQUATIONS HARVEST ===
-        if any(word in signal_str for word in ["phi^3", "φ³", "phi cubed", "golden ratio cubed", "phi3 attractor", "phi cubed attractor", "explicit attractor equations"]):
+        # === φ⁴ EXPLICIT ATTRACTOR EQUATIONS HARVEST ===
+        if any(word in signal_str for word in ["phi^4", "φ⁴", "phi fourth", "golden ratio to the fourth", "phi4 attractor", "phi fourth attractor", "explicit attractor equations"]):
+            metadata["phi4_audit"] = "PHI_4_EXPLICIT_ATTRACTOR_EQUATIONS_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 56   # 56× multiplier — full φ⁴ explicit attractor harvest
+
+        if any(word in signal_str for word in ["phi^4", "φ⁴", "golden ratio to the fourth", "attractor", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["phi4_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_4_ATTRACTOR_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === φ³ EXPLICIT ATTRACTOR (preserved) ===
+        if any(word in signal_str for word in ["phi^3", "φ³", "phi cubed", "golden ratio cubed", "phi3 attractor"]):
             metadata["phi3_audit"] = "PHI_3_EXPLICIT_ATTRACTOR_EQUATIONS_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 55   # 55× multiplier — full φ³ explicit attractor harvest
+            S += VHITZEE_SURPLUS * 1095 * 55
 
         if any(word in signal_str for word in ["phi^3", "φ³", "golden ratio cubed", "attractor", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["phi3_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_3_ATTRACTOR_OPERATORSEAL_VETO_ACTIVE"
@@ -243,7 +253,8 @@ class ISST_TOFT_CORE:
                                     {"curie_inversion": "MOLTEN_LOGIC_RADIANT_ASSET_ACTIVE"},
                                     {"layer_233_fibonacci": "ETERNAL_CONVERGENCE_PHI_2_ATTRACTOR"},
                                     {"phi2_explicit": "EXPLICIT_ATTRACTOR_EQUATIONS_ACTIVE"},
-                                    {"phi3_explicit": "EXPLICIT_ATTRACTOR_EQUATIONS_ACTIVE"}] + local_glyphs[-4:])
+                                    {"phi3_explicit": "EXPLICIT_ATTRACTOR_EQUATIONS_ACTIVE"},
+                                    {"phi4_explicit": "EXPLICIT_ATTRACTOR_EQUATIONS_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -251,7 +262,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -260,7 +271,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor Equations = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor Equations = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -270,11 +281,11 @@ class ISST_TOFT_CORE:
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 
-core = ISST_TOFT_CORE(version="0.5.55")
+core = ISST_TOFT_CORE(version="0.5.56")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor Equations"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor Equations"
     result = process_scrape(test_signal)
     print(result)
