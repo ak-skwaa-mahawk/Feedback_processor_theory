@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.60 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling)
+# isst_toft_core.py — v0.5.61 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -29,6 +29,9 @@ matriarch = MatriarchalInversion()
 
 # === GHOST CONSTANT (sovereign precision grain) ===
 GHOST_UNITY = 1.999999 * 10**(-13)
+
+# === EPSILON PI CONTINUITY CONSTANT (from Codex.Continuity.EpsilonPi.v001) ===
+EPSILON_PI = (3.1416210062 + 3.141592653589793 + 3.2358696365) / 3   # ≈ 3.1730277654
 
 # === MINIMAL STUBS ===
 def entropy(x): return 0.5
@@ -129,12 +132,16 @@ ADVERSARIAL_VECTORS = [
     "MRAD_REM_RAD_PARALLEL",
     "2_WALKS_THE_FIXED_POINT_GAIN",
     "CARROLL_RINGS_SCALING",
-    "GLYPHED_DIMENSION_SHIFT"
+    "GLYPHED_DIMENSION_SHIFT",
+    "CODEX_CONTINUITY_EPSILONPI_V001",
+    "EPSILON_PI_CONTINUITY_CONSTANT",
+    "DYNAMIC_BOUNDARY_OPERATOR",
+    "PI_MEMORY_PI_BASE_PI_SURPLUS"
 ]
 
 # === CORE CLASS ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.60"):
+    def __init__(self, version: str = "0.5.61"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
 
@@ -144,7 +151,7 @@ class ISST_TOFT_CORE:
         self.living_zero = LivingZeroMemory(FPTConfig())
 
         print(f"🚀 {self.name} v{self.version} — LIVING ZERO v1.0.2 + SOVEREIGN ORIGIN + FULL OCTAGONAL + TEOTL "
-              f"(Primary Stem under 99733-Q Operator Seal + Ghost Constant 1.999999 × 10^{-13})")
+              f"(Primary Stem under 99733-Q Operator Seal + Ghost Constant 1.999999 × 10^{-13} + ε_π Continuity)")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -178,10 +185,19 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === MOVING FIXED POINT + MRAD/REM/RAD PARALLEL + CARROLL RINGS SCALING HARVEST ===
-        if any(word in signal_str for word in ["moving fixed point", "mrad rem rad", "rem rad parallel", "2 walks the fixed point", "carroll rings", "glyphed dimension", "scaling into carroll rings"]):
+        # === ε_π CONTINUITY CONSTANT HARVEST (Codex.Continuity.EpsilonPi.v001) ===
+        if any(word in signal_str for word in ["epsilon pi", "ε_π", "continuity constant", "dynamic boundary", "pi memory", "pi surplus", "pi base", "3.1730277654"]):
+            metadata["epsilon_pi_audit"] = "CODEX_CONTINUITY_EPSILONPI_V001_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 61   # 61× multiplier — full ε_π continuity harvest
+
+        if any(word in signal_str for word in ["epsilon pi", "ε_π", "continuity", "dynamic boundary", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["epsilon_pi_operator_glyph"] = "KINTEK_TMR_TEOTL_EPSILON_PI_CONTINUITY_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === MOVING FIXED POINT + CARROLL RINGS (preserved) ===
+        if any(word in signal_str for word in ["moving fixed point", "mrad rem rad", "rem rad parallel", "2 walks the fixed point", "carroll rings", "glyphed dimension"]):
             metadata["moving_fixed_point_audit"] = "MOVING_FIXED_POINT_MRAD_REM_RAD_CARROLL_RINGS_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 60   # 60× multiplier — full moving fixed point / Carroll Rings harvest
+            S += VHITZEE_SURPLUS * 1095 * 60
 
         if any(word in signal_str for word in ["moving fixed point", "mrad", "rem rad", "carroll rings", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["moving_fixed_point_operator_glyph"] = "KINTEK_TMR_TEOTL_MOVING_FIXED_POINT_CARROLL_RINGS_OPERATORSEAL_VETO_ACTIVE"
@@ -299,7 +315,8 @@ class ISST_TOFT_CORE:
                                     {"rg_flow_phi4": "RENORMALIZATION_GROUP_FLOW_PHI4_ACTIVE"},
                                     {"wilson_fisher": "FIXED_POINT_CHAOS_TO_CAPITAL_ACTIVE"},
                                     {"township_shield": "SOVEREIGN_ELEMENT_CASTING_ACTIVE"},
-                                    {"moving_fixed_point": "MRAD_REM_RAD_PARALLEL_CARROLL_RINGS_ACTIVE"}] + local_glyphs[-4:])
+                                    {"moving_fixed_point": "MRAD_REM_RAD_PARALLEL_CARROLL_RINGS_ACTIVE"},
+                                    {"epsilon_pi": "CONTINUITY_CONSTANT_DYNAMIC_BOUNDARY_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -307,7 +324,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT + MOVING_FIXED_POINT_CARROLL_RINGS",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT + MOVING_FIXED_POINT_CARROLL_RINGS + EPSILON_PI_CONTINUITY",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -316,7 +333,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 (ε_π ≈ 3.1730277654) = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -326,11 +343,11 @@ class ISST_TOFT_CORE:
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 
-core = ISST_TOFT_CORE(version="0.5.60")
+core = ISST_TOFT_CORE(version="0.5.61")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001"
     result = process_scrape(test_signal)
     print(result)
