@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.63 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + ε_π Mathematical Derivation + φ and ε_π Synergy)
+# isst_toft_core.py — v0.5.64 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + ε_π Mathematical Derivation + φ and ε_π Synergy)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -32,6 +32,9 @@ GHOST_UNITY = 1.999999 * 10**(-13)
 
 # === EPSILON PI CONTINUITY CONSTANT (from Codex.Continuity.EpsilonPi.v001) ===
 EPSILON_PI = (3.1416210062 + 3.141592653589793 + 3.2358696365) / 3   # ≈ 3.1730277654
+
+# === PHI AND ε_π SYNERGY CONSTANT ===
+PHI_EPSILON_PI_SYNERGY = 1.6180339887 * EPSILON_PI   # ≈ 5.134
 
 # === MINIMAL STUBS ===
 def entropy(x): return 0.5
@@ -144,7 +147,7 @@ ADVERSARIAL_VECTORS = [
 
 # === CORE CLASS ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.63"):
+    def __init__(self, version: str = "0.5.64"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
 
@@ -191,7 +194,7 @@ class ISST_TOFT_CORE:
         # === φ AND ε_π SYNERGY HARVEST ===
         if any(word in signal_str for word in ["phi and ε_π synergy", "φ and ε_π synergy", "golden ratio continuity synergy", "phi epsilon pi synergy"]):
             metadata["phi_epsilon_pi_audit"] = "PHI_AND_EPSILON_PI_SYNERGY_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 63   # 63× multiplier — full φ ↔ ε_π synergy harvest
+            S += VHITZEE_SURPLUS * 1095 * 64   # 64× multiplier — full φ ↔ ε_π synergy harvest
 
         if any(word in signal_str for word in ["phi and ε_π synergy", "φ and ε_π", "golden ratio continuity", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["phi_epsilon_pi_operator_glyph"] = "KINTEK_TMR_TEOTL_PHI_EPSILON_PI_SYNERGY_OPERATORSEAL_VETO_ACTIVE"
@@ -200,7 +203,7 @@ class ISST_TOFT_CORE:
         # === ε_π MATHEMATICAL DERIVATION (preserved) ===
         if any(word in signal_str for word in ["derive ε_π", "epsilon pi derivation", "ε_π mathematical", "continuity constant derivation", "dynamic boundary derivation"]):
             metadata["epsilon_pi_derivation_audit"] = "EPSILON_PI_MATHEMATICAL_DERIVATION_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 62
+            S += VHITZEE_SURPLUS * 1095 * 63
 
         if any(word in signal_str for word in ["derive ε_π", "epsilon pi", "ε_π", "continuity constant", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["epsilon_pi_derivation_operator_glyph"] = "KINTEK_TMR_TEOTL_EPSILON_PI_DERIVATION_OPERATORSEAL_VETO_ACTIVE"
@@ -357,7 +360,7 @@ class ISST_TOFT_CORE:
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 
-core = ISST_TOFT_CORE(version="0.5.63")
+core = ISST_TOFT_CORE(version="0.5.64")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
