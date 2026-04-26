@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.59 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield)
+# isst_toft_core.py — v0.5.60 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -124,12 +124,17 @@ ADVERSARIAL_VECTORS = [
     "QUARTIC_RG_FLOW_ATTRACTOR",
     "CHAOS_TO_CAPITAL_LOOP",
     "TOWNSHIP_SHIELD",
-    "SOVEREIGN_ELEMENT_CASTING"
+    "SOVEREIGN_ELEMENT_CASTING",
+    "MOVING_FIXED_POINT",
+    "MRAD_REM_RAD_PARALLEL",
+    "2_WALKS_THE_FIXED_POINT_GAIN",
+    "CARROLL_RINGS_SCALING",
+    "GLYPHED_DIMENSION_SHIFT"
 ]
 
 # === CORE CLASS ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.59"):
+    def __init__(self, version: str = "0.5.60"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
 
@@ -173,10 +178,19 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === WILSON-FISHER FIXED POINT + CHAOS-TO-CAPITAL + TOWNSHIP SHIELD HARVEST ===
+        # === MOVING FIXED POINT + MRAD/REM/RAD PARALLEL + CARROLL RINGS SCALING HARVEST ===
+        if any(word in signal_str for word in ["moving fixed point", "mrad rem rad", "rem rad parallel", "2 walks the fixed point", "carroll rings", "glyphed dimension", "scaling into carroll rings"]):
+            metadata["moving_fixed_point_audit"] = "MOVING_FIXED_POINT_MRAD_REM_RAD_CARROLL_RINGS_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 60   # 60× multiplier — full moving fixed point / Carroll Rings harvest
+
+        if any(word in signal_str for word in ["moving fixed point", "mrad", "rem rad", "carroll rings", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["moving_fixed_point_operator_glyph"] = "KINTEK_TMR_TEOTL_MOVING_FIXED_POINT_CARROLL_RINGS_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === WILSON-FISHER FIXED POINT + CHAOS-TO-CAPITAL + TOWNSHIP SHIELD (preserved) ===
         if any(word in signal_str for word in ["wilson fisher", "fixed point", "chaos to capital", "chaos creation", "township shield", "sovereign element casting"]):
             metadata["wilson_fisher_audit"] = "WILSON_FISHER_FIXED_POINT_CHAOS_TO_CAPITAL_TOWNSHIP_SHIELD_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 59   # 59× multiplier — full Wilson-Fisher + chaos creation harvest
+            S += VHITZEE_SURPLUS * 1095 * 59
 
         if any(word in signal_str for word in ["wilson fisher", "fixed point", "chaos to capital", "township shield", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["wilson_fisher_operator_glyph"] = "KINTEK_TMR_TEOTL_WILSON_FISHER_OPERATORSEAL_VETO_ACTIVE"
@@ -284,7 +298,8 @@ class ISST_TOFT_CORE:
                                     {"phi4_qft": "QUANTUM_FIELD_THEORY_EXPLICIT_ATTRACTOR_ACTIVE"},
                                     {"rg_flow_phi4": "RENORMALIZATION_GROUP_FLOW_PHI4_ACTIVE"},
                                     {"wilson_fisher": "FIXED_POINT_CHAOS_TO_CAPITAL_ACTIVE"},
-                                    {"township_shield": "SOVEREIGN_ELEMENT_CASTING_ACTIVE"}] + local_glyphs[-4:])
+                                    {"township_shield": "SOVEREIGN_ELEMENT_CASTING_ACTIVE"},
+                                    {"moving_fixed_point": "MRAD_REM_RAD_PARALLEL_CARROLL_RINGS_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -292,7 +307,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT + MOVING_FIXED_POINT_CARROLL_RINGS",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -301,7 +316,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -311,11 +326,11 @@ class ISST_TOFT_CORE:
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 
-core = ISST_TOFT_CORE(version="0.5.59")
+core = ISST_TOFT_CORE(version="0.5.60")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling"
     result = process_scrape(test_signal)
     print(result)
