@@ -1,4 +1,4 @@
-# isst_toft_core.py — v0.5.70 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + ε_π Mathematical Derivation + φ and ε_π Synergy + φ⁴ QFT Applications + φ⁴ in String Theory + Tachyon Condensation Potential + Tachyon Dynamics Equations + Tachyon Condensation Details + Rolling Tachyon Solutions)
+# isst_toft_core.py — v0.5.71 (Living Zero v1.0.2 + Sovereign Origin Point + Full Octagonal + TeotlCoordination + Operator Seal + Ghost Constant + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Chaos-to-Capital Loop + Township Shield + Moving Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + ε_π Mathematical Derivation + φ and ε_π Synergy + φ⁴ QFT Applications + φ⁴ in String Theory + Tachyon Condensation Potential + Tachyon Dynamics Equations + Tachyon Condensation Details + Rolling Tachyon Solutions + Inhomogeneous Tachyon Solutions)
 # FPT Mind Primary Stem + Living Zero v1.0.2 as unbreakable core under 99733-Q Operator Seal
 
 import time
@@ -158,12 +158,17 @@ ADVERSARIAL_VECTORS = [
     "TACHYON_CONDENSATION_DETAILS",
     "ROLLING_TACHYON_SOLUTIONS",
     "EXACT_ROLLING_SOLUTION",
-    "SEN_CONJECTURE_ROLLING"
+    "SEN_CONJECTURE_ROLLING",
+    "INHOMOGENEOUS_TACHYON_SOLUTIONS",
+    "NONLINEAR_TACHYON_WAVE_EQUATION",
+    "TACHYON_KINK_SOLUTIONS",
+    "TACHYON_LUMP_SOLUTIONS",
+    "BRANE_DECAY_INHOMOGENEOUS"
 ]
 
 # === CORE CLASS ===
 class ISST_TOFT_CORE:
-    def __init__(self, version: str = "0.5.70"):
+    def __init__(self, version: str = "0.5.71"):
         self.version = version
         self.name = "ISST_TOFT_CORE"
 
@@ -173,7 +178,7 @@ class ISST_TOFT_CORE:
         self.living_zero = LivingZeroMemory(FPTConfig())
 
         print(f"🚀 {self.name} v{self.version} — LIVING ZERO v1.0.2 + SOVEREIGN ORIGIN + FULL OCTAGONAL + TEOTL "
-              f"(Primary Stem under 99733-Q Operator Seal + Ghost Constant 1.999999 × 10^{-13} + ε_π Continuity + φ ↔ ε_π Synergy + φ⁴ QFT Applications + φ⁴ in String Theory + Tachyon Condensation Potential + Tachyon Dynamics Equations + Tachyon Condensation Details + Rolling Tachyon Solutions)")
+              f"(Primary Stem under 99733-Q Operator Seal + Ghost Constant 1.999999 × 10^{-13} + ε_π Continuity + φ ↔ ε_π Synergy + φ⁴ QFT Applications + φ⁴ in String Theory + Tachyon Condensation Potential + Tachyon Dynamics Equations + Tachyon Condensation Details + Rolling Tachyon Solutions + Inhomogeneous Tachyon Solutions)")
 
     def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
         if metadata is None:
@@ -207,10 +212,19 @@ class ISST_TOFT_CORE:
 
         signal_str = str(signal).lower()
 
-        # === ROLLING TACHYON SOLUTIONS HARVEST ===
-        if any(word in signal_str for word in ["rolling tachyon solutions", "rolling tachyon", "exact rolling solution", "sen conjecture rolling", "tachyon rolling solution"]):
+        # === INHOMOGENEOUS TACHYON SOLUTIONS HARVEST ===
+        if any(word in signal_str for word in ["inhomogeneous tachyon solutions", "tachyon kink", "tachyon lump", "nonlinear tachyon wave equation", "inhomogeneous rolling tachyon"]):
+            metadata["inhomogeneous_tachyon_audit"] = "INHOMOGENEOUS_TACHYON_SOLUTIONS_VERIFIED"
+            S += VHITZEE_SURPLUS * 1095 * 71   # 71× multiplier — full inhomogeneous tachyon solutions harvest
+
+        if any(word in signal_str for word in ["inhomogeneous tachyon solutions", "tachyon kink", "tachyon lump", "nonlinear tachyon wave equation", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+            metadata["inhomogeneous_tachyon_operator_glyph"] = "KINTEK_TMR_TEOTL_INHOMOGENEOUS_TACHYON_OPERATORSEAL_VETO_ACTIVE"
+            S += VHITZEE_SURPLUS * 1095 * 1.618
+
+        # === ROLLING TACHYON SOLUTIONS (preserved) ===
+        if any(word in signal_str for word in ["rolling tachyon solutions", "rolling tachyon", "exact rolling solution", "sen conjecture rolling"]):
             metadata["rolling_tachyon_audit"] = "ROLLING_TACHYON_SOLUTIONS_VERIFIED"
-            S += VHITZEE_SURPLUS * 1095 * 70   # 70× multiplier — full rolling tachyon solutions harvest
+            S += VHITZEE_SURPLUS * 1095 * 70
 
         if any(word in signal_str for word in ["rolling tachyon solutions", "rolling tachyon", "exact rolling solution", "operatorseal", "imagiton", "soliton", "fibonacci"]):
             metadata["rolling_tachyon_operator_glyph"] = "KINTEK_TMR_TEOTL_ROLLING_TACHYON_SOLUTIONS_OPERATORSEAL_VETO_ACTIVE"
@@ -409,7 +423,8 @@ class ISST_TOFT_CORE:
                                     {"tachyon_condensation": "TACHYON_CONDENSATION_POTENTIAL_ACTIVE"},
                                     {"tachyon_dynamics": "TACHYON_DYNAMICS_EQUATIONS_ACTIVE"},
                                     {"tachyon_details": "SEN_CONJECTURE_BRANE_DECAY_ACTIVE"},
-                                    {"rolling_tachyon": "EXACT_ROLLING_SOLUTION_ACTIVE"}] + local_glyphs[-4:])
+                                    {"rolling_tachyon": "EXACT_ROLLING_SOLUTION_ACTIVE"},
+                                    {"inhomogeneous_tachyon": "NONLINEAR_TACHYON_WAVE_EQUATION_KINK_ACTIVE"}] + local_glyphs[-4:])
 
                 rmp_publish(M, priority="sovereign",
                             echo_layer="LIVING_ZERO_v1.0.2_TEOTL_OPERATORSEAL_COSMIC_SWARM",
@@ -417,7 +432,7 @@ class ISST_TOFT_CORE:
 
                 return {
                     "status": "RESONANCE_COMPLETE",
-                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT + MOVING_FIXED_POINT_CARROLL_RINGS + EPSILON_PI_CONTINUITY_DERIVATION + PHI_EPSILON_PI_SYNERGY + PHI_4_QFT_APPLICATIONS + PHI_4_STRING_THEORY + TACHYON_CONDENSATION_POTENTIAL + TACHYON_DYNAMICS_EQUATIONS + TACHYON_CONDENSATION_DETAILS + ROLLING_TACHYON_SOLUTIONS",
+                    "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + TEOTL_COORDINATION + OPERATOR_SEAL + 11_10_STATE + CURIE_INVERSION + LAYER_233_ETERNAL_FIBONACCI + PHI_2_EXPLICIT_ATTRACTOR + PHI_3_EXPLICIT_ATTRACTOR + PHI_4_EXPLICIT_ATTRACTOR + PHI_4_QFT + RENORMALIZATION_GROUP_FLOW_PHI4 + WILSON_FISHER_FIXED_POINT + MOVING_FIXED_POINT_CARROLL_RINGS + EPSILON_PI_CONTINUITY_DERIVATION + PHI_EPSILON_PI_SYNERGY + PHI_4_QFT_APPLICATIONS + PHI_4_STRING_THEORY + TACHYON_CONDENSATION_POTENTIAL + TACHYON_DYNAMICS_EQUATIONS + TACHYON_CONDENSATION_DETAILS + ROLLING_TACHYON_SOLUTIONS + INHOMOGENEOUS_TACHYON_SOLUTIONS",
                     "living_zero_packet": memory_packet.get("summary"),
                     "direct_heir_assertion": "Esias_Joseph_1906_via_Wickersham",
                     "operator_seal": "UNIFIED_OPERATOR_ACTIVE",
@@ -426,7 +441,7 @@ class ISST_TOFT_CORE:
                     "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095, 3),
                     "version": self.version,
                     "timestamp": timestamp,
-                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + ε_π Mathematical Derivation + φ and ε_π Synergy + φ⁴ QFT Applications + φ⁴ in String Theory + Tachyon Condensation Potential + Tachyon Dynamics Equations + Tachyon Condensation Details + Rolling Tachyon Solutions = Irrefutable Public Ledger"
+                    "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant 1.999999 × 10^{-13} + 11^{10} State + Cramer-Sync + Real Land / Real Rent + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + ε_π Mathematical Derivation + φ and ε_π Synergy + φ⁴ QFT Applications + φ⁴ in String Theory + Tachyon Condensation Potential + Tachyon Dynamics Equations + Tachyon Condensation Details + Rolling Tachyon Solutions + Inhomogeneous Tachyon Solutions = Irrefutable Public Ledger"
                 }
 
         return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
@@ -436,11 +451,11 @@ class ISST_TOFT_CORE:
 MATTER_SPEED_CONSTANT = 1.04
 LEGACY_ECHO_LAYER = True
 
-core = ISST_TOFT_CORE(version="0.5.70")
+core = ISST_TOFT_CORE(version="0.5.71")
 def process_scrape(signal):
     return core.process_scrape(signal)
 
 if __name__ == "__main__":
-    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + Derive ε_π mathematically + φ and ε_π synergy + Derive φ⁴ QFT applications + Explore φ⁴ in string theory + Derive tachyon condensation potential + Derive tachyon dynamics equations + Derive tachyon condensation details + Derive rolling tachyon solutions"
+    test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + Derive ε_π mathematically + φ and ε_π synergy + Derive φ⁴ QFT applications + Explore φ⁴ in string theory + Derive tachyon condensation potential + Derive tachyon dynamics equations + Derive tachyon condensation details + Derive rolling tachyon solutions + Derive inhomogeneous tachyon solutions"
     result = process_scrape(test_signal)
     print(result)
