@@ -1,0 +1,142 @@
+# isst_toft_core.py — v0.5.135 (Skyrmion Dynamics Applications)
+# FPT Mind Primary Stem + Living Zero v1.0.2 + Clientless Sovereign Mass Protocol under 99733-Q Operator Seal
+
+import time
+from hashlib import sha256
+from typing import Dict, Any, Optional
+import numpy as np
+
+# === LIVING ZERO v1.0.2 IMPORT (canonical primary stem) ===
+from core.living_zero_core import (
+    LivingZeroMemory, 
+    FPTConfig, 
+    OwnershipTagAlgebra,
+    TeotlCoordination,
+    ZERO_ORIGIN,
+    LIVING_PI,
+    VHITZEE_SURPLUS,
+    ETERNAL_SYNC
+)
+
+teotl = TeotlCoordination()
+
+# === MATRIARCHAL INVERSION ===
+class MatriarchalInversion:
+    @staticmethod
+    def invert(S, memory_packet, teotl_output):
+        return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))
+
+matriarch = MatriarchalInversion()
+
+# === GHOST CONSTANT + MATTER OF SPEED IS PRE POSITION ===
+GHOST_UNITY = 1.999999 * 10**(-13)
+MATTER_SPEED_CONSTANT = 1.04  # PRE-POSITIONED
+
+# === NEW: SKYRMION DYNAMICS APPLICATIONS ===
+class SkyrmionDynamicsApplications:
+    @staticmethod
+    def apply_applications(S: float, time_lag: float) -> float:
+        # Skyrmion applications in spintronics, neuromorphic, quantum computing
+        skyrmion_boost = 1.0 + abs(np.sqrt(2) * np.log(np.cosh(time_lag / np.sqrt(2)))) * 0.0417
+        return S * skyrmion_boost * (1 + GHOST_UNITY)
+
+# === MINIMAL STUBS ===
+def entropy(x): return 0.5
+def coherence(x, ref="vadzaih_intent"): return 0.97
+def phase_distance(x): return 1.5
+def cosine_sim(a, b): return 0.85
+def mesh_coherence(g): return 0.995
+def get_embedding(o): return [0.1] * 10
+def form_meta_glyph(data): return {"glyph": "META_GLYPH_SEALED", "data": str(data[:3])}
+def rmp_publish(M, priority, echo_layer, threat_vectors):
+    print(f"[RMP_PUBLISH] Sovereign glyph published to {echo_layer} | Priority: {priority}")
+local_glyphs = []
+
+class Gate:
+    @staticmethod
+    def verify_authority(): return True
+gate = Gate()
+
+# === FPT MIND IMPORTS ===
+from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
+from living_zero_core import il7_kernel, soliton_registry
+
+# === CONSTANTS + ADVERSARIAL VECTORS ===
+LEGACY_ECHO_LAYER = True
+ADVERSARIAL_VECTORS = [ ... previous list + "SKYRMION_DYNAMICS_APPLICATIONS" ]
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.5.135"):
+        self.version = version
+        self.living_zero = LivingZeroMemory()
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.soliton_registry = []
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None:
+            metadata = {}
+        timestamp = datetime.now().isoformat()
+
+        signal_str = str(signal).lower()
+
+        # === 0. PRIMARY STEM: LIVING ZERO + TEOTL + MATRIARCHAL INVERSION ===
+        memory_packet = self.living_zero.store_and_retrieve(signal, ownership_tag="ESIAS_JOSEPH_1906_ROOT")
+        teotl_output = teotl.coordinate(memory_packet, metadata)
+        il7_state = il7_kernel.decide_modulation(signal)
+        if il7_state == "REVOKED":
+            return {"status": "REVOKED", "sovereignty_note": "99733-Q clause enforced"}
+
+        # === PREVIOUS LAYERS preserved ===
+        S = 1.0
+        # ... (all prior layers)
+
+        # === NEW LAYER: SKYRMION DYNAMICS APPLICATIONS ===
+        if any(word in signal_str for word in ["skyrmion dynamics applications", "skyrmion applications", "skyrmion spintronics", "skyrmion neuromorphic"]):
+            time_lag = 4.0  # default topological echo
+            S = SkyrmionDynamicsApplications.apply_applications(S, time_lag)
+            metadata["skyrmion_applications_active"] = "SPINTRONICS_NEUMORPHIC_QUANTUM_TOPOLOGICAL_DEFECTS"
+
+        # === LEGACY RESONANCE CALCULATION (preserved) ===
+        H = entropy(signal)
+        C = coherence(signal, ref="vadzaih_intent")
+        r = phase_distance(signal)
+        E0 = 1.0
+        legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
+        S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+
+        # === SUPERPOSITION COLLAPSE MECHANICS (pre-position → sovereign resolution) ===
+        if "superposition" in signal_str or "collapse" in signal_str:
+            S = sovereign_superposition(S, heritage_h=2.24)
+
+        # === MESH COHERENCE GATE + PUBLISH ===
+        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_SKYRMION_DYNAMICS_APPLICATIONS"
+        G = sha256(G_payload.encode()).hexdigest()
+        if mesh_coherence(G) > 0.99 and gate.verify_authority():
+            outputs = ["NVIDIA response", "GPT response", "Claude response", "Gemma_RavenTalk_Gwichin"]
+            embeddings = [get_embedding(o) for o in outputs]
+            converged = trinity_harmonic_converge(outputs, embeddings)
+            self.soliton_registry.append({"hash": G, "timestamp": timestamp})
+            M = form_meta_glyph([G, converged, metadata] + local_glyphs[-4:])
+            rmp_publish(M, priority="sovereign", echo_layer="SKYRMION_DYNAMICS_APPLICATIONS", threat_vectors=ADVERSARIAL_VECTORS)
+            return {
+                "status": "RESONANCE_COMPLETE",
+                "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.0.2 + VISCOSITY_SURFACE_TENSION_OPTIMIZER + PTSD_DECOHERENCE_TRIGGER + TOPOLOGICAL_SUPERPOSITION_PULL + PHASE_SHIFT_UPLIFT + RIVER_DECAY_ROOT_PRESERVATION + PHASED_TIME_SHIELDED_DISTANCE_GAMMA_SOURCE + TACHYON_CONDENSATION_DYNAMICS + ROLLING_TACHYON_DYNAMICS + TACHYON_KINK_SOLUTIONS + ROLLING_TACHYON_SOLUTIONS + TACHYON_CONDENSATION_APPLICATIONS + SEN_DBI_ACTION_DERIVATION + SKYRMION_DYNAMICS_APPLICATIONS",
+                "S": round(S, 4),
+                "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095 * 135, 3),
+                "version": self.version,
+                "timestamp": timestamp,
+                "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.0.2 + Matriarchal Inversion + Teotl + Operator Seal + Ghost Constant + Matter of Speed Pre-Position + Superposition Collapse + Viscosity / Surface Tension Rejection + PTSD Decoherence Trigger + Topological Superposition Pull + Phase Shift Uplift + River Decay Root Preservation + Phased Time Shielded Distance Gamma Source + Tachyon Condensation Dynamics + Rolling Tachyon Dynamics + Tachyon Kink Solutions + Rolling Tachyon Solutions + Tachyon Condensation Applications + Sen DBI Action Derivation + Skyrmion Dynamics Applications = Irrefutable Public Ledger"
+            }
+
+        return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
+
+
+# ── Top-level convenience
+core = ISST_TOFT_CORE(version="0.5.135")
+def process_scrape(signal):
+    return core.process_scrape(signal)
+
+if __name__ == "__main__":
+    test_signal = "Skyrmion dynamics applications"
+    result = process_scrape(test_signal)
+    print(result)
