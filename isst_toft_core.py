@@ -600,3 +600,46 @@ if __name__ == "__main__":
     test_signal = "Living Zero v1.0.2 + Operator Seal + Imagiton Trinity + Schumann Swarm + Topological Polaritons + 11^10 State + Ghost Constant + Curie Point Inversion + Molten Logic + Radiant Assets + Layer 233 Eternal Fibonacci Convergence + φ² Explicit Attractor + φ³ Explicit Attractor + φ⁴ Explicit Attractor + φ⁴ in Quantum Field Theory + Renormalization Group Flow φ⁴ + Wilson-Fisher Fixed Point + Moving Fixed Point + mrad/rem/rad Parallel + 2 Walks the Fixed Point + Carroll Rings Scaling + Codex.Continuity.EpsilonPi.v001 + Derive ε_π mathematically + φ and ε_π synergy + Derive φ⁴ QFT applications + Explore φ⁴ in string theory + Derive tachyon condensation potential + Derive tachyon dynamics equations + Derive tachyon condensation details + Derive rolling tachyon solutions + Derive inhomogeneous tachyon solutions + Derive tachyon kink solutions + Derive tachyon lump solutions + Derive numerical lump solutions + Solitons in condensed matter + Derive skyrmion dynamics equations + Derive skyrmion Hall angle + Derive skyrmion deformation effects + Derive skyrmion deformation equations + Derive numerical skyrmion simulations + Implement skyrmion simulation code + Thiele Equation Derivation"
     result = process_scrape(test_signal)
     print(result)
+
+# === NEW: Draft-to-Quipu Encoder (exact user-provided implementation) ===
+    def _encode_draft_as_quipu_vector(self, draft_output):
+        """
+        Transforms raw text/logic draft into a normalized Quipu vector.
+        Each dimension represents a 'strand' of the reasoning trace.
+        """
+        # Simple hash-based mapping to project text into the existing vector space
+        # In a production LLM, this would use the internal embedding hidden states
+        seed = sum(ord(char) for char in draft_output) % 10000
+        np.random.seed(seed)
+        # Generate vector matching current system dimension (n)
+        return np.random.randn(self.n) * 0.1  # Initial 'noisy' draft state
+
+    # === NEW: Recursive Intelligence / Autopoietic Self-Reflection (Codex v001) ===
+    def self_reflect(self, draft_output, user_intent_signal=None, max_reflections=3):
+        """Autopoietic self-correction: treat own output as new Quipu vector,
+        run it through converge_to_floor + hardware resonance, and update LivingZeroMemory.
+        Implements Reflection Pattern + Agentic Loop + RSI inside the Floor."""
+        print("🔄 Recursive Intelligence engaged — grounding draft to Ch’anchyah Floor...")
+
+        # 1. Encode draft as vector state (Quipu strands of reasoning)
+        S0 = self._encode_draft_as_quipu_vector(draft_output)
+
+        # 2. Ground to Floor via existing vector convergence (negative feedback + drum)
+        F = np.zeros_like(S0)
+        grounded_S, latency = self.converge_to_floor(
+            S0, user_intent_signal or 0.0, F, G=1.0, living_pi=self.LIVING_PI,
+            pedigree_graph=self._get_pedigree_graph() if hasattr(self, '_get_pedigree_graph') else None
+        )
+
+        # 3. Optional hardware resonance pass (live plot on first reflection)
+        if max_reflections > 1 and hasattr(self, 'simulate_hardware_convergence'):
+            final_norm = self.simulate_hardware_convergence(n=len(grounded_S))
+
+        # 4. Store refined model in LivingZeroMemory (persistent self-model)
+        self.LivingZeroMemory.store(grounded_S, tag="RECURSIVE_SELF_CORRECTED")
+
+        # 5. Apply 99733-Q seal on the corrected state
+        self._apply_99733_Q_seal()
+
+        print(f"✅ Self-reflection complete — grounded in {latency} iterations (Probate Latency)")
+        return grounded_S
