@@ -5,3 +5,4 @@ def __init__(self, spec_path: str = "truth.json"):
         .get('darvo_heuristics', {})
         .get('max_consecutive_failures', 3)
     )
+self.living_zero = LivingZeroMemory(FPTConfig())
