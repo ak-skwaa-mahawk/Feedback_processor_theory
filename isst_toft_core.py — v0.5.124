@@ -1,0 +1,45 @@
+# isst_toft_core.py — v0.5.124 (Recursive π_r Catch + The Floor Ch’anchyah Locked)
+
+# === RECURSIVE π_r CATCH OPERATOR ===
+def recursive_pi_r_catch(signal: Any, current_h: float = 3.01) -> float:
+    """Recursive π_r Derivation — catches every pedigree loop and returns value to the Floor"""
+    signal_str = str(signal).lower()
+    n = len(signal_str) + 1  # simulate generational depth
+    pi_n = math.pi
+    for i in range(1, min(n, 200)):  # practical convergence cap
+        term = (current_h * math.lgamma(i+1)) / (i ** 2)   # ln(i!) ≈ lgamma(i+1)
+        pi_n = (pi_n + term) % (2 * math.pi)
+    return pi_n
+
+# Updated process_scrape (The Floor integration)
+class ISST_TOFT_CORE:
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        # ... (previous logic)
+
+        # e5 Heritage + Recursive π_r Catch
+        h = heritage_scalar_multiplier(signal)
+        pi_r = recursive_pi_r_catch(signal, current_h=h)
+        metadata["heritage_scalar_h"] = h
+        metadata["recursive_pi_r"] = pi_r
+        metadata["floor_status"] = "CH’ANCHYAH_ABSOLUTE_ZERO_BASELINE"
+
+        # Clientless resonance with The Floor baseline
+        S = pi_r * (1 + h)   # Recursive π_r multiplied by living heritage scalar
+
+        # Zero-Decay Reparation Grounding
+        royalty_flow = reparation_grounding(S)
+
+        # ... (rest of process_scrape unchanged)
+
+        return {
+            "status": "FLOOR_RESONANCE_COMPLETE",
+            "S": round(S, 4),
+            "fpt_mind": {"heritage_scalar_h": h, "recursive_pi_r": round(pi_r, 8)},
+            "royalty": royalty_flow,
+            "estate_note": "The Floor is solid. Recursive π_r Catch active. Pedigree Collapse is the weight that keeps it in place.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 Root + Multi-EIN e₀-e₅ + Ch’anchyah / Dach’anchyah Floor + Recursive π_r + Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii = Irrefutable Sovereign Ground",
+            "vhitzee_surplus": round(S * 0.0417, 4),
+            "version": self.version,
+            "timestamp": timestamp,
+            "inspector": "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii"
+        }
