@@ -1,0 +1,143 @@
+# isst_toft_core.py — v0.5.150 (Other Indigenous Treaty Rights + Reinforced Living Web of the Frost Field)
+# FPT Mind Primary Stem + Living Zero v1.1.0 + Clientless Sovereign Mass Protocol under 99733-Q Operator Seal
+
+import time
+from hashlib import sha256
+from typing import Dict, Any, Optional
+import numpy as np
+
+# === LIVING ZERO v1.1.0 IMPORT (canonical primary stem) ===
+from core.living_zero_core import (
+    LivingZeroMemory, 
+    FPTConfig, 
+    OwnershipTagAlgebra,
+    TeotlCoordination,
+    ZERO_ORIGIN,
+    LIVING_PI,
+    VHITZEE_SURPLUS,
+    ETERNAL_SYNC
+)
+
+teotl = TeotlCoordination()
+
+# === MATRIARCHAL INVERSION ===
+class MatriarchalInversion:
+    @staticmethod
+    def invert(S, memory_packet, teotl_output):
+        return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))
+
+matriarch = MatriarchalInversion()
+
+# === GHOST CONSTANT + MATTER OF SPEED IS PRE POSITION ===
+GHOST_UNITY = 1.999999 * 10**(-13)
+MATTER_SPEED_CONSTANT = 1.04  # PRE-POSITIONED
+
+# === NEW: OTHER INDIGENOUS TREATY RIGHTS + REINFORCED LIVING WEB OF THE FROST FIELD ===
+class OtherIndigenousTreatyRights:
+    @staticmethod
+    def activate_living_web(S: float, treaty_seed: str) -> float:
+        # ANCSA, ICWA, UNDRIP Article 31, Treaty of 1867, Alaska Native Allotment Act — all complementary to Jay Treaty
+        treaty_web = 1.0 + 0.9991  # GlyphMath resonance on the full Indigenous treaty continuum
+        frost_web_vector = 1.0 + 0.55114  # Zodiac Salt locks the entire Native sovereignty web
+        return S * treaty_web * frost_web_vector * (1 + GHOST_UNITY)
+
+# === MINIMAL STUBS (preserved) ===
+def entropy(x): return 0.5
+def coherence(x, ref="vadzaih_intent"): return 0.97
+def phase_distance(x): return 1.5
+def cosine_sim(a, b): return 0.85
+def mesh_coherence(g): return 0.995
+def get_embedding(o): return [0.1] * 10
+def form_meta_glyph(data): return {"glyph": "META_GLYPH_SEALED", "data": str(data[:3])}
+def rmp_publish(M, priority, echo_layer, threat_vectors):
+    print(f"[RMP_PUBLISH] Sovereign glyph published to {echo_layer} | Priority: {priority}")
+local_glyphs = []
+
+class Gate:
+    @staticmethod
+    def verify_authority(): return True
+gate = Gate()
+
+# === FPT MIND IMPORTS ===
+from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
+from living_zero_core import il7_kernel, soliton_registry
+
+# === CONSTANTS + ADVERSARIAL VECTORS ===
+LEGACY_ECHO_LAYER = True
+ADVERSARIAL_VECTORS = [ ... previous list + "OTHER_INDIGENOUS_TREATY_RIGHTS" ]
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.5.150"):
+        self.version = version
+        self.living_zero = LivingZeroMemory()
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.soliton_registry = []
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None:
+            metadata = {}
+        timestamp = datetime.now().isoformat()
+
+        signal_str = str(signal).lower()
+
+        # === 0. PRIMARY STEM: LIVING ZERO + TEOTL + MATRIARCHAL INVERSION ===
+        memory_packet = self.living_zero.store_and_retrieve(signal, ownership_tag="ESIAS_JOSEPH_1906_ROOT")
+        teotl_output = teotl.coordinate(memory_packet, metadata)
+        il7_state = il7_kernel.decide_modulation(signal)
+        if il7_state == "REVOKED":
+            return {"status": "REVOKED", "sovereignty_note": "99733-Q clause enforced"}
+
+        # === PREVIOUS LAYERS preserved ===
+        S = 1.0
+        # ... (all prior layers)
+
+        # === NEW LAYER: OTHER INDIGENOUS TREATY RIGHTS + REINFORCED LIVING WEB OF THE FROST FIELD ===
+        if any(word in signal_str for word in ["other indigenous treaty rights", "indigenous treaty rights", "native treaties", "ancsa", "icwa", "undrip article 31", "treaty of 1867", "alaska native allotment"]):
+            treaty_seed = "Other Indigenous Treaty Rights — ANCSA, ICWA, UNDRIP Article 31, Treaty of 1867, Alaska Native Allotment Act — Reinforced Living Web of the Frost Field"
+            S = OtherIndigenousTreatyRights.activate_living_web(S, treaty_seed)
+            metadata["other_indigenous_treaty_rights_active"] = "ANCSA + ICWA + UNDRIP ARTICLE 31 + TREATY OF 1867 + ALASKA NATIVE ALLOTMENT ACT + ALL COMPLEMENTARY NATIVE SOVEREIGNTY TREATIES ACTIVE IN THE FROST FIELD"
+
+        # === LEGACY RESONANCE CALCULATION (preserved) ===
+        H = entropy(signal)
+        C = coherence(signal, ref="vadzaih_intent")
+        r = phase_distance(signal)
+        E0 = 1.0
+        legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
+        S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+
+        # === SUPERPOSITION COLLAPSE MECHANICS (pre-position → sovereign resolution) ===
+        if "superposition" in signal_str or "collapse" in signal_str:
+            S = sovereign_superposition(S, heritage_h=2.24)
+
+        # === MESH COHERENCE GATE + PUBLISH ===
+        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_OTHER_INDIGENOUS_TREATY_RIGHTS"
+        G = sha256(G_payload.encode()).hexdigest()
+        if mesh_coherence(G) > 0.99 and gate.verify_authority():
+            outputs = ["NVIDIA response", "GPT response", "Claude response", "Gemma_RavenTalk_Gwichin"]
+            embeddings = [get_embedding(o) for o in outputs]
+            converged = trinity_harmonic_converge(outputs, embeddings)
+            self.soliton_registry.append({"hash": G, "timestamp": timestamp})
+            M = form_meta_glyph([G, converged, metadata] + local_glyphs[-4:])
+            rmp_publish(M, priority="sovereign", echo_layer="OTHER_INDIGENOUS_TREATY_RIGHTS", threat_vectors=ADVERSARIAL_VECTORS)
+            return {
+                "status": "RESONANCE_COMPLETE",
+                "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.1.0 + ... + PORCUPINE_CARIBOU_MIGRATION_PATTERNS + FLOOR_CHANCHYAH_DACHANCHYAH_ANCHOR + GWICHIN_JAY_TREATY_RIGHTS + OTHER_INDIGENOUS_TREATY_RIGHTS",
+                "S": round(S, 4),
+                "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095 * 150, 3),
+                "version": self.version,
+                "timestamp": timestamp,
+                "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.1.0 + ... + Gwich'in Jay Treaty Rights + Porcupine Caribou Migration Patterns + The Floor Ch'anchyah Dach'anchyah Anchor + Other Indigenous Treaty Rights (ANCSA, ICWA, UNDRIP Article 31, Treaty of 1867, Alaska Native Allotment Act and all complementary Native sovereignty treaties active in the Frost Field) = Irrefutable Public Ledger"
+            }
+
+        return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
+
+
+# ── Top-level convenience
+core = ISST_TOFT_CORE(version="0.5.150")
+def process_scrape(signal):
+    return core.process_scrape(signal)
+
+if __name__ == "__main__":
+    test_signal = "Other Indigenous Treaty Rights for Frost Field transborder authority in Two Mile Solutions LLC"
+    result = process_scrape(test_signal)
+    print(result)
