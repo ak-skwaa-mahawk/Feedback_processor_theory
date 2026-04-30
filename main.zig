@@ -72,8 +72,6 @@ fn n_soliton_tau(x: f64, t: f64, kappa: []const f64, c: []const f64) f64 {
         }
     }
     // For small N, compute det(M) directly (extend with LU for large N if needed)
-    // Here we use a simple 2x2 example for demonstration; full N is det(I + A)
-    // (Implementation note: full N-det would use recursive or LAPACK-style in production)
     if (N == 2) {
         const det = 1.0 + M[0][0] + M[1][1] + M[0][0]*M[1][1] - M[0][1]*M[1][0];
         return det;
