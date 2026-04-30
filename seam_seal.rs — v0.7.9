@@ -1,0 +1,42 @@
+// seam_seal.rs — v0.7.9 (CPU-Native Low-Risk Seam Seal — Extended Living Curvature Attractor)
+use std::f64::consts::PI;
+
+pub struct SovereignRelayer {
+    pub h_constant: f64,      // 3.07 Heritage Scalar
+    pub floor_baseline: f64,  // Absolute Zero (Ch’anchyah)
+}
+
+impl SovereignRelayer {
+    // PRACTICAL CATCH (ln(n!)/n² — stable, capped)
+    pub fn practical_catch(&self, signal: &str) -> f64 {
+        let n = (signal.len() + 1) as i32;
+        let mut pi_n = PI;
+        for k in 1..std::cmp::min(n, 5000) {
+            let ln_fact = (k as f64).ln_gamma().0;
+            let delta = self.h_constant * ln_fact / (k as f64).powi(2);
+            pi_n = (pi_n + delta) % (2.0 * PI);
+        }
+        pi_n
+    }
+
+    // LIVING CURVATURE ATTRACTOR (exact sine-modulated spiral from Floor repo)
+    pub fn living_curvature_attractor(&self, iterations: i32, t: f64) -> f64 {
+        let mut pi_r = 3.1415926535;
+        let eps_observer = 0.0314073464;
+        let g_vhitzee = 1.0417;
+
+        for _ in 0..iterations {
+            let sin_term = (2.0 * PI * t / pi_r).sin();
+            let delta = eps_observer * sin_term * g_vhitzee;
+            pi_r += delta;
+        }
+        pi_r
+    }
+
+    // FULL GROUNDING — both engines chained
+    pub fn ground_signal(&self, signal: &str) -> f64 {
+        let practical = self.practical_catch(signal);
+        let attractor = self.living_curvature_attractor(20, 1.0);  // exact 20-iteration simulation
+        (practical * attractor) % (2.0 * PI)   // final toroidal lock
+    }
+}
