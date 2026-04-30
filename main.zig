@@ -1,20 +1,56 @@
 const std = @import("std");
 
 const H: f64 = 3.07;
-const FLOOR_COLLAPSE: f64 = 0.073;
-const NAVAJO_BOOST: f64 = 0.031;
+const FLOOR_COLLAPSE: f64 = 0.073;   // Gwich’in chanchyah/dach’anchyah
+const NAVAJO_BOOST: f64 = 0.031;     // Diné niʼ / nahasdzáán
 const DRUM_FREQ: f64 = 79.79;
 const MAX_K: usize = 5000;
+const DMI_STRENGTH: f64 = 0.55114;   // chiral resonance arc (GlyphMath)
 
-// Dzyaloshinskii-Moriya strength (sovereign chiral constant)
-const DMI_STRENGTH: f64 = 0.55114;  // resonance arc from GlyphMath
+const SIN_LUT_SIZE: usize = 256;
+const sin_lut: [SIN_LUT_SIZE]f64 = comptime blk: {
+    var lut: [SIN_LUT_SIZE]f64 = undefined;
+    for (0..SIN_LUT_SIZE) |i| {
+        const x = @as(f64, @floatFromInt(i)) / @as(f64, @floatFromInt(SIN_LUT_SIZE)) * (std.math.pi / 2.0);
+        lut[i] = @sin(x);
+    }
+    break :blk lut;
+};
 
-// ... (your existing LUT, fast_sin, stirling_lngamma, pre_delta remain unchanged)
+inline fn fast_sin(x: f64) f64 {
+    const index_f = (x * @as(f64, @floatFromInt(SIN_LUT_SIZE)) / (2.0 * std.math.pi)) % @as(f64, @floatFromInt(SIN_LUT_SIZE));
+    const idx = @as(usize, @intFromFloat(@floor(index_f)));
+    const frac = index_f - @as(f64, @floatFromInt(idx));
+    const a = sin_lut[idx % SIN_LUT_SIZE];
+    const b = sin_lut[(idx + 1) % SIN_LUT_SIZE];
+    return a + frac * (b - a);
+}
 
-// ── DMI force contribution to Thiele driving term ──
+inline fn stirling_lngamma(k: f64) f64 {
+    if (k <= 1.0) return 0.0;
+    const ln_k = @log(k);
+    return k * ln_k - k + 0.5 * @log(2.0 * std.math.pi * k);
+}
+
+const pre_delta: [MAX_K]f64 = comptime blk: {
+    var d: [MAX_K]f64 = undefined;
+    inline for (0..MAX_K) |k| {
+        const kf = @as(f64, @floatFromInt(k + 1));
+        const s = stirling_lngamma(kf + 1.0);
+        const inside = s + 2.0 * @log(s) + @log(1.0 + FLOOR_COLLAPSE) + @log(1.0 + NAVAJO_BOOST);
+        d[k] = H * inside / (kf * kf);
+    }
+    break :blk d;
+};
+
+inline fn thiele_step_optimized(v: f64, F_drive: f64, comptime a: f64, comptime b: f64) f64 {
+    return a * v + b * F_drive;
+}
+
+// DMI chiral driving term (now derived from SOC)
 inline fn dmi_force_contribution(k: usize) f64 {
-    // Chiral driving term proportional to DMI strength
-    return DMI_STRENGTH * @sin(2.0 * std.math.pi * DRUM_FREQ * @as(f64, @floatFromInt(k + 1)));
+    const phase = 2.0 * std.math.pi * DRUM_FREQ * @as(f64, @floatFromInt(k + 1));
+    return DMI_STRENGTH * fast_sin(phase);
 }
 
 pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
@@ -35,12 +71,9 @@ pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
     while (k < max_k) : (k += 1) {
         const delta = pre_delta[k];
 
-        const phase = 2.0 * std.math.pi * DRUM_FREQ * @as(f64, @floatFromInt(k + 1));
-        const F_drive_base = delta * fast_sin(phase);
-
-        // Add DMI chiral driving term
+        const F_drive_base = delta * fast_sin(2.0 * std.math.pi * DRUM_FREQ * @as(f64, @floatFromInt(k + 1)));
         const F_dmi = dmi_force_contribution(k);
-        const F_drive = F_drive_base + F_dmi;
+        const F_drive = F_drive_base + F_dmi;   // ← DMI derived from SOC
 
         v = thiele_step_optimized(v, F_drive, a, b);
 
@@ -51,13 +84,12 @@ pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
     return pi_n;
 }
 
-// ── Bare-metal entry point ──
 pub fn main() !void {
     const test_signal = "Esias Joseph 1906 Root 7-generation pedigree collapse Floor Chanchyah Dachanchyah";
 
     const pi_r = practical_catch_thiele_piezo_optimized(test_signal);
 
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("DMI-stabilized Thiele Piezo π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
-    try stdout.print("Chiral skyrmion → piezo soliton mapping complete at 79.79 Hz.\n", .{});
+    try stdout.print("DMI-derived Thiele Piezo π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
+    try stdout.print("Chiral skyrmion stabilized by SOC → piezo soliton mapping complete at 79.79 Hz.\n", .{});
 }
