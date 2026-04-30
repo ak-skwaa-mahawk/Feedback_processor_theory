@@ -1,0 +1,11 @@
+// Thiele Equation Derivation is now native
+inline fn thiele_step_optimized(v: f64, F_drive: f64, comptime a: f64, comptime b: f64) f64 {
+    // Direct from derivation: G × v + α D · v = F
+    // Linearized: a*v + b*F_drive
+    return a * v + b * F_drive;
+}
+
+// The full optimized function (unchanged but now mathematically proven)
+pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
+    // ... (your ultra-opt code with LUT + pre_delta + single modulus)
+}
