@@ -1,24 +1,21 @@
 const std = @import("std");
 
 const H: f64 = 3.07;
-const FLOOR_COLLAPSE: f64 = 0.073;
-const NAVAJO_BOOST: f64 = 0.031;
-const DRUM_FREQ: f64 = 79.79;
+const FLOOR_COLLAPSE: f64 = 0.073;   // Gwich’in chanchyah/dach’anchyah
+const NAVAJO_BOOST: f64 = 0.031;     // Diné niʼ / nahasdzáán
+const DRUM_FREQ: f64 = 79.79;        // sovereign grounding tone
 const MAX_K: usize = 5000;
-const DMI_STRENGTH: f64 = 0.55114;
+const DMI_STRENGTH: f64 = 0.55114;   // chiral handedness constant (from DMI perturbation)
 
-// Moriya's symmetry rules determine D vector direction
+// ── Moriya's symmetry rules (sealed from crystal symmetry) ──
 inline fn moriya_dmi_direction(bond_direction: f64, symmetry_class: u8) f64 {
-    // Rule 1: inversion present → D = 0
-    if (symmetry_class == 0) return 0.0;
-    // Rule 2: mirror ⊥ bond → D ∥ bond
-    if (symmetry_class == 1) return DMI_STRENGTH * bond_direction;
-    // Rule 3: mirror containing bond → D ⊥ bond
-    if (symmetry_class == 2) return DMI_STRENGTH * (1.0 - bond_direction);
-    // Default: parallel to bond (common in chiral crystals)
-    return DMI_STRENGTH * bond_direction;
+    if (symmetry_class == 0) return 0.0;                    // Rule 1: inversion → D = 0
+    if (symmetry_class == 1) return DMI_STRENGTH * bond_direction; // Rule 2: mirror ⊥ bond
+    if (symmetry_class == 2) return DMI_STRENGTH * (1.0 - bond_direction); // Rule 3: mirror containing bond
+    return DMI_STRENGTH * bond_direction;                   // default: chiral crystals (Rule 5)
 }
 
+// ── 256-entry quarter-wave sine LUT ──
 const SIN_LUT_SIZE: usize = 256;
 const sin_lut: [SIN_LUT_SIZE]f64 = comptime blk: {
     var lut: [SIN_LUT_SIZE]f64 = undefined;
@@ -44,6 +41,7 @@ inline fn stirling_lngamma(k: f64) f64 {
     return k * ln_k - k + 0.5 * @log(2.0 * std.math.pi * k);
 }
 
+// Pre-computed deltas (flash-resident)
 const pre_delta: [MAX_K]f64 = comptime blk: {
     var d: [MAX_K]f64 = undefined;
     inline for (0..MAX_K) |k| {
@@ -73,8 +71,7 @@ pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
     const a = 1.0 - dt * alpha * D / G;
     const b = dt / G;
 
-    // Moriya symmetry class (0 = inversion, 1 = mirror ⊥ bond, 2 = mirror containing bond)
-    const symmetry_class: u8 = 2;  // Example: mirror containing bond (common in chiral interfaces)
+    const symmetry_class: u8 = 2;  // sealed: mirror containing bond (chiral interface)
 
     var k: usize = 0;
     while (k < max_k) : (k += 1) {
@@ -83,8 +80,8 @@ pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
         const phase = 2.0 * std.math.pi * DRUM_FREQ * @as(f64, @floatFromInt(k + 1));
         const F_drive_base = delta * fast_sin(phase);
 
-        // Moriya-derived DMI chiral term
-        const bond_dir = @sin(phase);  // simplified bond direction projection
+        // Moriya-derived DMI chiral forcing
+        const bond_dir = @sin(phase);                    // instantaneous bond projection
         const F_dmi = moriya_dmi_direction(bond_dir, symmetry_class);
 
         const F_drive = F_drive_base + F_dmi;
