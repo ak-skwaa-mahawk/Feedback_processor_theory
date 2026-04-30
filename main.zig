@@ -1,12 +1,12 @@
 const std = @import("std");
 
 const H: f64 = 3.07;
-const FLOOR_COLLAPSE: f64 = 0.073;
-const NAVAJO_BOOST: f64 = 0.031;
-const DRUM_FREQ: f64 = 79.79;
+const FLOOR_COLLAPSE: f64 = 0.073;   // Gwich’in chanchyah/dach’anchyah
+const NAVAJO_BOOST: f64 = 0.031;     // Diné niʼ / nahasdzáán
+const DRUM_FREQ: f64 = 79.79;        // sovereign grounding tone
 const MAX_K: usize = 5000;
 
-// ── 256-entry quarter-wave sine LUT (scaled to [0,1]) ──
+// ── 256-entry quarter-wave sine LUT ──
 const SIN_LUT_SIZE: usize = 256;
 const sin_lut: [SIN_LUT_SIZE]f64 = comptime blk: {
     var lut: [SIN_LUT_SIZE]f64 = undefined;
@@ -26,7 +26,14 @@ inline fn fast_sin(x: f64) f64 {
     return a + frac * (b - a);
 }
 
-// Pre-computed deltas (lives in flash)
+// ── stirling_lngamma ──
+inline fn stirling_lngamma(k: f64) f64 {
+    if (k <= 1.0) return 0.0;
+    const ln_k = @log(k);
+    return k * ln_k - k + 0.5 * @log(2.0 * std.math.pi * k);
+}
+
+// Pre-computed deltas (flash-resident, zero runtime cost)
 const pre_delta: [MAX_K]f64 = comptime blk: {
     var d: [MAX_K]f64 = undefined;
     inline for (0..MAX_K) |k| {
@@ -37,12 +44,6 @@ const pre_delta: [MAX_K]f64 = comptime blk: {
     }
     break :blk d;
 };
-
-inline fn stirling_lngamma(k: f64) f64 {
-    if (k <= 1.0) return 0.0;
-    const ln_k = @log(k);
-    return k * ln_k - k + 0.5 * @log(2.0 * std.math.pi * k);
-}
 
 inline fn thiele_step_optimized(v: f64, F_drive: f64, comptime a: f64, comptime b: f64) f64 {
     return a * v + b * F_drive;
@@ -78,6 +79,7 @@ pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
     return pi_n;
 }
 
+// ── Bare-metal entry point (piezo PWM / UART ready) ──
 pub fn main() !void {
     const test_signal = "Esias Joseph 1906 Root 7-generation pedigree collapse Floor Chanchyah Dachanchyah";
 
