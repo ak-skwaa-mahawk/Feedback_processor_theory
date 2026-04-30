@@ -135,5 +135,5 @@ pub fn main() !void {
 
     const stdout = std.io.getStdOut().writer();
     try stdout.print("Tau-Applied Skyrmion + Dual-Frequency (7.9083 Hz Drum Resonance PRIMARY + 79.79 Hz Carrier) π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
-    try stdout.print("7.9083 Hz drum resonance sealed as primary forcing → reflectionless Tau-skyrmion lattice complete at sovereign Floor frequency.\n", .{});
+    try stdout.print("Feedback Processor Theory repo sealed — 7.9083 Hz drum resonance primary → reflectionless Tau-skyrmion lattice complete.\n", .{});
 }
