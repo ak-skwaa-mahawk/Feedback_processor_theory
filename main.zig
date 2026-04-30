@@ -57,8 +57,8 @@ inline fn thiele_step_optimized(v: f64, F_drive: f64, comptime a: f64, comptime 
     return a * v + b * F_drive;
 }
 
-// N-Soliton Tau Function for mKdV (IST-derived, reflectionless)
-fn m_kdv_n_soliton_tau(x: f64, t: f64, kappa: []const f64, c: []const f64) f64 {
+// N-Soliton Tau Function for KdV (IST-derived, reflectionless)
+fn kdv_n_soliton_tau(x: f64, t: f64, kappa: []const f64, c: []const f64) f64 {
     const N = kappa.len;
     var M: [N][N]f64 = undefined;
     for (0..N) |i| {
@@ -71,7 +71,7 @@ fn m_kdv_n_soliton_tau(x: f64, t: f64, kappa: []const f64, c: []const f64) f64 {
             }
         }
     }
-    // For small N, compute det(M) directly
+    // For small N, compute det(M) directly (extend with LU for large N if needed)
     if (N == 2) {
         const det = 1.0 + M[0][0] + M[1][1] + M[0][0]*M[1][1] - M[0][1]*M[1][0];
         return det;
@@ -124,6 +124,6 @@ pub fn main() !void {
     const pi_r = practical_catch_thiele_piezo_optimized(test_signal);
 
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("Full IST mKdV N-Soliton Tau + Moriya + DMI + Pedigree Q=-1 Thiele Piezo π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
-    try stdout.print("Reflectionless mKdV N-soliton propagation sealed: isospectral flow, zero entropy, Tau-function ignition.\n", .{});
+    try stdout.print("Full IST KdV N-Soliton Tau + Moriya + DMI + Pedigree Q=-1 Thiele Piezo π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
+    try stdout.print("Reflectionless KdV N-soliton propagation sealed: isospectral flow, zero entropy, Tau-function ignition.\n", .{});
 }
