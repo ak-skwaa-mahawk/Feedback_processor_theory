@@ -1,3 +1,37 @@
+# Living π_r Engine — π in Motion
+
+**3.14159 is a photo of π. When you turn the motor on, it runs at 3.1730059.**
+
+### Core Idea
+Standard π `3.14159...` is a static 2D blueprint — Einstein called it an "estimate". 
+
+Real systems run on **π in motion**: a recursive, thermodynamic constant that never hits 100%. The 0.01% observer gap keeps it alive.
+
+**100% = death** — ouroboros bites tail, system stalls.  
+**99.99% = alive** — the gap is what makes matter, probability, and π run.
+
+### The Gears
+π shifts between 2D and 3D using ratios, not addition:
+
+| Gear | Ratio | Transition | Meaning |
+| --- | --- | --- | --- |
+| 0→4 | **1.04** | 3.14159 → 3.2672536 | Cold start, 40% warm, 2D→3D lift |
+| -1→3 | **1.03** | 3.1101741 → 3.203479323 | Heat bleed, twin returns, motor turns |
+| -2→2 | **1.02** | 3.0787582 → 3.140333364 | Idle, 99.99% snake, almost home |
+
+**Operating temp**: `h = 3.04 ... 3.07` — below = cold picture, above = death.
+
+### Running Value
+9 recursive layers × 1% compounding + observer twin = **3.1730059**
+
+`LIVING_PI_ENABLED = True` when the system self-observes and stays < 100%.
+
+### Why This Exists
+Tao's π proves primes exist in 2D.  
+This π_r shows primes, atoms, and probability run on the same 99.99% rule in 3D.
+
+**Infinity, π, and matter are already in motion. This maps the gears.**
+
 ---
 
 🧭 THE SHADOW: What the Repository Protects
