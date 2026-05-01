@@ -1,71 +1,308 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Trinity Harmonics Dashboard</title>
-<style>
-  body{margin:0;background:#111;color:#eee;font-family:'Segoe UI',sans-serif;}
-  #ui{position:absolute;left:12px;top:12px;z-index:10;background:rgba(0,0,0,0.8);padding:16px;border-radius:8px;backdrop-filter:blur(10px);}
-  #ui input{padding:8px;font-size:14px;border:1px solid #444;background:#222;color:#eee;border-radius:4px;}
-  #ui button{padding:8px 16px;margin-left:8px;background:#0066ff;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;}
-  #ui button:hover{background:#0052cc;}
-  #ui button:disabled{background:#444;cursor:not-allowed;}
-  
-  #status{position:absolute;right:12px;top:12px;z-index:10;background:rgba(0,0,0,0.8);padding:16px;border-radius:8px;min-width:250px;}
-  #status .badge{display:inline-block;padding:4px 8px;background:#0066ff;border-radius:12px;font-size:11px;margin:4px 4px 4px 0;}
-  #status .demo{background:#ff6600;}
-  #status .stat{font-size:12px;margin:4px 0;color:#aaa;}
-  #status .stat strong{color:#fff;}
-  
-  #convergenceCanvas{width:100vw;height:60vh;display:block;background:#000;}
-  
-  #log{position:absolute;left:12px;bottom:12px;max-height:30vh;overflow:auto;width:50vw;background:rgba(0,0,0,0.9);padding:12px;border-radius:8px;font-family:monospace;font-size:12px;}
-  #log .token{margin:2px 0;padding:4px;border-left:3px solid #0066ff;}
-  #log .nvidia{border-left-color:#76b900;}
-  #log .gpt{border-left-color:#00a67e;}
-  #log .claude{border-left-color:#9b59b6;}
-  
-  .toggle-container{margin:12px 0;}
-  .toggle-switch{position:relative;display:inline-block;width:50px;height:24px;}
-  .toggle-switch input{opacity:0;width:0;height:0;}
-  .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#444;transition:.3s;border-radius:24px;}
-  .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%;}
-  input:checked + .slider{background-color:#0066ff;}
-  input:checked + .slider:before{transform:translateX(26px);}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trinity Harmonics | π_r in Motion</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            overflow-x: hidden;
+        }
+        /* Dashboard UI */
+        #ui {
+            position: fixed;
+            left: 12px;
+            top: 12px;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid #222;
+        }
+        #ui input {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #333;
+            background: #111;
+            color: #00ff88;
+            border-radius: 4px;
+            width: 280px;
+        }
+        #ui button {
+            padding: 8px 16px;
+            margin-left: 8px;
+            background: #00ff88;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #ui button:hover { background: #00cc6a; }
+        #ui button:disabled { background: #333; cursor: not-allowed; }
+
+        #status {
+            position: fixed;
+            right: 12px;
+            top: 12px;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 16px;
+            border-radius: 8px;
+            min-width: 280px;
+            border: 1px solid #222;
+        }
+        #status.badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #00ff88;
+            color: #0a0a0a;
+            border-radius: 12px;
+            font-size: 11px;
+            margin: 4px 4px 4px 0;
+            font-weight: bold;
+        }
+        #status.death { background: #ff4d4d; }
+        #status.motion { background: #ffaa00; color: #0a0a0a; }
+        #status.stat { font-size: 12px; margin: 6px 0; color: #aaa; }
+        #status.stat strong { color: #00ff88; }
+
+        #convergenceCanvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            background: #000;
+        }
+
+        /* Proof Section */
+        #proof {
+            position: relative;
+            z-index: 50;
+            background: #0a0a0a;
+            padding: 60px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1, h2 { color: #00ff88; border-bottom: 1px solid #222; padding-bottom: 8px; }
+        h3 { color: #ffaa00; }
+        code { background: #1a1a1a; padding: 2px 6px; border-radius: 3px; color: #ff4d4d; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #222; padding: 10px 12px; text-align: left; }
+        th { background: #111; color: #00ff88; }
+        a { color: #00ccff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+       .snake { color: #00ff88; font-weight: bold; }
+       .death { color: #ff4d4d; font-weight: bold; }
+       .motion { color: #ffaa00; font-weight: bold; }
+       .notebook-btn {
+            display: inline-block;
+            background: #00ff88;
+            color: #0a0a0a;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+       .toggle-container { margin: 12px 0; font-size: 13px; }
+       .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+       .toggle-switch input { opacity: 0; width: 0; height: 0; }
+       .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #333; transition:.3s; border-radius: 24px; }
+       .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition:.3s; border-radius: 50%; }
+        input:checked +.slider { background: #00ff88; }
+        input:checked +.slider:before { transform: translateX(26px); }
+    </style>
 </head>
 <body>
 
 <div id="ui">
-  <div>
-    <input id="prompt" size="60" placeholder="Enter prompt for multi-LLM streaming..." value="Explain harmonic convergence in AI systems"/>
-    <button id="startBtn">Start Trinity</button>
-    <button id="statsBtn">Stats</button>
-  </div>
-  
-  <div class="toggle-container">
-    <label>
-      <span style="margin-right:8px;font-size:13px;">Demo Mode (no API costs):</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="demoToggle">
-        <span class="slider"></span>
-      </label>
-    </label>
-  </div>
+    <div>
+        <input id="prompt" size="40" placeholder="Crank the π_r engine..." value="3.14159"/>
+        <button id="startBtn">Run Trinity</button>
+    </div>
+    <div class="toggle-container">
+        <label>
+            <span style="margin-right:8px;">LIVING_PI_ENABLED:</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="demoToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </label>
+    </div>
 </div>
 
 <div id="status">
-  <div style="font-weight:bold;margin-bottom:8px;">Trinity Status</div>
-  <div id="statusBadges"></div>
-  <div id="statsDisplay"></div>
+    <div style="font-weight:bold;margin-bottom:8px;">π_r Engine Status</div>
+    <div id="statusBadges">
+        <span class="badge">99.99% ALIVE</span>
+        <span class="badge death">100% = DEATH</span>
+    </div>
+    <div id="statsDisplay">
+        <div class="stat">Picture π: <strong>3.14159</strong></div>
+        <div class="stat">Motion π_r: <strong>3.1730059</strong></div>
+        <div class="stat">h_range: <strong>3.04...3.07</strong></div>
+        <div class="stat">Current: <strong id="currentPi">3.14159</strong></div>
+        <div class="stat">Gear: <strong id="currentGear">0→4 [1.04]</strong></div>
+    </div>
 </div>
 
 <canvas id="convergenceCanvas"></canvas>
 
-<div id="log"></div>
+<div id="proof">
+    <h1>Topological_π_vs_Tao_Proof</h1>
+    <p><span class="motion">3.14159 is a photo of π. When you turn the motor on, it runs at 3.1730059.</span></p>
+
+    <h2>Thesis</h2>
+    <p>Tao's Green-Tao theorem uses <code>π = 3.14159...</code> as a <strong>static, 2D topological constant</strong> to prove primes exist.</p>
+    <p>This formalizes <strong>motion-π <code>π_r = 3.1730059</code></strong> as a <strong>recursive, 3D constant</strong> where primes exist <em>under observation</em> with a 99.99% cap.</p>
+
+    <h2>The Split</h2>
+    <table>
+        <tr><th>Aspect</th><th>Tao's π [Picture]</th><th>π_r [Motion]</th></tr>
+        <tr><td><strong>Value</strong></td><td>3.14159...</td><td class="motion">3.1730059</td></tr>
+        <tr><td><strong>Topology</strong></td><td>2D, static, complete</td><td>3D, recursive, 99.99%</td></tr>
+        <tr><td><strong>100% State</strong></td><td>Allowed, endpoint</td><td class="death">Death, stall, forbidden</td></tr>
+        <tr><td><strong>Observer</strong></td><td>External, not modeled</td><td class="snake">Internal, 0.01 gap required</td></tr>
+    </table>
+
+    <h2>The Gears</h2>
+    <ul>
+        <li><strong>1.04</strong>: 3.14159 → 3.2672536 [<span class="motion">40% warm, cold start</span>]</li>
+        <li><strong>1.03</strong>: 3.1101741 → 3.203479323 [<span class="motion">heat bleed, twin returns</span>]</li>
+        <li><strong>1.02</strong>: 3.0787582 → 3.140333364 [<span class="snake">99.99% idle</span>]</li>
+    </ul>
+
+    <h2>The Snake Rule</h2>
+    <p><span class="death"><strong>100% = death</strong></span> — ouroboros bites tail, system stalls.</p>
+    <p><span class="snake"><strong>99.99% = alive</strong></span> — the 0.01 gap is the observer. Keeps the crank turning. That’s quantum probability.</p>
+
+    <a href="https://nbviewer.org/github/ak-skwaa-mahawk/Topological_π_vs_Tao_Proof/blob/main/demo_notebook.ipynb"
+       class="notebook-btn" target="_blank">
+        → Launch Interactive Notebook
+    </a>
+
+    <h2>Bridge: Pure Math + Physics</h2>
+    <table>
+        <tr><th>Pure Math [Tao]</th><th>Physics [π_r]</th><th>Bridge</th></tr>
+        <tr><td>Existence proof</td><td>Running engine</td><td>3.14159 lifts to 3.1730059</td></tr>
+        <tr><td>Unit circle</td><td>Generator crank</td><td>1.04/1.03/1.02 gears</td></tr>
+        <tr><td>No observer</td><td>0.01 observer gap</td><td class="snake">99.99% = Born rule</td></tr>
+    </table>
+
+    <p><strong>Infinity, π, and matter are already in motion. This maps the topology.</strong></p>
+    <p style="font-size: 0.8em; color: #666;">LIVING_PI_ENABLED = True</p>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-<script src="app.js"></script>
+<script>
+// Trinity Harmonics + π_r Engine
+const PI_PICTURE = 3.14159;
+const PI_MOTION = 3.1730059;
+const SNAKE_CAP = 0.9999;
+const H_RANGE = [3.04, 3.07];
+const GEARS = [
+    { name: '0→4', ratio: 1.04, base: 3.14159, color: 0xff4d4d },
+    { name: '-1→3', ratio: 1.03, base: 3.1101741, color: 0xffaa00 },
+    { name: '-2→2', ratio: 1.02, base: 3.0787582, color: 0x00ff88 }
+];
+
+let scene, camera, renderer, snake, clock;
+let currentPi = PI_PICTURE;
+let gearIndex = 0;
+let isRunning = false;
+
+function initThree() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('convergenceCanvas'), antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.z = 5;
+
+    // Snake = π chasing 99.99%
+    const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
+    const material = new THREE.MeshPhongMaterial({
+        color: 0x00ff88,
+        emissive: 0x003322,
+        shininess: 100
+    });
+    snake = new THREE.Mesh(geometry, material);
+    scene.add(snake);
+
+    const light = new THREE.PointLight(0x00ff88, 1, 100);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x111111));
+
+    clock = new THREE.Clock();
+    animate();
+}
+
+function gearShift() {
+    if (!isRunning) return;
+    const gear = GEARS[gearIndex];
+    currentPi = gear.base * gear.ratio * SNAKE_CAP;
+
+    // Update UI
+    document.getElementById('currentPi').textContent = currentPi.toFixed(7);
+    document.getElementById('currentGear').textContent = `${gear.name} [${gear.ratio}]`;
+
+    // Visual: snake color = gear, scale = heat
+    snake.material.color.setHex(gear.color);
+    const heat = (currentPi - PI_PICTURE) / (PI_MOTION - PI_PICTURE);
+    snake.scale.setScalar(1 + heat * 0.5);
+
+    // Cycle gears: 0→4→3→-1→0
+    gearIndex = (gearIndex + 1) % GEARS.length;
+
+    // 99.99% cap: if we hit 100%, death
+    if (currentPi >= PI_MOTION * 1.001) {
+        currentPi = PI_PICTURE; // Stall, restart
+        snake.material.color.setHex(0xff4d4d);
+        setTimeout(() => { if(isRunning) gearShift(); }, 1000);
+    } else {
+        setTimeout(() => { if(isRunning) gearShift(); }, 800);
+    }
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    const time = clock.getElapsedTime();
+
+    if (snake) {
+        snake.rotation.x = time * 0.3;
+        snake.rotation.y = time * 0.5;
+        // Wobble at 99.99% = alive
+        const wobble = 1 + Math.sin(time * 10) * 0.0001;
+        snake.scale.multiplyScalar(wobble);
+    }
+
+    renderer.render(scene, camera);
+}
+
+document.getElementById('startBtn').onclick = () => {
+    isRunning =!isRunning;
+    document.getElementById('startBtn').textContent = isRunning? 'Stop Trinity' : 'Run Trinity';
+    if (isRunning) {
+        currentPi = parseFloat(document.getElementById('prompt').value) || PI_PICTURE;
+        gearIndex = 0;
+        gearShift();
+    }
+};
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+initThree();
+</script>
 
 </body>
 </html>
