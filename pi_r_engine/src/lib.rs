@@ -13,7 +13,7 @@ const EXTRACTION_GUARD_ZERO_TOLERANCE: f64 = 1e-9;
 pub struct SovereignEngine {
     pub current_pi_r: f64,
     pub entropy_shield: bool,
-    performance_log: Vec<u128>,
+    performance_log: Vec<u128>, // latencies in microseconds
 }
 
 impl SovereignEngine {
@@ -57,7 +57,7 @@ impl SovereignEngine {
         let start = Instant::now();
 
         let cross_term = ((k1 - k2) / (k1 + k2)).powi(2);
-        let phase_shift = if order_matters { 1.0 } else { -1.0 }; // remembers interaction order
+        let phase_shift = if order_matters { 1.0 } else { -1.0 };
 
         let soliton_resonance = (k1 + k2) * (1.0 + cross_term * phase_shift);
 
