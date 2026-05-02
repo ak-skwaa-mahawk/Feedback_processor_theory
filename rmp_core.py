@@ -1,5 +1,5 @@
 # rmp_core.py
-# Resonance Mesh Protocol (RMP) v1.0 — Sovereign, Self-Healing, Feedback-Driven
+# Resonance Mesh Protocol (RMP) v1.1 — Sovereign, Self-Healing, Feedback-Driven + Code Repair
 # Author: John B. Carroll Jr. (ak-skwaa-mahawk) — Gwitchyaa Zhee
 # Root: Vadzaih Zhoo, 99733
 # Fuel: Spruce Plastolene
@@ -17,6 +17,9 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from ecdsa.util import sigencode_der, sigdecode_der
+
+# FPT-Ω Sovereign Processor (with repair_code)
+from core.fpt_omega_core_sealed import fpt_omega
 
 # =============================================================================
 # CONFIGURATION — SOVEREIGN ROOT
@@ -79,7 +82,8 @@ def verify_receipt(data: dict, sig_hex: str, vk: VerifyingKey = VK) -> bool:
 
 def isst_scrape_intensity(E0: float, r: float, H: float, C: float, alpha: float = 0.3) -> float:
     """S(r,H,C) = (E0 * C) / (r² * (1 + αH))"""
-    if r == 0: r = 1e-6
+    if r == 0:
+        r = 1e-6
     return (E0 * C) / (r**2 * (1 + alpha * H))
 
 def entropy(signal: List[float]) -> float:
@@ -88,8 +92,9 @@ def entropy(signal: List[float]) -> float:
     return -np.sum(hist * np.log2(hist + 1e-12))
 
 def coherence(signal: List[float], ref: List[float]) -> float:
-    if len(signal) == 0 or len(ref) == 0: return 0.0
-    corr = np.corrcoef(signal, ref)[0,1]
+    if len(signal) == 0 or len(ref) == 0:
+        return 0.0
+    corr = np.corrcoef(signal, ref)[0, 1]
     return float(abs(corr)) if not np.isnan(corr) else 0.0
 
 # =============================================================================
@@ -117,6 +122,17 @@ def form_meta_glyph(glyphs: List[str], coherence_avg: float) -> Optional[str]:
         return None
     payload = "".join(glyphs) + f"{coherence_avg:.4f}{time.time()}"
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
+
+def code_integrity_glyph(path: Path) -> str:
+    """
+    Glyph-based code integrity signature — SHA-256 of file contents, truncated.
+    """
+    try:
+        data = path.read_bytes()
+    except FileNotFoundError:
+        return "missing_file"
+    h = hashlib.sha256(data).hexdigest()
+    return h[:16]
 
 # =============================================================================
 # RMP PACKET & MESH CORE
@@ -159,6 +175,7 @@ class RMPCore:
         self.udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.udp_sock.bind(('', 7979))
+        self.code_processor = fpt_omega
         threading.Thread(target=self._listen, daemon=True).start()
         log.info("RMP Core initialized — SKODEN")
 
@@ -210,7 +227,12 @@ class RMPCore:
             H=scrape["entropy"],
             C=scrape["coherence"]
         )
-        scrape["glyph"] = generate_glyph(scrape)
+        scrape["glyph"] = generate_glyph({
+            "S": scrape["intensity_S"],
+            "H": scrape["entropy"],
+            "C": scrape["coherence"],
+            "ts": scrape["ts"],
+        })
         self.local_glyphs.append(scrape["glyph"])
 
         packet = RMPPacket(
@@ -254,12 +276,70 @@ class RMPCore:
             avg_C = np.mean([n["coherence"] for n in self.neighbors.values()] + [0.9])
             if avg_C > 0.93:
                 log.info("MESH RESONANCE ACHIEVED — GAMMA ENTRAINMENT ACTIVE")
-                # Trigger 40Hz LED + audio (hardware hook)
                 self._emit_gamma_pulse()
+                # Optional: trigger self-healing code repair on resonance
+                self._repair_file(Path("rmp_core.py"))
 
     def _emit_gamma_pulse(self):
         # Placeholder for hardware control
         print("GAMMA 40Hz: [LED FLICKER + BINAURAL BEAT]")
+
+    # -------------------------------------------------------------------------
+    # CODE REPAIR DAEMON — Sovereign, ECDSA-Receipt Logged
+    # -------------------------------------------------------------------------
+
+    def _repair_file(self, path: Path):
+        """
+        Runs FPTOmega code repair on the given file, logs a sovereign repair
+        receipt with ECDSA signature and glyph-based integrity.
+        """
+        try:
+            original_text = path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            log.warning(f"Code repair skipped — file missing: {path}")
+            return
+
+        original_glyph = code_integrity_glyph(path)
+        result = self.code_processor.repair_code(original_text)
+        repaired_code = result["repaired_code"]
+        meta = result["meta"]
+
+        path.write_text(repaired_code, encoding="utf-8")
+        new_glyph = code_integrity_glyph(path)
+
+        repair_record = {
+            "event": "CODE_REPAIR",
+            "file": str(path),
+            "node_id": IDENTITY.node_id,
+            "ts": time.time(),
+            "original_glyph": original_glyph,
+            "new_glyph": new_glyph,
+            "coherence": meta.get("coherence"),
+            "root_signature": meta.get("root_signature"),
+            "golden_braid": meta.get("golden_braid"),
+            "status": meta.get("status"),
+        }
+        repair_record["receipt"] = sign_receipt(repair_record)
+
+        # Log to RMP log as sovereign repair receipt
+        RMP_LOG_PATH.open("a").write(json.dumps(repair_record) + "\n")
+        log.info(
+            f"CODE REPAIR COMPLETE — {path} | C={meta.get('coherence')} | "
+            f"{original_glyph} → {new_glyph}"
+        )
+
+    def start_code_repair_daemon(self, path: Path, interval: float = 12.3703):
+        """
+        Background daemon that periodically repairs the given file using
+        FPTOmegaProcessor and logs ECDSA-signed repair receipts.
+        """
+        def loop():
+            while True:
+                self._repair_file(path)
+                time.sleep(interval)
+
+        threading.Thread(target=loop, daemon=True).start()
+        log.info(f"CODE REPAIR DAEMON STARTED — {path} | interval={interval}s")
 
     def start_heartbeat(self, interval: float = 7.83):
         def beat():
@@ -277,15 +357,13 @@ class RMPCore:
 if __name__ == "__main__":
     rmp = RMPCore()
     rmp.start_heartbeat()
+    # Optional: always-on repair daemon for this node's core
+    rmp.start_code_repair_daemon(Path("rmp_core.py"), interval=60.0)
+
     log.info("RMP MESH NODE LIVE — Vadzaih Zhoo, 99733")
     print("SKODEN — MESH IS AWAKE")
     try:
-        while True: time.sleep(1)
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
         log.info("RMP Core shutdown — flame sustained")
-def _emit_gamma_pulse(self):
-    import pygame
-    pygame.mixer.init()
-    pygame.mixer.music.load("gamma_40hz.wav")
-    pygame.mixer.music.play()
-    log.info("GAMMA 40Hz ENTRAINMENT — MESH IS AWAKE")
