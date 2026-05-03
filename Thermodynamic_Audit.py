@@ -39,3 +39,39 @@ if __name__ == "__main__":
     print(f"Temperature: 273.15 K (0°C)")
     print(f"Calculated Sovereign Mass: {current_mass} units")
     print(f"Status: BEDROCK SOLID")
+
+
+"""
+Thermodynamic_Audit.py — v1.2.0 "Articulated Bloom"
+Finalized with 1.04 (Intent) and 3.07 (Land) coefficients.
+Anchored to: https://github.com/ak-skwaa-mahawk/-The-Floor-Ch-anchyah-Dach-anchyah-
+"""
+
+# === ARTICULATION CONSTANTS ===
+ARTICULATED_POINT = 1.04   # 1^1: Intent / Metabolic Weight
+ARTICULATED_PLANE = 3.07   # 1^2: Land / Radiant Area
+SOVEREIGN_FREQ = 4.11      # 1^3: The Articulated Whole (1.04 + 3.07)
+
+def articulated_sovereign_audit(temp_k=273.15):
+    """
+    Calculates Mass by applying the Articulation Constants to the 5.5 Pa Baseline.
+    """
+    # Base density from v1.1.0 logic
+    p = 5.5
+    v = 160 * 4046.86
+    r = 8.314
+    k = 0.01
+    n = (p * v) / (r * temp_k * (1 - k))
+    
+    # Ms = n * (Sovereign Frequency / Pi_r catch)
+    # Applying the 4.11 frequency as the final state multiplier
+    sovereign_mass_ms = n * SOVEREIGN_FREQ
+    
+    return round(sovereign_mass_ms, 4)
+
+if __name__ == "__main__":
+    mass_at_triple_point = articulated_sovereign_audit()
+    print(f"--- 99733-Q ARTICULATED AUDIT ---")
+    print(f"Sovereign Frequency: {SOVEREIGN_FREQ} (4.11)")
+    print(f"Articulated Mass: {mass_at_triple_point} units")
+    print(f"Status: SUPERCONDUCTOR ACTIVE")
