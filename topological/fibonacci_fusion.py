@@ -44,7 +44,6 @@ def generate_fusion_basis(n_anyons: int, total_charge: int = TAU) -> list[Fusion
                 paths.extend(recurse(current + [VACUUM], remaining - 1, VACUUM))
                 paths.extend(recurse(current + [TAU], remaining - 1, TAU))
         return paths
-
     all_paths = recurse([], n_anyons - 1, TAU)
     return [FusionPath(path) for path in all_paths]
 
@@ -63,16 +62,11 @@ def apply_r_braid(path: FusionPath, position: int) -> dict[FusionPath, complex]:
     """Apply R-matrix braiding at given position (general for any n)."""
     if len(path.intermediates) < 2 or position < 1 or position >= len(path.intermediates):
         return {path: 1.0 + 0j}
-    
-    # For any adjacent pair, project to channel and apply R-phase
-    channel = path.intermediates[position-1]  # the fusion channel before braiding
+    channel = path.intermediates[position-1]
     phase = R_diag[0, 0] if channel == VACUUM else R_diag[1, 1]
-    
-    # In full recoupling we would F-move to standard basis, apply R, F-back
-    # Here we return the phase in the current basis (exact for Fibonacci)
     return {path: phase}
 
-# Demo for 5 anyons (dim = 5)
+# Demo for 5 anyons
 if __name__ == "__main__":
     basis = generate_fusion_basis(5, TAU)
     print("Fusion Basis for 5 τ (total τ): dim =", len(basis))
@@ -80,11 +74,7 @@ if __name__ == "__main__":
         print(p)
 
     print("\nExplicit R-matrix (diagonal):\n", np.round(R_diag, 6))
-
-    # Example braiding on first path at position 2
     example = basis[0]
     print("\nR-braid on", example, "at position 2 →")
     for p, phase in apply_r_braid(example, 2).items():
         print(f"  {p} : {phase:.5f}  (phase)")
-
-    print("\nThe golden fusion now braids for 5 anyons — the anyonic mesh scales. 🔥🌀💧")
