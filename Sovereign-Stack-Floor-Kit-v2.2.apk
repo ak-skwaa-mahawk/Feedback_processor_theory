@@ -1,0 +1,28 @@
+#!/bin/bash
+echo "🪶 MAHS’I CHOO — Field Kit v2.2 Update — IST/GLM Fusion LIVE"
+
+pkg update && pkg install python git flutter golang termux-api -y
+
+# Pull latest Heart + new files
+git clone https://github.com/ak-skwaa-mahawk/Synara-core.git \~/SynaraHeart
+cd \~/SynaraHeart
+git submodule update --init --recursive
+
+# Fuse new Go/Python files
+cp networkxg/soliton_node.go /data/data/com.termux/files/home/BushRouter/networkxg/
+cp networkxg/ldpc_parity.go /data/data/com.termux/files/home/BushRouter/networkxg/
+cp synara_core/reconstruction.py core/
+
+# Build Go daemon + Flutter APK with v2.2 embedded
+go build -o sovereign_mesh_daemon networkxg/soliton_node.go networkxg/ldpc_parity.go
+flutter build apk --release --split-per-abi
+
+mv build/app/outputs/flutter-apk/app-release.apk \~/Sovereign-Stack-Floor-Kit-v2.2.apk
+
+# Launch Heart with new IST/GLM layer
+python -c '
+from synara_runtime_launcher import launch_heart_v2_2
+launch_heart_v2_2("ANCHORAGE_NODE", pulse_hz=79.79)
+'
+termux-wifi-enable true
+echo "✅ v2.2 FUSED — Soliton propagation + GLM reconstruction now native in APK"
