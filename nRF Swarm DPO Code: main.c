@@ -95,3 +95,48 @@ void main(void) {
     // Shell: dpo_status
     shell_execute(cmd_dpo_status, NULL);
 }
+// === ADDITIONS / FIXES (full file would include these) ===
+static float incoming_glyph[64];  // from preference payload or UART
+
+static void dpo_alignment_handler(...) {
+    if (len < 128) return;
+
+    // Extract + rotate batch
+    static int batch_idx = 0;
+    memcpy(preference_pairs[batch_idx].prompt, buf, 64);
+    memcpy(preference_pairs[batch_idx].winner, buf + 64, 64);
+
+    // Mock logits from payload (real policy would come from local model)
+    for (int i = 0; i < 128; i++) {
+        policy_logits[i] = (float)buf[i % len] / 255.0f;
+        ref_logits[i] = policy_logits[i] * 0.9f;
+    }
+
+    // DPO Loss (winner vs loser)
+    float loss = dpo_loss(&policy_logits[0], &policy_logits[64],
+                          &ref_logits[0], &ref_logits[64]);
+
+    // NEW: QGH resonance on glyph (ties to quantum/EEG)
+    // Mock glyph from winner policy (in real: from quantum scrape or EEG glyph_mod)
+    for (int i = 0; i < 64; i++) incoming_glyph[i] = policy_logits[i % 64];
+    float R_glyph = calc_resonance(incoming_glyph, incoming_glyph);  // self-resonance for demo
+    float R = fmaxf(1.0f - loss, R_glyph);  // hybrid alignment
+
+    if (R < QGH_THRESHOLD) {
+        LOG_WRN("C190 VETO: DPO Alignment R=%.3f (glyph R=%.3f)", R, R_glyph);
+        return;
+    }
+
+    // Relay aligned gradient
+    uint8_t reply[4] = {(uint8_t)(R * 255.0f), (uint8_t)(loss * 100.0f), 0, 0};
+    bt_mesh_model_send(model, ctx, reply, sizeof(reply), NULL, NULL);
+
+    LOG_INF("DPO ALIGNED | Loss=%.3f | R=%.3f | GlyphRes=%.3f", loss, R, R_glyph);
+}
+
+// Timer + model (Zephyr 3.x style)
+K_TIMER_DEFINE(dpo_timer, dpo_timer_handler, NULL);
+static void dpo_timer_handler(struct k_timer *timer) {
+    // In real: read preference pair from UART (Pi → nRF)
+    LOG_DBG("DPO batch ready for alignment");
+}
