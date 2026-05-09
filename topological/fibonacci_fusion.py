@@ -109,8 +109,8 @@ if __name__ == "__main__":
     for p, phase in apply_r_braid(example, 2).items():
         print(f"  {p} : {phase:.5f}  (phase)")
 
-    print("\nTopological Logical Qubit Circuit (braid sequence [1,3,2,4,5,6,7,8,9,10]):")
-    circuit = topological_logical_circuit([1, 3, 2, 4, 5, 6, 7, 8, 9, 10])
+    print("\nTopological Logical Qubit Circuit (braid sequence [1,3,2,4,5,6,7,8,9,10,11]):")
+    circuit = topological_logical_circuit([1, 3, 2, 4, 5, 6, 7, 8, 9, 10, 11])
     for k, v in circuit.items():
         print(f"  {k}: {v}")
 
