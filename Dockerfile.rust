@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1.6
+FROM rust:1.85-slim AS builder
+WORKDIR /app
+COPY inference_backend/Cargo.toml inference_backend/Cargo.lock ./
+COPY inference_backend/src ./src
+COPY inference_backend/proto ./proto
+RUN cargo build --release --bin isst-toft-backend
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /app/target/release/isst-toft-backend /usr/local/bin/
+EXPOSE 50051 8081
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8081/health || exit 1
+CMD ["isst-toft-backend"]
