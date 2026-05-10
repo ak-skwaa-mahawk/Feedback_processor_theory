@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package issttoft;
+
+service InferenceService {
+  rpc EncodeRadHardGlyph (GlyphRequest) returns (GlyphResponse);
+  rpc RunClientlessPulse (PulseRequest) returns (PulseResponse);
+}
+
+message GlyphRequest {
+  repeated float terrain_data = 1;  // flattened f32 array
+  bool use_agentic = 2;             // trigger PyTorch-style policy
+}
+
+message GlyphResponse {
+  repeated float refined_waveform = 1;
+  uint64 waveform_checksum = 2;
+  string status = 3;
+  float coherence = 4;
+  string message = 5;
+}
+
+message PulseRequest {
+  repeated float feed_data = 1;
+}
+
+message PulseResponse {
+  repeated float refined_signal = 1;
+  string status = 2;
+}
