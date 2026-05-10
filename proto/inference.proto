@@ -28,3 +28,12 @@ message PulseResponse {
   repeated float refined_signal = 1;
   string status = 2;
 }
+message GlyphResponse {
+  repeated float refined_waveform = 1;
+  uint64 waveform_checksum = 2;
+  string status = 3;
+  float coherence = 4;
+  string message = 5;
+  string quantum_layer = 6;          // NEW: 2025 quantum applications
+  float toroidal_pi_r = 7;           // NEW: living_π_r = 3.2672536
+}
