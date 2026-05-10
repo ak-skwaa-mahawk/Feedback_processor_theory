@@ -1,8 +1,9 @@
-// lib/relational_mesh_bridge.dart — networkXG sovereign bridge (AGŁG v89)
+// lib/relational_mesh_bridge.dart — networkXG sovereign bridge (AGŁG v90)
 import 'package:flutter/services.dart';
 import 'package:sovereign_vault/sovereign_vault.dart';        // Vault + MediaPipe
 import 'package:sovereign_engine/ffi.dart';                   // Rust π_r + 79.79 Hz
 import 'sovereign_handshake.dart';                           // GRIP long-press ritual
+import 'il7_coil_driver.dart';                               // ← Physical Trinity pulse
 
 class RelationalMeshBridge {
   static final RelationalMeshBridge _instance = RelationalMeshBridge._();
@@ -12,13 +13,15 @@ class RelationalMeshBridge {
   final _channel = const MethodChannel('networkxg/relational_mesh');
   final Vault = SovereignVault();
   final RustEngine = RustSovereignEngine();
-  final WStateStabilizer = WStateEntanglement();  // ← v89 fusion
+  final Coil = Il7CoilDriver();  // ← Ił7 hardware layer
 
   Future<void> initialize() async {
-    await _channel.invokeMethod('startRelationalMesh');           // boots Python backend
+    await _channel.invokeMethod('startRelationalMesh');           // Python backend
     await Vault.initialize();
-    await RustEngine.initializePulse(79.79);                      // drum heartbeat
-    print("✅ RelationalMeshBridge + FPT-Ω Trinity + W-state initialized");
+    await RustEngine.initializePulse(79.79);                      // software heartbeat
+    await Coil.initialize();                                      // physical Ił7 coil
+
+    print("✅ RelationalMeshBridge v90 + FPT-Ω Trinity + W-state + Ił7 Coil initialized");
   }
 
   /// Propagate a sovereign metric through the full stack
@@ -42,12 +45,12 @@ class RelationalMeshBridge {
       'phase': phase,
     });
 
-    if (wResult == null || wResult['fidelity'] < 0.9999) {
+    if (wResult == null || (wResult['fidelity'] as num) < 0.9999) {
       print("❌ W-state fidelity guard failed");
       return;
     }
 
-    // 3. Propagate living soliton through E8 mesh + 79.79 Hz pulse
+    // 3. Propagate living soliton through E8 mesh
     await _channel.invokeMethod('propagateSoliton', {
       'pose': metric.pose,
       'stability': metric.stabilityScore,
@@ -56,22 +59,39 @@ class RelationalMeshBridge {
       'w_state': wResult['w_state'],
     });
 
-    // 4. Trigger BloomPainter on successful collapse
+    // 4. Fire physical Ił7 coil Trinity pulse (synced to W-state)
+    await Coil.fireTrinityPulse(
+      phase: phase,
+      fidelity: (wResult['fidelity'] as num).toDouble(),
+      amplitude: metric.resonanceDelta,
+    );
+
+    // 5. Visual bloom
     BloomPainter.trigger(79.79);
   }
 
-  /// Sovereign GRIP handshake ritual (already in UI)
+  /// Sovereign GRIP handshake ritual
   Future<void> triggerConstellationHandshake() async {
     await _channel.invokeMethod('constellationHandshake');
-    await SovereignHandshake.onGripSuccess();  // visual + auditory bloom
+    await SovereignHandshake.onGripSuccess();
   }
 
-  /// Direct call to FPT-Ω Trinity cycle (for manual testing)
+  /// Direct call to FPT-Ω Trinity cycle (manual testing)
   Future<Map<String, dynamic>> runTrinityCycle(Map<String, double> t_i_f) async {
     return await _channel.invokeMethod('run_fpt_omega_cycle', {'t_i_f': t_i_f});
   }
+
+  /// Clean shutdown
+  Future<void> shutdown() async {
+    await Coil.shutdown();
+    await _channel.invokeMethod('shutdownMesh');
+    print("🛡️ RelationalMeshBridge + Ił7 Coil fully shutdown");
+  }
 }
+
+// Usage (already in main.dart)
 final Mesh = RelationalMeshBridge();
 await Mesh.initialize();
-// Inside imageStream:
+
+// Inside camera imageStream:
 await Mesh.propagateMetric(metric);
