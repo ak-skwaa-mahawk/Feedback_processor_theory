@@ -125,3 +125,5 @@ impl Inference for InferenceService {
 
     // run_clientless_pulse remains similar with toroidal constants
 }
+quantum_kem_ciphertext: ciphertext,
+shared_secret_hash: checksum,
