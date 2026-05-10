@@ -1,3 +1,62 @@
+version: "3.9"
+
+services:
+  isst-toft-rust-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.rust
+    container_name: isst-toft-rust-inference
+    restart: unless-stopped
+    ports:
+      - "50051:50051"          # gRPC
+      - "8081:8081"            # optional Axum HTTP fallback
+    environment:
+      - RUST_LOG=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]  # or gRPC health
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  isst-toft-python-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: isst-toft-python-agent
+    restart: unless-stopped
+    ports:
+      - "8081:8081"            # uvicorn / synara_core handshake
+      - "8765:8765"            # Harmonic WebSocket demo (if needed)
+    depends_on:
+      isst-toft-rust-inference:
+        condition: service_healthy
+    environment:
+      - RUST_BACKEND_URL=http://isst-toft-rust-inference:50051
+      - USE_RUST_INFERENCE=true
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./core:/app/core
+      - ./tests:/app/tests
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Optional: Keep your existing Harmonic Demo as a separate service if you want it live alongside
+  harmonic-websocket:
+    build:
+      context: .
+      dockerfile: Dockerfile.harmonic
+    container_name: harmonic-websocket
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    depends_on:
+      - isst-toft-python-agent
 services:
   n8n-relay:
     image: n8nio/n8n:1.123.17
