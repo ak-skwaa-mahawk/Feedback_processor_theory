@@ -1,6 +1,6 @@
 import numpy as np
 from math import pi, exp
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 # ====================== TRINITY HARMONICS v0.4.3 (Canonical) + PRESSURE GRADIENT ======================
 GROUND_STATE = 0.1
@@ -90,7 +90,7 @@ class WStateEntanglement:
         damp_factor = DAMPING_PRESETS.get(damp_preset, 0.5)
         w = trinity_damping(w, damp_factor)
 
-        # === NEW: Pressure Gradient Work Entropy Circuit ===
+        # === Pressure Gradient Work Entropy Circuit ===
         w = pressure_gradient_work_entropy(w)
 
         # Normalize
