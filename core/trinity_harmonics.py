@@ -1,9 +1,8 @@
-# trinity_harmonics.py — v0.4.3 (Canonical Trinity Harmonic Layer)
-# FPT-Ω — Quetzalcoatl 8-Phase Renewal Integrated
 import numpy as np
 import math
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Tuple
 
+# ====================== SACRED CONSTANTS + QUETZALCOATL 8-PHASE ======================
 GROUND_STATE = math.pi
 DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1
 RATIO = DIFFERENCE / GROUND_STATE
@@ -12,6 +11,12 @@ DELTA = 3 * EPSILON
 
 DAMPING_PRESETS = {"Balanced": 0.5, "Aggressive": 0.7, "Gentle": 0.3}
 CUSTOM_PRESETS = {}
+
+# Psyselsic + Thermodynamic Constants (new circuit)
+RECEPTION_PERCEPTION_DELTA = 1.0
+PSYSELSIC_COIL = 0.618034
+HEART_STERNUM_TRINITY = 3.0
+GOLDEN_ANGLE_RADIANS = math.pi * (3 - math.sqrt(5))
 
 def trinity_damping(signal: np.ndarray, damp_factor: float = 0.5) -> np.ndarray:
     return signal * np.exp(-damp_factor * np.arange(len(signal)))
@@ -24,7 +29,7 @@ def dynamic_weights(t: float) -> Dict[str, float]:
         "F": 0.2 + scale * np.sin(math.pi * t)
     }
 
-def phase_lock_recursive(phases: List[float]) -> tuple[float, float]:
+def phase_lock_recursive(phases: List[float]) -> Tuple[float, float]:
     if not phases:
         return 0.0, 0.0
     locked = phases[-1]
@@ -80,9 +85,68 @@ class TrinityHarmonics:
         return self.stabilize(vector, damping_factor=phase_mod)
 
     def sovereign_merge(self, a, b):
-        """-(-)+(+)=+³ — The diabolical Trinity merge operator"""
-        # Real sovereign version (observer-corrected power)
-        return (abs(a) + abs(b)) ** 3 * (GROUND_STATE / np.pi)
+        return (np.abs(a) + np.abs(b)) ** 3 * (GROUND_STATE / np.pi)
+
+    # ====================== PRESSURE GRADIENT WORK ENTROPY OPERATOR ======================
+    def pressure_gradient_work_entropy(self, vector: np.ndarray) -> np.ndarray:
+        """The missing circuit: Battery (potential) → Wires (Work) → Heat (Entropy)"""
+        # Battery (Living Pi potential)
+        potential = vector * LIVING_PI
+        
+        # Wires (Work) — psyselsic dual manipulation engine
+        work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
+        
+        # Heat (Entropy) — Vhitzee opposition + dissipative surplus
+        entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
+        entropy = np.pad(entropy, (0, 1), mode='constant')
+        
+        # Thermodynamic flow across gradient
+        final = work - (entropy * GOLDEN_ANGLE_RADIANS)
+        final = final / np.sum(final)
+        
+        return np.clip(final, -1.0, 1.0)
+
+    def apply_full_trinity(self, vector: np.ndarray, damping_factor: float = 0.5, tether_force: float = 0.0) -> Dict:
+        """Full fusion with Pressure Gradient Work Entropy"""
+        light_damped = trinity_damping(vector, damping_factor)
+        elegant = self.stabilize(vector, damping_factor)
+        buoyancy = 1.0 - (tether_force / 15.0) if tether_force != 0 else 1.0
+        pressured = self.pressure_gradient_work_entropy(vector)
+        
+        final = (0.3 * light_damped + 0.3 * elegant + 0.2 * buoyancy + 0.2 * pressured)
+        final = np.clip(final, -1.0, 1.0)
+        
+        return {
+            "final_stabilized": final,
+            "neutrosophic_weights": dynamic_weights(self.t),
+            "phase_locked": phase_lock_recursive([self.phase])[0],
+            "trinity_factor": self.trinity_factor(np.mean(final)),
+            "magnetic_buoyancy": buoyancy,
+            "pressure_gradient_active": True,
+            "work_done": True,
+            "entropy_generated": True
+        }
 
 # Vessel-wide singleton
 trinity = TrinityHarmonics()
+
+# WStateEntanglement (kept compatible with your base)
+class WStateEntanglement:
+    def __init__(self):
+        self.w_state = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
+        self.fidelity = 1.0
+
+    def measure_fidelity(self, w_state):
+        ideal = 1.0 / 3
+        deviation = sum(abs(v - ideal)**2 for v in w_state.values())
+        return max(0.0, 1.0 - deviation)
+
+    def update(self, damping_factor: float = 0.5, tether_force: float = 0.0):
+        w_vec = np.array([self.w_state['100'], self.w_state['010'], self.w_state['001']])
+        result = trinity.apply_full_trinity(w_vec, damping_factor, tether_force)
+        final = result["final_stabilized"]
+        total = np.sum(final)
+        w_norm = final / total if total > 0 else np.array([1.0/3, 1.0/3, 1.0/3])
+        self.w_state = {'100': w_norm[0], '010': w_norm[1], '001': w_norm[2]}
+        self.fidelity = self.measure_fidelity(self.w_state)
+        return self.w_state, self.fidelity, result
