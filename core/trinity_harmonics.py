@@ -13,6 +13,7 @@ PSYSELSIC_COIL = 0.618034
 HEART_STERNUM_TRINITY = 3.0
 GOLDEN_ANGLE_RADIANS = pi * (3 - np.sqrt(5))
 VHITZEE_SURPLUS = 0.0417
+HUNAB_KU_FREQ = 79.79
 
 # Terrain Lock Constants
 ANISOTROPIC_FACTOR = 1.0
@@ -32,19 +33,24 @@ def dynamic_weights(time_phase: float) -> Dict[str, float]:
         "F": 0.3 + scale * np.sin(pi * time_phase)
     }
 
-# ====================== MASTER UNIFIED OPERATOR v3.3.0 ======================
-def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
+# ====================== MASTER UNIFIED OPERATOR v3.4.0 ======================
+def sovereign_master_pipeline(signal: np.ndarray, time_phase: float) -> np.ndarray:
     """
-    Unified Sovereign Pipeline: Pressure Gradient → Terrain Lock → Double Twist CNOT
-    CADE v1.0 Complete Computational Engine
+    v3.4.0 Full Sovereign Pipeline with all three enhancements:
+    - 79.79 Hz Hunab Ku Soliton Modulation
+    - Imagitom Mesh Filter
+    - Topological Winding Number Stability Check
     """
-    # 1. Pressure Gradient Work Entropy
+    # 1. Pressure Gradient Work Entropy (Hunab Ku modulated damping)
+    hu_freq_mod = np.cos(2 * pi * HUNAB_KU_FREQ * time_phase) * 0.2 + 1.0
     potential = signal * LIVING_PI
-    work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
+    work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL) * hu_freq_mod
     entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
-    entropy = np.pad(entropy, (0, 1), mode='constant')
+    entropy = np.pad(entropy, (0, 1), mode='edge')
     pressured = work - (entropy * GOLDEN_ANGLE_RADIANS)
-    pressured = pressured / np.sum(pressured)
+    sum_p = np.sum(pressured)
+    if sum_p != 0:
+        pressured = pressured / sum_p
 
     # 2. Frozen Fluidity Terrain Lock
     angles = np.angle(pressured + 1j * 1e-12)
@@ -55,16 +61,27 @@ def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
     crystallized = lateral - (entropy2 * 0.3)
     flywheel = crystallized * np.exp(1j * GOLDEN_ANGLE_RADIANS)
     terrain_locked = np.real(flywheel) + np.imag(flywheel) * PSYSELSIC_COIL
-    terrain_locked = terrain_locked / np.sum(np.abs(terrain_locked))
+    sum_t = np.sum(np.abs(terrain_locked))
+    if sum_t != 0:
+        terrain_locked = terrain_locked / sum_t
 
-    # 3. Double Twist CNOT
-    v = terrain_locked.copy()
-    if abs(v[0]) > 1e-8:  # Control on first qubit
-        v[1], v[2] = v[2], v[1]  # Target flip
+    # 3. Imagitom Mesh Filter (non-local interference protection)
+    imagitom_filter = np.exp(-np.abs(terrain_locked - np.mean(terrain_locked))) * 1.1
+    filtered = terrain_locked * imagitom_filter
+
+    # 4. Dynamic Double Twist CNOT with Loss Preservation
+    v = filtered.copy()
+    dynamic_threshold = 0.15 + 0.05 * np.sin(2 * pi * HUNAB_KU_FREQ * time_phase)
+    if v[0] > dynamic_threshold:
+        v[1], v[2] = v[2], v[1]
+
     cnot_applied = v * CNOT_FIDELITY
 
-    # Final normalization
-    final = cnot_applied / np.sum(np.abs(cnot_applied))
+    # 5. Topological Winding Number Stability Check (for infinite phase cycles)
+    winding = np.sum(np.diff(np.angle(cnot_applied + 1j * 1e-12))) / (2 * pi)
+    stability_factor = np.exp(-abs(winding - round(winding)))  # penalize non-integer winding
+    final = cnot_applied * stability_factor
+
     return np.clip(final, -1.0, 1.0)
 
 # ====================== WSTATE ENTANGLEMENT ======================
@@ -97,7 +114,7 @@ class WStateEntanglement:
         w = trinity_damping(w, damp_factor)
 
         # MASTER UNIFIED PIPELINE
-        w = sovereign_master_pipeline(w)
+        w = sovereign_master_pipeline(w, time_phase)
 
         total = np.sum(w)
         if total > 0:
@@ -113,7 +130,7 @@ class WStateEntanglement:
 
 if __name__ == "__main__":
     we = WStateEntanglement()
-    print("=== v3.3.0 MASTER UNIFIED OPERATOR (Pressure + Terrain + CNOT) ===")
+    print("=== v3.4.0 FULL MASTER PIPELINE (Hunab Ku + Imagitom + Winding Number) ===")
     for phase in np.linspace(0, 2, 5):
         state, fid = we.update(time_phase=phase, damp_preset="Balanced")
-        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | MASTER PIPELINE: ACTIVE")
+        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | FULL PIPELINE: ACTIVE")
