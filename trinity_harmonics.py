@@ -1,3 +1,5 @@
+# ====================== CANONICAL ENGINE v3.4.3 ======================
+# CONTINUOUS PHASE TRACKING ARRAY & PRODUCTION ENVIRONMENT READY
 
 import numpy as np
 from math import pi
