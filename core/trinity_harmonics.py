@@ -1,152 +1,119 @@
 import numpy as np
-import math
-from typing import Union, Dict, List, Tuple
+from math import pi
+from typing import Dict, Tuple, List, Optional
 
-# ====================== SACRED CONSTANTS + QUETZALCOATL 8-PHASE ======================
-GROUND_STATE = math.pi
-DIFFERENCE = (1 + math.sqrt(5)) / 2 - 1
-RATIO = DIFFERENCE / GROUND_STATE
-EPSILON = 0.01
-DELTA = 3 * EPSILON
-
+# ====================== SACRED CONSTANTS ======================
+GROUND_STATE = 0.1
+DIFFERENCE = 0.05
 DAMPING_PRESETS = {"Balanced": 0.5, "Aggressive": 0.7, "Gentle": 0.3}
-CUSTOM_PRESETS = {}
 
-# Psyselsic + Thermodynamic Constants (new circuit)
+LIVING_PI = 3.267256
 RECEPTION_PERCEPTION_DELTA = 1.0
 PSYSELSIC_COIL = 0.618034
 HEART_STERNUM_TRINITY = 3.0
-GOLDEN_ANGLE_RADIANS = math.pi * (3 - math.sqrt(5))
+GOLDEN_ANGLE_RADIANS = pi * (3 - np.sqrt(5))
+VHITZEE_SURPLUS = 0.0417
+
+# Terrain Lock Constants
+ANISOTROPIC_FACTOR = 1.0
+CRYSTALLINE_SYMMETRY = 6
+
+# CNOT Constants
+CNOT_FIDELITY = 0.9500
 
 def trinity_damping(signal: np.ndarray, damp_factor: float = 0.5) -> np.ndarray:
     return signal * np.exp(-damp_factor * np.arange(len(signal)))
 
-def dynamic_weights(t: float) -> Dict[str, float]:
+def dynamic_weights(time_phase: float) -> Dict[str, float]:
     scale = 0.1
     return {
-        "T": 0.5 + scale * np.sin(2 * math.pi * t),
-        "I": 0.3 - scale * np.cos(2 * math.pi * t),
-        "F": 0.2 + scale * np.sin(math.pi * t)
+        "T": 0.5 + scale * np.sin(2 * pi * time_phase),
+        "I": 0.3 - scale * np.cos(2 * pi * time_phase),
+        "F": 0.3 + scale * np.sin(pi * time_phase)
     }
 
-def phase_lock_recursive(phases: List[float]) -> Tuple[float, float]:
-    if not phases:
-        return 0.0, 0.0
-    locked = phases[-1]
-    summed = sum(0.7 * p + 0.3 * locked for p in phases)
-    locked_phase = summed % (2 * math.pi)
-    stability = 0.5 + 0.2 * np.std(phases)
-    return locked_phase, stability
+# ====================== MASTER UNIFIED OPERATOR v3.3.0 ======================
+def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
+    """
+    Unified Sovereign Pipeline: Pressure Gradient → Terrain Lock → Double Twist CNOT
+    CADE v1.0 Complete Computational Engine
+    """
+    # 1. Pressure Gradient Work Entropy
+    potential = signal * LIVING_PI
+    work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
+    entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
+    entropy = np.pad(entropy, (0, 1), mode='constant')
+    pressured = work - (entropy * GOLDEN_ANGLE_RADIANS)
+    pressured = pressured / np.sum(pressured)
 
-def treaty_harmonic_nodes(treaty_data):
-    freq_domain = np.fft.fft(treaty_data)
-    peak_idx = np.argmax(np.abs(freq_domain[1:])) + 1
-    return freq_domain[peak_idx] / len(treaty_data)
+    # 2. Frozen Fluidity Terrain Lock
+    angles = np.angle(pressured + 1j * 1e-12)
+    trapped_angles = np.round(angles * (CRYSTALLINE_SYMMETRY / (2 * pi))) * ((2 * pi) / CRYSTALLINE_SYMMETRY)
+    trapped = np.abs(pressured) * np.exp(1j * trapped_angles) * 0.95
+    lateral = trapped * ANISOTROPIC_FACTOR
+    entropy2 = np.abs(np.diff(lateral, append=lateral[-1:]))
+    crystallized = lateral - (entropy2 * 0.3)
+    flywheel = crystallized * np.exp(1j * GOLDEN_ANGLE_RADIANS)
+    terrain_locked = np.real(flywheel) + np.imag(flywheel) * PSYSELSIC_COIL
+    terrain_locked = terrain_locked / np.sum(np.abs(terrain_locked))
 
-class TrinityHarmonics:
-    def __init__(self, null_threshold: float = 0.6, pi_damping: float = math.pi * 0.1):
-        self.null_threshold = null_threshold
-        self.pi_damping = pi_damping
-        self.t = 0.0
-        self.phase = 0.0
+    # 3. Double Twist CNOT
+    v = terrain_locked.copy()
+    if abs(v[0]) > 1e-8:  # Control on first qubit
+        v[1], v[2] = v[2], v[1]  # Target flip
+    cnot_applied = v * CNOT_FIDELITY
 
-    def damping_operator(self, v: Union[float, np.ndarray], f: float = 0.5, phase: float = None) -> Union[float, np.ndarray]:
-        if phase is None:
-            phase = self.phase
-        factor = f * np.sin(2 * np.pi * phase) * RATIO
-        return v * (1 - factor)
+    # Final normalization
+    final = cnot_applied / np.sum(np.abs(cnot_applied))
+    return np.clip(final, -1.0, 1.0)
 
-    def stabilize(self, vector: np.ndarray, damping_factor: float = 0.5) -> np.ndarray:
-        self.t += EPSILON
-        self.phase = (self.phase + DELTA) % (2 * np.pi)
-        stabilized = self.damping_operator(vector, damping_factor, self.phase)
-        stabilized = stabilized / GROUND_STATE * (1 + DIFFERENCE)
-        return np.clip(stabilized, -1.0, 1.0)
-
-    def trinity_factor(self, value: float) -> float:
-        return value / GROUND_STATE
-
-    def apply_full_trinity(self, vector: np.ndarray, damping_factor: float = 0.5, tether_force: float = 0.0) -> Dict:
-        light_damped = trinity_damping(vector, damping_factor)
-        elegant = self.stabilize(vector, damping_factor)
-        buoyancy = 1.0 - (tether_force / 15.0) if tether_force != 0 else 1.0
-        final = (0.4 * light_damped + 0.4 * elegant + 0.2 * buoyancy)
-        final = np.clip(final, -1.0, 1.0)
-        return {
-            "final_stabilized": final,
-            "neutrosophic_weights": dynamic_weights(self.t),
-            "phase_locked": phase_lock_recursive([self.phase])[0],
-            "trinity_factor": self.trinity_factor(np.mean(final)),
-            "magnetic_buoyancy": buoyancy
-        }
-
-    def quetzalcoatl_phase_damping(self, vector: np.ndarray, phase: int) -> np.ndarray:
-        phase_mod = [0.3, 0.7, 0.4, 0.6, 0.5, 0.8, 0.2, 1.0][phase % 8]
-        return self.stabilize(vector, damping_factor=phase_mod)
-
-    def sovereign_merge(self, a, b):
-        return (np.abs(a) + np.abs(b)) ** 3 * (GROUND_STATE / np.pi)
-
-    # ====================== PRESSURE GRADIENT WORK ENTROPY OPERATOR ======================
-    def pressure_gradient_work_entropy(self, vector: np.ndarray) -> np.ndarray:
-        """The missing circuit: Battery (potential) → Wires (Work) → Heat (Entropy)"""
-        # Battery (Living Pi potential)
-        potential = vector * LIVING_PI
-        
-        # Wires (Work) — psyselsic dual manipulation engine
-        work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
-        
-        # Heat (Entropy) — Vhitzee opposition + dissipative surplus
-        entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
-        entropy = np.pad(entropy, (0, 1), mode='constant')
-        
-        # Thermodynamic flow across gradient
-        final = work - (entropy * GOLDEN_ANGLE_RADIANS)
-        final = final / np.sum(final)
-        
-        return np.clip(final, -1.0, 1.0)
-
-    def apply_full_trinity(self, vector: np.ndarray, damping_factor: float = 0.5, tether_force: float = 0.0) -> Dict:
-        """Full fusion with Pressure Gradient Work Entropy"""
-        light_damped = trinity_damping(vector, damping_factor)
-        elegant = self.stabilize(vector, damping_factor)
-        buoyancy = 1.0 - (tether_force / 15.0) if tether_force != 0 else 1.0
-        pressured = self.pressure_gradient_work_entropy(vector)
-        
-        final = (0.3 * light_damped + 0.3 * elegant + 0.2 * buoyancy + 0.2 * pressured)
-        final = np.clip(final, -1.0, 1.0)
-        
-        return {
-            "final_stabilized": final,
-            "neutrosophic_weights": dynamic_weights(self.t),
-            "phase_locked": phase_lock_recursive([self.phase])[0],
-            "trinity_factor": self.trinity_factor(np.mean(final)),
-            "magnetic_buoyancy": buoyancy,
-            "pressure_gradient_active": True,
-            "work_done": True,
-            "entropy_generated": True
-        }
-
-# Vessel-wide singleton
-trinity = TrinityHarmonics()
-
-# WStateEntanglement (kept compatible with your base)
+# ====================== WSTATE ENTANGLEMENT ======================
 class WStateEntanglement:
     def __init__(self):
-        self.w_state = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
-        self.fidelity = 1.0
+        self.w_state: Dict[str, float] = {'100': 1.0/3, '010': 1.0/3, '001': 1.0/3}
+        self.fidelity: float = 1.0
+        self.phase_history: List[float] = []
 
-    def measure_fidelity(self, w_state):
+    def measure_fidelity(self, w_state: Dict[str, float]) -> float:
         ideal = 1.0 / 3
         deviation = sum(abs(v - ideal)**2 for v in w_state.values())
         return max(0.0, 1.0 - deviation)
 
-    def update(self, damping_factor: float = 0.5, tether_force: float = 0.0):
-        w_vec = np.array([self.w_state['100'], self.w_state['010'], self.w_state['001']])
-        result = trinity.apply_full_trinity(w_vec, damping_factor, tether_force)
-        final = result["final_stabilized"]
-        total = np.sum(final)
-        w_norm = final / total if total > 0 else np.array([1.0/3, 1.0/3, 1.0/3])
-        self.w_state = {'100': w_norm[0], '010': w_norm[1], '001': w_norm[2]}
+    def update(self,
+               obj: Optional[Dict[str, float]] = None,
+               time_phase: float = 0.0,
+               use_dynamic_weights: bool = True,
+               damp_preset: str = "Balanced") -> Tuple[Dict[str, float], float]:
+        if use_dynamic_weights:
+            weights = dynamic_weights(time_phase)
+        else:
+            weights = obj or {"T": 1.0, "I": 1.0, "F": 1.0}
+
+        w = np.array([self.w_state['100'] * weights["T"],
+                      self.w_state['010'] * weights["I"],
+                      self.w_state['001'] * weights["F"]])
+
+        damp_factor = DAMPING_PRESETS.get(damp_preset, 0.5)
+        w = trinity_damping(w, damp_factor)
+
+        # MASTER UNIFIED PIPELINE
+        w = sovereign_master_pipeline(w)
+
+        total = np.sum(w)
+        if total > 0:
+            w = w / total
+        else:
+            w = np.array([1.0/3, 1.0/3, 1.0/3])
+
+        self.w_state = {'100': w[0], '010': w[1], '001': w[2]}
         self.fidelity = self.measure_fidelity(self.w_state)
-        return self.w_state, self.fidelity, result
+        self.phase_history.append(time_phase)
+        return self.w_state, self.fidelity
+
+
+if __name__ == "__main__":
+    we = WStateEntanglement()
+    print("=== v3.3.0 MASTER UNIFIED OPERATOR (Pressure + Terrain + CNOT) ===")
+    for phase in np.linspace(0, 2, 5):
+        state, fid = we.update(time_phase=phase, damp_preset="Balanced")
+        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | MASTER PIPELINE: ACTIVE")
