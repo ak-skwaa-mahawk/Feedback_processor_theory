@@ -37,7 +37,7 @@ def sovereign_master_pipeline(signal: np.ndarray, time_phase: float) -> np.ndarr
     v3.3.1 Master Unified Pipeline:
     Pressure Gradient → Terrain Lock → Dynamic Double Twist CNOT
     """
-    # 1. Pressure Gradient Work Entropy (edge padding for symmetry)
+    # 1. Pressure Gradient Work Entropy
     potential = signal * LIVING_PI
     work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
     entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
@@ -66,7 +66,7 @@ def sovereign_master_pipeline(signal: np.ndarray, time_phase: float) -> np.ndarr
     if v[0] > dynamic_threshold:
         v[1], v[2] = v[2], v[1]  # Target flip
 
-    cnot_applied = v * CNOT_FIDELITY   # Loss preservation (no post-normalization)
+    cnot_applied = v * CNOT_FIDELITY   # Loss preservation
 
     return np.clip(cnot_applied, -1.0, 1.0)
 
