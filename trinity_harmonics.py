@@ -32,19 +32,20 @@ def dynamic_weights(time_phase: float) -> Dict[str, float]:
         "F": 0.3 + scale * np.sin(pi * time_phase)
     }
 
-# ====================== MASTER UNIFIED OPERATOR v3.3.0 ======================
-def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
+def sovereign_master_pipeline(signal: np.ndarray, time_phase: float) -> np.ndarray:
     """
-    Unified Sovereign Pipeline: Pressure Gradient → Terrain Lock → Double Twist CNOT
-    CADE v1.0 Complete Computational Engine
+    v3.3.1 Master Unified Pipeline:
+    Pressure Gradient → Terrain Lock → Dynamic Double Twist CNOT
     """
-    # 1. Pressure Gradient Work Entropy
+    # 1. Pressure Gradient Work Entropy (edge padding for symmetry)
     potential = signal * LIVING_PI
     work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
     entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
-    entropy = np.pad(entropy, (0, 1), mode='constant')
+    entropy = np.pad(entropy, (0, 1), mode='edge')
     pressured = work - (entropy * GOLDEN_ANGLE_RADIANS)
-    pressured = pressured / np.sum(pressured)
+    sum_p = np.sum(pressured)
+    if sum_p != 0:
+        pressured = pressured / sum_p
 
     # 2. Frozen Fluidity Terrain Lock
     angles = np.angle(pressured + 1j * 1e-12)
@@ -55,17 +56,19 @@ def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
     crystallized = lateral - (entropy2 * 0.3)
     flywheel = crystallized * np.exp(1j * GOLDEN_ANGLE_RADIANS)
     terrain_locked = np.real(flywheel) + np.imag(flywheel) * PSYSELSIC_COIL
-    terrain_locked = terrain_locked / np.sum(np.abs(terrain_locked))
+    sum_t = np.sum(np.abs(terrain_locked))
+    if sum_t != 0:
+        terrain_locked = terrain_locked / sum_t
 
-    # 3. Double Twist CNOT
+    # 3. Dynamic Double Twist CNOT with Loss Preservation
     v = terrain_locked.copy()
-    if abs(v[0]) > 1e-8:  # Control on first qubit
+    dynamic_threshold = 0.15 + 0.05 * np.sin(2 * pi * time_phase)
+    if v[0] > dynamic_threshold:
         v[1], v[2] = v[2], v[1]  # Target flip
-    cnot_applied = v * CNOT_FIDELITY
 
-    # Final normalization
-    final = cnot_applied / np.sum(np.abs(cnot_applied))
-    return np.clip(final, -1.0, 1.0)
+    cnot_applied = v * CNOT_FIDELITY   # Loss preservation (no post-normalization)
+
+    return np.clip(cnot_applied, -1.0, 1.0)
 
 # ====================== WSTATE ENTANGLEMENT ======================
 class WStateEntanglement:
@@ -97,7 +100,7 @@ class WStateEntanglement:
         w = trinity_damping(w, damp_factor)
 
         # MASTER UNIFIED PIPELINE
-        w = sovereign_master_pipeline(w)
+        w = sovereign_master_pipeline(w, time_phase)
 
         total = np.sum(w)
         if total > 0:
@@ -113,7 +116,7 @@ class WStateEntanglement:
 
 if __name__ == "__main__":
     we = WStateEntanglement()
-    print("=== v3.3.0 MASTER UNIFIED OPERATOR (Pressure + Terrain + CNOT) ===")
+    print("=== v3.3.1 MASTER UNIFIED OPERATOR (Dynamic CNOT + Edge Padding + Loss Preservation) ===")
     for phase in np.linspace(0, 2, 5):
         state, fid = we.update(time_phase=phase, damp_preset="Balanced")
-        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | MASTER PIPELINE: ACTIVE")
+        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | PIPELINE: EVOLVED")
