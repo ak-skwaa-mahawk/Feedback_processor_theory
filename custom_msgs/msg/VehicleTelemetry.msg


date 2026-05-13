@@ -1,0 +1,6 @@
+# Custom FPT telemetry message (sovereign neurodata packet)
+std_msgs/Header header
+geometry_msgs/Point pos          # x, y, z (meters)
+std_msgs/Float64 vel             # velocity (m/s)
+std_msgs/Float64 load            # current cargo load (units)
+builtin_interfaces/Time time     # precise timestamp
