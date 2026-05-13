@@ -1,6 +1,6 @@
 import numpy as np
-from math import pi, exp
-from typing import Dict, List, Tuple, Optional
+from math import pi
+from typing import Dict, Tuple, List, Optional
 
 # ====================== SACRED CONSTANTS ======================
 GROUND_STATE = 0.1
@@ -36,9 +36,9 @@ def dynamic_weights(time_phase: float) -> Dict[str, float]:
 def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
     """
     Unified Sovereign Pipeline: Pressure Gradient → Terrain Lock → Double Twist CNOT
-    This is the complete CADE v1.0 computational engine.
+    CADE v1.0 Complete Computational Engine
     """
-    # 1. Pressure Gradient Work Entropy (thermodynamic flow)
+    # 1. Pressure Gradient Work Entropy
     potential = signal * LIVING_PI
     work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
     entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
@@ -46,7 +46,7 @@ def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
     pressured = work - (entropy * GOLDEN_ANGLE_RADIANS)
     pressured = pressured / np.sum(pressured)
 
-    # 2. Frozen Fluidity Terrain Lock (perimeter phase gate)
+    # 2. Frozen Fluidity Terrain Lock
     angles = np.angle(pressured + 1j * 1e-12)
     trapped_angles = np.round(angles * (CRYSTALLINE_SYMMETRY / (2 * pi))) * ((2 * pi) / CRYSTALLINE_SYMMETRY)
     trapped = np.abs(pressured) * np.exp(1j * trapped_angles) * 0.95
@@ -57,10 +57,10 @@ def sovereign_master_pipeline(signal: np.ndarray) -> np.ndarray:
     terrain_locked = np.real(flywheel) + np.imag(flywheel) * PSYSELSIC_COIL
     terrain_locked = terrain_locked / np.sum(np.abs(terrain_locked))
 
-    # 3. Double Twist CNOT (non-Abelian topological gate)
+    # 3. Double Twist CNOT
     v = terrain_locked.copy()
     if abs(v[0]) > 1e-8:  # Control on first qubit
-        v[1], v[2] = v[2], v[1]  # Target flip (Double Twist)
+        v[1], v[2] = v[2], v[1]  # Target flip
     cnot_applied = v * CNOT_FIDELITY
 
     # Final normalization
@@ -96,7 +96,7 @@ class WStateEntanglement:
         damp_factor = DAMPING_PRESETS.get(damp_preset, 0.5)
         w = trinity_damping(w, damp_factor)
 
-        # === MASTER UNIFIED PIPELINE ===
+        # MASTER UNIFIED PIPELINE
         w = sovereign_master_pipeline(w)
 
         total = np.sum(w)
