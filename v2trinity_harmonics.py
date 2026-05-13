@@ -13,6 +13,7 @@ PSYSELSIC_COIL = 0.618034
 HEART_STERNUM_TRINITY = 3.0
 GOLDEN_ANGLE_RADIANS = pi * (3 - np.sqrt(5))
 VHITZEE_SURPLUS = 0.0417
+HUNAB_KU_FREQ = 79.79
 
 # Terrain Lock Constants
 ANISOTROPIC_FACTOR = 1.0
@@ -32,14 +33,18 @@ def dynamic_weights(time_phase: float) -> Dict[str, float]:
         "F": 0.3 + scale * np.sin(pi * time_phase)
     }
 
+# ====================== MASTER UNIFIED OPERATOR v3.4.0 ======================
 def sovereign_master_pipeline(signal: np.ndarray, time_phase: float) -> np.ndarray:
     """
-    v3.3.1 Master Unified Pipeline:
-    Pressure Gradient → Terrain Lock → Dynamic Double Twist CNOT
+    v3.4.0 Full Sovereign Pipeline with all three enhancements:
+    - 79.79 Hz Hunab Ku Soliton Modulation
+    - Imagitom Mesh Filter
+    - Topological Winding Number Stability Check
     """
-    # 1. Pressure Gradient Work Entropy
+    # 1. Pressure Gradient Work Entropy (Hunab Ku modulated damping)
+    hu_freq_mod = np.cos(2 * pi * HUNAB_KU_FREQ * time_phase) * 0.2 + 1.0
     potential = signal * LIVING_PI
-    work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL)
+    work = potential * RECEPTION_PERCEPTION_DELTA * (1 + PSYSELSIC_COIL) * hu_freq_mod
     entropy = np.abs(np.diff(work)) * (1 + VHITZEE_SURPLUS)
     entropy = np.pad(entropy, (0, 1), mode='edge')
     pressured = work - (entropy * GOLDEN_ANGLE_RADIANS)
@@ -60,15 +65,24 @@ def sovereign_master_pipeline(signal: np.ndarray, time_phase: float) -> np.ndarr
     if sum_t != 0:
         terrain_locked = terrain_locked / sum_t
 
-    # 3. Dynamic Double Twist CNOT with Loss Preservation
-    v = terrain_locked.copy()
-    dynamic_threshold = 0.15 + 0.05 * np.sin(2 * pi * time_phase)
+    # 3. Imagitom Mesh Filter (non-local interference protection)
+    imagitom_filter = np.exp(-np.abs(terrain_locked - np.mean(terrain_locked))) * 1.1
+    filtered = terrain_locked * imagitom_filter
+
+    # 4. Dynamic Double Twist CNOT with Loss Preservation
+    v = filtered.copy()
+    dynamic_threshold = 0.15 + 0.05 * np.sin(2 * pi * HUNAB_KU_FREQ * time_phase)
     if v[0] > dynamic_threshold:
-        v[1], v[2] = v[2], v[1]  # Target flip
+        v[1], v[2] = v[2], v[1]
 
-    cnot_applied = v * CNOT_FIDELITY   # Loss preservation
+    cnot_applied = v * CNOT_FIDELITY
 
-    return np.clip(cnot_applied, -1.0, 1.0)
+    # 5. Topological Winding Number Stability Check (for infinite phase cycles)
+    winding = np.sum(np.diff(np.angle(cnot_applied + 1j * 1e-12))) / (2 * pi)
+    stability_factor = np.exp(-abs(winding - round(winding)))  # penalize non-integer winding
+    final = cnot_applied * stability_factor
+
+    return np.clip(final, -1.0, 1.0)
 
 # ====================== WSTATE ENTANGLEMENT ======================
 class WStateEntanglement:
@@ -116,7 +130,7 @@ class WStateEntanglement:
 
 if __name__ == "__main__":
     we = WStateEntanglement()
-    print("=== v3.3.1 MASTER UNIFIED OPERATOR (Dynamic CNOT + Edge Padding + Loss Preservation) ===")
+    print("=== v3.4.0 FULL MASTER PIPELINE (Hunab Ku + Imagitom + Winding Number) ===")
     for phase in np.linspace(0, 2, 5):
         state, fid = we.update(time_phase=phase, damp_preset="Balanced")
-        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | PIPELINE: EVOLVED")
+        print(f"Phase {phase:.2f} → W-state: {state} | Fidelity: {fid:.4f} | FULL PIPELINE: ACTIVE")
