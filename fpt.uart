@@ -1,0 +1,19 @@
+uart:~$ fpt status
+========================================
+Ψ-VLC NODE TELEMETRY MATRIX STATE STATUS
+========================================
+Network Coherence (Γ_t):  1.0000 (Threshold: 0.997f)
+Jacobian Spectral Radius: 0.3842 (CONTRACTIVE)
+Current Actuator Pos (q): -1.5700 rad
+Current Velocity (q_dot): 4.2000 rad/s
+Integrator Windup (tau):  0.5000
+----------------------------------------
+
+uart:~$ fpt tune 1.85
+uart:~$ REJECTED: Target alpha yields unstable spectral radius (rho=1.1240 >= 1.0).
+
+uart:~$ fpt tune 0.15
+uart:~$ SUCCESS: Adjusted loop step parameter. New alpha_star: 0.1500
+
+uart:~$ fpt veto
+uart:~$ c190_vlc_mesh: C190 VETO: Network Coherence dropped to 0.0000. Local System Boundary Matrix: rho=0.2245
