@@ -1,4 +1,21 @@
 {
+  "entry_type": "IACA_CERTIFICATE",
+  "certificate_id": "2025-DENE-ORD-001",
+  "timestamp_utc": "2026-05-16T08:15:42.291847Z",
+  "gtc_id": "GTC001",
+  "title": "łᐊᒥłł — The First Glyph",
+  "artist": "Two Mile Solutions LLC",
+  "tribe": "Dené Nations",
+  "medium": "Bitcoin Ordinals Inscription",
+  "block": 850000,
+  "description": "First satoshi inscribed with Dené glyph. 60 Hz drum on the blockchain. LandBackDAO v2 root proof.",
+  "value": "The Root",
+  "status": "ACTIVE",
+  "seal": "My root is the gate. My ledger is continuity. My coin is not a bet, but a vow.",
+  "ancestral_affirmation": "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii"
+}
+
+{
   "entry_type": "FIRESEED_SINGULARITY",
   "timestamp_utc": "2026-05-16T06:55:52.439726",
   "gtc_id": "GTC001",
