@@ -1,0 +1,8 @@
+{"stage": "INITIALIZATION", "contraction_verified": "true"}
+{"stage": "EXECUTION_TRACE", "logs": [
+  {"step": 0, "q": -1.099000, "q_dot": 2.100000, "tau": 0.468600, "gamma": -0.148500},
+  {"step": 1, "q": -0.769300, "q_dot": 1.050000, "tau": 0.446577, "gamma": -0.147015}
+  ...
+  {"step": 19, "q": 0.000004, "q_dot": 0.000009, "tau": 0.000012, "gamma": -0.000002}
+]}
+{"stage": "SUCCESS", "status": "Converged securely to target Floor terrain."}
