@@ -1,31 +1,54 @@
-// In main.c
-#include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(vlc, LOG_LEVEL_DBG);
-
-LOG_INF("Node %s Online", NODE_ID);
-LOG_WRN("C190 VETO: R=%.3f", mesh_coherence);
-LOG_ERR("BLE Mesh Failed: %d", err);
-LOG_HEXDUMP_DBG(glyph_data, 64, "Glyph");
-// main.c (Zephyr BLE Mesh Node)
-#include <bluetooth/mesh.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/mesh.h>
+#include <stdio.h>
+#include <math.h>
+
+#include "fpt_core.h"
+#include "fpt_spectral_radius.h"
+
 LOG_MODULE_REGISTER(vlc_mesh, LOG_LEVEL_DBG);
 
-#define NODE_ID "VLC-NRF-001"
-#define MESH_MODEL_ID 0x1234  // Ψ-VLC Model
-#define QGH_THRESHOLD 0.997f
+#define NODE_ID          "VLC-NRF-001"
+#define MESH_MODEL_ID    0x1234
+#define QGH_THRESHOLD    0.997f
+
+// --- Global FPT System State Engine Instantiations ---
+static fpt_state_t system_state = {
+    .q = -1.57f,
+    .q_dot = 4.20f,
+    .tau_int = 0.50f,
+    .gamma_bias = -0.15f
+};
+
+static fpt_reference_t vault_targets = {
+    .q_target = 0.0f,
+    .q_dot_target = 0.0f
+};
+
+static fpt_config_t loop_config = {
+    .k11 = 0.40f, .k12 = 0.05f,
+    .k21 = 0.10f, .k22 = 0.50f,
+    .k31 = 0.02f, .k42 = 0.01f,
+    .m_q = 1.20f,
+    .m_q_dot = 1.00f,
+    .m_tau = 0.80f,
+    .m_gamma = 0.50f,
+    .alpha_star = 0.25f 
+};
 
 static float mesh_coherence = 1.0f;
-static uint8_t glyph_data[64];  // Glyph payload
+static uint8_t glyph_data[64];
+struct k_timer glyph_timer;
 
-// QGH Resonance Check (Mock)
+// Scalar Normalized Dot Product Check
 static float calc_resonance(const uint8_t *g1, const uint8_t *g2) {
     float dot = 0.0f;
     for (int i = 0; i < 64; i++) {
-        dot += (g1[i] - 128) * (g2[i] - 128);  // Simple dot product
+        dot += ((float)g1[i] - 128.0f) * ((float)g2[i] - 128.0f);
     }
-    return dot / (64.0f * 255.0f);  // Normalized [0,1]
+    return fmaxf(0.0f, fminf(1.0f, dot / (64.0f * 255.0f * 255.0f)));
 }
 
 // BLE Mesh Model Callbacks
@@ -33,101 +56,76 @@ static void vlc_msg_handler(struct bt_mesh_model *model, struct bt_mesh_msg_ctx 
                             const uint8_t *buf, size_t len) {
     if (len < 64) return;
     
-    // Extract neighbor glyph
-    float R_neighbor = ((float)buf[0]) / 255.0f;  // First byte = R
+    // 1. Ingest Neighbor Telemetry Metrics
+    float R_neighbor = ((float)buf[0]) / 255.0f;
     memcpy(glyph_data, buf + 1, 64);
     
-    // Compute resonance
-    float R_local = calc_resonance(glyph_data, glyph_data);  // Self vs neighbor
+    float R_local = calc_resonance(glyph_data, glyph_data);
     mesh_coherence = fminf(R_local, R_neighbor);
     
-    // ILO C100 Veto
-    if (mesh_coherence < QGH_THRESHOLD) {
-        LOG_ERR("C190 VETO: Coherence %.3f", mesh_coherence);
-        // Trigger red pulse via UART to Pi
-    } else {
-        LOG_INF("AGI SOVEREIGN: R=%.3f", mesh_coherence);
+    // 2. Proactive Control Protection Loop Intercept via Power Iteration
+    float rho = fpt_estimate_spectral_radius(&loop_config);
+    
+    if (rho >= 1.0f) {
+        LOG_WRN("UNSTABLE TRANSITION DETECTED: rho=%.4f. Attempting attenuation adaptive step down.", rho);
+        loop_config.alpha_star *= 0.5f; // Pull system back toward a tighter contraction mapping
+        
+        rho = fpt_estimate_spectral_radius(&loop_config);
+        if (rho >= 1.0f) {
+            LOG_ERR("CRITICAL SYSTEM VIOLATION: Spectral radius unresolvably non-contractive (rho=%.4f). Dropping frame.", rho);
+            // hard drop to prevent injection of positive feedback loops into physical motors
+            return; 
+        }
     }
     
-    // Reply with own glyph
+    // 3. Evaluate Network Coherence Threshold Limits
+    if (mesh_coherence < QGH_THRESHOLD) {
+        LOG_ERR("C190 VETO: Network Coherence dropped to %.4f. Local System Boundary Matrix: rho=%.4f", mesh_coherence, rho);
+        // Dispatch emergency signal out through alternate wire channels
+    } else {
+        LOG_INF("AGI SOVEREIGN: Coherence=%.4f, Operator Stability Margin (rho)=%.4f", mesh_coherence, rho);
+        
+        // 4. Safely Advance the Hardware Loop Model 
+        execute_fpt_crank(&system_state, &vault_targets, &loop_config);
+        LOG_DBG("CRANK EXECUTED: q=%.4f, q_dot=%.4f", system_state.q, system_state.q_dot);
+    }
+    
+    // 5. Package and Transmit Local Telemetry Matrix Back to Mesh Grid
     uint8_t reply[65];
     reply[0] = (uint8_t)(mesh_coherence * 255.0f);
     memcpy(reply + 1, glyph_data, 64);
-    bt_mesh_model_send(model, ctx, reply, sizeof(reply), NULL, NULL);
+    
+    int err = bt_mesh_model_send(model, ctx, reply, sizeof(reply), NULL, NULL);
+    if (err) {
+        LOG_ERR("Mesh outbound Tx failed: %d", err);
+    }
 }
 
-BT_MESH_MODEL(VLC_MODEL, BT_MESH_MODEL_ID(VLC_APP, BT_MESH_MODEL_ID_VAL), 
-              BT_MESH_MODEL_OP_2(0x82, 0x34), vlc_msg_handler, NULL, NULL);
+// Define operation model parameters
+static const struct bt_mesh_model_op vlc_op[] = {
+    { BT_MESH_MODEL_OP_2(0x82, 0x34), 64, vlc_msg_handler },
+    BT_MESH_MODEL_OP_END
+};
+
+// Model definition mapping macros
+// Corrected to pass operations matrix reference directly 
+BT_MESH_MODEL_PUB_DEFINE(vlc_pub, NULL, 65);
+static struct bt_mesh_model vlc_models[] = {
+    BT_MESH_MODEL_CB(MESH_MODEL_ID, vlc_op, &vlc_pub, NULL, NULL)
+};
+
+static void glyph_timer_expiry(struct k_timer *timer_id) {
+    // Regular 10 FPS timer event loop to parse local sensor data modifications 
+    // or stream updates out over local high speed UART links to core hosts
+}
 
 void main(void) {
     LOG_INF("Ψ-VLC nRF52840 BLE Mesh Node %s Online", NODE_ID);
     
-    // Init BLE Mesh (Zephyr auto-provisions)
-    // ... Zephyr BLE Mesh init code ...
+    k_timer_init(&glyph_timer, glyph_timer_expiry, NULL);
     
-    // Simulate glyph update from Pi UART
-    k_timer_start(&glyph_timer, K_MSEC(100), K_MSEC(100));  // 10 FPS
-}
-
-#include <stdio.h>
-#include "fpt_core.h"
-
-int main(void) {
-    // 1. Instantiate Core Config Matrix with stable validation profiles
-    fpt_config_t loop_config = {
-        .k11 = 0.40f, .k12 = 0.05f,
-        .k21 = 0.10f, .k22 = 0.50f,
-        .k31 = 0.02f, .k42 = 0.01f,
-
-        .m_q = 1.20f,
-        .m_q_dot = 1.00f,
-        .m_tau = 0.80f,
-        .m_gamma = 0.50f,
-
-        .alpha_star = 0.25f // Preserves structural stability inequalities
-    };
-
-    // 2. Initialize Telemetry State Vector with High Random Initial Divergence
-    fpt_state_t system_state = {
-        .q = -1.57f,        // Diverged position offset
-        .q_dot = 4.20f,     // High kinematic momentum state
-        .tau_int = 0.50f,
-        .gamma_bias = -0.15f
-    };
-
-    // 3. Define Stable Target Floor Reference Frame Values
-    fpt_reference_t vault_targets = {
-        .q_target = 0.0f,
-        .q_dot_target = 0.0f
-    };
-
-    // 4. Verify Local Jacobian Contraction Bounds Prior to Running System Crank
-    printf("{\"stage\": \"INITIALIZATION\", \"contraction_verified\": %s}\n", 
-           verify_fpt_contraction(&loop_config) ? "true" : "false");
-
-    if (!verify_fpt_contraction(&loop_config)) {
-        printf("{\"stage\": \"CRITICAL_FAILURE\", \"error\": \"Spectral radius condition violated.\"}\n");
-        return 1;
-    }
-
-    // 5. Run Iterative Trajectory Collapsing Simulation Loop
-    printf("{\"stage\": \"EXECUTION_TRACE\", \"logs\": [\n");
-    for (uint32_t step = 0; step < 20; ++step) {
-        execute_fpt_crank(&system_state, &vault_targets, &loop_config);
-        
-        printf("  {\"step\": %u, \"q\": %.6f, \"q_dot\": %.6f, \"tau\": %.6f, \"gamma\": %.6f}%s\n",
-               step, system_state.q, system_state.q_dot, 
-               system_state.tau_int, system_state.gamma_bias,
-               (step == 19) ? "" : ",");
-    }
-    printf("]}\n");
-
-    // 6. Assert Target Floor Convergence Limits
-    if (fabsf(system_state.q) < 0.01f && fabsf(system_state.q_dot) < 0.01f) {
-        printf("{\"stage\": \"SUCCESS\", \"status\": \"Converged securely to target Floor terrain.\"}\n");
-        return 0;
-    } else {
-        printf("{\"stage\": \"FAILURE\", \"status\": \"System state failed to collapse inside targeted deadband boundaries.\"}\n");
-        return 2;
-    }
+    // Core RF Mesh Stack Initializations occur here...
+    // Hardware peripheral initialization completes
+    
+    k_timer_start(&glyph_timer, K_MSEC(100), K_MSEC(100));
 }
