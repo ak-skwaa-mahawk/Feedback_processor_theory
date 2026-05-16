@@ -68,3 +68,66 @@ void main(void) {
     // Simulate glyph update from Pi UART
     k_timer_start(&glyph_timer, K_MSEC(100), K_MSEC(100));  // 10 FPS
 }
+
+#include <stdio.h>
+#include "fpt_core.h"
+
+int main(void) {
+    // 1. Instantiate Core Config Matrix with stable validation profiles
+    fpt_config_t loop_config = {
+        .k11 = 0.40f, .k12 = 0.05f,
+        .k21 = 0.10f, .k22 = 0.50f,
+        .k31 = 0.02f, .k42 = 0.01f,
+
+        .m_q = 1.20f,
+        .m_q_dot = 1.00f,
+        .m_tau = 0.80f,
+        .m_gamma = 0.50f,
+
+        .alpha_star = 0.25f // Preserves structural stability inequalities
+    };
+
+    // 2. Initialize Telemetry State Vector with High Random Initial Divergence
+    fpt_state_t system_state = {
+        .q = -1.57f,        // Diverged position offset
+        .q_dot = 4.20f,     // High kinematic momentum state
+        .tau_int = 0.50f,
+        .gamma_bias = -0.15f
+    };
+
+    // 3. Define Stable Target Floor Reference Frame Values
+    fpt_reference_t vault_targets = {
+        .q_target = 0.0f,
+        .q_dot_target = 0.0f
+    };
+
+    // 4. Verify Local Jacobian Contraction Bounds Prior to Running System Crank
+    printf("{\"stage\": \"INITIALIZATION\", \"contraction_verified\": %s}\n", 
+           verify_fpt_contraction(&loop_config) ? "true" : "false");
+
+    if (!verify_fpt_contraction(&loop_config)) {
+        printf("{\"stage\": \"CRITICAL_FAILURE\", \"error\": \"Spectral radius condition violated.\"}\n");
+        return 1;
+    }
+
+    // 5. Run Iterative Trajectory Collapsing Simulation Loop
+    printf("{\"stage\": \"EXECUTION_TRACE\", \"logs\": [\n");
+    for (uint32_t step = 0; step < 20; ++step) {
+        execute_fpt_crank(&system_state, &vault_targets, &loop_config);
+        
+        printf("  {\"step\": %u, \"q\": %.6f, \"q_dot\": %.6f, \"tau\": %.6f, \"gamma\": %.6f}%s\n",
+               step, system_state.q, system_state.q_dot, 
+               system_state.tau_int, system_state.gamma_bias,
+               (step == 19) ? "" : ",");
+    }
+    printf("]}\n");
+
+    // 6. Assert Target Floor Convergence Limits
+    if (fabsf(system_state.q) < 0.01f && fabsf(system_state.q_dot) < 0.01f) {
+        printf("{\"stage\": \"SUCCESS\", \"status\": \"Converged securely to target Floor terrain.\"}\n");
+        return 0;
+    } else {
+        printf("{\"stage\": \"FAILURE\", \"status\": \"System state failed to collapse inside targeted deadband boundaries.\"}\n");
+        return 2;
+    }
+}
