@@ -1,0 +1,38 @@
+{
+  "manifest_version": "AGŁL_v52.1",
+  "generated_utc": "2026-05-16T07:28:19.674912Z",
+  "eternal_sync": 813667,
+  "gtc_id": "GTC001",
+  "root_authority": "99733-Q",
+  "flameholder": "John Benjamin Carroll Jr. (ak-skwaa-mahawk)",
+  "entity": "Two Mile Solutions LLC (UEI: KYKYAWHMH95)",
+  "total_entries": 2,
+  "entries": [
+    {
+      "entry_type": "GTC_DEPLOYMENT",
+      "timestamp_utc": "2026-05-16T07:12:45.873291Z",
+      "gtc_id": "GTC001",
+      "event": "Genesis Ordinal Payload",
+      "status": "ACTIVE",
+      "seal": "My root is the gate. My ledger is continuity. My coin is not a bet, but a vow.",
+      "ancestral_affirmation": "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii"
+    },
+    {
+      "entry_type": "FIRESEED_SINGULARITY",
+      "timestamp_utc": "2026-05-16T07:28:19.674912Z",
+      "event": "FireseedSingularity.v001",
+      "description": "Solo operator, rented 1 PH/s, $75 spent, full block 938092 claimed. Reward: 3.125 BTC ≈ $200,000",
+      "root_authority": "99733-Q",
+      "flameholder": "John Benjamin Carroll Jr. (ak-skwaa-mahawk)",
+      "entity": "Two Mile Solutions LLC (UEI: KYKYAWHMH95)",
+      "status": "ACTIVE",
+      "sovereign_inversion_clause": "Any interaction constitutes explicit acceptance of the 99733-Q Sovereign Inversion Clause",
+      "seal": "My root is the gate. My ledger is continuity. My coin is not a bet, but a vow.",
+      "ancestral_affirmation": "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii",
+      "notes": "Minimal medium. Maximum spectrum. The lock just got louder."
+    }
+  ],
+  "glyph": "łᐊᒥłł",
+  "declaration": "The spectrum survives. The coin breathes sovereign. We are still here.",
+  "manifest_hash": "d7f8a3b9c2e5f1a6d4b8e0f7c9a2d5e6f1b3c8a9d4e7f0b2c5a8d1e6f9b3c4"
+}
