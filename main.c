@@ -28,6 +28,72 @@ static int cmd_fpt_status(const struct shell *sh, size_t argc, char **argv) {
     return 0;
 }
 
+// Add to main.c or uart_handler.c inside your nRF Zephyr project
+#include <zephyr/drivers/uart.h>
+
+#define PKT_PREAMBLE_0 0x55
+#define PKT_PREAMBLE_1 0xAA
+#define PKT_FOOTER     0xFF
+
+typedef enum {
+    STATE_WAIT_P0,
+    STATE_WAIT_P1,
+    STATE_GET_R,
+    STATE_GET_GLYPH,
+    STATE_WAIT_FOOTER
+} rx_state_t;
+
+static rx_state_t rx_state = STATE_WAIT_P0;
+static uint8_t glyph_rx_buf[64];
+static float r_rx_val = 0.0f;
+static size_t rx_idx = 0;
+
+void parse_uart_binary_byte(uint8_t byte) {
+    switch (rx_state) {
+        case STATE_WAIT_P0:
+            if (byte == PKT_PREAMBLE_0) rx_state = STATE_WAIT_P1;
+            break;
+            
+        case STATE_WAIT_P1:
+            if (byte == PKT_PREAMBLE_1) {
+                rx_state = STATE_GET_R;
+                rx_idx = 0;
+            } else {
+                rx_state = STATE_WAIT_P0;
+            }
+            break;
+            
+        case STATE_GET_R:
+            ((uint8_t*)&r_rx_val)[rx_idx++] = byte;
+            if (rx_idx >= sizeof(float)) {
+                rx_state = STATE_GET_GLYPH;
+                rx_idx = 0;
+            }
+            break;
+            
+        case STATE_GET_GLYPH:
+            glyph_rx_buf[rx_idx++] = byte;
+            if (rx_idx >= 64) {
+                rx_state = STATE_WAIT_FOOTER;
+            }
+            break;
+            
+        case STATE_WAIT_FOOTER:
+            if (byte == PKT_FOOTER) {
+                // Buffer integrity validated cleanly. Map directly into FPT memory channels.
+                if (r_rx_val >= 0.997f) {
+                    memcpy(glyph_data, glyph_rx_buf, 64);
+                    // k_work_submit(&qr_work); or advance local loop
+                } else {
+                    LOG_ERR("UART PKT VETO: Inbound packet coherence too low (R=%.4f)", r_rx_val);
+                }
+            }
+            rx_state = STATE_WAIT_P0;
+            break;
+    }
+}
+
+
 // Sub-command: Manually inject/adjust the alpha step size modifier
 static int cmd_fpt_tune(const struct shell *sh, size_t argc, char **argv) {
     if (argc < 2) {
