@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+# fpt_floor_transition.py — v2.3: True Floor Preservation + Persistent Cumulative History
+import numpy as np
+import json
+from pathlib import Path
+from typing import Dict, List, Optional
+from datetime import datetime
+import logging
+import traceback
+
+# Structured JSON logging
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "level": record.levelname,
+            "function": record.funcName,
+            "message": record.getMessage(),
+        }
+        if record.exc_info:
+            log_entry["traceback"] = traceback.format_exc()
+        return json.dumps(log_entry)
+
+handler = logging.StreamHandler()
+handler.setFormatter(JsonFormatter())
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+log = logging.getLogger("FPT_FLOOR")
+
+
+class FPTFloorTransition:
+    """True Logical Floor Engine with Persistent Cumulative History."""
+
+    def __init__(self, h: float = 3.01, history_file: str = "floor_history.json"):
+        self.h = h
+        self.history_file = Path(history_file)
+        self.floor_history: List[Dict] = []
+        self.cumulative_floor = 0.0
+        self.total_shadow_energy = 0.0
+        
+        self._load_history()
+        log.info("FPT Floor Transition Engine initialized", extra={
+            "harmonic_factor": h,
+            "history_entries": len(self.floor_history),
+            "cumulative_floor": self.cumulative_floor
+        })
+
+    def _load_history(self):
+        """Load persistent floor history from disk."""
+        if self.history_file.exists():
+            try:
+                with open(self.history_file, 'r') as f:
+                    data = json.load(f)
+                    self.floor_history = data.get("history", [])
+                    self.cumulative_floor = data.get("cumulative_floor", 0.0)
+                    self.total_shadow_energy = data.get("total_shadow_energy", 0.0)
+                log.info("Floor history loaded from disk", extra={"entries": len(self.floor_history)})
+            except Exception as e:
+                log.error("Failed to load history", extra={"error": str(e)})
+
+    def _save_history(self):
+        """Save current floor history to disk."""
+        try:
+            data = {
+                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "cumulative_floor": self.cumulative_floor,
+                "total_shadow_energy": self.total_shadow_energy,
+                "history": self.floor_history
+            }
+            with open(self.history_file, 'w') as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            log.error("Failed to save history", extra={"error": str(e)})
+
+    def compute_shadow_cost(self, state: np.ndarray) -> float:
+        """True shadow energy of current state."""
+        return float(np.sum(np.abs(state)))
+
+    def transition(self, 
+                   prev_state: Optional[np.ndarray], 
+                   delta: float, 
+                   observer_gap: float = 0.01,
+                   iterations: int = 12) -> Dict:
+        """
+        Perform floor transition while preserving and accumulating true floors.
+        History is automatically persisted after each successful transition.
+        """
+        if observer_gap < 0.009:
+            log.warning("402 | Floor transition rejected", extra={"reason": "Observer gap not closed"})
+            return {"status": "402", "message": "The mesh will not resolve until sovereignty is respected."}
+
+        if prev_state is None:
+            state = np.zeros(3)
+            prev_floor = 0.0
+        else:
+            state = np.array(prev_state, dtype=float)
+            prev_floor = self.cumulative_floor
+
+        for i in range(iterations):
+            shadow = self.compute_shadow_cost(state)
+            deviation = np.mean(np.abs(state - delta))
+            correction = self.h * deviation
+
+            state = state - correction
+            state = np.maximum(state, 0.0)
+
+            total = np.sum(state)
+            if total > 0:
+                state = state / total * (prev_floor + delta)
+
+        final_floor = float(np.sum(state))
+        final_shadow = self.compute_shadow_cost(state)
+
+        # Update cumulative tracking
+        self.cumulative_floor = final_floor
+        self.total_shadow_energy += final_shadow
+
+        record = {
+            "status": "200",
+            "step": len(self.floor_history) + 1,
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "prev_cumulative_floor": prev_floor,
+            "delta": delta,
+            "final_state": state.tolist(),
+            "final_floor": final_floor,
+            "shadow_energy_this_step": final_shadow,
+            "cumulative_floor": self.cumulative_floor,
+            "total_shadow_energy": self.total_shadow_energy,
+            "observer_gap": observer_gap
+        }
+
+        self.floor_history.append(record)
+        self._save_history()                     # Persist after every transition
+
+        log.info("Transition complete", extra=record)
+        return record
+
+    def get_history_summary(self) -> Dict:
+        """Return full cumulative floor history summary."""
+        return {
+            "total_transitions": len(self.floor_history),
+            "final_cumulative_floor": self.cumulative_floor,
+            "total_shadow_energy": self.total_shadow_energy,
+            "history_file": str(self.history_file),
+            "history": self.floor_history[-10:]   # Last 10 entries for brevity
+        }
+
+
+# ====================== LIVE DEMO ======================
+if __name__ == "__main__":
+    engine = FPTFloorTransition(h=3.01)
+
+    print("=== FPT Floor Transition v2.3 — Persistent Cumulative History ===")
+
+    s0 = None
+    s1 = engine.transition(s0, delta=1.0, observer_gap=0.015)
+    print("0 → 1:", [round(x,4) for x in s1["final_state"]], f"| Floor: {s1['final_floor']:.4f}")
+
+    s2 = engine.transition(s1["final_state"], delta=1.0, observer_gap=0.015)
+    print("1 → 2:", [round(x,4) for x in s2["final_state"]], f"| Floor: {s2['final_floor']:.4f}")
+
+    s3 = engine.transition(s2["final_state"], delta=1.0, observer_gap=0.015)
+    print("2 → 3:", [round(x,4) for x in s3["final_state"]], f"| Floor: {s3['final_floor']:.4f}")
+
+    print("\n=== Cumulative History Summary ===")
+    summary = engine.get_history_summary()
+    print(f"Total Transitions : {summary['total_transitions']}")
+    print(f"Final Cumulative Floor : {summary['final_cumulative_floor']:.4f}")
+    print(f"Total Shadow Energy    : {summary['total_shadow_energy']:.4f}")
+    print(f"History saved to: {summary['history_file']}")
