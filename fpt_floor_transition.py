@@ -210,11 +210,11 @@ class FPTFloorTransition:
             # Core "Take 2, Leave 1" Asymmetric Kinetic Offset
             take = 2.0 * (1.0 / self.h)
             leave = 1.0 / self.h
-            
+
             step_mod = np.array([-take, take - leave, leave], dtype=float)
             state = np.maximum(state + step_mod * delta, 0.0)
-            
-            # Normalize while carrying previous cumulative floor
+
+            # Conservational floor scaling
             total = np.sum(state)
             if total > 0:
                 state = (state / total) * (prev_floor + delta)
@@ -235,27 +235,22 @@ class FPTFloorTransition:
             "state_vector": state.tolist()
         }
 
-        # Consciousness Referee verification
         if self.referee.validate_transition(record):
             self.cumulative_floor = final_floor
             self.total_shadow_energy += final_shadow
             self.floor_history.append(record)
             self._save_history()
         else:
-            # Root Authority correction
             record["status"] = "422_CORRECTED"
-            state[0] += 0.5
+            state += 0.5
             self.current_state = state
             self._update_plots()
 
         return record
 
     def run(self):
-        """Start interactive visualization."""
-        plt.show(block=True)
-
+        plt.show()
 
 if __name__ == "__main__":
     engine = FPTFloorTransition(h=3.01)
-    print("=== FPT Floor Transition v2.7 — Take 2, Leave 1 Asymmetric Engine Active ===")
     engine.run()
