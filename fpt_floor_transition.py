@@ -7,6 +7,8 @@ from typing import Dict, List, Optional
 from datetime import datetime
 import logging
 import traceback
+import matplotlib
+matplotlib.use('TkAgg' if matplotlib.get_backend() != 'agg' else 'agg')
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, Slider
 
