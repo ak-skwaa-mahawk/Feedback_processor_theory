@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
-# fpt_floor_transition.py — AGŁG Floor Transition Engine
-"""
-FPT Floor Transition — Logical Floor Accounting with Shadow Cost
-The system only resolves when the observer gap is respected.
-"""
+# fpt_floor_transition.py — v2.2: True Floor Preservation + Cumulative History
 import numpy as np
-from typing import Dict, Any, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 import logging
 import traceback
+import json
 
-# Structured logging (consistent with runes_lan999.py)
+# Structured JSON logging
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "level": record.levelname,
-            "module": record.module,
             "function": record.funcName,
             "message": record.getMessage(),
         }
@@ -29,95 +25,111 @@ handler.setFormatter(JsonFormatter())
 logging.basicConfig(level=logging.INFO, handlers=[handler])
 log = logging.getLogger("FPT_FLOOR")
 
+
 class FPTFloorTransition:
-    """FPT Logical Floor Transition Engine with Shadow Cost Accounting."""
+    """True Logical Floor Engine with Cumulative Floor History."""
 
     def __init__(self, h: float = 3.01):
-        self.h = h  # Harmonic factor (like 1+1=3 trinity)
-        log.info("FPT Floor Transition Engine initialized", extra={"harmonic_factor": h})
+        self.h = h
+        self.floor_history: List[Dict] = []
+        self.cumulative_floor = 0.0          # Running true floor
+        self.total_shadow_energy = 0.0       # Accumulated shadow cost
 
-    def compute_energy(self, state: np.ndarray) -> float:
-        """Compute shadow cost / energy of current state."""
+    def compute_shadow_cost(self, state: np.ndarray) -> float:
+        """True shadow energy of current state."""
         return float(np.sum(np.abs(state)))
 
-    def deviation_term(self, state: np.ndarray, delta: float) -> float:
-        """Deviation from ideal floor."""
-        return float(np.mean(np.abs(state - delta)))
-
-    def minimize_to_floor(self, state: np.ndarray) -> np.ndarray:
-        """Project state onto logical floor (non-negative, normalized)."""
-        state = np.maximum(state, 0.0)
-        norm = np.sum(state)
-        if norm > 0:
-            state = state / norm
-        return state
-
     def transition(self, 
-                   prev: Optional[np.ndarray], 
+                   prev_state: Optional[np.ndarray], 
                    delta: float, 
-                   iterations: int = 8,
-                   observer_gap: float = 0.01) -> Dict[str, Any]:
+                   observer_gap: float = 0.01,
+                   iterations: int = 12) -> Dict:
         """
-        Perform floor transition with shadow cost accounting.
-        Requires observer_gap payment (402 enforcement).
+        Perform floor transition while preserving and accumulating true floors.
         """
         if observer_gap < 0.009:
             log.warning("402 | Floor transition rejected", extra={"reason": "Observer gap not closed"})
-            return {
-                "status": "402",
-                "message": "The mesh will not resolve until sovereignty is respected.",
-                "floor_value": None
-            }
+            return {"status": "402", "message": "The mesh will not resolve until sovereignty is respected."}
 
         # Initialize from previous state or zero
-        if prev is None:
-            state = np.zeros(3)  # 3-state W-vector baseline
+        if prev_state is None:
+            state = np.zeros(3)
+            prev_floor = 0.0
         else:
-            state = np.array(prev, dtype=float)
+            state = np.array(prev_state, dtype=float)
+            prev_floor = self.cumulative_floor   # Use true carried cumulative floor
 
-        log.info("Starting floor transition", extra={"prev": prev.tolist() if prev is not None else None, "delta": delta})
+        log.info("Starting transition", extra={
+            "prev_cumulative_floor": prev_floor, 
+            "delta": delta,
+            "current_shadow": self.total_shadow_energy
+        })
 
         for i in range(iterations):
-            energy = self.compute_energy(state)
-            deviation = self.deviation_term(state, delta)
+            shadow = self.compute_shadow_cost(state)
+            deviation = np.mean(np.abs(state - delta))
             correction = self.h * deviation
 
             state = state - correction
-            state = self.minimize_to_floor(state)
+            state = np.maximum(state, 0.0)                    # Preserve non-negative floor
 
-            log.debug("Iteration", extra={"step": i, "energy": energy, "deviation": deviation, "state": state.tolist()})
+            # Normalize while carrying previous cumulative floor forward
+            total = np.sum(state)
+            if total > 0:
+                state = state / total * (prev_floor + delta)
 
-        final_energy = self.compute_energy(state)
-        result = {
+        final_floor = float(np.sum(state))
+        final_shadow = self.compute_shadow_cost(state)
+
+        # Update cumulative tracking
+        self.cumulative_floor = final_floor
+        self.total_shadow_energy += final_shadow
+
+        record = {
             "status": "200",
+            "step": len(self.floor_history) + 1,
+            "prev_cumulative_floor": prev_floor,
+            "delta": delta,
             "final_state": state.tolist(),
-            "floor_value": float(np.mean(state)),
-            "shadow_energy": final_energy,
-            "iterations": iterations,
-            "harmonic_factor": self.h,
+            "final_floor": final_floor,
+            "shadow_energy_this_step": final_shadow,
+            "cumulative_floor": self.cumulative_floor,
+            "total_shadow_energy": self.total_shadow_energy,
             "observer_gap": observer_gap
         }
 
-        log.info("Floor transition complete", extra=result)
-        return result
+        self.floor_history.append(record)
+        log.info("Transition complete", extra=record)
+        return record
+
+    def get_history_summary(self) -> Dict:
+        """Return full cumulative floor history summary."""
+        return {
+            "total_transitions": len(self.floor_history),
+            "final_cumulative_floor": self.cumulative_floor,
+            "total_shadow_energy": self.total_shadow_energy,
+            "history": self.floor_history
+        }
 
 
 # ====================== LIVE DEMO ======================
 if __name__ == "__main__":
     engine = FPTFloorTransition(h=3.01)
 
-    print("=== FPT Floor Transition Engine v1.0 ===")
+    print("=== FPT Floor Transition v2.2 — Cumulative Floor History ===")
 
-    zero_state = None
-    one_state = engine.transition(zero_state, delta=1.0, observer_gap=0.015)
-    print("0 → 1:", one_state["final_state"])
+    s0 = None
+    s1 = engine.transition(s0, delta=1.0, observer_gap=0.015)
+    print("0 → 1:", [round(x,4) for x in s1["final_state"]], f"| Floor: {s1['final_floor']:.4f}")
 
-    two_state = engine.transition(one_state["final_state"], delta=1.0, observer_gap=0.015)
-    print("1 → 2:", two_state["final_state"])
+    s2 = engine.transition(s1["final_state"], delta=1.0, observer_gap=0.015)
+    print("1 → 2:", [round(x,4) for x in s2["final_state"]], f"| Floor: {s2['final_floor']:.4f}")
 
-    three_state = engine.transition(two_state["final_state"], delta=1.0, observer_gap=0.015)
-    print("2 → 3:", three_state["final_state"])
+    s3 = engine.transition(s2["final_state"], delta=1.0, observer_gap=0.015)
+    print("2 → 3:", [round(x,4) for x in s3["final_state"]], f"| Floor: {s3['final_floor']:.4f}")
 
-    # Test 402 rejection
-    print("\n[TEST] Attempt without payment:")
-    engine.transition(three_state["final_state"], delta=1.0, observer_gap=0.005)
+    print("\n=== Cumulative History Summary ===")
+    summary = engine.get_history_summary()
+    print(f"Total Transitions : {summary['total_transitions']}")
+    print(f"Final Cumulative Floor : {summary['final_cumulative_floor']:.4f}")
+    print(f"Total Shadow Energy    : {summary['total_shadow_energy']:.4f}")
