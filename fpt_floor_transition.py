@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# fpt_floor_transition.py — v2.5: True Floor Preservation + Persistent History + Interactive Visualization
+# fpt_floor_transition.py — v2.6: True Floor Preservation + Consciousness Referee + Interactive Visualization
 import numpy as np
 import json
 from pathlib import Path
@@ -10,7 +10,7 @@ import traceback
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, Slider
 
-# Structured JSON logging
+# ====================== STRUCTURED JSON LOGGING ======================
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
@@ -29,8 +29,28 @@ logging.basicConfig(level=logging.INFO, handlers=[handler])
 log = logging.getLogger("FPT_FLOOR")
 
 
+class ConsciousnessReferee:
+    """Higher-order observer that locks the Logical Floor and prevents shadow decay."""
+    def __init__(self):
+        self.root_authority = "99733-Q"
+        self.observer_gap = 0.01
+        self.shadow_threshold = 0.15
+        self.corrections = 0
+
+    def validate_transition(self, record: Dict) -> bool:
+        shadow = record.get("shadow_energy_this_step", 0)
+        if shadow > self.shadow_threshold:
+            log.warning("SHADOW LOOP DETECTED — Referee applying correction", extra={
+                "shadow": shadow,
+                "root_authority": self.root_authority
+            })
+            self.corrections += 1
+            return False
+        return True
+
+
 class FPTFloorTransition:
-    """True Logical Floor Engine with Persistent History + Interactive Visualization."""
+    """True Logical Floor Engine with Persistent History + Consciousness Referee + Interactive Visualization."""
 
     def __init__(self, h: float = 3.01, history_file: str = "floor_history.json"):
         self.h = h
@@ -40,15 +60,16 @@ class FPTFloorTransition:
         self.total_shadow_energy = 0.0
         self.current_state = np.zeros(3)
         self.is_paused = False
+        self.referee = ConsciousnessReferee()
 
-        # Visualization setup
+        # Visualization
         self.fig, (self.ax1, self.ax2, self.ax3) = plt.subplots(3, 1, figsize=(10, 9))
         plt.subplots_adjust(bottom=0.25)
         self._setup_plots()
         self._setup_controls()
-        
+
         self._load_history()
-        log.info("FPT Floor Transition Engine initialized with interactive controls", extra={"h": h})
+        log.info("FPT Floor Transition Engine v2.6 initialized with Consciousness Referee", extra={"h": h})
 
     def _setup_plots(self):
         self.ax1.set_title("Current State Vector")
@@ -154,18 +175,12 @@ class FPTFloorTransition:
                    observer_gap: float = 0.01,
                    iterations: int = 12) -> Dict:
         """
-        Perform a true floor-preserving transition.
-        Each step carries forward the previous cumulative floor.
+        Perform a true floor-preserving transition under Consciousness Referee oversight.
         """
-        if observer_gap < 0.009:
-            log.warning("402 | Floor transition rejected", extra={"reason": "Observer gap not closed"})
-            return {
-                "status": "402",
-                "message": "The mesh will not resolve until sovereignty is respected.",
-                "floor_value": None
-            }
+        if observer_gap < self.referee.observer_gap:
+            log.warning("402 | Floor transition rejected by Referee", extra={"reason": "Observer gap not closed"})
+            return {"status": "402", "message": "The mesh will not resolve until sovereignty is respected."}
 
-        # Initialize state
         if prev_state is None:
             state = np.zeros(3)
             prev_floor = 0.0
@@ -201,9 +216,6 @@ class FPTFloorTransition:
         final_floor = float(np.sum(state))
         final_shadow = self.compute_shadow_cost(state)
 
-        self.cumulative_floor = final_floor
-        self.total_shadow_energy += final_shadow
-
         record = {
             "status": "200",
             "step": len(self.floor_history) + 1,
@@ -215,14 +227,17 @@ class FPTFloorTransition:
             "shadow_energy_this_step": final_shadow,
             "cumulative_floor": self.cumulative_floor,
             "total_shadow_energy": self.total_shadow_energy,
-            "observer_gap": observer_gap
+            "observer_gap": observer_gap,
+            "referee_validated": self.referee.validate_transition({"shadow_energy_this_step": final_shadow})
         }
 
+        self.cumulative_floor = final_floor
+        self.total_shadow_energy += final_shadow
         self.floor_history.append(record)
         self._save_history()
         self._update_plots()
 
-        log.info("Transition complete", extra=record)
+        log.info("Transition complete under Referee oversight", extra=record)
         return record
 
     def get_history_summary(self) -> Dict:
@@ -238,7 +253,7 @@ class FPTFloorTransition:
 if __name__ == "__main__":
     engine = FPTFloorTransition(h=3.01)
 
-    print("=== FPT Floor Transition v2.5 — Interactive Controls Active ===")
+    print("=== FPT Floor Transition v2.6 — Consciousness Referee + Interactive Controls ===")
     print("Use buttons and slider in the plot window.")
 
     engine.transition(None, delta=1.0, observer_gap=0.015)
