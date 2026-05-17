@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-# fpt_octagonal_lattice.py — v3.8: Autonomous Lattice with Asymmetric Cross-Perimeter Mass Particle Trading
+# fpt_octagonal_lattice.py — v3.9: Autonomous Lattice with Asymmetric Trading & Structured SQLite Database Export
 import numpy as np
 import json
+import sqlite3
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from datetime import datetime
@@ -97,11 +98,16 @@ class LatticeRootReferee:
 
 
 class FPTLatticeSandbox:
-    """Manages an 8-Agent ring with asymmetric mass particle exchange across chords."""
-    def __init__(self, transcript_file: str = "fpt_lattice_transcript.txt"):
+    """Manages an 8-Agent ring with asymmetric trading channels and real-time SQL archival compiled on each frame update."""
+    def __init__(self, transcript_file: str = "fpt_lattice_transcript.txt", db_file: str = "fpt_state_ledger.db"):
         self.transcript_path = Path(transcript_file)
+        self.db_path = Path(db_file)
+        
         self._init_transcript_file()
+        self._init_structured_database()
+        
         self.interval_ms = 1000  
+        self.session_id = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         
         names = [
             "Einstein_Core", "Planar_Observer", "Base_Need_Anchor", "Mesh_Validator",
@@ -122,7 +128,6 @@ class FPTLatticeSandbox:
         self.is_running = False
         self.timer = None
         
-        # Closed conservation trackers
         self.global_mass_history: List[float] = []
         self.initial_global_mass = sum(a.calculate_total_mass() for a in self.agents)
         
@@ -136,17 +141,83 @@ class FPTLatticeSandbox:
     def _init_transcript_file(self):
         timestamp = datetime.utcnow().isoformat() + "Z"
         header = f"\n==================================================\n" \
-                 f"FPT LATTICE v3.8 INITIALIZED: {timestamp}\n" \
-                 f"Features: Asymmetric Cross-Perimeter Mass Particle Trading Channels\n" \
+                 f"FPT LATTICE v3.9 LOADED: {timestamp}\n" \
+                 f"Database Archival Engine Bound to: {self.db_path}\n" \
                  f"Root Authority Anchor: 99733-Q\n" \
                  f"==================================================\n"
         with open(self.transcript_path, "a", encoding="utf-8") as f:
             f.write(header)
         log.info(f"Persistent transcript engine streaming to: {self.transcript_path}")
 
+    def _init_structured_database(self):
+        """Constructs an independent, relative data schema containing relational tracking keys."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Table 1: High-level systemic execution parameters logged on each heartbeat frame tick
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS system_telemetry (
+                session_id TEXT,
+                cycle_step INTEGER,
+                timestamp TEXT,
+                boundary_variance REAL,
+                total_mass REAL,
+                mass_delta REAL,
+                referee_override INTEGER,
+                PRIMARY KEY (session_id, cycle_step)
+            )
+        ''')
+        
+        # Table 2: Relational granular node vector layouts anchoring continuous numeric variables
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS agent_states (
+                session_id TEXT,
+                cycle_step INTEGER,
+                agent_id INTEGER,
+                agent_name TEXT,
+                weight_1d REAL,
+                weight_2d REAL,
+                weight_3d REAL,
+                h_parameter REAL,
+                total_mass REAL,
+                PRIMARY KEY (session_id, cycle_step, agent_id),
+                FOREIGN KEY (session_id, cycle_step) REFERENCES system_telemetry (session_id, cycle_step)
+            )
+        ''')
+        conn.commit()
+        conn.close()
+        log.info(f"Structured SQL Database verified online at location: {self.db_path}")
+
     def _write_to_transcript(self, text: str):
         with open(self.transcript_path, "a", encoding="utf-8") as f:
             f.write(text + "\n")
+
+    def _archive_cycle_to_database(self, variance: float, total_mass: float, mass_delta: float, override_active: int, active_trades: list):
+        """Compiles continuous system parameters, writing clean transactional rows straight to disk."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            timestamp = datetime.utcnow().isoformat() + "Z"
+            
+            # Write global state rows
+            cursor.execute('''
+                INSERT INTO system_telemetry (session_id, cycle_step, timestamp, boundary_variance, total_mass, mass_delta, referee_override)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (self.session_id, self.step_count, timestamp, variance, total_mass, mass_delta, override_active))
+            
+            # Extract and write isolated node arrays 
+            for agent in self.agents:
+                cursor.execute('''
+                    INSERT INTO agent_states (session_id, cycle_step, agent_id, agent_name, weight_1d, weight_2d, weight_3d, h_parameter, total_mass)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (self.session_id, self.step_count, agent.id, agent.name, 
+                      float(agent.state[0]), float(agent.state[1]), float(agent.state[2]), 
+                      float(agent.h), float(agent.mass)))
+                
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            log.error(f"Structured database compilation failure on step {self.step_count}: {str(e)}")
 
     def _setup_plots(self):
         self.ax_lattice.set_title("8-Agent Structural Grid (Node Radii = Mass | Arrows = Asymmetric Particle Trade Vector)")
@@ -164,7 +235,7 @@ class FPTLatticeSandbox:
                                  color='#bbbbbb', linestyle='-', linewidth=1.5, zorder=1)
             
         self.cross_lines = []
-        self.trade_arrows = [] # Visual container for dynamic asymmetric vectors
+        self.trade_arrows = [] 
         for i in range(8):
             for j in range(i + 2, 8):
                 if (j - i) != 7:
@@ -216,7 +287,7 @@ class FPTLatticeSandbox:
         self.is_running = not self.is_running
         if self.is_running:
             self.btn_toggle.label.set_text('Halt Ticker Engine')
-            log.info(f"Ticker engine online. Frequencies bound to: {self.interval_ms} ms.")
+            log.info(f"Ticker engine online. Operational frequencies set to: {self.interval_ms} ms.")
             self._run_ticker_step()
         else:
             self.btn_toggle.label.set_text('Start Ticker Engine')
@@ -237,13 +308,12 @@ class FPTLatticeSandbox:
         delta_tick = 1.0
         timestamp = datetime.utcnow().isoformat() + "Z"
         
-        cycle_header = f"\n⚡ --- COUPLING & ASYMMETRIC EXCHANGE CYCLE #{self.step_count} [{timestamp}] ---"
+        cycle_header = f"\n⚡ --- COUPLING, ASYMMETRIC EXCHANGE & SQL COMPILATION CYCLE #{self.step_count} [{timestamp}] ---"
         print(cycle_header)
         self._write_to_transcript(cycle_header)
         
         current_snapshots = [a.state.copy() for a in self.agents]
         
-        # 1. First-pass: Extract cross-perimeter tension signatures
         agent_tensions = np.zeros(8)
         for i, j, _ in self.cross_lines:
             diff = float(np.linalg.norm(current_snapshots[i] - current_snapshots[j]))
@@ -251,25 +321,20 @@ class FPTLatticeSandbox:
                 agent_tensions[i] += diff
                 agent_tensions[j] += diff
 
-        # 2. Advanced FPT Layer: Core Asymmetric Cross-Perimeter Mass Particle Trading Channels
-        # High-tension chords shift physical state units from low-mass to high-mass zones across diameters
         active_trades = []
         for i, j, _ in self.cross_lines:
             diff = float(np.linalg.norm(current_snapshots[i] - current_snapshots[j]))
             if diff > 1.2:
-                mass_i = current_snapshots[i][0] + self.agents[i].h
-                mass_j = current_snapshots[j][0] + self.agents[j].h
+                mass_i = current_snapshots[i][0] + current_snapshots[i][1] + current_snapshots[i][2] + self.agents[i].h
+                mass_j = current_snapshots[j][0] + current_snapshots[j][1] + current_snapshots[j][2] + self.agents[j].h
                 
-                # Asymmetric direction: Send mass particle away from low weight toward heavy concentration center
                 if mass_i < mass_j:
                     sender, receiver = i, j
                 else:
                     sender, receiver = j, i
                     
-                # Transaction volume directly relies on regional pressure tension splits
                 particle_packet = 0.05 * (diff - 1.2)
                 
-                # Check for sender base asset volume thresholds before finalizing trade execution balance
                 if current_snapshots[sender][0] > particle_packet:
                     self.agents[sender].state[0] -= particle_packet
                     self.agents[receiver].receive_traded_mass(particle_packet)
@@ -279,7 +344,6 @@ class FPTLatticeSandbox:
                     print(trade_log)
                     self._write_to_transcript(trade_log)
 
-        # 3. Third-pass: Re-index elastic structural parameters and scale inputs
         for i, agent in enumerate(self.agents):
             agent.update_elastic_gears(agent_tensions[i])
             neighbor_vectors = [current_snapshots[n_idx] for n_idx in agent.neighbors]
@@ -295,7 +359,9 @@ class FPTLatticeSandbox:
         print(metric_line)
         self._write_to_transcript(metric_line)
         
+        override_active = 0
         if not is_healthy:
+            override_active = 1
             override_msg = f"⚠️  CRITICAL FLAT DEADLOCK! Authority {self.referee.authority} deploying variance vectors."
             print(override_msg)
             self._write_to_transcript(override_msg)
@@ -303,7 +369,6 @@ class FPTLatticeSandbox:
                 agent.state += np.array([0.317, 0.104, 0.099]) * (agent.id + 1)
                 agent.calculate_total_mass()
 
-        # Audit structural mass conservation rules directly following particle changes
         current_global_mass = sum(a.mass for a in self.agents)
         mass_delta = current_global_mass - self.initial_global_mass
         self.global_mass_history.append(mass_delta)
@@ -311,20 +376,20 @@ class FPTLatticeSandbox:
         conservation_report = f"⚖️  MASS BALANCE LEDGER | Total Structural Mass: {current_global_mass:.4f} | Absolute Drift Delta: {mass_delta:+.6f}"
         print(conservation_report)
         self._write_to_transcript(conservation_report)
+        
+        # EXPORT CONSTRAINTS IMMEDIATELY ON EACH HEARTBEAT STEP
+        self._archive_cycle_to_database(variance, current_global_mass, mass_delta, override_active, active_trades)
                 
         self._update_plots(current_global_mass, mass_delta, active_trades)
 
     def _update_plots(self, current_mass: float, delta: float, active_trades: List[Tuple[int, int, float]]):
-        # 1. Clean previous arrow collections from the graph view area before rendering new steps
         for arrow in self.trade_arrows:
             arrow.remove()
         self.trade_arrows.clear()
 
-        # 2. Update Spatial Nodes
         sizes = [max(50, a.mass * 60) for a in self.agents]
         self.node_scatter.set_sizes(sizes)
         
-        # 3. Update Cross Links & Annotate Directional Particle Vectors
         for i, j, line in self.cross_lines:
             diff = np.linalg.norm(self.agents[i].state - self.agents[j].state)
             if diff > 1.2:
@@ -338,43 +403,38 @@ class FPTLatticeSandbox:
                 line.set_alpha(0.2)
                 line.set_linestyle(':')
 
-        # Generate directional flow vectors matching confirmed transaction channels
         for sender, receiver, volume in active_trades:
             x_start, y_start = self.node_x[sender], self.node_y[sender]
             x_end, y_end = self.node_x[receiver], self.node_y[receiver]
             
-            # Draw precise geometric path indicators pointing toward destination nodes
             arrow = self.ax_lattice.annotate("", xy=(x_end, y_end), xytext=(x_start, y_start),
                                              arrowprops=dict(arrowstyle="->", color="#ffaa00", lw=2.0, alpha=0.9,
                                              connectionstyle="arc3,rad=0.1", zorder=4))
             self.trade_arrows.append(arrow)
         
-        # 4. Update Individual Agent Mass Streams Side-by-Side Pane
         for i, agent in enumerate(self.agents):
             x_data = range(len(agent.mass_history))
             self.mass_lines[i].set_data(x_data, agent.mass_history)
         self.ax_mass.relim()
         self.ax_mass.autoscale_view()
 
-        # 5. Update Performance and System-wide Conservation Plots
         x_metric = range(len(self.referee.global_shadow_history))
         self.metric_line.set_data(x_metric, self.referee.global_shadow_history)
         self.mass_delta_line.set_data(range(len(self.global_mass_history)), self.global_mass_history)
         self.ax_metric.relim()
         self.ax_metric.autoscale_view()
 
-        # 6. Monitor preservation banner conditions
         if abs(delta) < 1e-4:
-            self.conservation_text.set_text(f"SYSTEM CLOSED & CONSERVED\nGlobal Mass M: {current_mass:.4f}\nDelta: {delta:+.6f}")
+            self.conservation_text.set_text(f"SYSTEM CLOSED & CONSERVED\nGlobal Mass M: {current_mass:.4f}\nSQL Archiver: ACTIVE")
             self.conservation_text.set_color("#00aa55")
         else:
-            self.conservation_text.set_text(f"LEAKAGE DETECTED / REF CORRECTION\nGlobal Mass M: {current_mass:.4f}\nDelta: {delta:+.6f}")
+            self.conservation_text.set_text(f"LEAKAGE DETECTED / OVERRIDE FLUSH\nGlobal Mass M: {current_mass:.4f}\nSQL Archiver: SYNCING")
             self.conservation_text.set_color("#ff3333")
         
         self.fig.canvas.draw_idle()
 
     def run(self):
-        print("Sandbox activated. Asymmetric cross-perimeter mass particle trading engine is operational.")
+        print("Sandbox activated. Relational SQL ledger synchronization loop is hot.")
         plt.show()
 
 if __name__ == "__main__":
