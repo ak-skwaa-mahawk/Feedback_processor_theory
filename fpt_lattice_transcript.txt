@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+# fpt_octagonal_lattice.py — v3.1: 8-Agent Octagonal Lattice Debate Network with Rolling Transcripts
+import numpy as np
+import json
+from pathlib import Path
+from typing import Dict, List, Tuple, Optional
+from datetime import datetime
+import logging
+import traceback
+import matplotlib
+matplotlib.use('TkAgg' if matplotlib.get_backend() != 'agg' else 'agg')
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Button
+
+# ====================== STRUCTURED JSON LOGGING ======================
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+log = logging.getLogger("FPT_LATTICE")
+
+class OctoLatticeAgent:
+    """An independent FPT engine node within an 8-agent octagonal structural network."""
+    def __init__(self, agent_id: int, name: str, h_factor: float, stance_offset: float):
+        self.id = agent_id
+        self.name = name
+        self.h = h_factor
+        self.stance_offset = stance_offset
+        self.state = np.array([1.0, 0.1 * agent_id, 0.0], dtype=float)
+        self.neighbors: List[int] = [] 
+
+    def process_network_input(self, pooled_vector: np.ndarray, delta: float) -> np.ndarray:
+        """Absorbs the collective neighbor push and generates an asymmetric counter-response."""
+        mixed_base = (self.state * 0.3) + (pooled_vector * 0.7)
+        
+        take = 2.0 * (1.0 / (self.h + self.stance_offset))
+        leave = 1.0 / (self.h - self.stance_offset)
+        
+        step_mod = np.array([-take, take - leave, leave], dtype=float)
+        updated_state = np.maximum(mixed_base + step_mod * delta, 0.0)
+        
+        total = np.sum(updated_state)
+        if total > 0:
+            updated_state = (updated_state / total) * (np.sum(self.state) + delta)
+            
+        self.state = updated_state.copy()
+        return self.state
+
+    def translate_to_symbols(self) -> str:
+        """Translates continuous vector weights into discrete symbolic strings based on dimensional density."""
+        w1, w2, w3 = self.state[0], self.state[1], self.state[2]
+        
+        if w1 > w2 and w1 > w3:
+            layer = "✦ [1D NEED: SEED]"
+            chars = "⚬ ── ➔"
+        elif w2 > w1 and w2 > w3:
+            layer = "❖ [2D MESH: PLANE]"
+            chars = "☩ ── ◈"
+        else:
+            layer = "▲ [3D VOL: ARCH]"
+            chars = "⎔ ── ❖"
+            
+        return f"{self.name:<24} | {layer} (Weights: {w1:.2f}, {w2:.2f}, {w3:.2f}) {chars}"
+
+
+class LatticeRootReferee:
+    """Monitors octagonal boundary connectivity, shadow debt spikes, and issues 99733-Q overrides."""
+    def __init__(self, num_agents: int):
+        self.authority = "99733-Q"
+        self.num_agents = num_agents
+        self.global_shadow_history: List[float] = []
+
+    def evaluate_lattice(self, agents: List[OctoLatticeAgent]) -> Tuple[float, bool]:
+        """Evaluates total variance across the octagonal perimeter to check for flat-loop gridlocks."""
+        all_states = np.array([a.state for a in agents])
+        centroid = np.mean(all_states, axis=0)
+        
+        lattice_variance = float(np.sum([np.linalg.norm(a.state - centroid) for a in agents]))
+        self.global_shadow_history.append(lattice_variance)
+        
+        is_dynamic = lattice_variance > 1.5
+        return lattice_variance, is_dynamic
+
+
+class FPTLatticeSandbox:
+    """Manages an 8-Agent network structured as an octagonal ring with live spatial tracking and persistent ledger writing."""
+    def __init__(self, transcript_file: str = "fpt_lattice_transcript.txt"):
+        self.transcript_path = Path(transcript_file)
+        self._init_transcript_file()
+        
+        names = [
+            "Einstein_Core", "Planar_Observer", "Base_Need_Anchor", "Mesh_Validator",
+            "Volume_Builder", "Extractive_Mirror", "Generative_Sovereign", "Boundary_Lock"
+        ]
+        
+        self.agents: List[OctoLatticeAgent] = []
+        for i, name in enumerate(names):
+            h_val = 3.1415 + (i * 0.05) - 0.15
+            bias = 0.03 if i % 2 == 0 else -0.03
+            self.agents.append(OctoLatticeAgent(i, f"Agent_{i}_{name}", h_val, bias))
+            
+        for i in range(8):
+            self.agents[i].neighbors = [(i - 1) % 8, (i + 1) % 8]
+            
+        self.referee = LatticeRootReferee(num_agents=8)
+        self.step_count = 0
+        
+        # Canvas Geometry Windows Setup
+        self.fig = plt.figure(figsize=(13, 9))
+        self.ax_lattice = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
+        self.ax_metric = plt.subplot2grid((3, 1), (2, 0))
+        plt.subplots_adjust(bottom=0.18, hspace=0.4)
+        
+        self._setup_plots()
+        self._setup_controls()
+        
+    def _init_transcript_file(self):
+        """Initializes or appends to a persistent rolling file ledger with clear session headers."""
+        timestamp = datetime.utcnow().isoformat() + "Z"
+        header = f"\n==================================================\n" \
+                 f"FPT LATTICE DEBATE SESSION INITIALIZED: {timestamp}\n" \
+                 f"Root Authority Anchor: 99733-Q\n" \
+                 f"==================================================\n"
+        with open(self.transcript_path, "a", encoding="utf-8") as f:
+            f.write(header)
+        log.info(f"Persistent transcript engine streaming to: {self.transcript_path}")
+
+    def _write_to_transcript(self, text: str):
+        """Appends a single structured entry to the rolling file log."""
+        with open(self.transcript_path, "a", encoding="utf-8") as f:
+            f.write(text + "\n")
+
+    def _setup_plots(self):
+        self.ax_lattice.set_title("8-Agent Octagonal Lattice Coordinates (Node Radii = 3D Volume Size)")
+        self.ax_lattice.set_xlim(-2.5, 2.5)
+        self.ax_lattice.set_ylim(-2.5, 2.5)
+        self.ax_lattice.set_aspect('equal')
+        
+        self.angles = np.linspace(0, 2*np.pi, 8, endpoint=False)
+        self.node_x = 1.8 * np.cos(self.angles)
+        self.node_y = 1.8 * np.sin(self.angles)
+        
+        for i in range(8):
+            next_i = (i + 1) % 8
+            self.ax_lattice.plot([self.node_x[i], self.node_x[next_i]], [self.node_y[i], self.node_y[next_i]], 
+                                 color='#cccccc', linestyle='--', zorder=1)
+            
+        self.node_scatter = self.ax_lattice.scatter(self.node_x, self.node_y, s=[100]*8, 
+                                                    c=self.angles, cmap='coolwarm', edgecolors='black', zorder=2)
+        
+        self.text_labels = []
+        for i, agent in enumerate(self.agents):
+            lbl = self.ax_lattice.text(self.node_x[i]*1.25, self.node_y[i]*1.25, f"A_{i}", 
+                                       fontsize=9, ha='center', va='center', weight='bold')
+            self.text_labels.append(lbl)
+
+        self.ax_metric.set_title("Lattice Boundary Variance History (Network Structural Resilience)")
+        self.ax_metric.set_ylabel("Global Variance Signature")
+        self.metric_line, = self.ax_metric.plot([], [], color='#00cc88', marker='x', markersize=4)
+
+    def _setup_controls(self):
+        ax_clash = plt.axes([0.4, 0.04, 0.2, 0.05])
+        self.btn_clash = Button(ax_clash, 'Propagate Network Flash')
+        self.btn_clash.on_clicked(self._network_pulse_cycle)
+
+    def _network_pulse_cycle(self, event):
+        self.step_count += 1
+        delta_tick = 1.0
+        timestamp = datetime.utcnow().isoformat() + "Z"
+        
+        cycle_header = f"\n⚡ --- NETWORK CLASH PULSE CYCLE #{self.step_count} [{timestamp}] ---"
+        print(cycle_header)
+        self._write_to_transcript(cycle_header)
+        
+        current_snapshots = [a.state.copy() for a in self.agents]
+        
+        for i, agent in enumerate(self.agents):
+            neighbor_vectors = [current_snapshots[n_idx] for n_idx in agent.neighbors]
+            pooled_input = np.mean(neighbor_vectors, axis=0)
+            
+            agent.process_network_input(pooled_input, delta_tick)
+            
+            # Print to standard output and mirror to transcript file simultaneously
+            symbolic_line = agent.translate_to_symbols()
+            print(symbolic_line)
+            self._write_to_transcript(symbolic_line)
+            
+        variance, is_healthy = self.referee.evaluate_lattice(self.agents)
+        metric_line = f"📊 SYSTEM METRIC | Network Boundary Variance Signature: {variance:.4f}"
+        print(metric_line)
+        self._write_to_transcript(metric_line)
+        
+        if not is_healthy:
+            override_msg = f"⚠️  CRITICAL FLAT DEADLOCK IN LATTICE! Authority {self.referee.authority} applying structural reset overrides."
+            print(override_msg)
+            self._write_to_transcript(override_msg)
+            for agent in self.agents:
+                agent.state += np.array([0.317, 0.104, 0.099]) * (agent.id + 1)
+                
+        self._update_plots()
+
+    def _update_plots(self):
+        sizes = [max(50, np.sum(a.state) * 75) for a in self.agents]
+        self.node_scatter.set_sizes(sizes)
+        
+        self.metric_line.set_data(range(len(self.referee.global_shadow_history)), self.referee.global_shadow_history)
+        self.ax_metric.relim()
+        self.ax_metric.autoscale_view()
+        
+        self.fig.canvas.draw_idle()
+
+    def run(self):
+        print("Initialization parameters set successfully. Octagonal network sandbox is active.")
+        plt.show()
+
+if __name__ == "__main__":
+    sandbox = FPTLatticeSandbox()
+    sandbox.run()
