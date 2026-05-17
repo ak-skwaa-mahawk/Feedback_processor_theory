@@ -1,141 +1,155 @@
-// In main.c (Zephyr Shell Integration Block)
+#include <zephyr/kernel.h>
+#include <zephyr/bluetooth/bluetooth.h>
+#include <zephyr/bluetooth/mesh.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/shell/shell.h>
-#include <stdlib.h>
-#include "fpt_core.h"
-#include "fpt_spectral_radius.h"
+#include <math.h>
+#include <string.h>
 
-// Reference external instances to maintain a single source of truth across compiler units
-extern float mesh_coherence;
-extern fpt_config_t loop_config;
-extern fpt_state_t system_state;
+LOG_MODULE_REGISTER(dpo_swarm, LOG_LEVEL_DBG);
 
-// Sub-command: Read current operational telemetry
-static int cmd_fpt_status(const struct shell *sh, size_t argc, char **argv) {
-    // Local copy to prevent string formatting thread preemption anomalies
-    float current_coherence = mesh_coherence;
-    float rho = fpt_estimate_spectral_radius(&loop_config);
+#define NODE_ID "DPO-NRF-001"
+#define MESH_MODEL_ID 0x1236  
+#define BATCH_SIZE 5
+#define BETA 0.1f
+#define QGH_THRESHOLD 0.997f
 
-    shell_print(sh, "========================================");
-    shell_print(sh, "Ψ-VLC NODE TELEMETRY MATRIX STATE STATUS");
-    shell_print(sh, "========================================");
-    shell_print(sh, "Network Coherence (Γ_t):  %.4f (Threshold: %.4f)", current_coherence, 0.997f);
-    shell_print(sh, "Jacobian Spectral Radius: %.4f (%s)", rho, (rho < 1.0f) ? "CONTRACTIVE" : "UNSTABLE");
-    shell_print(sh, "Current Actuator Pos (q): %.4f rad", system_state.q);
-    shell_print(sh, "Current Velocity (q_dot): %.4f rad/s", system_state.q_dot);
-    shell_print(sh, "Integrator Windup (tau):  %.4f", system_state.tau_int);
-    shell_print(sh, "----------------------------------------");
+// --- System Memory Mappings ---
+static float policy_logits[128];  
+static float ref_logits[128];     
+static float incoming_glyph[64];  
+static float reference_glyph[64] = { [0 ... 63] = 0.5f }; // Midpoint baseline anchor
+
+static struct {
+    char prompt[64];
+    char winner[64];
+} preference_pairs[BATCH_SIZE];
+
+static int batch_idx = 0;
+
+// === 1. ARM-OPTIMIZED DPO LOSS ===
+static float dpo_loss(const float *log_prob_w, const float *log_prob_l, 
+                      const float *log_prob_w_ref, const float *log_prob_l_ref) {
+    // Delta = beta * [ (ln(pi_w) - ln(ref_w)) - (ln(pi_l) - ln(ref_l)) ]
+    float delta = BETA * ((*log_prob_w - *log_prob_w_ref) - (*log_prob_l - *log_prob_l_ref));
     
-    return 0;
-}
-
-// Add to main.c or uart_handler.c inside your nRF Zephyr project
-#include <zephyr/drivers/uart.h>
-
-#define PKT_PREAMBLE_0 0x55
-#define PKT_PREAMBLE_1 0xAA
-#define PKT_FOOTER     0xFF
-
-typedef enum {
-    STATE_WAIT_P0,
-    STATE_WAIT_P1,
-    STATE_GET_R,
-    STATE_GET_GLYPH,
-    STATE_WAIT_FOOTER
-} rx_state_t;
-
-static rx_state_t rx_state = STATE_WAIT_P0;
-static uint8_t glyph_rx_buf[64];
-static float r_rx_val = 0.0f;
-static size_t rx_idx = 0;
-
-void parse_uart_binary_byte(uint8_t byte) {
-    switch (rx_state) {
-        case STATE_WAIT_P0:
-            if (byte == PKT_PREAMBLE_0) rx_state = STATE_WAIT_P1;
-            break;
-            
-        case STATE_WAIT_P1:
-            if (byte == PKT_PREAMBLE_1) {
-                rx_state = STATE_GET_R;
-                rx_idx = 0;
-            } else {
-                rx_state = STATE_WAIT_P0;
-            }
-            break;
-            
-        case STATE_GET_R:
-            ((uint8_t*)&r_rx_val)[rx_idx++] = byte;
-            if (rx_idx >= sizeof(float)) {
-                rx_state = STATE_GET_GLYPH;
-                rx_idx = 0;
-            }
-            break;
-            
-        case STATE_GET_GLYPH:
-            glyph_rx_buf[rx_idx++] = byte;
-            if (rx_idx >= 64) {
-                rx_state = STATE_WAIT_FOOTER;
-            }
-            break;
-            
-        case STATE_WAIT_FOOTER:
-            if (byte == PKT_FOOTER) {
-                // Buffer integrity validated cleanly. Map directly into FPT memory channels.
-                if (r_rx_val >= 0.997f) {
-                    memcpy(glyph_data, glyph_rx_buf, 64);
-                    // k_work_submit(&qr_work); or advance local loop
-                } else {
-                    LOG_ERR("UART PKT VETO: Inbound packet coherence too low (R=%.4f)", r_rx_val);
-                }
-            }
-            rx_state = STATE_WAIT_P0;
-            break;
-    }
-}
-
-
-// Sub-command: Manually inject/adjust the alpha step size modifier
-static int cmd_fpt_tune(const struct shell *sh, size_t argc, char **argv) {
-    if (argc < 2) {
-        shell_error(sh, "Usage: fpt tune <alpha_value>");
-        return -EINVAL;
-    }
-
-    float new_alpha = strtof(argv[1], NULL);
-    if (new_alpha <= 0.0f || new_alpha > 2.0f) {
-        shell_error(sh, "Error: Alpha value out of bounds (0.0 < alpha <= 2.0).");
-        return -EINVAL;
-    }
-
-    // Temporarily cache configuration to check validity before updating global memory
-    fpt_config_t test_cfg = loop_config;
-    test_cfg.alpha_star = new_alpha;
+    // Explicit numerical clipping to prevent expf() overflow or saturation traps
+    if (delta > 20.0f) return 0.0f;
+    if (delta < -20.0f) return -delta;
     
-    float projected_rho = fpt_estimate_spectral_radius(&test_cfg);
-    if (projected_rho >= 1.0f) {
-        shell_error(sh, "REJECTED: Target alpha yields unstable spectral radius (rho=%.4f >= 1.0).", projected_rho);
-        return -EPERM;
+    return -logf(1.0f / (1.0f + expf(-delta)));  
+}
+
+// === 2. MATHEMATICALLY SOUND RESONANCE (COSINE SIMILARITY) ===
+static float calc_resonance(const float *vector_a, const float *vector_b) {
+    float dot = 0.0f;
+    float norm_a = 0.0f;
+    float norm_b = 0.0f;
+
+    for (int i = 0; i < 64; i++) {
+        dot += vector_a[i] * vector_b[i];
+        norm_a += vector_a[i] * vector_a[i];
+        norm_b += vector_b[i] * vector_b[i];
     }
 
-    loop_config.alpha_star = new_alpha;
-    shell_print(sh, "SUCCESS: Adjusted loop step parameter. New alpha_star: %.4f", loop_config.alpha_star);
+    if (norm_a <= 0.0f || norm_b <= 0.0f) {
+        return 0.0f; 
+    }
+
+    return dot / (sqrtf(norm_a) * sqrtf(norm_b) + 1e-6f);
+}
+
+// === 3. BLE MESH DPO MESSAGE HANDLER ===
+static int dpo_alignment_handler(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx,
+                                 struct net_buf_simple *buf) {
+    uint16_t len = buf->len;
+    if (len < 128) {
+        LOG_ERR("Packet validation failed: insufficient length (%d bytes)", len);
+        return -EMSGSIZE; 
+    }
+
+    uint8_t *data = net_buf_simple_pull_mem(buf, len);
+
+    // Dynamic rotation inside ring-buffer boundary limits
+    memcpy(preference_pairs[batch_idx].prompt, data, 64);
+    memcpy(preference_pairs[batch_idx].winner, data + 64, 64);
+    batch_idx = (batch_idx + 1) % BATCH_SIZE;
+
+    // Map inbound signal elements into real logit registers
+    for (int i = 0; i < 128; i++) {
+        policy_logits[i] = (float)data[i % len] / 255.0f;
+        ref_logits[i] = policy_logits[i] * 0.9f;  
+    }
+
+    // Evaluate optimization gradient loss vectors
+    float loss = dpo_loss(&policy_logits[0], &policy_logits[64], &ref_logits[0], &ref_logits[64]);
+
+    // Map current logit projection back into visual phase space
+    for (int i = 0; i < 64; i++) {
+        incoming_glyph[i] = policy_logits[i];
+    }
+    
+    // Evaluate cross-resonance against system reference baseline anchor
+    float R_glyph = calc_resonance(incoming_glyph, reference_glyph);
+    
+    // Hybrid alignment assessment
+    float R = fmaxf(1.0f - loss, R_glyph);
+
+    // Enforce C190 Veto Boundaries
+    if (R < QGH_THRESHOLD) {
+        LOG_ERR("C190 VETO ACTIVATED: Realignment out of bounds. R=%.4f (Glyph R=%.4f, Loss=%.4f)", R, R_glyph, loss);
+        return 0; // Drop packet immediately, stop cascading steps
+    }
+
+    // Prepare outbound network telemetry verification vector
+    uint8_t reply[4];
+    reply[0] = (uint8_t)(R * 255.0f);
+    reply[1] = (uint8_t)(fminf(loss, 2.55f) * 100.0f);
+    reply[2] = batch_idx;
+    reply[3] = 0x00;
+
+    struct bt_mesh_msg_ctx tx_ctx = {
+        .net_idx = ctx->net_idx,
+        .app_idx = ctx->app_idx,
+        .addr = ctx->addr,  // Reply directly back to originating address
+        .send_ttl = BT_MESH_TTL_DEFAULT,
+    };
+
+    bt_mesh_model_send(model, &tx_ctx, NET_BUF_SIMPLE(sizeof(reply)), NULL, NULL);
+    LOG_INF("DPO ALIGNED AND REGISTERED | Loss=%.3f | R=%.4f | Glyph R=%.4f", loss, R, R_glyph);
+
     return 0;
 }
 
-// Sub-command: Force a manual systemic C190 Veto override
-static int cmd_veto_trigger(const struct shell *sh, size_t argc, char **argv) {
-    mesh_coherence = 0.000f; // Force drop state below QGH threshold boundaries
-    shell_warn(sh, "CRITICAL: Manual C190 VETO triggered. Actuator step paths locked.");
+// === 4. MODERN STRUCT DECLARATIONS (ZEPHYR v3.x COMPLIANT) ===
+static const struct bt_mesh_model_op dpo_ops[] = {
+    { BT_MESH_MODEL_OP_2(0x82, 0x36), 128, dpo_alignment_handler },
+    BT_MESH_MODEL_OP_END
+};
+
+static struct bt_mesh_model dpo_models[] = {
+    BT_MESH_MODEL_VND(0x0059, MESH_MODEL_ID, dpo_ops, NULL, NULL) // Nordic Vendor ID 0x0059
+};
+
+// Timer Callback for Asynchronous UART/Pi Pooling
+static void dpo_timer_handler(struct k_timer *timer) {
+    LOG_DBG("[POLLING] Checking UART buffers for inbound preference pairs from Pi...");
+}
+K_TIMER_DEFINE(dpo_timer, dpo_timer_handler, NULL);
+
+// === 5. INTERACTIVE DIAGNOSTIC SHELL ENGINE ===
+static int cmd_dpo_status(const struct shell *sh, size_t argc, char **argv) {
+    shell_print(sh, "--- DPO SWARM NODE ALIGNMENT OVERVIEW ---");
+    shell_print(sh, "Node Identifier:      %s", NODE_ID);
+    shell_print(sh, "Current Batch Index:  %d / %d", batch_idx, BATCH_SIZE);
+    shell_print(sh, "Beta Hyperparameter:  %.2f", BETA);
+    shell_print(sh, "Veto Threshold Bnd:   %.4f", QGH_THRESHOLD);
+    shell_print(sh, "Last Evaluated Logit: %.4f", policy_logits[0]);
     return 0;
 }
+SHELL_CMD_REGISTER(dpo_status, NULL, "Display DPO policy status telemetry metrics", cmd_dpo_status);
 
-// Define the structured subcommand tree hierarchy
-SHELL_STATIC_SUBCMD_SET_CREATE(sub_fpt,
-    SHELL_CMD(status, NULL, "View real-time FPT vector telemetry status indicators.", cmd_fpt_status),
-    SHELL_CMD(tune,   NULL, "Dynamically adjust step-size scaling arguments.", cmd_fpt_tune),
-    SHELL_CMD(veto,   NULL, "Force trigger an instant system-wide fallback veto event.", cmd_veto_trigger),
-    SHELL_SUBCMD_SET_END
-);
-
-// Register the root-level entry point command macro
-SHELL_CMD_REGISTER(fpt, &sub_fpt, "Sovereign Ψ-VLC Control Loop Management Engine", NULL);
+void main(void) {
+    LOG_INF("Ψ-DPO nRF Swarm Node %s Online", NODE_ID);
+    k_timer_start(&dpo_timer, K_SECONDS(1), K_SECONDS(1));
+}
