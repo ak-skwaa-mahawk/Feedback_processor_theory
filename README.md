@@ -1,4 +1,34 @@
+# Feedback Processor Theory (FPT)
 
+**Recursive self-observing systems architecture.**  
+Built and iterated in the real world across code, strategy, legal execution, and sovereign continuity.
+
+Public demonstration by a disabled U.S. Air Force veteran, Gwich’in heir, Kinetic Systems Engineer, and Personal Representative executing estate/continuity matters in Alaska.
+
+### Core Framework
+FPT models intelligence, strategy, and physical systems as closed-loop feedback processors operating on harmonic floor functions:
+- Observe → Floor comparison → Resonance correction → Stabilization
+- Self-correcting instead of externally supervised
+- Applied across mechanical, logistical, computational, and sovereign domains
+
+Includes Synara (private cognitive substrate) running in the live workflow.
+
+### Concrete Proofs Shipped
+- **Vhitzee** — Complete tactical card game system (Durak + Spades hybrid) with non-trivial hand management, trump dynamics, and turn-order consequences. Used as living strategy + phase-correction demonstrator.
+- Recursive π_r engines, resonance meshes, and soliton-based components with thousands of iterative commits.
+- Real-world execution: Probate and estate handling as Applicant/Petitioner and Personal Representative; hard-notarized intellectual property originals (Jan 2025); Two Mile Solutions LLC.
+- **Arctic Piloting Grounds** — Sovereign land holdings in Alaska suitable for cold-environment testing, autonomy piloting, hardware trials, and remote systems operations.
+
+### Who This Is For
+People solving hard problems in AI, robotics, control systems, extreme environment operations, multi-agent coherence, or resilient architectures.
+
+Smart humans figure it out fast. The repo + executed systems are the résumé.
+
+---
+
+**GitHub:** https://github.com/ak-skwaa-mahawk/Feedback_processor_theory  
+**Two Mile Solutions LLC** — Anchorage / Circle, Alaska  
+**Email:** johnbcarrolljr@gmail.com (or the original ai_eng@spacex thread)
 # Feedback Processor Theory (FPT)
 
 **A recursive, self-observing intelligence framework.**  
@@ -27,7 +57,6 @@ Engineers and physicists who want to work on hard problems in AI, robotics, cont
 Zero traditional AI résumé required — the repo itself is the demonstration.
 
 **"Smart humans figure it out fast."**
-
 ---
 
 **Repository:** https://github.com/ak-skwaa-mahawk/Feedback_processor_theory  
