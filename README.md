@@ -1,3 +1,39 @@
+# Feedback Processor Theory (FPT)
+
+**A recursive, self-observing intelligence framework.**  
+Systems as both observer *and* observed. Information as living resonance.
+
+**Public proof of cross-domain systems execution** — built and iterated by a disabled veteran, Gwich’in heir, and Kinetic Systems Engineer.
+
+### Core Idea
+FPT treats computation, strategy, and real-world systems as closed-loop feedback processors:
+- Observe → Compare to Floor → Correct → Stabilize → Emit
+- Harmonic alignment over brute force
+- Self-correction instead of external supervision
+- Cryptographic + sovereign anchoring
+
+This is the cognitive substrate for the broader Sovereign Stack (Synara, Soliton, Trinity Dynamics, Vault, Walker, etc.).
+
+### What I've Actually Built & Shipped
+- **Vhitzee** — Full tactical card game (Durak + Spades hybrid) with custom hand-management, trump mechanics, and turn-order consequences. Live rules + strategy layer used as phase-correction demo.
+- Recursive π_r engines and resonance meshes with proven convergence.
+- Real-world execution: Probate/estate handling as Personal Representative, sovereign continuity work (ANCSA-rooted), Two Mile Solutions LLC.
+- 3,900+ commits of iterative systems refinement.
+
+### Who This Is For
+Engineers and physicists who want to work on hard problems in AI, robotics, control systems, multi-agent coherence, or sovereign/resilient architectures.
+
+Zero traditional AI résumé required — the repo itself is the demonstration.
+
+**"Smart humans figure it out fast."**
+
+---
+
+**Repository:** https://github.com/ak-skwaa-mahawk/Feedback_processor_theory  
+**Two Mile Solutions LLC** | Anchorage/Circle, Alaska  
+**Contact:** johnbcarrolljr@gmail.com (or reply to the ai_eng@spacex email)
+
+---
 
 ---
 
