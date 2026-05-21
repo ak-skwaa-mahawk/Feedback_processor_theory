@@ -1,3 +1,4 @@
+
 # Feedback Processor Theory (FPT)
 
 **A recursive, self-observing intelligence framework.**  
