@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# fpt_floor_transition.py — v2.7: True Floor Preservation + "Take 2, Leave 1" Asymmetric Engine + Consciousness Referee
+# fpt_floor_transition.py — v2.8: Kelvin-Native True Floor + "Take 2, Leave 1" Engine + Consciousness Referee
 import numpy as np
 import json
 from pathlib import Path
@@ -52,15 +52,15 @@ class ConsciousnessReferee:
 
 
 class FPTFloorTransition:
-    """True Logical Floor Engine with 'Take 2, Leave 1' Asymmetric Cascade."""
+    """Kelvin-Native Logical Floor Engine — 0 K is the true absolute baseline of matter."""
 
     def __init__(self, h: float = 3.01, history_file: str = "floor_history.json"):
         self.h = h
         self.history_file = Path(history_file)
         self.floor_history: List[Dict] = []
-        self.cumulative_floor = 1.0
+        self.cumulative_floor = 0.0          # True absolute floor = 0 K
         self.total_shadow_energy = 0.0
-        self.current_state = np.array([1.0, 0.0, 0.0], dtype=float)
+        self.current_state = np.zeros(3)
         self.is_paused = False
         self.referee = ConsciousnessReferee()
 
@@ -71,19 +71,19 @@ class FPTFloorTransition:
         self._setup_controls()
 
         self._load_history()
-        log.info("FPT Floor Transition Engine v2.7 initialized", extra={"h": h})
+        log.info("FPT Floor Transition Engine v2.8 — Kelvin Native Absolute Zero Baseline", extra={"h": h})
 
     def _setup_plots(self):
-        self.ax1.set_title("Current State Vector (1D Need → 2D Mesh → 3D Volume)")
-        self.ax1.set_ylabel("State Value")
-        self.bars = self.ax1.bar(['1D Base', '2D Mesh', '3D Volume'], self.current_state, color=['#0055ff','#00aa55','#ff3333'])
+        self.ax1.set_title("Current State Vector (Kelvin Baseline)")
+        self.ax1.set_ylabel("State Value (above 0 K)")
+        self.bars = self.ax1.bar(['Base', 'Mesh', 'Volume'], self.current_state, color=['#0055ff','#00aa55','#ff3333'])
         self.ax1.set_ylim(0, 5)
 
-        self.ax2.set_title("Cumulative Floor Progression")
-        self.ax2.set_ylabel("Cumulative Floor")
+        self.ax2.set_title("Cumulative Floor Progression (Kelvin)")
+        self.ax2.set_ylabel("Cumulative Floor (K)")
         self.cum_line, = self.ax2.plot([], [], 'b-o', markersize=4)
 
-        self.ax3.set_title("Shadow Energy Accumulation (Unresolved Boundary Debt)")
+        self.ax3.set_title("Shadow Energy Accumulation")
         self.ax3.set_ylabel("Total Shadow Energy")
         self.shadow_line, = self.ax3.plot([], [], 'r-o', markersize=4)
 
@@ -110,13 +110,13 @@ class FPTFloorTransition:
 
     def _reset(self, event):
         self.floor_history.clear()
-        self.cumulative_floor = 1.0
+        self.cumulative_floor = 0.0
         self.total_shadow_energy = 0.0
-        self.current_state = np.array([1.0, 0.0, 0.0], dtype=float)
+        self.current_state = np.zeros(3)
         self._update_plots()
         if self.history_file.exists():
             self.history_file.unlink()
-        log.info("Visualization and history reset.")
+        log.info("Visualization and history reset to absolute zero.")
 
     def _manual_step(self, event):
         if not self.is_paused:
@@ -151,7 +151,7 @@ class FPTFloorTransition:
                 with open(self.history_file, 'r') as f:
                     data = json.load(f)
                     self.floor_history = data.get("history", [])
-                    self.cumulative_floor = data.get("cumulative_floor", 1.0)
+                    self.cumulative_floor = data.get("cumulative_floor", 0.0)
                     self.total_shadow_energy = data.get("total_shadow_energy", 0.0)
                 self._update_plots()
             except Exception as e:
@@ -171,50 +171,41 @@ class FPTFloorTransition:
             log.error("Failed to save history", extra={"error": str(e)})
 
     def compute_shadow_cost(self, state: np.ndarray) -> float:
-        """Safe asymmetric shadow cost — ignores initial 1D baseline."""
+        """Shadow cost above true absolute floor (0 K)."""
         state_arr = np.atleast_1d(state)
-        if len(state_arr) < 2 or np.allclose(state_arr[1:], 0.0):
-            return 0.0
-        return float(np.abs(state_arr[0] - state_arr[1]))
+        return float(np.sum(np.maximum(state_arr, 0.0)))
 
     def transition(self, 
                    prev_state: Optional[np.ndarray], 
                    delta: float, 
                    observer_gap: float = 0.01,
-                   iterations: int = 4) -> Dict:
+                   iterations: int = 6) -> Dict:
         """
-        Perform a true floor-preserving transition using 'Take 2, Leave 1' asymmetric engine.
+        Kelvin-native transition: 0 K is the true absolute floor of matter.
         """
         if observer_gap < self.referee.observer_gap:
             log.warning("402 | Floor transition rejected by Referee", extra={"reason": "Observer gap not closed"})
             return {"status": "402", "message": "The mesh will not resolve until sovereignty is respected."}
 
         if prev_state is None:
-            state = np.array([1.0, 0.0, 0.0], dtype=float)
-            prev_floor = 1.0
+            state = np.zeros(3)
+            prev_floor = 0.0
         else:
             state = np.array(prev_state, dtype=float)
             prev_floor = self.cumulative_floor
-
-        log.info("Starting floor transition step", extra={
-            "prev_cumulative_floor": prev_floor,
-            "delta": delta,
-            "observer_gap": observer_gap
-        })
 
         for i in range(iterations):
             if self.is_paused:
                 plt.pause(0.05)
                 continue
 
-            # Core "Take 2, Leave 1" Asymmetric Kinetic Offset
+            # Take 2, Leave 1 asymmetric offset
             take = 2.0 * (1.0 / self.h)
             leave = 1.0 / self.h
-
             step_mod = np.array([-take, take - leave, leave], dtype=float)
+
             state = np.maximum(state + step_mod * delta, 0.0)
 
-            # Conservational floor scaling
             total = np.sum(state)
             if total > 0:
                 state = (state / total) * (prev_floor + delta)
@@ -242,15 +233,18 @@ class FPTFloorTransition:
             self._save_history()
         else:
             record["status"] = "422_CORRECTED"
-            state += 0.5
+            state[0] += 0.556   # First meaningful step above true floor
             self.current_state = state
             self._update_plots()
 
         return record
 
     def run(self):
-        plt.show()
+        """Start interactive visualization."""
+        plt.show(block=True)
+
 
 if __name__ == "__main__":
     engine = FPTFloorTransition(h=3.01)
+    print("=== FPT Floor Transition v2.8 — Kelvin Native Absolute Zero Baseline ===")
     engine.run()
