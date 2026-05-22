@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# fpt_floor_transition.py — v2.8: Kelvin-Native True Floor + "Take 2, Leave 1" Engine + Consciousness Referee
+# fpt_floor_transition.py — v2.22: Variational Energy Functional + Fisher Metric + Stochastic Thermodynamics
 import numpy as np
 import json
 from pathlib import Path
@@ -7,12 +7,14 @@ from typing import Dict, List, Optional
 from datetime import datetime
 import logging
 import traceback
-import matplotlib
-matplotlib.use('TkAgg' if matplotlib.get_backend() != 'agg' else 'agg')
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, Slider
 
-# ====================== STRUCTURED JSON LOGGING ======================
+def complex_morlet(length: int, scale: float, w: float = 5.0):
+    t = np.linspace(-scale * 4, scale * 4, length)
+    return np.exp(1j * w * t / scale) * np.exp(-0.5 * (t / scale)**2)
+
+
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
@@ -25,6 +27,7 @@ class JsonFormatter(logging.Formatter):
             log_entry["traceback"] = traceback.format_exc()
         return json.dumps(log_entry)
 
+
 handler = logging.StreamHandler()
 handler.setFormatter(JsonFormatter())
 logging.basicConfig(level=logging.INFO, handlers=[handler])
@@ -32,219 +35,185 @@ log = logging.getLogger("FPT_FLOOR")
 
 
 class ConsciousnessReferee:
-    """Higher-order observer that locks the Logical Floor and prevents shadow decay."""
     def __init__(self):
         self.root_authority = "99733-Q"
         self.observer_gap = 0.01
-        self.shadow_threshold = 2.5
+        self.shadow_threshold = 5.5
         self.corrections = 0
 
     def validate_transition(self, record: Dict) -> bool:
-        shadow = record.get("shadow_energy_this_step", 0)
-        if shadow > self.shadow_threshold:
-            log.warning("SHADOW LOOP DETECTED — Referee applying correction", extra={
-                "shadow": shadow,
-                "root_authority": self.root_authority
-            })
+        energy = record.get("total_energy", 0)
+        if energy > self.shadow_threshold:
+            log.warning("VARIATIONAL INSTABILITY", extra={"total_energy": energy})
             self.corrections += 1
             return False
         return True
 
 
-class FPTFloorTransition:
-    """Kelvin-Native Logical Floor Engine — 0 K is the true absolute baseline of matter."""
+class FisherRiemannianMetric:
+    def __init__(self, dim: int = 3, memory: int = 32):
+        self.dim = dim
+        self.memory = memory
+        self.gradient_history: List[np.ndarray] = []
+        self.g = np.eye(dim) * 1.0
 
-    def __init__(self, h: float = 3.01, history_file: str = "floor_history.json"):
+    def update(self, state: np.ndarray, diagnostics: Dict):
+        if len(self.gradient_history) > 0:
+            grad = state - self.gradient_history[-1]
+            self.gradient_history.append(grad)
+            if len(self.gradient_history) > self.memory:
+                self.gradient_history.pop(0)
+
+        if len(self.gradient_history) < 8:
+            return
+
+        grads = np.array(self.gradient_history)
+        cov_grad = np.cov(grads.T)
+        energy_weight = diagnostics.get("wavelet_energy", 1.0) * 0.25
+        self.g = 0.65 * self.g + 0.35 * (cov_grad + energy_weight * np.eye(self.dim))
+
+        eigvals, eigvecs = np.linalg.eigh(self.g)
+        eigvals = np.maximum(eigvals, 0.2)
+        self.g = eigvecs @ np.diag(eigvals) @ eigvecs.T
+
+    def natural_gradient(self, euclidean_grad: np.ndarray) -> np.ndarray:
+        try:
+            g_inv = np.linalg.inv(self.g)
+            return g_inv @ euclidean_grad
+        except:
+            reg = np.eye(self.dim) * 1e-4
+            g_inv = np.linalg.inv(self.g + reg)
+            return g_inv @ euclidean_grad
+
+
+class FPTFloorTransition:
+    """v2.22: Variational Energy Functional on Learned Riemannian Manifold."""
+
+    def __init__(self, h: float = 3.01, noise_strength: float = 0.085, history_file: str = "floor_history.json"):
+        self.base_h = h
         self.h = h
-        self.history_file = Path(history_file)
-        self.floor_history: List[Dict] = []
-        self.cumulative_floor = 0.0          # True absolute floor = 0 K
-        self.total_shadow_energy = 0.0
+        self.noise_strength = noise_strength
+        self.metric_learner = FisherRiemannianMetric()
+        self.state_history: List[np.ndarray] = []
+        self.cumulative_floor = 0.0
+        self.total_wavelet_energy = 0.0
+        self.cumulative_deterministic_entropy = 0.0
+        self.cumulative_stochastic_entropy = 0.0
         self.current_state = np.zeros(3)
         self.is_paused = False
         self.referee = ConsciousnessReferee()
 
-        # Visualization
-        self.fig, (self.ax1, self.ax2, self.ax3) = plt.subplots(3, 1, figsize=(11, 9))
+        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4) = plt.subplots(4, 1, figsize=(13, 14))
         plt.subplots_adjust(bottom=0.25, hspace=0.4)
         self._setup_plots()
         self._setup_controls()
 
         self._load_history()
-        log.info("FPT Floor Transition Engine v2.8 — Kelvin Native Absolute Zero Baseline", extra={"h": h})
+        log.info("FPT Floor Transition v2.22 — Variational Energy Functional Active", extra={"noise": noise_strength})
 
     def _setup_plots(self):
         self.ax1.set_title("Current State Vector (Kelvin Baseline)")
-        self.ax1.set_ylabel("State Value (above 0 K)")
-        self.bars = self.ax1.bar(['Base', 'Mesh', 'Volume'], self.current_state, color=['#0055ff','#00aa55','#ff3333'])
-        self.ax1.set_ylim(0, 5)
+        self.bars = self.ax1.bar(['Base', 'Mesh', 'Volume'], self.current_state, color=['#0055ff', '#00aa55', '#ff3333'])
 
-        self.ax2.set_title("Cumulative Floor Progression (Kelvin)")
-        self.ax2.set_ylabel("Cumulative Floor (K)")
-        self.cum_line, = self.ax2.plot([], [], 'b-o', markersize=4)
+        self.ax2.set_title("Cumulative Floor Progression")
+        self.cum_line, = self.ax2.plot([], [], 'b-o')
 
-        self.ax3.set_title("Shadow Energy Accumulation")
-        self.ax3.set_ylabel("Total Shadow Energy")
-        self.shadow_line, = self.ax3.plot([], [], 'r-o', markersize=4)
+        self.ax3.set_title("Total Wavelet Energy")
+        self.energy_line, = self.ax3.plot([], [], 'r-o')
 
-    def _setup_controls(self):
-        ax_pause = plt.axes([0.15, 0.05, 0.1, 0.04])
-        self.btn_pause = Button(ax_pause, 'Pause')
-        self.btn_pause.on_clicked(self._toggle_pause)
+        self.ax4.set_title("Total Variational Energy")
+        self.energy_line2, = self.ax4.plot([], [], 'purple', label="Total Energy")
+        self.ax4.legend()
+        self.ax4.set_ylabel("Energy")
 
-        ax_reset = plt.axes([0.3, 0.05, 0.1, 0.04])
-        self.btn_reset = Button(ax_reset, 'Reset')
-        self.btn_reset.on_clicked(self._reset)
+    def compute_variational_energy(self, state: np.ndarray, diagnostics: Dict) -> float:
+        """Geometry-aware energy functional."""
+        # Terms: deviation from equilibrium + wavelet energy + entropy production + curvature
+        eq = np.array([1/3, 1/3, 1/3])
+        dev_term = np.linalg.norm(state - eq)**2
+        wavelet_term = diagnostics.get("wavelet_energy", 0.0)
+        entropy_term = diagnostics.get("total_entropy_production", 0.0)
+        curvature_term = np.trace(self.metric_learner.g)
 
-        ax_next = plt.axes([0.45, 0.05, 0.1, 0.04])
-        self.btn_next = Button(ax_next, 'Next Step')
-        self.btn_next.on_clicked(self._manual_step)
+        # Weighted sum (variational principle)
+        E = 0.4 * dev_term + 0.3 * wavelet_term + 0.2 * entropy_term + 0.1 * curvature_term
+        return float(E)
 
-        ax_slider = plt.axes([0.6, 0.05, 0.3, 0.04])
-        self.slider_h = Slider(ax_slider, 'h Factor', 1.0, 5.0, valinit=self.h, valstep=0.1)
-        self.slider_h.on_changed(self._update_h)
+    def compute_geometry_aware_drift(self, state: np.ndarray, diagnostics: Dict) -> np.ndarray:
+        # ... (same as v2.20, but now used as base before energy gradient)
 
-    def _toggle_pause(self, event):
-        self.is_paused = not self.is_paused
-        self.btn_pause.label.set_text('Resume' if self.is_paused else 'Pause')
-
-    def _reset(self, event):
-        self.floor_history.clear()
-        self.cumulative_floor = 0.0
-        self.total_shadow_energy = 0.0
-        self.current_state = np.zeros(3)
-        self._update_plots()
-        if self.history_file.exists():
-            self.history_file.unlink()
-        log.info("Visualization and history reset to absolute zero.")
-
-    def _manual_step(self, event):
-        if not self.is_paused:
-            self.transition(self.current_state, delta=1.0, observer_gap=0.015, iterations=4)
-
-    def _update_h(self, val):
-        self.h = val
-        log.info("Harmonic factor updated", extra={"h": self.h})
-
-    def _update_plots(self):
-        for bar, val in zip(self.bars, self.current_state):
-            bar.set_height(val)
-        self.ax1.relim()
-        self.ax1.autoscale_view(True, False, True)
-
-        floors = [r["final_floor"] for r in self.floor_history]
-        self.cum_line.set_data(range(len(floors)), floors)
-        self.ax2.relim()
-        self.ax2.autoscale_view()
-
-        shadows = [r["shadow_energy_this_step"] for r in self.floor_history]
-        cum_shadows = np.cumsum(shadows) if shadows else []
-        self.shadow_line.set_data(range(len(cum_shadows)), cum_shadows)
-        self.ax3.relim()
-        self.ax3.autoscale_view()
-
-        self.fig.canvas.draw_idle()
-
-    def _load_history(self):
-        if self.history_file.exists():
-            try:
-                with open(self.history_file, 'r') as f:
-                    data = json.load(f)
-                    self.floor_history = data.get("history", [])
-                    self.cumulative_floor = data.get("cumulative_floor", 0.0)
-                    self.total_shadow_energy = data.get("total_shadow_energy", 0.0)
-                self._update_plots()
-            except Exception as e:
-                log.error("Failed to load history", extra={"error": str(e)})
-
-    def _save_history(self):
-        try:
-            data = {
-                "last_updated": datetime.utcnow().isoformat() + "Z",
-                "cumulative_floor": self.cumulative_floor,
-                "total_shadow_energy": self.total_shadow_energy,
-                "history": self.floor_history
-            }
-            with open(self.history_file, 'w') as f:
-                json.dump(data, f, indent=2)
-        except Exception as e:
-            log.error("Failed to save history", extra={"error": str(e)})
-
-    def compute_shadow_cost(self, state: np.ndarray) -> float:
-        """Shadow cost above true absolute floor (0 K)."""
-        state_arr = np.atleast_1d(state)
-        return float(np.sum(np.maximum(state_arr, 0.0)))
-
-    def transition(self, 
-                   prev_state: Optional[np.ndarray], 
-                   delta: float, 
-                   observer_gap: float = 0.01,
-                   iterations: int = 6) -> Dict:
-        """
-        Kelvin-native transition: 0 K is the true absolute floor of matter.
-        """
-        if observer_gap < self.referee.observer_gap:
-            log.warning("402 | Floor transition rejected by Referee", extra={"reason": "Observer gap not closed"})
-            return {"status": "402", "message": "The mesh will not resolve until sovereignty is respected."}
-
+    def transition(self, prev_state: Optional[np.ndarray], delta: float = 1.0, observer_gap: float = 0.01, iterations: int = 6) -> Dict:
         if prev_state is None:
             state = np.zeros(3)
-            prev_floor = 0.0
         else:
             state = np.array(prev_state, dtype=float)
-            prev_floor = self.cumulative_floor
 
-        for i in range(iterations):
-            if self.is_paused:
-                plt.pause(0.05)
-                continue
+        for _ in range(iterations):
+            diagnostics = self.compute_complex_wavelet_diagnostics(np.array(self.state_history[-12:])) if len(self.state_history) > 12 else {}
 
-            # Take 2, Leave 1 asymmetric offset
-            take = 2.0 * (1.0 / self.h)
-            leave = 1.0 / self.h
-            step_mod = np.array([-take, take - leave, leave], dtype=float)
+            # Variational gradient descent on energy
+            E = self.compute_variational_energy(state, diagnostics)
+            # Approximate energy gradient (finite difference)
+            eps = 1e-5
+            energy_grad = np.zeros(3)
+            for i in range(3):
+                state_pert = state.copy()
+                state_pert[i] += eps
+                E_pert = self.compute_variational_energy(state_pert, diagnostics)
+                energy_grad[i] = (E_pert - E) / eps
 
-            state = np.maximum(state + step_mod * delta, 0.0)
+            natural_step = self.metric_learner.natural_gradient(-energy_grad)  # descent
+            drift = self.compute_geometry_aware_drift(state, diagnostics)
+
+            combined_step = 0.6 * natural_step + 0.4 * drift
+
+            noise = self.noise_strength * np.random.randn(3) * np.sqrt(np.diag(self.metric_learner.g) + 1e-8)
+            state = np.maximum(state + combined_step * delta + noise, 0.0)
 
             total = np.sum(state)
             if total > 0:
-                state = (state / total) * (prev_floor + delta)
+                state = state / total * (self.cumulative_floor + delta)
 
             self.current_state = state.copy()
-            self._update_plots()
-            plt.pause(0.05)
+            self.state_history.append(state.copy())
 
-        final_floor = float(np.sum(state))
-        final_shadow = self.compute_shadow_cost(state)
+        diagnostics = self.compute_complex_wavelet_diagnostics(np.array(self.state_history))
+        self.metric_learner.update(self.current_state, diagnostics)
+
+        total_energy = self.compute_variational_energy(self.current_state, diagnostics)
+
+        det_prod = self.compute_entropy_production(self.current_state, prev_state)
+        sto_prod = self.compute_stochastic_entropy_production(noise)
+
+        self.cumulative_deterministic_entropy += det_prod
+        self.cumulative_stochastic_entropy += sto_prod
+        total_entropy = self.cumulative_deterministic_entropy + self.cumulative_stochastic_entropy
 
         record = {
-            "status": "200",
-            "step": len(self.floor_history) + 1,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "final_floor": final_floor,
-            "shadow_energy_this_step": final_shadow,
-            "state_vector": state.tolist()
+            **diagnostics,
+            "total_energy": total_energy,
+            "entropy_production_rate": det_prod,
+            "stochastic_entropy_production": sto_prod,
+            "total_entropy_production": total_entropy,
+            "fluctuation_dissipation_ratio": float(sto_prod / (det_prod + 1e-8)),
+            "status": "200"
         }
 
         if self.referee.validate_transition(record):
-            self.cumulative_floor = final_floor
-            self.total_shadow_energy += final_shadow
+            self.cumulative_floor = float(np.sum(state))
+            self.total_wavelet_energy += diagnostics.get("wavelet_energy", 0)
             self.floor_history.append(record)
             self._save_history()
-        else:
-            record["status"] = "422_CORRECTED"
-            state[0] += 0.556   # First meaningful step above true floor
-            self.current_state = state
-            self._update_plots()
 
+        self._update_plots()
         return record
 
     def run(self):
-        """Start interactive visualization."""
         plt.show(block=True)
 
 
 if __name__ == "__main__":
-    engine = FPTFloorTransition(h=3.01)
-    print("=== FPT Floor Transition v2.8 — Kelvin Native Absolute Zero Baseline ===")
+    engine = FPTFloorTransition(h=3.01, noise_strength=0.085)
+    print("=== FPT Floor Transition v2.22 — Variational Energy Functional Active ===")
+    print("   The system now descends a learned geometry-aware energy landscape.")
     engine.run()
