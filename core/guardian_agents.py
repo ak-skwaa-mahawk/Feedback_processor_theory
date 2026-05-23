@@ -4,6 +4,21 @@ import numpy as np
 import time
 from typing import Dict, Tuple, Any
 
+from core.bridge import SovereignBridge
+
+class StrawmanGuardianAgent:
+    def __init__(self):
+        self.bridge = SovereignBridge()
+        # ... rest of your init
+    
+    def evaluate_transition(self, state_vector, proposal):
+        # Try private core first for complex cases
+        success, result = self.bridge.secure_call("compute_phase_step", state_vector, proposal)
+        if success:
+            return True, result["state"], result.get("energy", 0.25)
+        
+        # Fallback to public Strawman logic
+        # ... (your existing Fisher-Riemannian implementation)
 # =========================================================================
 # CONDITIONAL CORE BRIDGE (Sovereign Privacy Safeguard)
 # =========================================================================
