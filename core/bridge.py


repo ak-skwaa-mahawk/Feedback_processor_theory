@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+# core/bridge.py — Sealed Sovereign Bridge (Public ↔ Private Core)
+import os
+import json
+import hashlib
+import numpy as np
+from typing import Dict, Any, Optional, Tuple
+
+class SovereignBridge:
+    """
+    Encrypted, conditional bridge. 
+    - Local trusted environment → full private core access
+    - External/untrusted clone → public-only fallback with 0K floor
+    """
+    
+    def __init__(self, bridge_config_path: str = "config/sovereign_bridge.json"):
+        self.bridge_config_path = bridge_config_path
+        self.private_core_active = False
+        self.local_fingerprint = self._generate_local_fingerprint()
+        self._load_or_create_config()
+    
+    def _generate_local_fingerprint(self) -> str:
+        """Machine + user-specific anchor for trusted execution"""
+        try:
+            hostname = os.uname().nodename if hasattr(os, 'uname') else "unknown"
+            user = os.getenv("USER", "unknown")
+            seed = f"{hostname}:{user}:{os.getcwd()}"
+            return hashlib.sha256(seed.encode()).hexdigest()[:32]
+        except:
+            return "fallback_fingerprint"
+    
+    def _load_or_create_config(self):
+        os.makedirs(os.path.dirname(self.bridge_config_path), exist_ok=True)
+        if os.path.exists(self.bridge_config_path):
+            with open(self.bridge_config_path, 'r') as f:
+                config = json.load(f)
+                self.private_core_active = config.get("trusted_fingerprint") == self.local_fingerprint
+        else:
+            # First run on trusted machine → auto-approve
+            config = {"trusted_fingerprint": self.local_fingerprint, "seal_version": "1.0"}
+            with open(self.bridge_config_path, 'w') as f:
+                json.dump(config, f, indent=2)
+            self.private_core_active = True
+    
+    def get_private_core(self) -> Optional[Any]:
+        """Return private core handle only if running in trusted environment"""
+        if not self.private_core_active:
+            return None
+        
+        try:
+            from core.octagonal_fpt_agent import OctagonalFPTAgent
+            return OctagonalFPTAgent()
+        except ImportError:
+            return None
+    
+    def secure_call(self, method_name: str, *args, **kwargs) -> Tuple[bool, Any]:
+        """Safe proxy to private core methods"""
+        core = self.get_private_core()
+        if core is None:
+            # Public fallback
+            return False, {"mode": "public_shield_only", "state": np.zeros(3)}
+        
+        try:
+            method = getattr(core, method_name)
+            result = method(*args, **kwargs)
+            return True, result
+        except Exception as e:
+            return False, {"error": str(e), "state": np.zeros(3)}
