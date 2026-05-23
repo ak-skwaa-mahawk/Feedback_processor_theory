@@ -4,42 +4,38 @@ import numpy as np
 import time
 from typing import Dict, Tuple, Any
 
-# =========================================================================
-# SOVEREIGN BRIDGE (Privacy Firewall)
-# =========================================================================
 from core.bridge import SovereignBridge
 
 # =========================================================================
 # CONDITIONAL PRIVATE CORE BRIDGE
 # =========================================================================
 try:
-    # Local-only imports from your private FPT core
     from core.octagonal_fpt_agent import OctagonalFPTAgent
     PRIVATE_CORE_ACTIVE = True
 except ImportError:
     PRIVATE_CORE_ACTIVE = False
-    # Mock for public/standalone mode
     class OctagonalFPTAgent:
-        def compute_phase_step(self, state: np.ndarray, task: np.ndarray):
-            return state + 0.1, 1.25  # Mock state + energy
+        def compute_phase_step(self, state: np.ndarray, task: np.ndarray) -> dict:
+            # Consistent dict return for JSON safety + bridge compatibility
+            return {
+                "state": (state + 0.1).tolist(),
+                "energy": 1.25
+            }
 
 # =========================================================================
 # PUBLIC PROTECTION LAYER IMPORTS
 # =========================================================================
-# Adjust these paths based on how you install/import the public repos
 try:
     from strawman.strawman_fpt_shapeshift import ConsciousnessReferee, FisherRiemannianMetric
 except ImportError:
-    # Fallback if not installed as package
-    from strawman.fpt_floor_transition import ConsciousnessReferee, FisherRiemannianMetric  # or wherever it lives
+    from strawman.fpt_floor_transition import ConsciousnessReferee, FisherRiemannianMetric
 
 try:
     from human_in_the_loop.handshake import ConsciousnessReferee as HITLReferee
 except ImportError:
-    # Placeholder fallback
     class HITLReferee:
         def validate_transition(self, record: dict) -> bool:
-            return True  # Safe default in public mode
+            return True  # Safe public fallback
 
 
 # =========================================================================
@@ -55,17 +51,18 @@ class StrawmanGuardianAgent:
         self.skills = ["phase_stabilization", "asymmetric_pump", "variational_shield"]
 
     def evaluate_transition(self, state_vector: np.ndarray, proposal: np.ndarray) -> Tuple[bool, np.ndarray, float]:
-        # First: Try private core via sealed bridge (sovereign path)
+        # Priority 1: Sovereign private core via sealed bridge
         success, result = self.bridge.secure_call("compute_phase_step", state_vector, proposal)
         if success:
-            return True, result.get("state", state_vector), result.get("energy", 0.25)
+            state_out = np.array(result.get("state", state_vector.tolist()))
+            energy = float(result.get("energy", 0.25))
+            return True, state_out, energy
 
-        # Fallback: Public Strawman logic
+        # Priority 2: Public Strawman logic
         record = {"total_energy": float(np.linalg.norm(proposal))}
         if not self.referee.validate_transition(record):
             return False, state_vector, 999.0
 
-        # Fisher-Riemannian natural gradient correction
         diagnostics = {"wavelet_energy": 0.15, "total_entropy_production": 0.2}
         self.metric.update(state_vector, diagnostics)
         natural_step = self.metric.natural_gradient(proposal - state_vector)
@@ -84,19 +81,20 @@ class HumanInTheLoopAgent:
         self.skills = ["cryptographic_lock", "hallucination_block", "manual_override"]
 
     def evaluate_transition(self, state_vector: np.ndarray, proposal: np.ndarray) -> Tuple[bool, np.ndarray, float]:
-        # Try private core first
+        # Priority 1: Sovereign private core
         success, result = self.bridge.secure_call("compute_phase_step", state_vector, proposal)
         if success:
-            return True, result.get("state", state_vector), result.get("energy", 0.25)
+            state_out = np.array(result.get("state", state_vector.tolist()))
+            energy = float(result.get("energy", 0.25))
+            return True, state_out, energy
 
-        # Public HITL logic
+        # Priority 2: Public HITL logic
         shadow_cost = float(np.sum(np.maximum(proposal, 0.0)))
         record = {"shadow_energy_this_step": shadow_cost}
 
         if not self.referee.validate_transition(record):
             return False, np.zeros_like(state_vector), 999.0
 
-        # Mass-preserving 'Take 2, Leave 1' stabilization
         h = 3.01
         take = 2.0 / h
         leave = 1.0 / h
@@ -114,7 +112,7 @@ class HumanInTheLoopAgent:
 # 2. MULTI-AGENT RESONANCE MESH ROUTER
 # =========================================================================
 class MultiAgentResonanceMesh:
-    """Central arbitration layer comparing all agents live"""
+    """Central arbitration layer comparing skill performance in real-time"""
     def __init__(self):
         self.agents = {
             "strawman_guardian": StrawmanGuardianAgent(),
@@ -135,18 +133,17 @@ class MultiAgentResonanceMesh:
 
             performance_matrix[name] = {
                 "success": success,
-                "state_output": output_state,
-                "energy_cost": energy_metric,
+                "state_output": output_state.tolist() if isinstance(output_state, np.ndarray) else output_state,
+                "energy_cost": float(energy_metric),
                 "latency_ms": (t_end - t_start) * 1000.0,
                 "skills": getattr(agent, "skills", ["native_fpt_core"])
             }
 
-        # Selection logic
         validated = {k: v for k, v in performance_matrix.items() if v["success"]}
         if not validated:
             return {
                 "selected_agent": "SYSTEM_CRITICAL_FALLBACK",
-                "state": np.zeros_like(current_state),
+                "state": np.zeros_like(current_state).tolist(),
                 "arbitration_matrix": performance_matrix
             }
 
@@ -160,21 +157,33 @@ class MultiAgentResonanceMesh:
 
 
 # =========================================================================
-# 3. TEST RUNNER
+# 3. VERIFICATION RUNNER
 # =========================================================================
 if __name__ == "__main__":
-    mesh = MultiAgentResonanceMesh()
+    print("=== SOVEREIGN MULTI-AGENT ARCHITECTURE VERIFICATION ===")
+    
+    # Bridge self-test
+    test_bridge = SovereignBridge(bridge_config_path="config/sovereign_bridge_test.json")
+    print("--- Bridge Containment Security Check ---")
+    print(f"Calculated Local Fingerprint: {test_bridge.local_fingerprint}")
+    print(f"Private Core Access Granted : {test_bridge.private_core_active}")
+    
+    success, payload = test_bridge.secure_call("compute_phase_step", np.array([0.3, 0.3, 0.4]))
+    print(f"Bridge Route                : {'PRIVATE_CORE' if success else 'PUBLIC_FALLBACK'}")
+    print(f"Payload                     : {payload}\n")
 
+    # Full mesh test
+    print("--- Launching Resonance Mesh Arbitration ---")
+    mesh = MultiAgentResonanceMesh()
     initial_state = np.array([0.4, 0.3, 0.3])
     incoming_burst = np.array([1.2, -0.5, 2.4])
-
-    print(f"--- FPT Resonance Mesh Arbitration (Private Core: {PRIVATE_CORE_ACTIVE}) ---")
+    
     decision = mesh.route_and_arbitrate(incoming_burst, initial_state)
-
-    print(f"\nWinner: {decision['selected_agent']}\n")
-    for name, metrics in decision["arbitration_matrix"].items():
-        print(f"Agent: {name.upper()}")
-        print(f"  └─ Success     : {metrics['success']}")
-        print(f"  └─ Energy      : {metrics['energy_cost']:.5f}")
-        print(f"  └─ Latency     : {metrics['latency_ms']:.2f} ms")
-        print(f"  └─ Skills      : {metrics['skills']}\n")
+    print(f"Winner Selected: {decision['selected_agent']}\n")
+    
+    for agent_name, metrics in decision["arbitration_matrix"].items():
+        print(f"Agent: {agent_name.upper()}")
+        print(f"  └─ Success       : {metrics['success']}")
+        print(f"  └─ Energy Cost   : {metrics['energy_cost']:.5f}")
+        print(f"  └─ Latency       : {metrics['latency_ms']:.2f} ms")
+        print(f"  └─ Skills        : {metrics['skills']}\n")
