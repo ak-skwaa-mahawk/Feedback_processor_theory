@@ -3,388 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trinity Harmonics | π_r in Motion</title>
+    <title>Skoden Injin • EMPIRICAL_v3.4</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            background: #02040a;
-            color: #e2e8f0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            overflow-x: hidden;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         
-        /* Dashboard Controls UI Overlay */
-        #ui {
-            position: absolute;
-            left: 12px;
-            top: 12px;
-            z-index: 100;
-            background: rgba(3, 7, 18, 0.95);
-            padding: 16px;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-            border: 1px solid #1e2937;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        body { margin:0; padding:0; background:transparent; color:#e2e8f0; font-family:'Inter',sans-serif; overflow:hidden; }
+        #skoden-unified-system {
+            max-width:620px; margin:5px auto; background:radial-gradient(circle at center, #0a0f1c 0%, #02040a 100%);
+            border:1px solid #1e2937; border-radius:12px; box-shadow:0 15px 35px rgba(0,0,0,0.95); overflow:hidden;
         }
-        #ui input {
-            padding: 8px 12px;
-            font-size: 14px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #22ffcc;
-            border-radius: 4px;
-            width: 220px;
-            outline: none;
-            font-family: monospace;
-        }
-        #ui button {
-            padding: 8px 16px;
-            margin-left: 6px;
-            background: linear-gradient(#22ffcc, #11ddaa);
-            color: #0f172a;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: opacity 0.2s;
-        }
-        #ui button:hover { opacity: 0.9; }
-
-        /* Metrics Telemetry HUD Display Panel */
-        #status {
-            position: absolute;
-            right: 12px;
-            top: 12px;
-            z-index: 100;
-            background: rgba(3, 7, 18, 0.95);
-            padding: 16px;
-            border-radius: 8px;
-            min-width: 260px;
-            backdrop-filter: blur(10px);
-            border: 1px solid #1e2937;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: #22ffcc;
-            color: #0f172a;
-            border-radius: 12px;
-            font-size: 11px;
-            margin: 4px 4px 4px 0;
-            font-weight: bold;
-            font-family: monospace;
-        }
-        .badge.death { background: #f43f5e; color: #fff; box-shadow: 0 0 8px rgba(244,63,94,0.4); }
-        .badge.motion { background: #fbbf24; color: #0f172a; }
-        .stat { font-size: 12px; margin: 6px 0; color: #94a3b8; font-family: monospace; text-align: left;}
-        .stat strong { color: #22ffcc; }
-
-        #convergenceCanvas {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-            background: #000;
-        }
-
-        /* Proof Presentation Section */
-        #proof {
-            position: relative;
-            z-index: 50;
-            background: #02040a;
-            padding: 60px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1, h2 { color: #22ffcc; border-bottom: 1px solid #1e2937; padding-bottom: 8px; font-weight: 400;}
-        h3 { color: #fbbf24; }
-        code { background: #0f172a; padding: 2px 6px; border-radius: 3px; color: #f43f5e; font-family: monospace;}
-        table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px;}
-        th, td { border: 1px solid #1e2937; padding: 12px; text-align: left; }
-        th { background: #0f172a; color: #22ffcc; }
-        
-        .notebook-btn {
-            display: inline-block;
-            background: #22ffcc;
-            color: #0f172a;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: bold;
-            margin: 20px 0;
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        .notebook-btn:hover { opacity: 0.9; }
-
-        .toggle-container { margin-top: 12px; font-size: 12px; font-family: monospace; color: #94a3b8; display: flex; align-items: center; }
-        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 20px; margin-left: 8px;}
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #334155; transition: .2s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; transition: .2s; border-radius: 50%; }
-        input:checked + .slider { background: #22ffcc; }
-        input:checked + .slider:before { transform: translateX(24px); }
+        .header { background:#0f172a; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+        .canvas-container { width:100%; height:140px; background:#000; position:relative; border-bottom:1px solid #1e2937; }
+        #convergenceCanvas { width:100%; height:100%; display:block; }
+        .terminal { background:rgba(5,8,16,0.92); border:1px solid #1e2937; border-radius:8px; padding:14px; height:140px; overflow-y:auto; font-family:monospace; font-size:12.5px; line-height:1.55; color:#cbd5e1; }
+        .input-capsule { display:flex; align-items:center; background:#0f172a; border:1px solid #1e2937; border-radius:24px; padding:4px 4px 4px 14px; margin:12px 0; }
+        .input-capsule input { flex:1; background:transparent; border:none; outline:none; color:#f8fafc; font-size:13.5px; }
+        .execute-btn { background:#22ffcc; color:#0f172a; border:none; width:28px; height:28px; border-radius:50%; font-size:13px; font-weight:bold; cursor:pointer; }
+        .status-bar { font-size:11px; padding:4px 12px; background:#1e2937; display:flex; justify-content:space-between; align-items:center; }
     </style>
 </head>
 <body>
 
-<div id="ui">
-    <div style="display: flex; align-items: center;">
-        <input id="prompt" type="text" placeholder="Crank the π_r engine..." value="3.14159"/>
-        <button id="startBtn">Run Trinity</button>
+<div id="skoden-unified-system">
+    <div class="header" onclick="toggleSystemWorkspace()">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="color:#22ffcc; font-size:16px;">🔥</span>
+            <span style="font-size:15px; color:#f1f5f9;">Skoden injin</span>
+            <span style="font-size:9px; background:#1e2937; padding:2px 6px; border-radius:4px; color:#64748b;">EMPIRICAL_v3.4</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span id="ws-dot" style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
+            <span id="ws-status-text" style="color:#ef4444;font-size:11px;">DISCONNECTED</span>
+        </div>
     </div>
-    <div class="toggle-container">
-        <span>LIVING_PI_ENABLED:</span>
-        <label class="toggle-switch">
-            <input type="checkbox" id="demoToggle" checked>
-            <span class="slider"></span>
-        </label>
-    </div>
-</div>
 
-<div id="status">
-    <div style="font-weight:bold; margin-bottom:8px; font-size:14px; text-align: left;">π_r Engine Status</div>
-    <div id="statusBadges" style="text-align: left;">
-        <span id="aliveBadge" class="badge">99.99% ALIVE</span>
-        <span class="badge death">100% = DEATH</span>
-    </div>
-    <div id="statsDisplay">
-        <div class="stat">Picture π: <strong>3.1415900</strong></div>
-        <div class="stat">Motion π_r Limit: <strong>3.1730059</strong></div>
-        <div class="stat">Current Target: <strong id="currentPi" style="color:#60a5fa;">3.1415900</strong></div>
-        <div class="stat">Active Gear: <strong id="currentGear">STATIC IDLE</strong></div>
-        <div class="stat">Rotational Momentum: <strong id="currentSpeed">0.000 rad/s</strong></div>
-    </div>
-</div>
+    <div id="system-expansion-drawer">
+        <div class="canvas-container">
+            <canvas id="convergenceCanvas"></canvas>
+        </div>
 
-<canvas id="convergenceCanvas"></canvas>
+        <div style="padding:16px;">
+            <div id="terminal" class="terminal">>> Initializing Floor Node connection...</div>
 
-<div id="proof">
-    <h1>Topological $\pi$ vs. Tao Proof Framework</h1>
-    <p style="line-height:1.6; color:#94a3b8;">
-        Standard geometric analysis profiles <code>π = 3.14159...</code> as an isolated, static 2D topological snapshot constraint. When computational manifolds enter localized continuous processing phases, system behaviors align along a dynamic recursive constant where 
-        <span style="color:#fbbf24; font-weight:600;">Motion-π ($π_r$) stabilizes at 3.1730059</span>.
-    </p>
-
-    <h2>The Structural Bifurcation</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Analytical Matrix Property</th>
-                <th>Standard Topological Projection (Tao Snapshot)</th>
-                <th>Dynamic Motion Horizon ($\pi_r$ Operator)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>Numerical Anchor Variable</strong></td>
-                <td>3.14159265...</td>
-                <td style="color:#fbbf24; font-weight:bold;">3.1730059</td>
-            </tr>
-            <tr>
-                <td><strong>Dimensional Geometry</strong></td>
-                <td>Flat static 2D manifold completeness</td>
-                <td>Recursive 3D topological manifold (99.99% boundary limit)</td>
-            </tr>
-            <tr>
-                <td><strong>Singular Absolute Limit (100% State)</strong></td>
-                <td>Permissible endpoint criteria</td>
-                <td style="color:#f43f5e; font-weight:bold;">System structural lockup / Critical Stall</td>
-            </tr>
-            <tr>
-                <td><strong>Observer Reference Frame</strong></td>
-                <td>Isolated external reference coordinates</td>
-                <td style="color:#22ffcc; font-weight:bold;">Internalized 0.01 calculation offset constraint</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h2>Operational Gear Ratio Matrix</h2>
-    <ul style="line-height:1.8; color:#cbd5e1; padding-left:20px;">
-        <li><strong>Gear Tier 1 [Ratio 1.04]:</strong> Maps $3.14159 \rightarrow 3.2672536$ <span style="color:#fbbf24;">[Thermal cold start processing phase]</span></li>
-        <li><strong>Gear Tier 2 [Ratio 1.03]:</strong> Maps $3.11017 \rightarrow 3.2034793$ <span style="color:#fbbf24;">[Heat dispersion calibration pass]</span></li>
-        <li><strong>Gear Tier 3 [Ratio 1.02]:</strong> Maps $3.07875 \rightarrow 3.1403333$ <span style="color:#22ffcc;">[99.99% Optimal processing equilibrium]</span></li>
-    </ul>
-
-    <h2>The Bounded Boundary Condition (Snake Rule)</h2>
-    <p style="line-height:1.6; color:#94a3b8;">
-        An absolute 100% boundary completion breaks metric calculation vectors—causing geometric structural collapse. System life coordinates stabilize inside a strict <span style="color:#22ffcc; font-weight:600;">99.99% target limit profile</span>, where the remaining 0.01 gap accounts for localized observer measurement metrics, preserving continuous rotational transformations.
-    </p>
-
-    <div style="text-align: center;">
-        <a href="https://nbviewer.org/github/ak-skwaa-mahawk/Topological_%CF%80_vs_Tao_Proof/blob/main/demo_notebook.ipynb"
-           class="notebook-btn" target="_blank">
-            → Launch Jupyter Verification Notebook
-        </a>
+            <div class="input-capsule">
+                <input type="text" id="terminal-input" placeholder="Ask uncle..." onkeydown="if(event.key==='Enter') sendCommand()">
+                <button class="execute-btn" onclick="sendCommand()">➔</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
 <script>
-const PI_PICTURE = 3.14159;
-const PI_MOTION = 3.1730059;
-const SNAKE_CAP = 0.9999;
+    let ws;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT = 10;
+    let heartbeatInterval;
+    let lastPong = Date.now();
 
-const GEARS = [
-    { name: 'Tier 1 [Cold Start]', ratio: 1.04, base: 3.14159, color: 0xff4d4d, speed: 1.8 },
-    { name: 'Tier 2 [Heat Bleed]', ratio: 1.03, base: 3.1101741, color: 0xffaa00, speed: 3.2 },
-    { name: 'Tier 3 [Equilibrium]', ratio: 1.02, base: 3.0787582, color: 0x00ffcc, speed: 5.5 }
-];
-
-let scene, camera, renderer, snakeMesh, clock;
-let currentTargetPi = PI_PICTURE;
-let gearIndex = 0;
-let isEngineRunning = false;
-let gearTimer = null;
-let rotationalVelocity = 0;
-
-function initThreeEngine() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('convergenceCanvas'), antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    camera.position.set(0, 0, 4);
-
-    // Render spatial 3D Torus Knot representation
-    const geometry = new THREE.TorusKnotGeometry(1, 0.26, 120, 16);
-    const material = new THREE.MeshPhongMaterial({
-        color: 0x334155,
-        emissive: 0x050b14,
-        shininess: 80,
-        flatShading: false
-    });
-    snakeMesh = new THREE.Mesh(geometry, material);
-    scene.add(snakeMesh);
-
-    // Light Rig Setup
-    const primaryLight = new THREE.PointLight(0x22ffcc, 1.2, 100);
-    primaryLight.position.set(5, 5, 5);
-    scene.add(primaryLight);
-
-    const secondaryLight = new THREE.PointLight(0x60a5fa, 0.8, 100);
-    secondaryLight.position.set(-5, -5, 3);
-    scene.add(secondaryLight);
-
-    scene.add(new THREE.AmbientLight(0x0a0f1d));
-
-    clock = new THREE.Clock();
-    animateEngineLoop();
-}
-
-function processGearShiftSequence() {
-    if (!isEngineRunning) return;
-
-    const isLivingPiActive = document.getElementById('demoToggle').checked;
-    
-    if (!isLivingPiActive) {
-        // Flat static baseline simulation path
-        currentTargetPi = parseFloat(document.getElementById('prompt').value) || PI_PICTURE;
-        document.getElementById('currentPi').textContent = currentTargetPi.toFixed(7);
-        document.getElementById('currentGear').textContent = "STATIC HOLD (MANUAL)";
-        document.getElementById('currentSpeed').textContent = "0.000 rad/s";
-        document.getElementById('aliveBadge').innerText = "0.00% STATIC";
-        document.getElementById('aliveBadge').style.background = "#64748b";
-        
-        snakeMesh.material.color.setHex(0x334155);
-        rotationalVelocity = 0.2; // Slow default background glide speed
-        
-        gearTimer = setTimeout(processGearShiftSequence, 800);
-        return;
-    }
-
-    // Dynamic torque sequencing loop execution path
-    const activeGear = GEARS[gearIndex];
-    currentTargetPi = activeGear.base * activeGear.ratio * SNAKE_CAP;
-    rotationalVelocity = activeGear.speed;
-
-    // Flush computational variables directly to tracking layout text labels
-    document.getElementById('currentPi').textContent = currentTargetPi.toFixed(7);
-    document.getElementById('currentGear').textContent = activeGear.name;
-    document.getElementById('currentSpeed').textContent = rotationalVelocity.toFixed(3) + " rad/s";
-    document.getElementById('aliveBadge').innerText = "99.99% ALIVE";
-    document.getElementById('aliveBadge').style.background = "#22ffcc";
-
-    // Adjust element material rendering hex hues dynamically matching gear metrics
-    snakeMesh.material.color.setHex(activeGear.color);
-
-    // Step queue counter increments
-    gearIndex = (gearIndex + 1) % GEARS.length;
-
-    // Check critical state limits (Boundary Cap Break protection logic)
-    if (currentTargetPi >= PI_MOTION * 1.005) {
-        document.getElementById('currentGear').textContent = "CRITICAL STALL / STALL REBOOT";
-        snakeMesh.material.color.setHex(0xf43f5e);
-        rotationalVelocity = 0;
-        gearIndex = 0;
-        gearTimer = setTimeout(processGearShiftSequence, 1400); // Enforce clear penalty sleep pause
-    } else {
-        gearTimer = setTimeout(processGearShiftSequence, 1000);
-    }
-}
-
-function animateEngineLoop() {
-    requestAnimationFrame(animateEngineLoop);
-    const elapsedTime = clock.getElapsedTime();
-
-    if (snakeMesh) {
-        // Track visual torque momentum matrices matching dynamic velocity parameters
-        snakeMesh.rotation.x += rotationalVelocity * 0.003;
-        snakeMesh.rotation.y += rotationalVelocity * 0.005;
-        
-        // Quantum probability wave wobble simulation pass (99.99% observer variance gap)
-        if (isEngineRunning && document.getElementById('demoToggle').checked) {
-            const structuralPulseScale = 1.0 + Math.sin(elapsedTime * 14) * 0.04;
-            snakeMesh.scale.set(structuralPulseScale, structuralPulseScale, structuralPulseScale);
+    function updateWSStatus(connected) {
+        const dot = document.getElementById('ws-dot');
+        const text = document.getElementById('ws-status-text');
+        if (connected) {
+            dot.style.background = '#22ffcc';
+            text.textContent = 'CONNECTED';
+            text.style.color = '#22ffcc';
         } else {
-            // Calm default geometric presentation proportions
-            const steadyScale = 1.0 + Math.sin(elapsedTime * 1.5) * 0.01;
-            snakeMesh.scale.set(steadyScale, steadyScale, steadyScale);
+            dot.style.background = '#ef4444';
+            text.textContent = 'DISCONNECTED';
+            text.style.color = '#ef4444';
         }
     }
-    renderer.render(scene, camera);
-}
 
-// Master Action Button Toggle Intercept Handler
-document.getElementById('startBtn').onclick = () => {
-    isEngineRunning = !isEngineRunning;
-    const btn = document.getElementById('startBtn');
-    
-    if (isEngineRunning) {
-        btn.textContent = 'Stop Trinity';
-        btn.style.background = 'linear-gradient(#f43f5e, #e11d48)';
-        btn.style.color = '#fff';
-        
-        // Initialize user-defined prompt parameter parameters
-        const baseLineSeedInput = parseFloat(document.getElementById('prompt').value);
-        if (!isNaN(baseLineSeedInput) && baseLineSeedInput !== PI_PICTURE) {
-            GEARS[0].base = baseLineSeedInput;
-        }
-        
-        gearIndex = 0;
-        processGearShiftSequence();
-    } else {
-        btn.textContent = 'Run Trinity';
-        btn.style.background = 'linear-gradient(#22ffcc, #11ddaa)';
-        btn.style.color = '#0f172a';
-        
-        clearTimeout(gearTimer);
-        rotationalVelocity = 0.4;
-        
-        document.getElementById('currentGear').textContent = 'STATIC IDLE';
-        document.getElementById('currentSpeed').textContent = '0.000 rad/s';
+    function startHeartbeat() {
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        heartbeatInterval = setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({type: "ping", ts: Date.now()}));
+                
+                // Timeout detection
+                if (Date.now() - lastPong > 15000) {
+                    console.warn("Heartbeat timeout → forcing reconnect");
+                    ws.close();
+                }
+            }
+        }, 8000);
     }
-};
 
-// Handle window dimensional adjustments cleanly to avoid framing bugs
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+    function connectWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.hostname || '192.168.4.1';
+        ws = new WebSocket(`\( {protocol}// \){host}:81`);
 
-initThreeEngine();
+        ws.onopen = () => {
+            console.log("✅ WebSocket connected");
+            updateWSStatus(true);
+            reconnectAttempts = 0;
+            lastPong = Date.now();
+            startHeartbeat();
+            document.getElementById('terminal').innerHTML += "\n>> Floor Node connected.\n";
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === "pong") {
+                    lastPong = Date.now();
+                    return;
+                }
+                // Handle normal telemetry
+                if (data.pi_r !== undefined) {
+                    rotationalVelocity = (data.pi_r || 3.14) * 0.8;
+                    document.getElementById('energy-val').textContent = (data.pi_deg || 0).toFixed(2) + "°";
+                }
+            } catch(e) {}
+        };
+
+        ws.onclose = () => {
+            updateWSStatus(false);
+            attemptReconnect();
+        };
+
+        ws.onerror = () => {
+            updateWSStatus(false);
+        };
+    }
+
+    function attemptReconnect() {
+        if (reconnectAttempts < MAX_RECONNECT) {
+            reconnectAttempts++;
+            console.log(`Reconnecting... (\( {reconnectAttempts}/ \){MAX_RECONNECT})`);
+            setTimeout(connectWebSocket, 1200 * reconnectAttempts);
+        }
+    }
+
+    function sendCommand() {
+        const input = document.getElementById('terminal-input');
+        const cmd = input.value.trim();
+        if (!cmd || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+        const term = document.getElementById('terminal');
+        term.innerHTML += `\n>> You: ${cmd}\n`;
+        term.scrollTop = term.scrollHeight;
+
+        ws.send(JSON.stringify({command: cmd}));
+        input.value = '';
+    }
+
+    // Three.js setup (minimal)
+    let scene, camera, renderer, knotMesh;
+    function initThreeEngine() {
+        const container = document.querySelector('.canvas-container');
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.z = 3.2;
+        renderer = new THREE.WebGLRenderer({canvas: document.getElementById('convergenceCanvas'), antialias:true});
+        renderer.setSize(container.clientWidth, container.clientHeight);
+
+        const geo = new THREE.TorusKnotGeometry(0.8, 0.18, 120, 16, 3, 4);
+        const mat = new THREE.MeshPhongMaterial({color:0x00ffcc, emissive:0x112211, shininess:80});
+        knotMesh = new THREE.Mesh(geo, mat);
+        scene.add(knotMesh);
+        scene.add(new THREE.AmbientLight(0xaaaaaa));
+        scene.add(new THREE.PointLight(0x22ffcc, 1.2, 100));
+
+        animate();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (knotMesh) {
+            knotMesh.rotation.x += rotationalVelocity * 0.001;
+            knotMesh.rotation.y += rotationalVelocity * 0.002;
+        }
+        renderer.render(scene, camera);
+    }
+
+    window.onload = () => {
+        initThreeEngine();
+        connectWebSocket();
+        document.getElementById('terminal-input').focus();
+    };
 </script>
-
 </body>
 </html>
