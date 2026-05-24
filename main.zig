@@ -1,10 +1,10 @@
 const std = @import("std");
 
 const H: f64 = 3.07;
-const FLOOR_COLLAPSE: f64 = 0.073;
-const NAVAJO_BOOST: f64 = 0.031;
-const DRUM_FREQ: f64 = 79.79;           // carrier / chiral modulation
-const DRUM_RESONANCE: f64 = 7.9083;     // primary sovereign grounding tone (IACA sealed)
+const FLOOR_COLLAPSE: f64 = 0.073;        // Gwich’in chanchyah/dach’anchyah
+const NAVAJO_BOOST: f64 = 0.031;          // Diné niʼ / nahasdzáán
+const DRUM_FREQ: f64 = 79.79;             // carrier / chiral modulation
+const DRUM_RESONANCE: f64 = 7.9083;       // PRIMARY sovereign grounding tone (IACA sealed)
 const MAX_K: usize = 5000;
 const DMI_STRENGTH: f64 = 0.55114;
 const PEDIGREE_Q: f64 = -1.0;
@@ -71,6 +71,7 @@ fn skyrmion_tau(x: f64, t: f64, kappa: [4]f64, c: [4]f64) f64 {
             }
         }
     }
+    // 4x4 determinant (simplified for embedded performance)
     const det = 1.0 + M[0][0] + M[1][1] + M[2][2] + M[3][3]
               + M[0][0]*M[1][1] + M[0][0]*M[2][2] + M[0][0]*M[3][3]
               + M[1][1]*M[2][2] + M[1][1]*M[3][3] + M[2][2]*M[3][3]
@@ -107,17 +108,16 @@ pub fn practical_catch_thiele_piezo_optimized(signal: []const u8) f64 {
         const phase_drum = 2.0 * std.math.pi * DRUM_RESONANCE * @as(f64, @floatFromInt(k + 1));
 
         const F_drive_base = delta * fast_sin(phase_carrier);
-
         const bond_dir = @sin(phase_carrier);
         const F_dmi = moriya_dmi_direction(bond_dir, symmetry_class);
 
-        // Primary 7.9083 Hz drum resonance forcing term
-        const F_drum = 0.8 * fast_sin(phase_drum);  // primary amplitude (tunable)
+        // Primary 7.9083 Hz drum resonance (sovereign grounding tone)
+        const F_drum = 0.85 * fast_sin(phase_drum);
 
         const tau_val = skyrmion_tau(phase_carrier, phase_carrier / DRUM_FREQ, kappa, c);
         const G_eff = G + PEDIGREE_Q * 0.073 * tau_val;
 
-        const F_drive = F_drive_base + F_dmi + F_drum;  // dual-frequency soliton
+        const F_drive = F_drive_base + F_dmi + F_drum;   // Dual-frequency soliton
 
         v = thiele_step_optimized(v, F_drive, a, b / G_eff);
 
@@ -134,6 +134,6 @@ pub fn main() !void {
     const pi_r = practical_catch_thiele_piezo_optimized(test_signal);
 
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("Tau-Applied Skyrmion + Dual-Frequency (7.9083 Hz Drum Resonance PRIMARY + 79.79 Hz Carrier) π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
-    try stdout.print("Feedback Processor Theory repo sealed — 7.9083 Hz drum resonance primary → reflectionless Tau-skyrmion lattice complete.\n", .{});
+    try stdout.print("Skoden Injin • EMPIRICAL_v3.4 + Dual-Frequency (7.9083 Hz PRIMARY Drum + 79.79 Hz Carrier) π_r = {d:.10} rad ({d:.4}°)\n", .{ pi_r, pi_r * 180.0 / std.math.pi });
+    try stdout.print("7.9083 Hz drum resonance sealed as primary forcing. Tau-skyrmion lattice active in Feedback Processor Theory repo.\n", .{});
 }
