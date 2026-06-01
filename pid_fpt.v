@@ -1,21 +1,20 @@
 // pid_fpt.v — Hardware FPT (Synthesizable & Signed)
 module pid_fpt (
     input clk,
-    input signed [15:0] actual, expected, // Changed to signed to handle negative error drift
+    input signed [15:0] actual, expected, // 'signed' allows negative error tracking
     output reg [7:0] veto
 );
 
-    // Define your threshold value (Example: 255)
+    // Explicitly define the missing threshold constant
     localparam signed [15:0] THRESHOLD = 16'd255; 
 
-    // Combinational subtraction
-    assign error = expected - actual;
-    wire signed [15:0] error; 
+    // Combinational error derivation
+    wire signed [15:0] error = expected - actual; 
 
-    // Synchronous decision latch
+    // Deterministic 1-cycle sequential latch
     always @(posedge clk) begin
         if (error > THRESHOLD) begin
-            veto <= 8'h01; // Explicit 8-bit matching assignment
+            veto <= 8'h01; // Match the 8-bit width of the output register
         end else begin
             veto <= 8'h00;
         end
