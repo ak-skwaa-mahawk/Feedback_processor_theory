@@ -1,43 +1,30 @@
-[package]
-name = "isst-toft-inference-backend"
-version = "1.6.0"
-edition = "2024"
-authors = ["Flamekeeper <john@sovereignvessel.alaska>"]
-license = "Apache-2.0"
-description = "Rad-hard Candle + gRPC inference backend for ISST-TOFT sovereign stack"
+[workspace]
+resolver = "2"
+members = [
+    "isst-toft-inference-backend",
+    "floor_catch",
+    "pi_r_engine",
+    "sovereign_engine",
+]
 
-[dependencies]
-candle-core = { version = "0.9", features = ["cuda"] }
-candle-nn = { version = "0.9" }
-tokio = { version = "1", features = ["full"] }
-tonic = "0.12"
-prost = "0.13"
-axum = { version = "0.7", features = ["json"] }
-serde = { version = "1.0", features = ["derive"] }
-tower = "0.5"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-rand = "0.9"  # for deterministic seeds if needed
-
-[build-dependencies]
-tonic-build = "0.12"
-
-[[bin]]
-name = "isst-toft-backend"
-path = "src/main.rs"
-
-[package]
-name = "floor_catch"
-version = "0.5.190"
-edition = "2021"
-
-[dependencies]
-rayon = "1.10"
-
-[package]
-name = "pi_r_engine"
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
+authors = ["Flamekeeper <john@sovereignvessel.alaska>", "Two Mile Solutions LLC <johnbcarrolljr@gmail.com>"]
+license = "Apache-2.0"
+repository = "https://github.com/ak-skwaa-mahawk/sovereign-stack"
 
-[lib]
-crate-type = ["cdylib"]
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+debug = false
+overflow-checks = false
+incremental = false
