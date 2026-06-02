@@ -2,13 +2,19 @@
 // Sovereign π_r Core — Hardened FFI Boundary (Dart side)
 // Matches the current Rust sovereign_engine exactly.
 // Defense-in-depth: Rust re-verifies 99733-Q guard + fidelity threshold internally.
+//
+// Platform-aware library loading:
+// - Android: loads dynamic .so from jniLibs
+// - iOS: uses process() because we link a static library (recommended)
+// - macOS/Linux desktop: adjust as needed
 
 import 'dart:ffi';
+import 'dart:io';
 import 'package:ffi/ffi.dart';
 
-final DynamicLibrary _sovereignLib = DynamicLibrary.open(
-  'libsovereign_engine.so', // Adjust per platform (Android/iOS/macOS/Linux)
-);
+final DynamicLibrary _sovereignLib = Platform.isAndroid
+    ? DynamicLibrary.open('libsovereign_engine.so')
+    : DynamicLibrary.process();
 
 // === Data Structures (must match Rust #[repr(C)] exactly) ===
 
