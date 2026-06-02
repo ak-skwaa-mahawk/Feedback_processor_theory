@@ -17,6 +17,19 @@ pub mod issttoft {
     tonic::include_proto!("issttoft");
 }
 
+let base_waveform = glyph::generate_glyph_waveform(
+    7.83, 44100, 528.0, Self::living_toroidal_pi_r(),
+)
+.map_err(|e| Status::internal(format!("Glyph generation failed: {}", e)))?;
+
+// Agentic path (Candle policy)
+let refined: Vec<f32> = if req.use_agentic {
+    model::apply_agentic_policy(&req.terrain_data, Self::living_toroidal_pi_r())
+        .map_err(|e| Status::internal(format!("Agentic policy failed: {}", e)))?
+} else {
+    base_waveform
+};
+
 use issttoft::{
     inference_service_server::{InferenceService, InferenceServiceServer},
     GlyphRequest, GlyphResponse, PulseRequest, PulseResponse,
