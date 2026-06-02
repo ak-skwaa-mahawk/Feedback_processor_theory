@@ -1,24 +1,65 @@
 version: "3.9"
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# ISST-TOFT Sovereign Full Stack — Production Orchestration
+# Two Mile Solutions LLC • Dinjji Zhuu Kwaa • Flamekeeper Protocol
+#
+# This compose brings up the complete sovereign inference mesh:
+#   • Rust gRPC inference backend (rad-hard glyph + clientless pulse)
+#   • Python agent / Synara handshake layer
+#   • Optional Harmonic WebSocket demo
+#   • Hardened n8n relay (Starvation Protocols + Google OTLP)
+#   • Prometheus + Nginx exporter for observability
+#
+# Build examples:
+#   docker compose up -d --build
+#   docker compose up -d --build --build-arg FEATURES=candle
+#   docker compose up -d --build --build-arg FEATURES=cuda
+# ═══════════════════════════════════════════════════════════════════════════════
+
 services:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 1. Sovereign Rust Inference Backend (gRPC)
+  # ─────────────────────────────────────────────────────────────────────────────
   isst-toft-rust-inference:
     build:
       context: .
       dockerfile: Dockerfile.rust
+      args:
+        FEATURES: ""          # "candle" or "cuda" to enable SovereignAgentPolicy
     container_name: isst-toft-rust-inference
     restart: unless-stopped
     ports:
-      - "50051:50051"          # gRPC
-      - "8081:8081"            # optional Axum HTTP fallback
+      - "50051:50051"         # gRPC InferenceService only
     environment:
       - RUST_LOG=info
+      - RUST_BACKTRACE=1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]  # or gRPC health
+      # TCP probe is appropriate for pure gRPC until an HTTP health endpoint is added
+      test: ["CMD", "sh", "-c", "echo > /dev/tcp/localhost/50051"]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 15s
+      start_period: 20s
+    networks:
+      - secure-internal
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "sovereign.stack=isst-toft"
+      - "sovereign.component=inference-backend"
+      - "sovereign.lineage=Two Mile Solutions LLC • Dinjji Zhuu Kwaa"
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 2. Python Agent / Synara Handshake Layer
+  # ─────────────────────────────────────────────────────────────────────────────
   isst-toft-python-agent:
     build:
       context: .
@@ -26,8 +67,7 @@ services:
     container_name: isst-toft-python-agent
     restart: unless-stopped
     ports:
-      - "8081:8081"            # uvicorn / synara_core handshake
-      - "8765:8765"            # Harmonic WebSocket demo (if needed)
+      - "8081:8081"           # FastAPI / uvicorn main API
     depends_on:
       isst-toft-rust-inference:
         condition: service_healthy
@@ -37,16 +77,24 @@ services:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
     volumes:
-      - ./core:/app/core
-      - ./tests:/app/tests
+      - ./core:/app/core:ro
+      - ./tests:/app/tests:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
       interval: 15s
       timeout: 10s
       retries: 3
       start_period: 30s
+    networks:
+      - secure-internal
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
-  # Optional: Keep your existing Harmonic Demo as a separate service if you want it live alongside
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 3. Optional Harmonic WebSocket Demo
+  # ─────────────────────────────────────────────────────────────────────────────
   harmonic-websocket:
     build:
       context: .
@@ -57,9 +105,17 @@ services:
       - "8765:8765"
     depends_on:
       - isst-toft-python-agent
-services:
+    networks:
+      - secure-internal
+    cap_drop:
+      - ALL
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 4. Hardened n8n Relay (Starvation Protocols + Google OTLP)
+  # ─────────────────────────────────────────────────────────────────────────────
   n8n-relay:
     image: n8nio/n8n:1.123.17
+    container_name: n8n-wasilla-relay
     restart: unless-stopped
     user: "1000:1000"
     read_only: true
@@ -67,14 +123,14 @@ services:
       - /home/node/.n8n:size=64m,mode=1777
       - /tmp:size=16m,mode=1777
     environment:
-      # Starvation Protocols
+      # === Starvation Protocols (user-defined hardening) ===
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
       - N8N_DISABLE_PRODUCTION_MAIN_PROCESS_TERMINATION=true
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
       - N8N_LOG_LEVEL=error
       - N8N_ENCRYPTION_KEY_FILE=/home/node/.n8n/encryption.key
 
-      # Pioneer OTLP - Unified Google Ingestion (Effective March 4, 2026)
+      # === Pioneer OTLP - Unified Google Ingestion (Effective March 4, 2026) ===
       - OTEL_EXPORTER_OTLP_ENDPOINT=https://telemetry.googleapis.com
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_SERVICE_NAME=n8n-wasilla-relay
@@ -92,6 +148,9 @@ services:
     networks:
       - secure-internal
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 5. Prometheus + Nginx Exporter (Observability)
+  # ─────────────────────────────────────────────────────────────────────────────
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -125,12 +184,17 @@ services:
     cap_drop:
       - ALL
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# Secrets, Volumes & Networks
+# ═══════════════════════════════════════════════════════════════════════════════
+
 secrets:
   gcp_observability_key:
     file: ./gcp-observability-key.json
 
 volumes:
   prometheus-data:
+  n8n_data:
 
 networks:
   secure-internal:
