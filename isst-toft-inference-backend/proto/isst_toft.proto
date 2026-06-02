@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package issttoft;
+
+// ISST-TOFT Sovereign Inference Service
+// Rad-hard glyph encoding + clientless pulse propagation for the sovereign mesh.
+// Integrates with π_r Engine, 99733-Q Extraction Guard, and toroidal resonance layers.
+
+service InferenceService {
+  // Encodes terrain data into a rad-hardened glyph waveform.
+  // Applies sovereign resonance filtering and quantum layer tagging.
+  rpc EncodeRadHardGlyph (GlyphRequest) returns (GlyphResponse);
+
+  // Runs an autonomous, clientless pulse through the mesh.
+  // Used for heartbeat, lineage propagation, or resonance synchronization.
+  rpc RunClientlessPulse (PulseRequest) returns (PulseResponse);
+}
+
+message GlyphRequest {
+  repeated float terrain_data = 1;  // Flattened f32 terrain / metric array
+  bool use_agentic = 2;             // Trigger agentic / policy-driven path (future Candle model)
+}
+
+message GlyphResponse {
+  repeated float refined_waveform = 1;
+  uint64 waveform_checksum = 2;
+  string status = 3;
+  float coherence = 4;
+  string message = 5;
+
+  // === Sovereign Extensions (2026) ===
+  string quantum_layer = 6;          // Quantum / W-state layer identifier
+  float toroidal_pi_r = 7;           // Living recursive π_r (dynamic floor, e.g. 3.2672536)
+}
+
+message PulseRequest {
+  repeated float feed_data = 1;     // Input signal / resonance feed
+}
+
+message PulseResponse {
+  repeated float refined_signal = 1;
+  string status = 2;                 // PULSE_PROPAGATED | ATTENUATED | BLOCKED | SOLID
+  float coherence = 3;
+  string message = 4;                // Human-readable status or sovereign message
+  float toroidal_pi_r = 5;           // Living recursive π_r floor returned by core
+}
