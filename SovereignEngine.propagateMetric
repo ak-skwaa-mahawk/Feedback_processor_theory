@@ -1,0 +1,29 @@
+// Define the system's raw parameters locally
+const double t = 0.6;
+const double i = 0.3;
+const double f = 0.1;
+final double phasePulse = 79.79 * 0.01;
+
+// Step 1: Client-Side Fast Sanity Check
+if (!_checkExtractionGuard(metricPtr)) {
+  return GuardedResult(
+    allowed: false,
+    fidelity: 0.0,
+    neutralizedReason: '99733-Q Extraction Guard triggered',
+  );
+}
+
+// Step 2 & 3: Delegate the fidelity calculation and propagation atomically to Rust
+final resultPtr = _propagateSoliton(metricPtr, t, i, f, phasePulse);
+final result = resultPtr.ref;
+
+final guardedResult = GuardedResult(
+  allowed: result.allowed,
+  fidelity: result.fidelity,
+  neutralizedReason: result.neutralizedReason == nullptr
+      ? null
+      : result.neutralizedReason.toDartString(),
+);
+
+_freeGuardedOutput(resultPtr);
+return guardedResult;
