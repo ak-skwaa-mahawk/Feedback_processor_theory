@@ -2,6 +2,16 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+typedef _PropagateSolitonC = Pointer<GuardedOutput> Function(
+    Pointer<SovereignMetric>, Double, Double, Double, Double);
+typedef _PropagateSolitonDart = Pointer<GuardedOutput> Function(
+    Pointer<SovereignMetric>, double, double, double, double);
+
+final _propagateSoliton = _sovereignLib
+    .lookup<NativeFunction<_PropagateSolitonC>>('propagate_soliton')
+    .asFunction<_PropagateSolitonDart>();
+
+
 // Global counter for simulated deterministic auditing without external dependencies
 static REJECTION_COUNT: AtomicU64 = AtomicU64::new(0);
 
@@ -44,7 +54,7 @@ fn compute_metric_hash(metric: &SovereignMetric) -> String {
 fn log_vault_rejection(stage: &str, reason: &str, metric: &SovereignMetric) {
     let trace_hash = compute_metric_hash(metric);
     REJECTION_COUNT.fetch_add(1, Ordering::SeqCst);
-    
+
     // In production, this targets an append-only localized file system descriptor
     eprintln!(
         "[SOVEREIGN_VAULT_AUDIT] Epoch: {} | Stage: {} | Reason: {} | Hash: {}",
@@ -60,7 +70,7 @@ pub unsafe extern "C" fn check_extraction_guard(metric_ptr: *const SovereignMetr
     if metric_ptr.is_null() {
         return false;
     }
-    
+
     let metric = &*metric_ptr;
 
     // Section 3: Enforcement Bounds Check
@@ -95,9 +105,9 @@ pub unsafe extern "C" fn wstate_update(
     // Simulating W-state system stabilization calculation matching the 79.79Hz pulse
     let coherence_factor = truth / (truth + indeterminacy + falsity + 1e-9);
     let phase_damping = (phase_pulse.cos()).abs();
-    
+
     let calculated_fidelity = coherence_factor * (1.0 - (indeterminacy * 0.1)) * phase_damping;
-    
+
     // Bound processing exactly within 0.0 -> 1.0 limit architectures
     calculated_fidelity.clamp(0.0, 1.0)
 }
@@ -110,7 +120,7 @@ pub unsafe extern "C" fn propagate_soliton(
 ) -> *mut GuardedOutput {
     // Immediately establish a safe, zeroed-out, blocked container for allocations
     let fallback_reason = CString::new("Null or critically invalid structure").unwrap();
-    
+
     let mut outcome = Box::new(GuardedOutput {
         allowed: false,
         fidelity: calculated_fidelity,
