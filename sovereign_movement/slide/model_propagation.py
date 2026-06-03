@@ -168,4 +168,4 @@ class ModelPropagation:
 
     def propagate_via_rust(self, target_host: str, tunnel_id: str) -> bool:
         logger.debug("[Phase 4] Rust propagation path called (placeholder)")
-        return self.propagate_to_host(target_host, tunnel_id)
+        return self.propagate_to_host(target_host, tunnel_id) 
