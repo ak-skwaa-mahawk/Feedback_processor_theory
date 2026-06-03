@@ -22,6 +22,7 @@ class ModelPropagation:
         model_path: str = "models/quantized/",
         default_model: str = "qwen2.5-coder-32b-q4_k_m.gguf",
         remote_model_dir: str = "/tmp/slide_models/",
+        default_transfer_password: str = "sovereign_transfer_key",
     ):
         self.tunnel_manager = tunnel_manager
         self.frame_energy = frame_energy
@@ -29,6 +30,7 @@ class ModelPropagation:
         self.default_model = default_model
         self.remote_model_dir = remote_model_dir
         self.lolbin = LOLBin(tunnel=tunnel_manager)
+        self.default_transfer_password = default_transfer_password
 
     def propagate_to_host(
         self,
@@ -38,15 +40,18 @@ class ModelPropagation:
         transfer_model: bool = True,
         progress_callback: Optional[ProgressCallback] = None,
         use_streaming: bool = False,
+        transfer_password: Optional[str] = None,
     ) -> bool:
         logger.info(f"[Phase 4] Starting ingestion on {target_host} "
                     f"(streaming={use_streaming})")
+
+        password = transfer_password or self.default_transfer_password
 
         success = True
 
         if transfer_model:
             if not self._transfer_model_weights(
-                target_host, tunnel_id, progress_callback, use_streaming
+                target_host, tunnel_id, progress_callback, use_streaming, password
             ):
                 logger.error(f"[Phase 4] Model transfer to {target_host} failed")
                 success = False
@@ -64,7 +69,7 @@ class ModelPropagation:
         return success
 
     # ============================================================
-    # Model Transfer (with streaming option)
+    # Model Transfer
     # ============================================================
 
     def _transfer_model_weights(
@@ -73,6 +78,7 @@ class ModelPropagation:
         tunnel_id: str,
         progress_callback: Optional[ProgressCallback] = None,
         use_streaming: bool = False,
+        password: str = "sovereign_transfer_key",
     ) -> bool:
         local_model_path = os.path.join(self.model_path, self.default_model)
         remote_model_path = os.path.join(self.remote_model_dir, self.default_model)
@@ -86,26 +92,23 @@ class ModelPropagation:
             logger.error("[Phase 4] Failed to compute local model hash")
             return False
 
-        # Ensure remote directory exists
         self.tunnel_manager.execute_command(tunnel_id, f"mkdir -p {self.remote_model_dir}")
 
         logger.info(f"[Phase 4] Transferring model to {target_host} "
                     f"(streaming={use_streaming})...")
 
         if use_streaming:
-            # === Streaming encrypted transfer (stealthier) ===
             transfer_success = self.lolbin.stream_encrypt_via_ssh(
                 local_path=local_model_path,
                 remote_path=remote_model_path,
-                password="sovereign_transfer_key",  # TODO: Make this configurable / derived
+                password=password,
                 tunnel_id=tunnel_id,
             )
         else:
-            # === File-based encrypted transfer ===
             transfer_success = self.lolbin.transfer_encrypted_via_openssl(
                 local_path=local_model_path,
                 remote_path=remote_model_path,
-                password="sovereign_transfer_key",
+                password=password,
                 tunnel_id=tunnel_id,
                 progress_callback=progress_callback,
             )
@@ -114,7 +117,6 @@ class ModelPropagation:
             logger.error(f"[Phase 4] File transfer failed to {target_host}")
             return False
 
-        # Verify integrity after transfer
         remote_hash = self._verify_remote_file_hash(tunnel_id, self.default_model)
         if not remote_hash:
             logger.error("[Phase 4] Failed to retrieve remote model hash")
