@@ -5,6 +5,15 @@ from textblob import TextBlob
 import hashlib
 import json
 import time
+import os
+
+# Securely handle TextBlob/NLTK missing dependencies inside headless environments
+try:
+    import nltk
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    import nltk
+    nltk.download('punkt', quiet=True)
 
 class AdaptiveFeedbackSystem:
     def __init__(self, passcode=None, enable_logging=True):
@@ -23,16 +32,28 @@ class AdaptiveFeedbackSystem:
             raise ValueError("Passcode must be a string.")
 
     def _log_action(self, action_data):
-        """Log an action with a cryptographic hash for auditability."""
+        """Log an action with a secure sequential cryptographic hash chain."""
         if not self.enable_logging:
-            return
+            return None
         timestamp = time.time()
-        data_str = json.dumps(action_data) + str(timestamp)
+        
+        # Pull the last row's hash vector to create a true immutable block sequence
+        prev_hash = self.audit_log[-1]["hash"] if self.audit_log else "0" * 64
+        
+        # Bind block data cleanly to prevent mutation gaps
+        payload = {
+            "prev_hash": prev_hash,
+            "timestamp": timestamp,
+            "action": action_data
+        }
+        data_str = json.dumps(payload, sort_keys=True)
         hash_value = hashlib.sha256(data_str.encode()).hexdigest()
+        
         log_entry = {
             "timestamp": timestamp,
             "action": action_data,
-            "hash": hash_value
+            "hash": hash_value,
+            "prev_hash": prev_hash
         }
         self.audit_log.append(log_entry)
         return hash_value
@@ -44,21 +65,26 @@ class AdaptiveFeedbackSystem:
         """
         if not isinstance(input_data, (list, str)):
             raise ValueError("Input data must be a string or list.")
-        # Simple normalization example: convert to lowercase and strip
+        
         if isinstance(input_data, str):
             calibrated = input_data.lower().strip()
         else:
             calibrated = [msg.lower().strip() for msg in input_data]
+            
         self._log_action({"type": "calibration", "input": input_data})
         return calibrated
 
     def domain_translation(self, input_text, target_domain="computational"):
         """
-        Translate input text between domains (e.g., human to computational).
-        Here, simplifies to sentiment polarity extraction for signal use.
+        Translate input text between domains via textblob sentiment polarity mapping.
         """
         if not isinstance(input_text, str):
             raise ValueError("Input text must be a string.")
+        
+        # Safeguard text structure processing loops
+        if not input_text.strip():
+            return 0.0
+            
         blob = TextBlob(input_text)
         translated = blob.sentiment.polarity  # Float between -1 and 1
         self._log_action({"type": "translation", "input": input_text, "target": target_domain})
@@ -67,28 +93,36 @@ class AdaptiveFeedbackSystem:
     def process_conversation(self, conversation, speaker=None):
         """
         Process a conversation (list of strings) with recursive feedback.
-        - conversation: List of messages.
-        - speaker: Optional speaker identifier.
         Returns a dict with coherence and signal data.
         """
         if not isinstance(conversation, list) or not all(isinstance(msg, str) for msg in conversation):
             raise ValueError("Conversation must be a list of strings.")
-        
+            
+        if len(conversation) == 0:
+            return {"coherence": 0.0, "waveform": [], "speaker": speaker}
+
         # Step 1: Calibrate
         calibrated = self.baseline_calibration(conversation)
-        
+
         # Step 2: Translate to signals (sentiment waveform)
         signals = [self.domain_translation(msg) for msg in calibrated]
-        waveform = np.array(signals)  # Time-series signal
+        waveform = np.array(signals, dtype=float)  # Time-series signal
+
+        # Step 3: Recursive self-reference (Moving average feedback stabilization)
+        if len(waveform) > 1:
+            for _ in range(3):  
+                waveform = np.convolve(waveform, np.ones(3)/3, mode='same')
         
-        # Step 3: Recursive self-reference (simple feedback: smooth the signal)
-        for _ in range(3):  # Recursive iterations
-            waveform = np.convolve(waveform, np.ones(3)/3, mode='same')  # Moving average feedback
-        
-        # Step 4: Compute coherence (auto-correlation as proxy)
-        coherence = np.corrcoef(waveform, np.roll(waveform, 1))[0, 1]  # Shifted correlation
-        coherence_pct = abs(coherence) * 100  # As percentage
-        
+        # Step 4: Compute coherence using auto-correlation
+        if len(waveform) > 1 and np.std(waveform) > 1e-6:
+            rolled = np.roll(waveform, 1)
+            coherence_matrix = np.corrcoef(waveform, rolled)
+            coherence = coherence_matrix[0, 1] if not np.isnan(coherence_matrix[0, 1]) else 0.0
+        else:
+            coherence = 1.0 # Static or single token baseline input holds absolute parity
+            
+        coherence_pct = abs(coherence) * 100  
+
         result = {
             "coherence": coherence_pct,
             "waveform": waveform.tolist(),
@@ -99,77 +133,101 @@ class AdaptiveFeedbackSystem:
 
     def analyze_dialogue(self, conversation):
         """
-        Analyze dialogue for patterns (spectral analysis).
-        Returns a dict with alignment score and dominant frequency.
+        Analyze dialogue for patterns using STFT spectral mapping array fields.
         """
         result = self.process_conversation(conversation)
         waveform = np.array(result["waveform"])
         
-        # Spectral analysis using STFT
-        f, t, Zxx = stft(waveform, fs=1.0, nperseg=min(8, len(waveform)))
-        dominant_freq = f[np.argmax(np.abs(Zxx).mean(axis=1))] if len(f) > 0 else 0
-        
-        alignment_score = result["coherence"] / 100  # Normalized
-        
+        if len(waveform) < 2:
+            return {"alignment_score": result["coherence"] / 100, "dominant_frequency": 0.0}
+
+        # Dynamically allocate segment sizes to prevent overlap panics on minimal sample strings
+        n_points = len(waveform)
+        nperseg_val = max(2, min(8, n_points))
+        noverlap_val = nperseg_val // 2
+
+        # Spectral analysis using short-time fourier transform
+        f, t, Zxx = stft(waveform, fs=1.0, nperseg=nperseg_val, noverlap=noverlap_val, boundary=None)
+        dominant_freq = f[np.argmax(np.abs(Zxx).mean(axis=1))] if len(f) > 0 else 0.0
+
+        alignment_score = result["coherence"] / 100  
+
         analysis = {
             "alignment_score": alignment_score,
-            "dominant_frequency": dominant_freq
+            "dominant_frequency": float(dominant_freq),
+            "waveform": result["waveform"]
         }
         self._log_action({"type": "analyze_dialogue", "input": conversation, "result": analysis})
         return analysis
 
-    def generate_visualization(self, analysis_data, output_path="dialogue_visual.png"):
+    def generate_visualization(self, result_data, output_path="dialogue_visual.png"):
         """
-        Generate a spectrogram-like plot from analysis data.
-        Saves to file.
+        Generate a spectrogram plot from the analyzed waveform sequence data.
         """
-        waveform = analysis_data.get("waveform", [])
-        if not waveform:
-            raise ValueError("Analysis data must include 'waveform'.")
-        
+        waveform = result_data.get("waveform", [])
+        if len(waveform) < 2:
+            print("⚠️ Trace contains insufficient points for valid STFT drawing. Skipping plot creation.")
+            return
+
         waveform = np.array(waveform)
-        f, t, Zxx = stft(waveform, fs=1.0, nperseg=min(8, len(waveform)))
+        nperseg_val = max(2, min(8, len(waveform)))
+        noverlap_val = nperseg_val // 2
         
-        plt.figure()
-        plt.pcolormesh(t, f, np.abs(Zxx), shading='gouraud')
-        plt.title('Spectrogram Visualization')
-        plt.ylabel('Frequency')
-        plt.xlabel('Time')
+        f, t, Zxx = stft(waveform, fs=1.0, nperseg=nperseg_val, noverlap=noverlap_val, boundary=None)
+
+        plt.figure(figsize=(6, 4))
+        plt.pcolormesh(t, f, np.abs(Zxx), shading='flat')
+        plt.title('FPT Spectrogram Visualization')
+        plt.ylabel('Frequency (Hz)')
+        plt.xlabel('Time Step')
         plt.colorbar(label='Amplitude')
+        plt.tight_layout()
         plt.savefig(output_path)
         plt.close()
         self._log_action({"type": "generate_visualization", "output_path": output_path})
 
     def get_audit_log(self):
-        """Retrieve the full audit log."""
         return self.audit_log
 
     def verify_audit_chain(self):
-        """Verify the integrity of the audit log chain."""
-        for i in range(1, len(self.audit_log)):
-            prev_hash = self.audit_log[i-1]["hash"]
-            current_data = json.dumps(self.audit_log[i]["action"]) + str(self.audit_log[i]["timestamp"])
-            if hashlib.sha256(current_data.encode()).hexdigest() != self.audit_log[i]["hash"]:
+        """Verify the cryptographic chain of validation ledger blocks."""
+        for i in range(len(self.audit_log)):
+            current_entry = self.audit_log[i]
+            
+            # Reconstruct the tracking payload dictionary to verify validity
+            expected_prev_hash = self.audit_log[i-1]["hash"] if i > 0 else "0" * 64
+            if current_entry["prev_hash"] != expected_prev_hash:
+                return False
+                
+            rebuild_payload = {
+                "prev_hash": current_entry["prev_hash"],
+                "timestamp": current_entry["timestamp"],
+                "action": current_entry["action"]
+            }
+            rebuild_str = json.dumps(rebuild_payload, sort_keys=True)
+            rebuild_hash = hashlib.sha256(rebuild_str.encode()).hexdigest()
+            
+            if rebuild_hash != current_entry["hash"]:
                 return False
         return True
 
-# Example Usage
+# Example Usage Block
 if __name__ == "__main__":
     afs = AdaptiveFeedbackSystem(passcode="ACCESS", enable_logging=True)
+
+    convo = [
+        "Hello, how are you?", 
+        "I am great, thanks!", 
+        "That is amazing news.", 
+        "Perfect harmony achieved."
+    ]
     
-    # Process a conversation
-    convo = ["Hello, how are you?", "I'm great, thanks!", "That's good to hear."]
     result = afs.process_conversation(convo, speaker="User")
     print(f"Coherence: {result['coherence']:.2f}%")
-    
-    # Analyze
+
     analysis = afs.analyze_dialogue(convo)
     print(f"Alignment Score: {analysis['alignment_score']:.2f}")
-    print(f"Dominant Frequency: {analysis['dominant_frequency']:.2f}")
-    
-    # Visualize
+    print(f"Dominant Frequency: {analysis['dominant_frequency']:.2f} Hz")
+
     afs.generate_visualization(result, output_path="example_visual.png")
-    
-    # Audit
-    print("Audit Log:", afs.get_audit_log())
-    print("Chain Verified:", afs.verify_audit_chain())
+    print("Chain Verification Passed:", afs.verify_audit_chain())
