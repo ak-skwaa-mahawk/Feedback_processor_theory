@@ -1,0 +1,3 @@
+# Core Project Dependencies
+requests
+pytest
