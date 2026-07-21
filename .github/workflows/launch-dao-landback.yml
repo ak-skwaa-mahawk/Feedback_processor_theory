@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Handshake + IPFS
         run: |
-          curl -sL https://handshake.org/download | bash
+          npm install -g hs-client || true
           curl -sL https://dist.ipfs.io/go-ipfs/v0.20.0/go-ipfs_v0.20.0_linux-amd64.tar.gz | tar xz
           sudo mv go-ipfs/ipfs /usr/local/bin/
       - run: python scripts/launch_dao_landback.py

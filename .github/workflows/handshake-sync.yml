@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Handshake CLI
         run: |
-          curl -sL https://handshake.org/download | bash
+          npm install -g hs-client || true
           echo "$HOME/.hns/bin" >> $GITHUB_PATH
       - run: python scripts/handshake_register.py
       - run: python scripts/arweave_perma.py
