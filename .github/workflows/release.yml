@@ -93,11 +93,11 @@ jobs:
           EOF
 
       - name: Create namespace (idempotent)
-        run: kubectl create ns ${NAMESPACE} --dry-run=client -o yaml || true
+        run: kubectl create ns ${NAMESPACE} --dry-run -o yaml || true
 
       - name: Helm upgrade --install
         run: |
-          helm upgrade --install ${RELEASE_NAME} ./helm/synara \ --dry-run=client || true
+          helm upgrade --install ${RELEASE_NAME} ./helm/synara \ --dry-run || true
             --namespace ${NAMESPACE} \
             --set image.repository=${IMAGE_REPO} \
             --set image.tag=${IMAGE_TAG} \
