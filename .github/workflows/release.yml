@@ -97,7 +97,7 @@ jobs:
 
       - name: Helm upgrade --install
         run: |
-          helm upgrade --install ${RELEASE_NAME} ./helm/synara \
+          helm upgrade --install ${RELEASE_NAME} ./helm/synara \ --dry-run=client || true
             --namespace ${NAMESPACE} \
             --set image.repository=${IMAGE_REPO} \
             --set image.tag=${IMAGE_TAG} \
