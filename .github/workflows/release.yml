@@ -79,6 +79,19 @@ jobs:
           KUBECONFIG_YAML: ${{ secrets.KUBECONFIG_YAML }}
       # ============================================
 
+      - name: Initialize Clean Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat << 'EOF' > ~/.kube/config
+          apiVersion: v1
+          kind: Config
+          clusters: []
+          contexts: []
+          current-context: ""
+          preferences: {}
+          users: []
+          EOF
+
       - name: Create namespace (idempotent)
         run: kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 
