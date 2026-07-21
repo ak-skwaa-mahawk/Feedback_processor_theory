@@ -93,7 +93,7 @@ jobs:
           EOF
 
       - name: Create namespace (idempotent)
-        run: kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
+        run: kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply --dry-run=client -f -
 
       - name: Helm upgrade --install
         run: |
