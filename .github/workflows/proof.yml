@@ -10,7 +10,7 @@ jobs:
         with: { python-version: '3.11' }
       - run: pip install opentimestamps-client
       - run: python scripts/auto_proof.py
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: bitcoin-proofs
           path: proofs/

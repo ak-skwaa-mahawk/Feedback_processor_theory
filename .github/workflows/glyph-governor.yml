@@ -13,7 +13,7 @@ jobs:
       - name: Setup Clarity
         run: curl -sL https://clarity-lang.org/install.sh | bash
       - run: python scripts/deploy_glyph_governor.py
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: glyph-governor
           path: contracts/GlyphGovernor.scl

@@ -15,7 +15,7 @@ jobs:
           curl -sL https://ordinals.com/install.sh | bash
       - run: python scripts/inscribe_ordinal.py
       - name: Save Proof
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ordinal-proof
           path: inscriptions/

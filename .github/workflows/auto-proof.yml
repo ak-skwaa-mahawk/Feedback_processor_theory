@@ -11,7 +11,7 @@ jobs:
       - run: pip install opentimestamps-client arweave-python-client
       - run: python scripts/auto_proof.py
       - run: python scripts/arweave_perma.py
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: eternal-seals
           path: |

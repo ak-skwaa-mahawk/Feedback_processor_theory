@@ -13,7 +13,7 @@ jobs:
       - name: Setup Ord
         run: curl -sL https://ordinals.com/install.sh | bash
       - run: python scripts/inscribe_oaths.py
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: member-oaths
           path: inscriptions/member_oaths/

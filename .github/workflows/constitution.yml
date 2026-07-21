@@ -13,7 +13,7 @@ jobs:
       - name: Setup Ord
         run: curl -sL https://ordinals.com/install.sh | bash
       - run: python scripts/inscribe_constitution.py
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: constitution-proof
           path: inscriptions/dené_constitution.txt
