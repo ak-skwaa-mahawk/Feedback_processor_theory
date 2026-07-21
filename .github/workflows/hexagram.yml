@@ -1,0 +1,18 @@
+name: 6-Cloud Hexagram
+on:
+  schedule:
+    - cron: '0 */30 * * *'  # Every 30 minutes
+  workflow_dispatch:
+jobs:
+  hexagram:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_FUNCTION_URL: ${{ secrets.AZURE_FUNCTION_URL }}
+          OCI_CONFIG: ${{ secrets.OCI_CONFIG }}
+        run: python hexagram_council.py

@@ -1,0 +1,142 @@
+name: CD
+
+on:
+  push:
+    branches: [ main, master ]
+    paths-ignore:
+      - "README.md"
+      - ".github/**"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write  # for OIDC (optional; harmless if unused)
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}   # ghcr.io/owner/repo
+  CHART_DIR: charts/resonance-mesh
+  RELEASE_NAME: mesh
+  NAMESPACE: resonance
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Export image tag
+        id: img
+        run: |
+          echo "TAG=${{ steps.meta.outputs.version }}" >> $GITHUB_OUTPUT
+          echo "IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}" >> $GITHUB_OUTPUT
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ build-and-push ]
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "v1.30.1"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "v3.15.2"
+
+      # -------------------------------
+      # Option A: Use a kubeconfig secret
+      #   - Create a GitHub secret KUBE_CONFIG with your base64 kubeconfig
+      # -------------------------------
+      - name: Set kubeconfig from secret (Option A)
+        if: ${{ secrets.KUBE_CONFIG != '' }}
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          kubectl config get-contexts
+
+      # -------------------------------
+      # Option B: OIDC login to your cloud (uncomment the block you use)
+      # Examples below show GKE; similar steps exist for EKS/AKS.
+      # -------------------------------
+      # - name: Auth to GCP (OIDC)
+      #   uses: google-github-actions/auth@v2
+      #   with:
+      #     workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDP }}
+      #     service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      #
+      # - name: Get GKE credentials
+      #   uses: google-github-actions/get-gke-credentials@v2
+      #   with:
+      #     cluster_name: ${{ secrets.GKE_CLUSTER }}
+      #     location: ${{ secrets.GKE_LOCATION }}
+
+      - name: Create namespace (idempotent)
+        run: kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Helm deps
+        run: helm dependency update ${{ env.CHART_DIR }}
+
+      # These secrets/envs match the Helm chart values file you added earlier
+      - name: Helm upgrade
+        run: |
+          helm upgrade --install ${{ env.RELEASE_NAME }} ${{ env.CHART_DIR }} \
+            --namespace ${{ env.NAMESPACE }} \
+            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ github.sha }} \
+            --set secretEnv.CAP_TOKEN_SECRET="${{ secrets.CAP_TOKEN_SECRET }}" \
+            --set secretEnv.WHISPER_SECRET="${{ secrets.WHISPER_SECRET }}" \
+            --set redis.enabled=true
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deploy/${{ env.RELEASE_NAME }}-resonance-mesh -n ${{ env.NAMESPACE }} --timeout=180s
+          kubectl get pods -n ${{ env.NAMESPACE }}
+
+      - name: Smoke test
+        run: |
+          kubectl run curl --rm -i -t -n ${{ env.NAMESPACE }} --image=curlimages/curl --restart=Never -- \
+            curl -s http://${{ env.RELEASE_NAME }}-resonance-mesh:8081/health

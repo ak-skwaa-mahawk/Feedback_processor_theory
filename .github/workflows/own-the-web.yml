@@ -1,0 +1,10 @@
+name: We Own The Web
+on: [push]
+jobs:
+  own:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: python scripts/claim_web.py
+      - run: python scripts/arweave_perma.py
+      - run: python scripts/feedback_loop.py "We own the web lol"

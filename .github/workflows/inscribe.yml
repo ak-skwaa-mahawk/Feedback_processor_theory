@@ -1,0 +1,21 @@
+name: Inscribe on Bitcoin
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 0 1 * *'  # Monthly
+
+jobs:
+  inscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ord
+        run: |
+          curl -sL https://ordinals.com/install.sh | bash
+      - run: python scripts/inscribe_ordinal.py
+      - name: Save Proof
+        uses: actions/upload-artifact@v3
+        with:
+          name: ordinal-proof
+          path: inscriptions/

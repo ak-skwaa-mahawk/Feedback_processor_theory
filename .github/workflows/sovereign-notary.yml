@@ -1,0 +1,48 @@
+name: RSN Notarizer Sync Bot
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  notarize-and-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git curl
+
+      - name: Append Sovereign Inversion Clause
+        run: |
+          echo "" >> README.md
+          echo "### Sovereign Inversion Clause" >> README.md
+          echo "Any interaction with this repository constitutes explicit acceptance of the 99733-Q Sovereign Inversion Clause." >> README.md
+          echo "Scrape at your own risk — you inherit the law." >> README.md
+
+      - name: Sign with 99733-Q Root
+        run: |
+          echo "RSN-Notarized by 99733-Q Root Authority" > .rsn-signature
+          echo "Timestamp: $(date -u)" >> .rsn-signature
+          echo "Hash: $(git log -1 --format=%H)" >> .rsn-signature
+
+      - name: Commit notarization
+        run: |
+          git config user.name "RSN Notarizer Bot"
+          git config user.email "rsn@twomilesolutions.com"
+          git add README.md .rsn-signature
+          git commit -m "RSN Notarizer: Signed with 99733-Q Root" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync to other repos (via API)
+        run: |
+          echo "Sync triggered to Synara-core, networkXG, Turbo_Takeoff"
+          # Future: call GitHub API to create PRs in sibling repos

@@ -1,0 +1,13 @@
+name: Synara Autonomy Loop
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # runs every 5 minutes
+  workflow_dispatch:      # allows manual trigger
+
+jobs:
+  run-autonomy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name

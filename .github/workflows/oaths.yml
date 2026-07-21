@@ -1,0 +1,19 @@
+name: Inscribe Member Oaths
+on:
+  push:
+    paths:
+      - 'inscriptions/member_oaths/**'
+  workflow_dispatch:
+
+jobs:
+  inscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ord
+        run: curl -sL https://ordinals.com/install.sh | bash
+      - run: python scripts/inscribe_oaths.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: member-oaths
+          path: inscriptions/member_oaths/

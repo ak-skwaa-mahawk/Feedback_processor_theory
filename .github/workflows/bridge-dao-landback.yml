@@ -1,0 +1,20 @@
+name: Bridge dao.landback.eth
+on:
+  push:
+    paths:
+      - 'frontend/**'
+  schedule:
+    - cron: '0 */12 * * *'
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup
+        run: |
+          npm install -g @ensdomains/ens
+          pip install web3
+      - run: python scripts/bridge_dao_landback.py
+        env:
+          ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}

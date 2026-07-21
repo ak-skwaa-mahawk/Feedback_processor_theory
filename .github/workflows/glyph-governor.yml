@@ -1,0 +1,19 @@
+name: Deploy GlyphGovernor
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'contracts/GlyphGovernor.scl'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Clarity
+        run: curl -sL https://clarity-lang.org/install.sh | bash
+      - run: python scripts/deploy_glyph_governor.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: glyph-governor
+          path: contracts/GlyphGovernor.scl

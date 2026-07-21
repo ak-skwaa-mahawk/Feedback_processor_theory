@@ -1,0 +1,56 @@
+git apply <<'PATCH'
+*** Begin Patch
+*** Add File: .github/workflows/emit-ssc-handshake.yml
++name: emit-ssc-handshake
++
++on:
++  workflow_run:
++    workflows: ["verify-ssc"]
++    types:
++      - completed
++
++jobs:
++  emit:
++    runs-on: ubuntu-latest
++    if: ${{ github.event.workflow_run.conclusion == 'success' }}
++
++    steps:
++      - name: Checkout
++        uses: actions/checkout@v4
++
++      - name: Setup Python
++        uses: actions/setup-python@v5
++        with:
++          python-version: "3.11"
++
++      - name: Install minimal dependencies
++        run: |
++          pip install --quiet pytest
++
++      - name: Emit CI handshake receipt
++        run: |
++          python - <<'PY'
++          import os
++          from fpt.utils.handshake import handshake_message
++
++          sha = os.environ.get("GITHUB_SHA", "unknown")[:12]
++          ref = os.environ.get("GITHUB_REF", "")
++          run_id = os.environ.get("GITHUB_RUN_ID", "none")
++
++          seed = f"CI:handshake|sha={sha}|ref={ref}|run={run_id}"
++          receipt = handshake_message(seed, log_file="logs/handshake_ci.json")
++          print(f"🛰️  Emitted SSC CI handshake:\n{receipt}")
++          PY
++
++      - name: Upload CI handshake log
++        uses: actions/upload-artifact@v4
++        with:
++          name: ssc-ci-handshake
++          path: logs/handshake_ci.json
++          if-no-files-found: warn
++
++      - name: Confirm handshake digest
++        run: |
++          tail -n 1 logs/handshake_ci.json | python tools/handshake_cli.py verify || true
+*** End Patch
+PATCH

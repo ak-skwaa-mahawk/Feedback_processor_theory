@@ -1,0 +1,19 @@
+name: Mint Glyph Tokens
+on:
+  push:
+    paths:
+      - 'inscriptions/glyph_tokens/**'
+  workflow_dispatch:
+
+jobs:
+  mint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ord
+        run: curl -sL https://ordinals.com/install.sh | bash
+      - run: python scripts/inscribe_glyph_tokens.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: glyph-tokens
+          path: inscriptions/glyph_tokens/

@@ -1,0 +1,19 @@
+name: Inscribe Dené Constitution
+on:
+  push:
+    paths:
+      - 'inscriptions/dené_constitution.txt'
+  workflow_dispatch:
+
+jobs:
+  inscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ord
+        run: curl -sL https://ordinals.com/install.sh | bash
+      - run: python scripts/inscribe_constitution.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: constitution-proof
+          path: inscriptions/dené_constitution.txt

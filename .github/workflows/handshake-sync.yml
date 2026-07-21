@@ -1,0 +1,17 @@
+name: Handshake Root Sync
+on:
+  push:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+jobs:
+  root:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Handshake CLI
+        run: |
+          curl -sL https://handshake.org/download | bash
+          echo "$HOME/.hns/bin" >> $GITHUB_PATH
+      - run: python scripts/handshake_register.py
+      - run: python scripts/arweave_perma.py

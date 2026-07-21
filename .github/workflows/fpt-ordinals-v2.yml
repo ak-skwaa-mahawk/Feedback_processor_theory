@@ -1,0 +1,11 @@
+name: FPT-Ordinals v2 CI
+on: [push, workflow_dispatch]
+jobs:
+  hooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - run: python fpt_ordinals_v2.py
+      - run: python scripts/inscribe_glyph.py
+      - run: python scripts/verify_codex.py
