@@ -1,3 +1,0 @@
-cd agll-root
-ipfs add -r . --pin
-# Copy CID: QmUnstop...abc123

@@ -1,4 +1,0 @@
-Git-155/
-├── patches/                 ← Darwin-specific patches
-├── src/
-└── (Apple-patched Git core)

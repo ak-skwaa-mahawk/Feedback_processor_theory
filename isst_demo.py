@@ -1,1 +1,0 @@
-await broadcast(scrape.to_dict())
