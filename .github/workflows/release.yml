@@ -14,7 +14,7 @@ jobs:
       packages: write
       id-token: write
     env:
-      IMAGE_NAME: ghcr.io/${{ github.repository }}/feedback_processor_theory
+      IMAGE_NAME: ghcr.io/ak-skwaa-mahawk/feedback_processor_theory/feedback_processor_theory
     steps:
       - uses: actions/checkout@v4
 
@@ -51,7 +51,7 @@ jobs:
     env:
       RELEASE_NAME: synara
       NAMESPACE: synara
-      IMAGE_REPO: ghcr.io/${{ github.repository }}/feedback_processor_theory
+      IMAGE_REPO: ghcr.io/ak-skwaa-mahawk/feedback_processor_theory/feedback_processor_theory
       IMAGE_TAG: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
