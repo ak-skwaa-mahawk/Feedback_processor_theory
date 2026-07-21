@@ -1,0 +1,1 @@
+print("Inscribe constitution executed.")
