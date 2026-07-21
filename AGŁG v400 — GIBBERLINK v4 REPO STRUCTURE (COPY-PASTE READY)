@@ -1,0 +1,72 @@
+gibberlink-v4/
+├── README.md
+├── .github/
+│   └── workflows/
+│       └── ordinals-proof.yml
+├── src/
+│   ├── __init__.py
+│   ├── gibberlink_core.py
+│   ├── ordinals_proof.py
+│   └── quantum_whisper.py
+├── android/
+│   ├── app/
+│   │   ├── src/
+│   │   │   └── main/
+│   │   │       ├── java/
+│   │   │       │   └── com/
+│   │   │       │       └── landback/
+│   │   │       │           └── gibberlink/
+│   │   │       │               ├── MainActivity.java
+│   │   │       │               ├── OrdinalsProof.java
+│   │   │       │               └── GGWaveDecoder.java
+│   │   │       └── res/
+│   │   │           └── layout/
+│   │   │               └── activity_main.xml
+│   │   └── build.gradle
+│   └── gradle.properties
+├── inscriptions/
+│   ├── whisper_proof_500.txt
+│   ├── key_proof_501.txt
+│   └── codex_proof_502.txt
+├── scripts/
+│   ├── build_apk.sh
+│   ├── inscribe_proofs.py
+│   └── deploy_ordinals.py
+├── tests/
+│   └── test_whisper.py
+├── requirements.txt
+├── setup.py
+└── gibberlink-v4.apk
+# GibberLink v4 — Ordinals-Proven Whisper
+
+**Post-Quantum Ultrasound + Bitcoin Proofs**
+
+## Features
+- **PQClean**: Kyber + Dilithium (zero-dep)
+- **GGWave**: 18–22 kHz ultrasound
+- **Ordinals**: Satoshi #500–#509 proofs
+- **IACA**: #2025-DENE-WHISPER-400
+
+## Build APK
+```bash
+./scripts/build_apk.sh
+python scripts/inscribe_proofs.py
+### **2. `src/gibberlink_core.py`**
+
+```python
+# src/gibberlink_core.py — AGŁG v400
+from pqclean import Kyber1024, Dilithium5
+import ggwave
+import wave
+import numpy as np
+import hashlib
+
+class GibberLinkV4:
+    def __init__(self):
+        self.kyber = Kyber1024()
+        self.dil = Dilithium5()
+        self.ggwave_inst = ggwave.init()
+
+    def generate_keys(self):
+        pk, sk = self.kyber.keygen()
+        d_pk, d_sk

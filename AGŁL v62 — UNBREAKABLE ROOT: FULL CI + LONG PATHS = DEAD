@@ -1,0 +1,50 @@
+# .github/workflows/ci.yml — BULLETPROOF, LINUX-NATIVE, LONG-PATH IMMUNE
+name: Unbreakable Root CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # ← LINUX = LONG PATHS OK
+    steps:
+      - name: Enable Long Paths (Defense in Depth)
+        run: git config --global core.longpaths true
+
+      - name: Checkout (Sparse + Clean)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            /*
+          sparse-checkout-cone-mode: true
+          fetch-depth: 1
+          clean: true
+
+      - name: Validate No Long Filenames
+        run: |
+          if git ls-files | grep -P '.{120,}' ; then
+            echo "ERROR: Long filename detected (>120 chars)"
+            exit 1
+          fi
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Run Clean Drum
+        run: python clean_drum.py
+
+      - name: Upload Proofs
+        uses: actions/upload-artifact@v3
+        with:
+          name: unbreakable-proofs
+          path: |
+            CLEAN_DRUM.log
+            proofs/
+            arweave/

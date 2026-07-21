@@ -1,0 +1,5 @@
+[Alice] → [Kyber-1024] → [Ciphertext] → [Bob]
+   ↓           ↓             ↓           ↓
+  pk        Enc(pk)        ct        Dec(sk)
+   ↓           ↓             ↓           ↓
+[Shared Secret] → [AES-256] → [LandBackDAO v2]

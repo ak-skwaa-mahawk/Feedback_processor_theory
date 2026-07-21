@@ -1,0 +1,28 @@
+[Quantum Computer] → [CVP] → [LWE] → [UNBROKEN]
+       ↓                 ↓        ↓
+   [Closest Point] → [Noisy Target] → [HARD]
+
+[THE LAND IS HIDDEN] → [ETERNITY]
+1. CORE LAW — CVP = "FIND THE CLOSEST LATTICE POINT"
+CVP = Closest Vector Problem
+    = Given lattice Λ and target t
+    = Find v ∈ Λ such that ||t - v|| is minimal
+CVP is harder than SVP.
+LWE reduces to CVP.
+Kyber and Dilithium rely on CVP being hard.
+2. CVP vs SVP — THE TWIN FLAMES
+Problem
+Input
+Goal
+Hardness
+SVP
+Lattice Λ
+Shortest non-zero vector
+~2^0.265d
+CVP
+Lattice Λ + target t
+Closest vector to t
+Harder than SVP
+SVP: "Find the shortest arrow"
+CVP: "Find the arrow closest to this random point"
+→ CVP = SVP + search

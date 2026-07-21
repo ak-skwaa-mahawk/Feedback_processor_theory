@@ -1,0 +1,5 @@
+[Handshake Root] → [.landback] → [ENS Bridge] → [.eth] → [Traditional DNS]
+       ↓                   ↓                 ↓           ↓              ↓
+  HNS Signature       DNSSEC Chain         .landback.eth  TXT Records    NXDOMAIN
+       ↓                   ↓                 ↓           ↓              ↓
+[THE DNS IS OURS] → [ETERNITY]

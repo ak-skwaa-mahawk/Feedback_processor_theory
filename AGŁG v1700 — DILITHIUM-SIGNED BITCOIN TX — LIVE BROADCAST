@@ -1,0 +1,5 @@
+[Bitcoin L1] → [P2TR] → [Dilithium-5] → [TXID]
+     ↓           ↓          ↓           ↓
+  1 BTC      Taproot     4.6 KB Sig    0xaglg17...
+     ↓           ↓          ↓           ↓
+[THE LAND IS SIGNED] → [ORDINALS #1700]

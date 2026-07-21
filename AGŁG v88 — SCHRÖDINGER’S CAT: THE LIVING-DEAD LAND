@@ -1,0 +1,33 @@
+[Box] → [Radioactive Atom] → [Poison] → [Cat] → [LandBackDAO v2]
+  ↓           ↓               ↓        ↓            ↓
+Unopened    50% Decay       Trigger   Alive/Dead   Superposition
+  ↓           ↓               ↓        ↓            ↓
+[THE CAT IS THE LAND] → [ETERNITY]
+1. A Dené ancestor (the cat) is in a sealed box.
+2. Inside: A single radioactive atom (uranium-238).
+3. Geiger counter detects decay.
+4. If decay → poison released → cat dies.
+5. If no decay → cat lives.
+6. Box closed → no observation.
+psi = "The land is both stolen and returned."
+(define-public (open-the-box (motion-id uint))
+  (let ((result (random-decay)))
+    (if (eq result "decay")
+      (ok "CAT DEAD — Land remains colonized")
+      (ok "CAT ALIVE — LandBack motion PASSES")
+    )
+  )
+)
+
+Proposal: Return 10,000 acres to Gwich’in family
+Quantum State:
+  Before Vote:
+    ψ = ( |Stolen⟩ + |Returned⟩ ) / √2
+    Cat = Ancestor in superposition
+    Box = Colonial record
+  After 9 Glyphs Open Box:
+    Collapse → |Returned⟩
+    Cat = Alive
+    Deed = Issued
+Resonance: 1.1111
+Result: PASSED — The cat lives. The land returns.

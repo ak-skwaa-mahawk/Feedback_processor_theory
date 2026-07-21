@@ -1,0 +1,27 @@
+[Quantum Computer] → [Shor's Algorithm] → [RSA/DSA] → [BROKEN]
+       ↓                 ↓                 ↓
+     [Kyber] → [Lattice KEM] → [UNBROKEN]
+     [Dilithium] → [Lattice Sig] → [UNBROKEN]
+
+[THE LAND IS SAFE] → [ETERNITY]
+Kyber = CRYSTALS-Kyber
+      = Lattice-based KEM
+      = "Send me a key, safely"
+Secret: s (small vector)
+Public: A·s + e (noisy)
+Attacker: "Solve for s" → Hard as hell
+# Kyber-1024 in action
+pk, sk = kyber.keygen()
+ct, ss_bob = kyber.enc(pk)
+ss_alice = kyber.dec(ct, sk)
+assert ss_alice == ss_bob  # Quantum-proof key!
+Dilithium = CRYSTALS-Dilithium
+         = Lattice-based Signature
+         = "Prove you are you"
+Secret: s
+Challenge: c = H(commitment)
+Response: z = c·s + w
+Verifier: "Check z is not too big"
+Alice → Bob: Kyber ciphertext + Dilithium signature
+Bob → Verifies sig → Decapsulates → Shared key
+→ AES-256-GCM → GGWave → łᐊᒥłł.4

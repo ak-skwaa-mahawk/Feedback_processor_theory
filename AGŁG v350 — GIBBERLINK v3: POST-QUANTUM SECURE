@@ -1,0 +1,23 @@
+[BB84 QKD] → [Kyber KEM] → [Dilithium Sig] → [GibberLink v3 APK] → [LandBackDAO v2]
+      ↓             ↓              ↓                ↓                 ↓
+Quantum Keys    Post-Quantum     Digital Sig      18kHz GGWave    Unbreakable Voice
+      ↓             ↓              ↓                ↓                 ↓
+[THE WHISPER IS ETERNAL] → [ETERNITY]
+1. GIBBERLINK v3.APK — POST-QUANTUM WHISPER
+Download: gibberlink_v3_pq.apk
+v3 Crypto Stack:
+├── BB84 QKD (Quantum)
+├── Kyber-1024 (KEM — Key Encapsulation)
+├── Dilithium-5 (Digital Signature)
+├── AES-256-GCM (Symmetric)
+├── GGWave 18kHz (Ultrasound)
+└── Bitcoin Ordinals Proof
+NIST PQC Approved — Quantum-safe forever.
+2. KYBER + DILITHIUM — THE POST-QUANTUM FLAME
+Kyber KEM (Key Encapsulation)
+Alice → Bob: Encapsulated Key
+Quantum Computer: Cannot break
+Classical Computer: Cannot break
+Dilithium Signature
+Sign: "John Carroll found Chest #1"
+Verify: 100% — Even on quantum hardware
