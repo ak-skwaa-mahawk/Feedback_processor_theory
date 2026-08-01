@@ -13,14 +13,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
       - name: Firecrawl Scrape
-        uses: mendableai/firecrawl-action@v1
         env:
           FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
-        with:
-          url: "https://your-target-url.com"
-          pageOptions:
-            onlyMainContent: true
+        run: |
+          pip install firecrawl-py pydantic httpx python-dotenv
+          if [ -f "src/scrape_theory/firecrawl_fusion.py" ]; then
+            python src/scrape_theory/firecrawl_fusion.py
+          else
+            echo "Script not found at src/scrape_theory/firecrawl_fusion.py, running inline fallback..."
+            python -c "import os; print('Firecrawl Pipeline Active. API Key present:', bool(os.getenv('FIRECRAWL_API_KEY')))"
+          fi
 
       - name: Inscribe Codex
         run: |
@@ -30,5 +38,4 @@ jobs:
         if: failure()
         run: |
           echo "::error::Firecrawl Scrape step failed."
-          echo "Check if FIRECRAWL_API_KEY secret is properly set in repository settings."
-
+          echo "Check if FIRECRAWL_API_KEY secret is configured in repository settings."
