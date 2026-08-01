@@ -1,0 +1,34 @@
+name: Firecrawl Scraping Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  scrape-and-inscribe:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Firecrawl Scrape
+        uses: mendableai/firecrawl-action@v1
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        with:
+          url: "https://your-target-url.com"
+          pageOptions:
+            onlyMainContent: true
+
+      - name: Inscribe Codex
+        run: |
+          echo "Executing Codex Inscription payload..."
+
+      - name: Debug Firecrawl Failure
+        if: failure()
+        run: |
+          echo "::error::Firecrawl Scrape step failed."
+          echo "Check if FIRECRAWL_API_KEY secret is properly set in repository settings."
+
