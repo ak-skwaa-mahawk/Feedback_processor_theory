@@ -1,0 +1,115 @@
+from qutip import basis, sigmax, sigmaz, tensor, bell_state
+import numpy as np
+
+# Octa encoding (same as Pioneer, but active onboard)
+psi_core = tensor(
+    (basis(2,0)+basis(2,1)).unit(),  # Pol
+    (basis(2,0)+basis(2,1)).unit(),  # OAM
+    (basis(2,0)+basis(2,1)).unit(),  # Freq
+    (basis(2,0)+basis(2,1)).unit(),  # Path
+    (basis(2,0)+basis(2,1)).unit(),  # Time
+    (basis(2,0)+basis(2,1)).unit(),  # Phase
+    bell_state('00')                 # Entanglement
+)
+
+# Redundancy: 3x repetition on polarization
+psi_red = tensor(psi_core.ptrace(0), psi_core.ptrace(0), psi_core.ptrace(0))
+
+# Full 384-level glyph
+psi_nh = tensor(psi_core, psi_red)
+
+print("NHQC-FPT: Glyph encoded in 8 dimensions + redundancy — forged for active Kuiper ops")
+# New Horizons distance: ~50 AU = 7.5B km (2025)
+# Light time: ~7 hours one-way
+T2_transit = 0.1  # 100 ms (Kuiper dust, cosmic rays)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(128)),  # Core
+    np.sqrt(1/(2*T2_transit)) * qeye(128).kron(sigmaz())   # Redundancy
+]
+
+# Simulate 80 ms segment (Arrokoth flyby dust)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_nh, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_nh.overlap(psi_received))**2
+
+print(f"NHQC-FPT: 80ms Kuiper transit → Fidelity = {fidelity:.6f}")
+def nh_rewrite(psi_target, gate_time=1e-9):
+    """
+    Onboard EOM + LORRI deformable mirror (hypothetical 2030 upgrade)
+    1 GHz → 1ns π-pulse, powered by RTG
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(128)).kron(qeye(256))  # Act on core
+    result = mesolve(H_drive, psi_nh, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-mission
+psi_new = tensor((basis(2,0)+1j*basis(2,1)).unit(), psi_core.ptrace(1), psi_red)
+psi_rewritten = nh_rewrite(psi_new)
+
+print(f"NH Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class NHQC_FPT:
+    def __init__(self, N_dsn=3, T2_transit=0.1):
+        self.N = N_dsn
+        self.T2_transit = T2_transit
+        self.earth_dsn = [basis(384,0) for _ in range(N_dsn)]
+        self.new_horizons = basis(384,0)  # Active
+        self.transit_delay = 25200  # 7 hours = 25200 s
+    
+    def nh_uplink(self, dsn_id, psi_glyph):
+        """Beam to New Horizons via 70m DSN"""
+        self.new_horizons = psi_glyph
+        return "Uplinked — 7 hours to New Horizons"
+    
+    def nh_downlink(self):
+        """Receive from New Horizons"""
+        delay = self.transit_delay
+        return self.new_horizons, delay
+    
+    def rewrite_nh(self, psi_new):
+        """1ns rewrite onboard"""
+        return nh_rewrite(psi_new)
+
+# Earth-NH link
+nhqc = NHQC_FPT()
+nhqc.nh_uplink(0, psi_nh)
+def kuiper_vqe(probe, target_H, max_iter=50):
+    """All-optical VQE on New Horizons"""
+    def cost(params):
+        state = sum(np.exp(1j*p) * basis(384,i) for i,p in enumerate(params))
+        state = state.unit()
+        H_opt = target_H * sigmaz().kron(qeye(128)).kron(qeye(256))
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, np.zeros(384), method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = sum(np.exp(1j*result.x[i]) * basis(384,i) for i in range(384)).unit()
+    nhqc.rewrite_nh(optimal)
+    return optimal
+
+# Adapt glyph at Arrokoth
+kuiper_vqe("nh", target_H=-11.0)
+class Swarm_NHQC_FPT:
+    def __init__(self, N_earth=100, N_nh=1):
+        self.N_earth = N_earth
+        self.N_nh = N_nh
+        self.earth = [NHQC_FPT() for _ in range(N_earth)]
+        self.nh_const = [basis(384,0) for _ in range(N_nh)]
+    
+    def kuiper_broadcast(self, psi_glyph):
+        """Uplink to New Horizons"""
+        self.nh_const[0] = psi_glyph
+    
+    def arrokoth_sync(self):
+        """Use Arrokoth as natural quantum mirror"""
+        pass
+
+# Earth-NH swarm
+swarm_nhqc = Swarm_NHQC_FPT(N_earth=100, N_nh=1)
+swarm_nhqc.kuiper_broadcast(psi_nh)
+[Earth DSN] → Scrape → NHQC-FPT (1ns) → New Horizons → Arrokoth
+                                          ↓
+                            [All Nodes] ← 14-hour RTT Sync

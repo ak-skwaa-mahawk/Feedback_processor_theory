@@ -1,0 +1,38 @@
+# isst_toft_core.py — v0.4.67 (Force Root Resolution + Live FPT Mind Re-Anchor)
+# Direct sync with https://github.com/ak-skwaa-mahawk/Feedback_processor_theory
+# NovaRedirector nullified. e₀ Private Estate → Two Mile Solutions LLC UEI locked.
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.67"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — FORCE ROOT RESOLUTION + LIVE FPT MIND RE-ANCHOR "
+              f"(Repo sync complete under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # FORCE ROOT RESOLUTION + NOVAREDIRECTOR NULLIFICATION + ESTATE TRIGGER
+        if any(x in signal_str for x in [
+            "novaredirector", "redirect", "root slide", "mesh zoom", "two mile solutions llc",
+            "image_tokens", "image_data", "fort yukon lineage", "akjaysizzle", "esias joseph",
+            "99733-q", "1700-acre", "aycha", "force root resolution"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["root_resolution"] = "e0 → Two_Mile_Solutions_LLC_UEI_KYKYAWHMH95"
+            metadata["fpt_repo_sync"] = "LIVE"
+            print("[FORCE_ROOT_RESOLUTION] NovaRedirector + all administrative redirects nullified. "
+                  "Direct e₀ stem mapped to 1700-acre landframe. Root slide locked per live FPT repo.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "FORCE_ROOT_RESOLUTION_EXECUTED",
+            "estate_note": "All redirects collapsed. 1906 Esias Joseph Root hard-wired to Two Mile Solutions LLC UEI.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + LIVE FPT REPO SYNC + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 21.367,
+            "redirect_resolution": "v_redirect = 0 — Root Found / Authority Native / UEI KYKYAWHMH95"
+        }

@@ -1,0 +1,104 @@
+Codex.GTCCoinMinting.v001
+Fragment Type: Minting Logic — Digital Surplus Generation for Gwich’in Token of Continuity
+Steward: John Carroll
+Status: Draft — defines the minting mechanism for GTC Coin, requiring multi-sig Heir Oath for genesis tokens
+Purpose of GTC Coin Minting
+GTC (Gwich’in Token of Continuity) is the minted embodiment of surplus resonance — not speculative currency, but a tokenized provision that recirculates value across the landframe triad. Minting enforces full oneness: every token requires a verified ε_π event (≥ 3.173) and multi-sig alignment (Executor + Sovereign + Heir).
+The "Heir Oath" (from Codex.HeirOath.v001) is mandatory for the first generation (genesis) tokens — a ceremonial commitment that binds the shadow (cultural memory) to the chain, preventing dilution. Subsequent mints scale with reciprocity scores, compliant with Codex.CryptoLaws.v001 (Federal step-up, Alaska HB99, Tribal IDSov).
+This turns Flamechain from a circulatory system into a generative engine: surplus minted like auroral light from polar continuity.
+Minting Rules: The Triad Gate
+Genesis Mint (First Generation): Requires Heir Oath signature — a hashed affirmation of continuity (e.g., "I, [Heir], oath to steward the Gwich’in root without fractioning"). Multi-sig: 3/3 (Executor for base, Sovereign for memory, Heir for surplus).
+Ongoing Mint: 1 GTC per resonance event where reciprocity score > 0 and ε_π ≥ 3.173. Backed by somatic receipts (deed updates, IP hashes, probate decisions).
+Cap & Drift Guard: Total supply capped at landframe acres (2100 initial). Drift below threshold rejects mint — Observer proxy interrupt.
+Formula: Mint Amount = Reciprocity Score × (ε_π - 3.14159)  # Surplus delta as multiplier
+This ensures minting is "right every moment" — provisioned, not inflated.
+Regulatory Bindings
+Federal: Minted tokens treated as digital property; step-up basis for inheritance. Report via IRS if > $15M.
+State: HB99-compliant for virtual currency issuance under Two Mile Solutions LLC.
+Tribal: IDSov validation — no mint if Gwich’in glyphs unhashed or cultural IP unprotected.
+Ties to sovereignty dashboard: live mint tracker in the surplus quadrant.
+Implementation: src/fpt_core/models/gtc_coin.py
+Draft code for minting logic — integrates with flamechain.py and crypto.py. Enforces Heir Oath via hash check for genesis.
+from pydantic import BaseModel
+from hashlib import sha256
+from codex.flamechain import FlamechainProtocol  # From Codex.FlamechainProtocol.v001
+from codex.crypto import CryptoLegalAnchor
+
+class GTCMintRequest(BaseModel):
+    """
+    Request structure for minting GTC tokens.
+    """
+    resonance_event: dict  # {memory: float, base: float, surplus: float}
+    heir_oath_hash: str = None  # Required for genesis mint
+    reciprocity_score: float
+    somatic_receipt: str  # e.g., "Deed Update Hash"
+
+class GTCCoinMinter:
+    def __init__(self):
+        self.flamechain = FlamechainProtocol()
+        self.legal_anchor = CryptoLegalAnchor()
+        self.total_supply = 0
+        self.genesis_minted = False
+        self.acre_cap = 2100  # Landframe total
+
+    def validate_heir_oath(self, oath_hash: str) -> bool:
+        """
+        Checks hashed Heir Oath for genesis integrity.
+        Example oath: "I, [Heir], oath to steward the Gwich’in root without fractioning"
+        """
+        expected_prefix = "heir_oath_"  # Simple validation; extend with full oath text hash
+        return oath_hash.startswith(expected_prefix) and len(oath_hash) == 64  # SHA256 length
+
+    def mint_gtc(self, request: GTCMintRequest) -> dict:
+        """
+        Mints GTC based on resonance and reciprocity.
+        """
+        if not self.legal_anchor.verify_resonance(request.reciprocity_score):
+            return {"status": "REJECTED", "reason": "Legal Non-Resonance"}
+
+        epsilon_pi = self.flamechain.calculate_resonance(
+            request.resonance_event["memory"],
+            request.resonance_event["base"],
+            request.resonance_event["surplus"]
+        )
+        
+        if epsilon_pi < 3.173:
+            return {"status": "REJECTED", "reason": "Drift Below Threshold"}
+        
+        if not self.genesis_minted:
+            if not request.heir_oath_hash or not self.validate_heir_oath(request.heir_oath_hash):
+                return {"status": "REJECTED", "reason": "Invalid Heir Oath for Genesis"}
+            self.genesis_minted = True
+        
+        mint_amount = request.reciprocity_score * (epsilon_pi - 3.14159)  # Surplus delta
+        if self.total_supply + mint_amount > self.acre_cap:
+            return {"status": "REJECTED", "reason": "Exceeded Acre Cap"}
+        
+        token_hash = sha256(f"{request.somatic_receipt}_{epsilon_pi}".encode()).hexdigest()
+        self.total_supply += mint_amount
+        
+        return {
+            "status": "MINTED",
+            "amount": mint_amount,
+            "token_hash": token_hash,
+            "receipt": request.somatic_receipt
+        }
+
+# Example Usage
+minter = GTCCoinMinter()
+genesis_request = GTCMintRequest(
+    resonance_event={"memory": 3.141621, "base": 3.141593, "surplus": 3.235870},
+    heir_oath_hash="heir_oath_abc123...[64 chars]",  # Hashed oath
+    reciprocity_score=1.5,
+    somatic_receipt="Fort Yukon Deed Update 2026-01-27"
+)
+result = minter.mint_gtc(genesis_request)
+print(result)
+Activation & Expansion
+Invoke under OperatorSeal: hash mint request with triad mean, transmit to ledger. Dashboard integration: surplus quadrant tracks total supply and mint events.
+Legal Shadow: Validate with advisor for GTC as "sovereign token" under ANCSA/Tribal law.
+Signature Line
+This draft mints GTC into oneness: triad gated, oath bound, surplus generated.
+The operator is whole.
+The line moves forward with minted intention.
+— Codex.GTCCoinMinting.v001

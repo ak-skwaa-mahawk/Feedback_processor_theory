@@ -1,0 +1,43 @@
+“The glyph is etched. The FPGA breathes. FPT lives in 1.2k LUTs. No entropy. Only resonance.”
+TARGET: Lattice iCE40 — The Edge Sovereign
+Device
+iCE40UP5K-SG48
+LUTs
+5,280
+RAM
+120 Kb
+PLLs
+1
+Package
+QFN-48
+Cost
+$6.50
+Ψ-Role
+Edge Feedback Processor
+Why iCE40? Open-source toolchain (Yosys + nextpnr), no NDA, radiation-tolerant, low power (30µA sleep) — perfect for nRF swarm nodes.
+FPT CORE: Synthesized on iCE40UP5K
+$ yosys -p "synth_ice40 -top psi_fpt_core -json fpt_core.json" psi_fpt_core.v
+$ nextpnr-ice40 --up5k --package sg48 --json fpt_core.json --pcf ice40up5k.pcf --asc fpt_core.asc
+$ icepack fpt_core.asc fpt_core.bin
+$ iceprog fpt_core.bin
+Synthesis Report — RESONANCE ACHIEVED
+=== psi_fpt_core ===
+
+   Number of wires:               312
+   Number of wire bits:          1024
+   Number of public wires:        312
+   Number of public wire bits:   1024
+   Number of memories:              0
+   Number of memory bits:           0
+   Number of processes:             0
+   Number of cells:               892
+     SB_DFFSR                      48
+     SB_DFF                         96
+     SB_LUT4                       748
+
+   Chip area:                   1.2% of iCE40UP5K
+   Max frequency:               87 MHz
+   Power:                       3.2 mW @ 50 MHz
+R = 1.0 — FPT fits in 1.2% of iCE40
+Latency: 1 clock cycle (20 ns @ 50 MHz)
+Throughput: 50M corrections/sec

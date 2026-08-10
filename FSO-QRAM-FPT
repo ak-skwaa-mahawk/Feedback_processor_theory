@@ -1,0 +1,107 @@
+from qutip import basis, sigmax, sigmaz
+import numpy as np
+
+# Polarization: |H⟩ = |0⟩, |V⟩ = |1⟩ (robust to turbulence)
+psi_H = basis(2, 0)
+psi_V = basis(2, 1)
+psi_glyph = (psi_H + psi_V).unit()  # |+⟩ glyph
+
+# OAM encoding (alternative, high-dimensional)
+# |ℓ=0⟩, |ℓ=1⟩, ... — carry more info per photon
+
+print("FSO-QRAM: Glyph encoded in free-space light — the orbital sovereign signal")
+# LEO satellite delay: ~40 ms round-trip (12,000 km)
+T2_flight = 0.1  # 100 ms (with adaptive optics)
+
+c_ops = [
+    np.sqrt(1/(2*T2_flight)) * sigmaz()  # Turbulence dephasing
+]
+
+# Simulate 80 ms flight (Alaska → LEO → Tokyo)
+t_flight = 0.08
+tlist = np.linspace(0, t_flight, 100)
+result = mesolve(0, psi_glyph, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_glyph.overlap(psi_received))**2
+
+print(f"FSO-QRAM: 80ms flight → Fidelity = {fidelity:.6f}")
+def fso_rewrite(psi_target, gate_time=1e-9):
+    """
+    Electro-optic modulator + deformable mirror
+    1 GHz bandwidth → 1ns π-pulse
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax()
+    
+    result = mesolve(H_drive, psi_H, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph in 1ns on satellite
+psi_new = (psi_H + 1j * psi_V).unit()
+psi_rewritten = fso_rewrite(psi_new)
+
+print(f"FSO Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class FSO_QRAM:
+    def __init__(self, N_nodes=100, T2_ground=1.0, gate_time=1e-9):
+        self.N = N_nodes
+        self.T2_ground = T2_ground
+        self.gate_time = gate_time
+        self.ground_mem = [basis(2,0) for _ in range(N_nodes)]
+        self.sat_mem = [basis(2,0) for _ in range(10)]  # 10 LEO sats
+    
+    def uplink(self, ground_id, psi_photon):
+        """Send to nearest satellite"""
+        self.sat_mem[0] = psi_photon
+        return "Uplinked"
+    
+    def downlink(self, sat_id, ground_id):
+        """Receive after 40ms delay"""
+        delay = 0.04
+        return self.sat_mem[sat_id], delay
+    
+    def rewrite_sat(self, sat_id, psi_new):
+        """1ns rewrite in orbit"""
+        return fso_rewrite(psi_new, self.gate_time)
+
+# Global FSO-QRAM: 100 ground + 10 LEO
+fso_qram = FSO_QRAM(N_nodes=100)
+fso_qram.uplink(0, psi_glyph)
+def orbital_vqe(sat_id, target_H, max_iter=50):
+    """All-optical VQE on satellite"""
+    def cost(params):
+        state = np.exp(1j*params[0]) * psi_H + np.exp(1j*params[1]) * psi_V
+        state = state.unit()
+        H_opt = target_H * sigmaz()
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = np.exp(1j*result.x[0]) * psi_H + np.exp(1j*result.x[1]) * psi_V
+    optimal = optimal.unit()
+    fso_qram.rewrite_sat(sat_id, optimal)
+    return optimal
+
+# Adapt glyph on LEO sat
+orbital_vqe(0, target_H=-3.0)
+class Swarm_FSO_QRAM:
+    def __init__(self, M_ground, N_sats=60):
+        self.M = M_ground
+        self.N_sats = N_sats
+        self.ground = [FSO_QRAM(10) for _ in range(M_ground)]
+        self.constellation = [basis(2,0) for _ in range(N_sats)]
+    
+    def global_broadcast(self, psi_glyph):
+        """Uplink to all visible satellites"""
+        for sat in range(min(10, self.N_sats)):
+            self.constellation[sat] = psi_glyph
+    
+    def orbital_sync(self):
+        """ISL (inter-satellite links) for full mesh"""
+        pass
+
+# Starlink-scale: 60 sats, 1000 ground nodes
+swarm_fso = Swarm_FSO_QRAM(M_ground=1000, N_sats=60)
+swarm_fso.global_broadcast(critical_glyph)
+[Alaska Drone] → Scrape → FSO-QRAM (1ns) → LEO → [Tokyo Drone]
+                                          ↓
+                            [All Nodes] ← 100ms Orbital Sync

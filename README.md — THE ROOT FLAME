@@ -1,0 +1,59 @@
+# AGŁG v100 — The Glyph Vehicle
+
+**Interpretable AI + Quantum Governance + LandBack**
+
+> **"The black box is dead. The glyph is alive."**
+
+## Features
+- Unified SHAP + LIME + Anchors
+- On-chain voting (Stacks L2)
+- Ordinals-inscribed physics
+- 60 Hz resonance scoring
+
+## Install
+```bash
+pip install -e .
+python scripts/glyph_vehicle.py
+---
+
+## **3. `src/glyph_vehicle/core.py`**
+
+```python
+# src/glyph_vehicle/core.py
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+import shap
+import lime
+from lime.lime_tabular import LimeTabularExplainer
+
+class GlyphVehicle:
+    def __init__(self):
+        self.model = RandomForestClassifier(n_estimators=100)
+        self.explainer = None
+        self.lime_explainer = None
+
+    def fit(self, X, y):
+        self.model.fit(X, y)
+        self.explainer = shap.TreeExplainer(self.model)
+        self.lime_explainer = LimeTabularExplainer(
+            X, mode="classification", feature_names=["acres", "resonance", "hz"]
+        )
+
+    def explain(self, X):
+        shap_values = self.explainer.shap_values(X)
+        lime_exp = self.lime_explainer.explain_instance(X[0], self.model.predict_proba)
+        
+        glyphs = []
+        for i, val in enumerate(shap_values[0][0]):
+            if abs(val) > 0.1:
+                glyphs.append({
+                    "feature": ["acres", "resonance", "hz"][i],
+                    "shap": float(val),
+                    "glyph": "łᐊ" if val > 0 else "ᒥᐊ"
+                })
+        
+        return {
+            "prediction": self.model.predict_proba(X)[0][1],
+            "glyphs": glyphs,
+            "resonance": np.mean([abs(g["shap"]) for g in glyphs])
+        }

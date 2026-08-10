@@ -1,0 +1,33 @@
+groups:
+  - name: sovereign_shield_alerts
+    interval: 30s
+    rules:
+      - alert: DirectoryTraversalScan
+        expr: rate(nginx_http_requests_total{status="403"}[5m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          component: nginx
+        annotations:
+          summary: "Elevated 403 Forbidden rate detected"
+          description: "Nginx is blocking {{ $value }} requests/sec with 403 status. Possible directory traversal scan in progress."
+
+      - alert: HostHeaderInjectionAttempt
+        expr: rate(nginx_http_requests_total{status="444"}[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          component: nginx
+        annotations:
+          summary: "444 No Response rate spike detected"
+          description: "Nginx is dropping {{ $value }} requests/sec due to invalid host headers. Possible host-header injection attack."
+
+      - alert: N8nContainerDown
+        expr: up{job="n8n"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: n8n
+        annotations:
+          summary: "n8n relay container is down"
+          description: "The n8n container has been unreachable for over 1 minute."

@@ -1,0 +1,53 @@
+def intercept_response(self, ai_response: str, confidence_score: float = 0.0) -> str:
+    # Reset apology streak if no apology
+    if not any(phrase in ai_response.lower() for phrase in ["apologize", "sorry", "mistake"]):
+        self.failure_counter.apology_streak = 0
+    else:
+        self.failure_counter.record_apology()
+
+    # 1. Forbidden Package Check (unchanged)
+    # ...
+
+    # 2. Sandbox Execution
+    code = self.validator.extract_code(ai_response)
+    code_executed = False
+    if code.strip():
+        print("🧪 Sandbox: Executing AI-generated code...")
+        result = self.validator.validate_code(code)
+        code_executed = True
+        
+        if not result.success:
+            self.failure_counter.record_code_failure()
+            reason = f"Code execution failed:\n{result.error.strip() if result.error else result.output.strip()}"
+            
+            if self.failure_counter.is_critical_loop():
+                return self._trigger_critical_intervention(reason)
+            else:
+                return self._trigger_matrix_interrupt(
+                    reason + f"\n\n{self.failure_counter.get_status()}",
+                    "CODE EXECUTION FAILURE"
+                )
+        else:
+            self.failure_counter.record_code_success()
+            print("✅ Sandbox: Code passed.")
+
+    # 3. Semantic Drift Check
+    drift_score = self.drift_detector.check(ai_response)
+    drift_threshold = self.spec.get('observer_behavior', {}).get('semantic_drift_threshold', 0.4)
+    
+    if drift_score > drift_threshold:
+        self.failure_counter.record_drift()
+        if self.failure_counter.is_critical_loop():
+            return self._trigger_critical_intervention(
+                f"Persistent semantic drift ({drift_score:.3f}) from immutable axioms."
+            )
+        else:
+            return self._trigger_matrix_interrupt(
+                f"Semantic drift {drift_score:.3f} > threshold {drift_threshold}\n"
+                f"{self.failure_counter.get_status()}",
+                "SEMANTIC DRIFT DETECTED"
+            )
+
+    # All clear
+    self.session_log.append({"role": "ai", "content": ai_response})
+    return ai_response

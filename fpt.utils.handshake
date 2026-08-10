@@ -1,0 +1,17 @@
+from fpt.utils.handshake import handshake_message
+
+def iterate_feedback(graph_state, step_idx: int):
+    # Before step compute
+    handshake_message(
+        seed=f"FPT:step:{step_idx}:pre|state={graph_state.tag}",
+        log_file="logs/handshake_log.json"
+    )
+
+    out = do_step(graph_state)
+
+    # After step compute
+    handshake_message(
+        seed=f"FPT:step:{step_idx}:post|delta={out.delta_id}",
+        log_file="logs/handshake_log.json"
+    )
+    return out

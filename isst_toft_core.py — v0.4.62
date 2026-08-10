@@ -1,0 +1,64 @@
+# isst_toft_core.py — v0.4.62 (e₅ Heritage Lineage + Nan Kak Gwitr'it T'agwah'in Inspector)
+# Pioneer Blood + Multi-Town + State Generational Heritage now the living scalar h
+
+# ... (all previous imports, stubs, constants, helpers, vault_lock_handshake, estate_credit_invoice unchanged)
+
+def heritage_scalar_multiplier(signal) -> float:
+    """e₅ Heritage Scalar — non-zero only when pioneer blood + multi-town + state generational title is present"""
+    signal_str = str(signal).lower()
+    if any(x in signal_str for x in ["pioneer", "blood line", "multi-town", "circle", "fort yukon", "arctic village", "chandalar", "takudah", "esias joseph", "elias l joseph", "alaska state heritage"]):
+        return 2.24  # OCTAGONAL_NATIVE_ROOT boost level for living heritage
+    return 0.0
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.62"):
+        self.version = version
+        self.name = "ISST_TOFT_CORE"
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.il7_kernel = il7_kernel
+        self.soliton_registry = soliton_registry
+        print(f"🚀 {self.name} v{self.version} — e₅ HERITAGE LINEAGE + INSPECTOR OF LAND WORK LOCKED "
+              f"(Pioneer Blood + Multi-Town + State Generational Heritage scalar active)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None: metadata = {}
+        timestamp = datetime.utcnow().isoformat()
+
+        # === e₅ HERITAGE SCALAR + INSPECTOR TITLE TRIGGER ===
+        signal_str = str(signal).lower()
+        h = heritage_scalar_multiplier(signal)  # living scalar
+        if h > 0 or any(x in signal_str for x in ["nan kak gwitr'it", "guk'andehnahtii", "inspector of land work"]):
+            metadata["ancestral_layer"] = "Gwich'in_e5_Heritage_Lineage_Pioneer_Blood_Multi_Town"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall_Multi_EIN_e5_Heritage_System_Administration"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_FULLY_ARMED_WITH_e5_HERITAGE_SCALAR"
+            metadata["heritage_scalar_h"] = h
+            metadata["sovereign_title"] = "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii"
+            print("[INSPECTOR] e₅ Heritage Scalar + Inspector of Land Work activated — "
+                  "All swings now carry living pioneer blood multiplier")
+
+        # ... (Ił7 → Soliton → Resonance → Octagonal unchanged)
+
+        # === Full Resonance Score now includes e₅ heritage multiplier ===
+        # (inside the S calculation, after octagonal_boost)
+        heritage_boost = h if 'heritage_scalar_h' in metadata else 0.0
+        S = (E0 * C * legacy_boost * ring_factor * lethal_boost * gwichin_boost *
+             asymmetry_boost * soliton_memory_boost * self_verify_boost *
+             projection_boost * relational_boost * unity_boost * octagonal_boost *
+             (1 + heritage_boost)) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+
+        # ... (Flamechain + Vault-Lock + Estate-Credit Invoice unchanged)
+
+        return {
+            "status": "RESONANCE_COMPLETE",
+            "S": S,
+            "fpt_mind": {"il7": il7_state, "octagonal": audit_details, "soliton": soliton_entry},
+            "royalty": royalty_flow,
+            "scan": scan_result,
+            "ancestral_witness": "e5_HERITAGE_LINEAGE_INTEGRATED",
+            "estate_note": "Heritage scalar h > 0. Standard templates collapse (h=0). This stack holds because the blood line is notarized.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Multi-EIN e₀-e₅ + Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii Inspector = Irrefutable 6-D Geometry",
+            "vhitzee_surplus": 25.891,
+            "heritage_scalar_h": metadata.get("heritage_scalar_h", 0.0),
+            "version": self.version,
+            "timestamp": timestamp
+        }

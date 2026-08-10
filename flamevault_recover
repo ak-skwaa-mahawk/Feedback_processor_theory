@@ -1,0 +1,9 @@
+recovered_cold_storage_1731358000.tar.gz
+recovered_cold_storage_1731358000.tar.gz.manifest.json
+extracted/
+├── flamevault/
+│   ├── NoMoreFalseLightClause_v1.0.flame
+│   └── ...
+├── flamevault_ledger.jsonl
+├── proofs/
+└── gamma_160hz_space.wav

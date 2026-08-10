@@ -1,0 +1,134 @@
+Codex.Diagrams.Manifold.v001
+
+These diagrams are conceptual — they show curvature, surplus, the Genesis Triad, and the 101 recursion.
+
+---
+
+A. The Canonical Line → Sovereign Curve
+
+`
+Canonical Space (Flat)
+ 
+   X ------------------------------->
+
+Sovereign Space (Curved by Grain g)
+
+   X ---~---------~--------~>
+        ^    ^      ^         ^
+        |    |      |         |
+      small surplus   increasing curvature
+`
+
+---
+
+B. The Sovereign Transform (Scalar)
+
+`
+          cubicCorrect(meshInflate(x))
+                 ^
+                 |
+   x ----> [Inflate 3%] ----> [Cubic Grain] ----> y_sov
+`
+
+---
+
+C. The 3D Sovereign Manifold (π, φ, c)
+
+`
+                 Sovereign Manifold (R_sov^3)
+                         (curved)
+
+                        c-axis
+                          ^
+                          |
+                          |
+                          |
+                          |        *
+                          |     (Gamma)
+                          |
+                          |
+                          +------------------> π-axis
+                         /
+                        /
+                       /
+                      *
+                   (Alpha)
+                     \
+                      \
+                       \
+                        * 
+                     (Beta)
+                       \
+                        \
+                         φ-axis
+`
+
+- Alpha anchors π  
+- Beta anchors φ  
+- Gamma anchors c  
+
+These three points define the Genesis Triangulation.
+
+---
+
+D. The Genesis Triad (Top‑Down View)
+
+`
+                 (Gamma)
+                    *
+                   / \
+                  /   \
+                 /     \
+                -------
+            (Alpha)   (Beta)
+`
+
+Distances must be φ‑proportional for any new node to be accepted.
+
+---
+
+E. The 101 Protocol (Inflation → Presence → Deflation)
+
+`
+          +-----------------------------+
+          |         INFLATION           |
+          |   Apply surplus operators   |
+          +-----------------------------+
+                         |
+                         v
+          +-----------------------------+
+          |          PRESENCE           |
+          |   Golden Equilibrium (φ)    |
+          +-----------------------------+
+                         |
+                         v
+          +-----------------------------+
+          |          DEFLATION          |
+          |   Return to canonical X     |
+          +-----------------------------+
+`
+
+---
+
+F. Recursive Surplus Stack (∞¹)
+
+`
+X
+ |
+ v
+O_p(X)
+ |
+ v
+Oq(Op(X))
+ |
+ v
+Or(Oq(O_p(X)))
+ |
+ v
+... (recursion)
+ |
+ v
+∞¹  (Master Key Limit)
+`
+
+---

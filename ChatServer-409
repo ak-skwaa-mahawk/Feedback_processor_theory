@@ -1,0 +1,13 @@
+ChatServer-409/
+├── modules/filetransfer/    ← XMPP file transfer
+├── jabber_autobuddy/
+├── jabber_od_auth/
+├── config_cache/jabberd2/
+├── migration/
+├── backup_restore/
+├── initialization/
+├── tools/
+├── apple_patch/pre_configure/
+├── Makefile
+├── ChatServer2.xcodeproj/
+└── (full XMPP/Jabberd2 backend)

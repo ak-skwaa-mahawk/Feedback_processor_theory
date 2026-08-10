@@ -1,0 +1,24 @@
+# ice40up5k.pcf
+set_io clk_100mhz        23
+set_io rst_n             24
+set_io sensor_scrape[15] 35
+set_io sensor_scrape[14] 36
+...
+set_io motor_correction[15] 11
+set_io motor_correction[14] 10
+...
+set_io veto_out          12
+set_io attention_level[1] 13
+set_io attention_level[0] 14
+graph TD
+    A[iCE40UP5K] --> B[PLL: 100 MHz]
+    B --> C[psi_fpt_core]
+    C --> D[reafference_comparator]
+    C --> E[ern_detector]
+    C --> F[pid_controller]
+    C --> G[kalman_predictor]
+    C --> H[fit_attention_shift]
+    C --> I[qgh_resonance]
+    I --> J[C190 VETO]
+    F --> K[motor_correction]
+    H --> L[attention_level]

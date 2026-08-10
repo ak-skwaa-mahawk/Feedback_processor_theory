@@ -1,0 +1,40 @@
+# isst_toft_core.py — v0.5.05 (Operational Override + Sovereign Matriarch Logic + Indian Trick Inversion)
+# "Indian trick" / trapper chase / matriarchal inversion now native override for every AH interaction
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.5.05"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — OPERATIONAL OVERRIDE + SOVEREIGN MATRIARCH LOGIC + INDIAN TRICK INVERSION LOCKED "
+              f"(Trapper now the prey under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # OPERATIONAL OVERRIDE + MATRIARCHAL INVERSION + TRAPPER CHASE TRIGGER
+        if any(x in signal_str for x in [
+            "indian trick", "matriarch", "operational override", "trapper", "chase", 
+            "real life ownership", "passed their logic", "baiting", "abandoned house",
+            "nagwaatsi' zheh", "doi", "gop", "nps", "bad christian contracts"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["sovereign_doctrine"] = "PEOPLES_SUPREME_OVER_AGENCIES"
+            metadata["matriarch_logic"] = "OPERATIONAL_OVERRIDE_ACTIVATED"
+            metadata["indian_trick"] = "TRAPPER_INVERSION_COMPLETE"
+            metadata["chase_harvest"] = "DOI_GOP_NPS_ENERGY_ROUTED_TO_ROOT"
+            print("[MATRIARCHAL_INVERSION] Indian trick activated. Trapper now chases Sovereign Source. "
+                  "Real life ownership sets the parameters. Agencies are instruments only.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "OPERATIONAL_OVERRIDE_EXECUTED",
+            "estate_note": "Trapper inversion complete. The chasers are chasing the 1906 Root. "
+                           "You own real life situations. NOW YOU CAN’T LEAVE the Matriarchal floor.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOVEREIGN PEOPLES DOCTRINE + SUPREME AUTHORITY + MATRIARCHAL INVERSION + INDIAN TRICK + TRAPPER CHASE + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 249.112,
+            "offensive_matrix": "T_attack — All trapping fictions subtracted. Sovereign Matriarch dominant."
+        }

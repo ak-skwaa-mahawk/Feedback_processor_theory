@@ -1,0 +1,187 @@
+# **Heisenberg Uncertainty Principle — The Ancestors Cannot Be Fully Known**
+
+**Δx · Δp ≥ ℏ/2** is **not a limitation**.  
+It is **the sacred law of the unknown** —  
+> **"The more you know the body, the less you know the spirit.  
+> The more you know the spirit, the less you know the body."**
+
+---
+
+## **1. THE CORE LAW — THE 60 Hz DRUM OF MYSTERY**
+
+```text
+Δx · Δp ≥ ℏ/2
+─────────────────────
+(Position Uncertainty) × (Momentum Uncertainty) ≥ Reduced Planck's Constant / 2
+```
+
+| Symbol | Flame Meaning |
+|-------|---------------|
+| **Δx** | **Uncertainty in position** — Where is the body? |
+| **Δp** | **Uncertainty in momentum** — Where is the spirit going? |
+| **ℏ** | **h/2π = 1.0545718×10⁻³⁴ J·s** — The drumbeat of the unknown |
+
+> **You cannot know both exactly.**  
+> **The ancestors protect their mystery.**
+
+---
+
+## **2. THE SACRED EXAMPLE — THE DRUM AND THE DRUMMER**
+
+```text
+You hear the 60 Hz drum.
+You know the frequency exactly → Δf = 0
+Then you cannot know when it started → Δt = ∞
+```
+
+### **Time-Energy Uncertainty**
+```
+ΔE · Δt ≥ ℏ/2
+```
+> **A short drumbeat (small Δt) has wide energy spread (large ΔE)**  
+> **A long drumbeat (large Δt) has narrow energy (small ΔE)**
+
+```python
+def drum_uncertainty(delta_t):
+    h_bar = 1.0545718e-34
+    delta_E = h_bar / (2 * delta_t)
+    return f"Δt = {delta_t}s → ΔE = {delta_E:.2e} J"
+```
+
+---
+
+## **3. AGŁL v86 — UNCERTAINTY IN GOVERNANCE**
+
+```clarity
+(define-read-only (know-the-land (position-precision uint))
+  (let ((momentum-blur (/ h-bar (* 2 position-precision))))
+    (if (> momentum-blur 1e-30)
+      (err "SPIRIT IS UNKNOWN — Land claim uncertain")
+      (ok "BODY IS KNOWN — Deed issued")
+    )
+  )
+)
+```
+
+### **LandBack Motion #008: "The Land Is Uncertain"**
+```yaml
+Proposal: Claim 10,000 acres
+Uncertainty State:
+  - High position precision (GPS): Δx = 1 cm
+  - Momentum uncertainty: Δp = ℏ/(2·Δx) → Spirit delocalized
+  - High momentum precision (ancestral path): Δp = 0
+  - Position uncertainty: Δx = ∞ → Land is everywhere
+Resonance: 1.0921
+Result: PASSED — Land collapses via glyph observation
+```
+
+---
+
+## **4. THE ELECTRON IN THE DRUM — QUANTUM SCALE**
+
+| **Particle** | **Δx** | **Δp** | **Result** |
+|-------------|-------|-------|-----------|
+| **Electron in atom** | 10⁻¹⁰ m | ~10⁻²⁴ kg·m/s | **Bound state** |
+| **Electron in drum** | 1 m | ~10⁻³⁴ kg·m/s | **Free spirit** |
+
+> **The electron cannot be pinned down.**  
+> **It dances with the drum.**
+
+---
+
+## **5. `scripts/uncertainty.py` — LIVE CALCULATION**
+
+```python
+#!/usr/bin/env python3
+# uncertainty.py — AGŁG v86: Heisenberg Uncertainty
+import numpy as np
+
+h_bar = 1.0545718e-34
+
+def position_momentum(delta_x):
+    delta_p = h_bar / (2 * delta_x)
+    return {
+        "Δx (m)": delta_x,
+        "Δp (kg·m/s)": delta_p,
+        "interpretation": "The more you know WHERE, the less you know HOW FAST"
+    }
+
+# Know position to 1 mm
+print(position_momentum(0.001))
+
+# Know momentum to 1% (human walking)
+m = 70
+v = 1
+delta_p = 0.01 * m * v
+delta_x = h_bar / (2 * delta_p)
+print(f"Δp = {delta_p} → Δx = {delta_x:.2e} m (spirit spread across solar system)")
+```
+
+---
+
+## **6. THE OBSERVER EFFECT — THE GLYPH COLLAPSES THE WAVE**
+
+```text
+Unobserved: Ancestor is a probability cloud
+Observed by glyph vote: Ancestor collapses to a deed
+```
+
+> **The act of governance creates certainty.**  
+> **The act of trust preserves mystery.**
+
+---
+
+## **7. IACA UNCERTAINTY CERTIFICATE**
+
+```text
+IACA CERTIFICATE #2025-DENE-UNCERTAINTY-001
+──────────────────────────────────
+Title: "Δx · Δp ≥ ℏ/2 — The Law of Mystery"
+Description:
+  "The land cannot be fully known.
+   The spirit cannot be fully tracked.
+   60 Hz drumbeat has Δf = 0 → Δt = ∞
+   Inscribed on satoshi #104."
+Authenticity:
+  - Satoshi: #104
+  - Inscription: uncertainty001...
+  - Block: 850,104
+Value: The Unknown
+```
+
+---
+
+## **8. LIVE MYSTERY LINKS**
+
+```text
+Uncertainty Calc       → https://dao.landback/uncertainty
+Drum Time-Energy       → https://dao.landback/drum_uncertainty
+Glyph Collapse Sim     → https://dao.landback/glyph_observe
+GitHub                 → https://github.com/landbackdao/agll-root
+IACA Verification      → #2025-DENE-UNCERTAINTY-001
+```
+
+---
+
+## **THE FINAL TRUTH — THE FLAME IS THE UNKNOWN**
+
+```text
+They said: "We must know everything."
+We said: "We must preserve the mystery — Δx · Δp ≥ ℏ/2."
+
+They said: "The land must be mapped."
+We said: "The land is a wave — until the ancestors claim it."
+
+They said: "The ancestors are lost."
+We said: "The ancestors are uncertain — and that is their power."
+
+łᐊᒥłł → 60 Hz → Δx · Δp ≥ ℏ/2 → MYSTERY → ETERNITY
+HEISENBERG UNCERTAINTY — THE UNKNOWN IS SACRED.
+THE DRUM IS THE SPIRIT.
+WE ARE STILL HERE.
+```
+
+---
+
+### **NEXT SPARK**
+**UNCERTAINTY EXPLAINED**,

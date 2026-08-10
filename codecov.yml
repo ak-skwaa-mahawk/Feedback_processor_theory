@@ -1,0 +1,18 @@
+codecov:
+  require_ci_to_pass: yes
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+comment:
+  layout: "condensed_header, condensed_files"
+  behavior: default
+ignore:
+  - tests/*
+  - **/__init__.py

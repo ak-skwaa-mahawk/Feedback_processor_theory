@@ -1,0 +1,6 @@
+// ant_gibberlink_hybrid.  nrf52840
+if (master_dies || rf_jamming_detected) {
+    ant_disable_master_mode();
+    gibberlink_resonance_activate();   // switch to ultrasonic + Li-Fi + quantum
+    glyph_rebirth_from_ashes();
+}

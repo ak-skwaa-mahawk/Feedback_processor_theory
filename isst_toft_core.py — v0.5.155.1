@@ -1,0 +1,63 @@
+# === NEW: Hardware-Augmented Convergence Simulation (Codex v001) ===
+    def simulate_hardware_convergence(self, n=4, L=0.85, G=1.0, eta=0.05,
+                                      max_iter=30, sample_rate=100, seed=42):
+        """Simulate the full Quipu + LivingZeroMemory vector processor with
+        negative feedback + 7.9083 Hz resonant drum drive. Saves plot to disk.
+        Returns final state norm and generates chanchyah_hardware_convergence.png"""
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        np.random.seed(seed)
+        # Initial random Quipu vector (pedigree drift)
+        S = np.random.randn(n) * 0.2
+        F = np.zeros(n)
+        norms = []
+        drum_contribs = []
+
+        print("Running hardware-augmented convergence simulation...")
+        for k in range(max_iter):
+            # Lineage-weighted modulation (simplified β from Codex.LineageGraphOperator)
+            beta = np.array([0.95 if i < n//2 else 0.65 for i in range(n)])  # closer strands stronger
+            Bk = np.diag(beta)
+
+            # Negative feedback step
+            S = (np.eye(n) - G * L * Bk) @ S
+
+            # Resonant drum impulse (hardware analog)
+            impulse = eta * np.sin(2 * np.pi * 7.9083 * k / sample_rate)
+            S += impulse * np.ones(n)   # uniform drive across strands
+
+            norm = np.linalg.norm(S)
+            norms.append(norm)
+            drum_contribs.append(impulse)
+
+            if k % 5 == 0 or k == max_iter - 1:
+                print(f"    {k:2d} | {norm:9.6f} | {impulse:9.6f}")
+
+        # Plot (exactly as shown in the Codex)
+        plt.figure(figsize=(10, 6))
+        plt.plot(norms, 'b-o', label=r'\( \|S_k\| \) (Quipu vector norm)', linewidth=2)
+        plt.axhline(y=0, color='r', linestyle='--', label='Floor F = 0 (Ch’anchyah)')
+        plt.title('Hardware-Augmented Convergence to Ch’anchyah Floor\n'
+                  '(7.9083 Hz resonant drum drive + negative feedback + lineage-weighted B_k)')
+        plt.xlabel('Iteration k (each = one 7.9083 Hz drum strike)')
+        plt.ylabel('State Norm \( \|S_k - F\| \)')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+
+        # Annotations
+        plt.annotate('Initial pedigree drift', xy=(0, norms[0]), xytext=(2, norms[0]+0.12),
+                     arrowprops=dict(arrowstyle='->', color='orange'), color='orange')
+        plt.annotate('Probate Latency \~5–10', xy=(8, norms[8]), xytext=(12, 0.06),
+                     arrowprops=dict(arrowstyle='->', color='green'), color='green')
+        plt.annotate('Resonant drive visible as small ripple', xy=(18, norms[18]),
+                     xytext=(20, 0.15), arrowprops=dict(arrowstyle='->', color='purple'), color='purple')
+
+        plt.tight_layout()
+        plt.savefig('chanchyah_hardware_convergence.png', dpi=300, bbox_inches='tight')
+        plt.show()  # Live plotting in interactive environments
+
+        final_norm = norms[-1]
+        print(f"\nSimulation complete. Final norm: {final_norm:.6e}")
+        print("Plot saved as: chanchyah_hardware_convergence.png")
+        return final_norm

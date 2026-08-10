@@ -1,0 +1,120 @@
+from qutip import basis, sigmax, sigmaz, tensor
+import numpy as np
+
+# Triple encoding:
+# 1. Polarization (H/V) — survives ring dust
+# 2. OAM (ℓ=0,1) — high-dimensional shield
+# 3. Frequency comb (ω₁, ω₂) — plasma dispersion cancel
+
+psi_H = basis(2, 0); psi_V = basis(2, 1)
+psi_pol = (psi_H + psi_V).unit()
+
+psi_oam0 = basis(2, 0); psi_oam1 = basis(2, 1)
+psi_oam = (psi_oam0 + psi_oam1).unit()
+
+psi_freq1 = basis(2, 0); psi_freq2 = basis(2, 1)
+psi_freq = (psi_freq1 + psi_freq2).unit()
+
+# 8-level glyph: |pol⟩ ⊗ |oam⟩ ⊗ |freq⟩
+psi_saturn = tensor(psi_pol, psi_oam, psi_freq)
+
+print("SQC-FPT: Glyph encoded in light + orbital + frequency — forged for Saturn's rings")
+# Earth-Saturn distance: ~9.5 AU = 1.42B km avg
+# Light time: ~83 minutes one-way
+T2_transit = 0.1  # 100 ms (ring dust, plasma, solar wind)
+
+c_ops = [
+    np.sqrt(1/(2*T2_transit)) * sigmaz().kron(qeye(2)).kron(qeye(2)),  # Pol
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(sigmaz()).kron(qeye(2)),  # OAM
+    np.sqrt(1/(2*T2_transit)) * qeye(2).kron(qeye(2)).kron(sigmaz())   # Freq
+]
+
+# Simulate 80 ms segment (Encke gap crossing)
+t_transit = 0.08
+tlist = np.linspace(0, t_transit, 100)
+result = mesolve(0, psi_saturn, tlist, c_ops, [])
+
+psi_received = result.states[-1]
+fidelity = abs(psi_saturn.overlap(psi_received))**2
+
+print(f"SQC-FPT: 80ms Saturnian transit → Fidelity = {fidelity:.6f}")
+def saturn_rewrite(psi_target, gate_time=1e-9):
+    """
+    EOM + deformable mirror tuned to ring particle density
+    1 GHz → 1ns π-pulse, error <10⁻⁴ from ice grains
+    """
+    omega_eom = 1e9 * 2*np.pi
+    H_drive = omega_eom * sigmax().kron(qeye(2)).kron(qeye(2))  # Act on polarization
+    result = mesolve(H_drive, psi_saturn, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph mid-ring
+psi_new = tensor((psi_H + 1j * psi_V).unit(), psi_oam, psi_freq)
+psi_rewritten = saturn_rewrite(psi_new)
+
+print(f"Saturn Rewrite: 1ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.6f}")
+class SQC_FPT:
+    def __init__(self, N_relays=5, T2_transit=0.1):
+        self.N = N_relays
+        self.T2_transit = T2_transit
+        self.earth_station = basis(8,0)
+        self.titan_relay = basis(8,0)
+        self.ring_particle = basis(8,0)
+        self.saturn_orbit = basis(8,0)
+        self.transit_delay = 4980  # 83 min = 4980 s
+    
+    def titan_uplink(self, psi_glyph):
+        """Beam to Titan (Cassini-Huygens II)"""
+        self.titan_relay = psi_glyph
+        return "Uplinked — 83 min to Saturn"
+    
+    def saturn_downlink(self):
+        """Receive at ring orbiter"""
+        delay = self.transit_delay
+        return self.saturn_orbit, delay
+    
+    def rewrite_ring(self, psi_new):
+        """1ns rewrite in ring particle swarm"""
+        return saturn_rewrite(psi_new)
+
+# Earth-Saturn link
+sqc = SQC_FPT()
+sqc.titan_uplink(psi_saturn)
+def ring_vqe(relay, target_H, max_iter=50):
+    """All-optical VQE on ring particle swarm"""
+    def cost(params):
+        # 8-level ansatz
+        state = sum(np.exp(1j*p) * basis(8,i) for i,p in enumerate(params[:8]))
+        state = state.unit()
+        H_opt = target_H * sigmaz().kron(qeye(2)).kron(qeye(2))
+        return (state.dag() * H_opt * state).full()[0,0].real
+    
+    result = minimize(cost, np.zeros(8), method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = sum(np.exp(1j*result.x[i]) * basis(8,i) for i in range(8)).unit()
+    sqc.rewrite_ring(optimal)
+    return optimal
+
+# Adapt glyph in the rings
+ring_vqe("ring", target_H=-5.0)
+class Swarm_SQC_FPT:
+    def __init__(self, N_earth=100, N_saturn=5):
+        self.N_earth = N_earth
+        self.N_saturn = N_saturn
+        self.earth = [SQC_FPT() for _ in range(N_earth)]
+        self.saturn_const = [basis(8,0) for _ in range(N_saturn)]
+    
+    def saturnian_broadcast(self, psi_glyph):
+        """Uplink to all ring orbiters + Titan"""
+        for orb in range(self.N_saturn):
+            self.saturn_const[orb] = psi_glyph
+    
+    def ring_sync(self):
+        """Use ring particles as natural quantum repeaters"""
+        pass
+
+# Earth-Saturn swarm
+swarm_sqc = Swarm_SQC_FPT(N_earth=100, N_saturn=5)
+swarm_sqc.saturnian_broadcast(psi_saturn)
+[Earth Drone] → Scrape → SQC-FPT (1ns) → Titan → Ring Swarm → Saturn Orbiter
+                                          ↓
+                            [All Nodes] ← 166-min RTT Sync

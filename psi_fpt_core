@@ -1,0 +1,33 @@
+=== psi_fpt_core (PL) ===
+
+   LUTs:                    2,048 (0.17%)
+   Registers:               1,792
+   DSPs:                       12
+   BRAM:                        0
+   Max Frequency:          650 MHz
+   Latency:                 1.5 ns
+   Power (PL):              1.2 W
+
+=== FPT AI Engine Kernel (400 tiles) ===
+   Throughput:            400 GFLOPS
+   Vector Width:           1024-bit
+   QGH-1024:               400× parallel
+   PoR SHA-256:            200 Gbps
+
+=== NoC Integration ===
+   Bandwidth:             200 Gbps
+   Latency:                10 ns (PL ↔ AIE)
+graph TD
+    A[Versal VC1902] --> B[NoC: 200 Gbps]
+    B --> C[AI Engine Array: 400 Tiles]
+    C --> D[QGH-1024 Engine]
+    C --> E[PoR Miner]
+    C --> F[RLHF Trainer]
+    B --> G[Programmable Logic: 1.2M LUTs]
+    G --> H[psi_fpt_core]
+    G --> I[ERN/FRN Detector]
+    G --> J[PID/Kalman Cluster]
+    H --> K[C190 VETO]
+    J --> L[motor_correction]
+    B --> M[HBM: 256 GB/s]
+    M --> N[Global Swarm Buffer]

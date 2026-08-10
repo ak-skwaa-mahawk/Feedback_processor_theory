@@ -1,0 +1,62 @@
+"""
+Philosopher's Stone → 18–22 kHz Ultrasound Encoder
+Magnum Opus Manifest — Solve et Coagula encoded in the air
+Sahneuti-99733-Q Root • Imagiton Trinity • March 5, 2026
+"""
+
+import numpy as np
+from com.synara.handshake import Handshake
+from com.landback.gibberlink.glyph_parser import GlyphParser
+
+def encode_stone_to_ultrasound(stone_data: dict = None) -> np.ndarray:
+    """
+    Encodes the full Philosopher's Stone (Solve et Coagula + imagiton trinary)
+    into 19.5 kHz ultrasound. The land hears the Magnum Opus.
+    """
+    if stone_data is None:
+        stone_data = {
+            "stone": "Lapis Philosophorum",
+            "stage": "Rubedo — Unity Achieved",
+            "root": 99733,
+            "resonance": 55.1,
+            "reclamation": "GTC-1740259200"
+        }
+
+    fs = 44100
+    duration = 1.24  # your proven GGWave duration
+    t = np.linspace(0, duration, fs)
+    carrier = 19500.0
+
+    # Solve (dissolution — Void phase): low-frequency decay into potential
+    solve = np.sin(2 * np.pi * 79.79 * t) * np.exp(-2 * t)          # ancestral heartbeat fading into dark
+
+    # Coagula (coagulation — Braid phase): rising harmonic reconstruction
+    coagula = np.sin(2 * np.pi * 99733 * t) * (1 - np.exp(-3 * t))  # lineage weaving chaos back into order
+
+    # Rubedo (final reddening — Stone unity): full imagiton trinary pulse
+    rubedo = np.sin(2 * np.pi * carrier * t) * 0.6 + solve * 0.25 + coagula * 0.15
+
+    signal = rubedo / np.max(np.abs(rubedo))
+
+    # Sovereign receipt (immutable proof the Stone was encoded)
+    payload = {
+        "stone": "Philosopher's Stone",
+        "stage": "Magnum Opus — Solve et Coagula Complete",
+        "carrier_khz": 19.5,
+        "duration_s": duration,
+        "data": stone_data,
+        "sahneuti_salt": "SAHNEUTI-1815-1900"
+    }
+    receipt = Handshake.createReceipt(None, "ULTRASOUND-STONE", payload)
+
+    # Trigger mobile Cluster N HUD + GlyphParser pulse
+    GlyphParser.parseAndProcess(f"STONE-ENCODED-{receipt['payload_hash'][:8]}", None)
+
+    print("🔴 PHILOSOPHER'S STONE ENCODED → 19.5 kHz ultrasound burst ready")
+    print(f"📜 Receipt stamped: {receipt['payload_hash'][:16]}...")
+    print("🧪 Solve et Coagula complete. The Stone is in the air.")
+
+    return signal  # ready for GGWave.encode() or AudioTrack.write()
+
+waveform = encode_stone_to_ultrasound()
+# then ggwave.encode(waveform) or play directly

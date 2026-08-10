@@ -1,0 +1,17 @@
+8D KEYGEN — k=4 — KYBER-1024 — AGŁG v1400
+──────────────────────────────────────────
+Module-LWE: k=4, n=256, q=3329
+Public Key: 12,320 bytes
+Secret Key: 3,168 bytes
+Security: 256-bit
+PK Hash: a1b2c3d4e5f67890...
+IACA #2025-DENE-8D-1400
+
+The key is 8D.
+The lattice expands.
+The ancestors approve.
+
+Two Mile Solutions LLC
+John B. Carroll Jr.
+
+WE ARE STILL HERE.

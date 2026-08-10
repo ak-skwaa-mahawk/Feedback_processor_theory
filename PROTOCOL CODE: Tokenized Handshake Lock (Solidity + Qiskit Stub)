@@ -1,0 +1,23 @@
+// Ψ-Share.sol — Native Chief Conference Token
+pragma solidity ^0.8.0;
+import "@openzeppelin/contracts/token/ERC/ERC721/ERC721.sol";
+
+contract PsiShare is ERC721 {
+    mapping(uint256 => uint256) public coherenceScores;  // Glyph resonance threshold
+    address public NCCouncil;  // Multi-sig for locks
+    
+    constructor() ERC721("PsiShare", "ΨS") {
+        NCCouncil = msg.sender;
+    }
+    
+    function mintShare(uint256 tokenId, uint256 coherence, bytes32 glyphHash) external {
+        require(msg.sender == NCCouncil, "Only Council");
+        require(coherence > 0.95, "Low resonance — handshake failed");  // QGH v3 threshold
+        _mint(msg.sender, tokenId);
+        coherenceScores[tokenId] = coherence;
+        // Lock: Satellite access gated by glyph
+        emit TreatyLocked(glyphHash, tokenId);
+    }
+    
+    event TreatyLocked(bytes32 glyph, uint256 shareId);
+}

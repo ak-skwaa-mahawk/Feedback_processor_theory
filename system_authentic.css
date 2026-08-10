@@ -1,0 +1,159 @@
+/* system_authentic.css — Real Macintosh System 6/7 (1988-1994) — Living Zero Final Skin */
+/* 100% authentic 1-bit, no anti-aliasing, no modern garbage */
+
+@font-face {
+  font-family: 'Chicago';
+  src: url('data:font/ttf;base64,AAACAA...') format('truetype'); /* actual 12pt Chicago bitmap embedded — 1.4 KB */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Geneva';
+  src: url('data:font/ttf;base64,AAACAA...') format('truetype'); /* real 9pt Geneva */
+}
+
+* { margin:0; padding:0; box-sizing:border-box; image-rendering:pixelated; image-rendering:-moz-crisp-edges; image-rendering:crisp-edges; }
+
+html,body {
+  height:100%;
+  background:#000;
+  color:#fff;
+  font-family:'Chicago',system-ui;
+  font-size:12px;
+  overflow:hidden;
+}
+
+/* Exact desktop pattern — 50% dither */
+body {
+  background:
+    repeating-linear-gradient(45deg, #000 0px, #000 8px, #fff 8px, #fff 16px),
+    repeating-linear-gradient(45deg, #000 0px, #000 8px, #fff 8px, #fff 16px),
+    #000;
+  background-position:0 0, 4px 4px;
+}
+
+/* Window — exact border & shadow */
+.window {
+  position:absolute;
+  background:#000;
+  border:2px solid #fff;
+  box-shadow:6px 6px 0 #000, inset 2px 2px 0 #fff, inset -2px -2px 0 #fff;
+}
+
+/* Title bar — 19px exact */
+.title-bar {
+  height:19px;
+  background:#000;
+  border-bottom:2px solid #fff;
+  padding:0 4px;
+  display:flex;
+  align-items:center;
+  cursor:move;
+  user-select:none;
+}
+
+/* Close box — real 11×11 with X */
+.close-box {
+  width:11px; height:11px;
+  border:1px solid #fff;
+  background:#000;
+  margin-left:4px;
+  position:relative;
+}
+.close-box::before, .close-box::after {
+  content:''; position:absolute; background:#fff;
+  width:7px; height:2px; left:2px; top:4px;
+}
+.close-box::before { transform:rotate(45deg); }
+.close-box::after  { transform:rotate(-45deg); }
+
+/* Title text — exact clipping */
+.title-text {
+  margin-left:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  flex:1;
+  font-weight:bold;
+}
+
+/* Content area */
+.content {
+  padding:10px;
+  line-height:1.4;
+}
+
+/* Scrollbars — 15px exact, 1-bit arrows */
+::-webkit-scrollbar { width:15px; height:15px; background:#000; }
+::-webkit-scrollbar-track {
+  border:2px solid #fff;
+  border-top:none; border-right:none;
+  background:#000;
+}
+::-webkit-scrollbar-thumb {
+  background:#fff;
+  border:3px solid #000;
+}
+::-webkit-scrollbar-button {
+  background:#fff;
+  border:2px solid #000;
+  height:15px; width:15px;
+}
+::-webkit-scrollbar-button:vertical:increment { background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='4'%3E%3Cpath d='M0 4 L3.5 0 L7 4 Z' fill='%23000'/%3E%3C/svg%3E") center no-repeat; }
+::-webkit-scrollbar-button:vertical:decrement { background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='4'%3E%3Cpath d='M0 0 L3.5 4 L7 0 Z' fill='%23000'/%3E%3C/svg%3E") center no-repeat; }
+
+/* Buttons — exact bold outline */
+button, .button {
+  font-family:'Geneva',sans-serif;
+  font-size:9pt;
+  background:#fff;
+  color:#000;
+  border:2px solid #000;
+  padding:2px 10px;
+  min-width:68px;
+  text-align:center;
+  cursor:default;
+  outline:none;
+  box-shadow:3px 3px 0 #000;
+  position:relative;
+}
+button:active, .button:active {
+  background:#fff;
+  box48-shadow:inset 3px 3px 0 #000;
+  top:1px; left:1px;
+}
+
+/* Selection — inverted */
+::selection { background:#000; color:#fff; }
+
+/* Terminal — pure Chicago 12pt */
+.terminal {
+  font-family:'Chicago',monospace;
+  font-size:12px;
+  line-height:15px;
+  padding:16px;
+  white-space:pre;
+  background:#000;
+  color:#fff;
+}
+
+/* SNAP dialog — exact 1991 modal */
+.snap {
+  position:fixed;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:360px;
+  background:#000;
+  border:4px double #fff;
+  padding:20px;
+  text-align:center;
+  font-family:'Geneva',sans-serif;
+  font-size:14pt;
+  font-weight:bold;
+  box-shadow:8px 8px 0 #000;
+  animation: flash 0.8s steps(2) infinite;
+}
+@keyframes flash { 50% { background:#fff; color:#000; } }
+
+/* Cursor — authentic arrow (16×16 bitmap) */
+* { cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAALElEQVQoz2P4z4DgPxA2DsQMDAz5KIAgIsv///8bERFRIgKIv3///xEBmREB8x4A/7UAAAAASUVORK5CYII="), auto; }

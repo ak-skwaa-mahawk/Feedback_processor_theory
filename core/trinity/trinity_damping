@@ -1,0 +1,2 @@
+def trinity_damping(signal: np.ndarray, damp_factor=0.5) -> np.ndarray:
+    return signal * (1 - (DIFFERENCE / GROUND_STATE) * np.abs(signal) * damp_factor)

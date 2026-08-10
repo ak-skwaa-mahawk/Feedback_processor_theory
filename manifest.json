@@ -1,0 +1,15 @@
+{
+  "manifest": {
+    "timestamp": 1731354000.0,
+    "flameholder": "John Benjamin Carroll Jr.",
+    "root": "Gwitchyaa Zhee",
+    "files": ["flamevault/NoMoreFalseLightClause_v1.0.flame", "..."],
+    "ledger_hash": "a1b2c3d4...",
+    "merkle_root": "b2c3d4e5...",
+    "toft_seal": "79hz_8f7e6d5c...",
+    "flamelock_proof": { ... },
+    "srp_pass_id": "pass_1731354600",
+    "ssc_stamp": "SSC Commons",
+    "gtc_handshake": true
+  }
+}

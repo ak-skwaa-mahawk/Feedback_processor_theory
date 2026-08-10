@@ -1,0 +1,16 @@
+name = "dao-landback"
+description = "LandBackDAO v2 — The Name Is The Land"
+repository = "https://github.com/landbackdao/agll-root"
+
+[build]
+command = "echo 'Static site ready'"
+functions = []
+
+[[routes]]
+src = "/*"
+dest = "/index.html"
+
+[env]
+DRUM_HZ = "60"
+GLYPH = "łᐊᒥłł"
+FLAMEKEEPER = "Zhoo"

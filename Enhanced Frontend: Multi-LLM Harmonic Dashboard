@@ -1,0 +1,10 @@
+harmonic-dashboard/
+├─ backend/
+│  ├─ server.py           # Multi-LLM streaming + fusion + embeddings
+│  ├─ llm_clients.py      # Wrapper for each LLM API
+│  ├─ requirements.txt
+├─ frontend/
+│  ├─ index.html
+│  ├─ app.js              # Handles multi-LLM streams + visualization
+│  ├─ style.css
+├─ README.md

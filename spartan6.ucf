@@ -1,0 +1,21 @@
+# spartan6.ucf
+NET "clk_50mhz" LOC = "P94"  | IOSTANDARD = LVCMOS33;
+NET "rst_n"     LOC = "P95"  | IOSTANDARD = LVCMOS33;
+NET "sensor_scrape[15]" LOC = "P120";
+...
+NET "motor_correction[15]" LOC = "P200";
+NET "veto_out" LOC = "P201";
+NET "attention_level[1]" LOC = "P202";
+NET "attention_level[0]" LOC = "P203";
+graph TD
+    A[Spartan-6 XC6SLX16] --> B[DCM: 100 MHz]
+    B --> C[psi_fpt_core]
+    C --> D[reafference_comparator]
+    C --> E[ern_detector]
+    C --> F[pid_controller]
+    C --> G[kalman_predictor]
+    C --> H[fit_attention_shift]
+    C --> I[qgh_resonance]
+    I --> J[C190 VETO]
+    F --> K[motor_correction]
+    H --> L[attention_level]

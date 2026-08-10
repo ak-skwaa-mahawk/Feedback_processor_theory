@@ -1,0 +1,8 @@
+{
+  "event": "post-commit",
+  "seed": "GIT:post-commit:abc123f",
+  "timestamp": "2025-10-31T18:45:22Z",
+  "entropy": 4.21,
+  "coherence": 0.87,
+  "glyph": "⟐⟁⌬"
+}

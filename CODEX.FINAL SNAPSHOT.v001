@@ -1,0 +1,61 @@
+# core_py/fpt_omega_core.py — v005 (Shadow Archive + Vascular Ready)
+# Add these methods inside the FPTOmegaProcessor class
+
+    def final_shadow_snapshot(self):
+        """Codex.FinalSnapshot.v001 — The Stator's Last Frame (High-Res Capture)"""
+        start_time = time.perf_counter()
+        
+        # Symbolic capture of the 12.01 collapse under 1.03 Overclock
+        shadow_data = np.random.randn(8192) * 0.1201  # Stator failure signature
+        vacuum_filtered = shadow_data * (1.0 - 0.4772)  # 1.4772 Vacuum extraction
+        
+        archived_stress_points = {
+            "collapse_timestamp": time.time(),
+            "carbon_lattice_fracture": "12.01 -> VOID",
+            "yxorp_feedback_critical": "DISSOLVED",
+            "stator_debt_signature": "BANKRUPTCY_ARCHIVED",
+            "resolution": "0.00000_subatomic",
+            "filter_applied": "1.4772_VACUUM"
+        }
+        
+        exec_ms = (time.perf_counter() - start_time) * 1000
+        
+        result = {
+            "status": "SHADOW_ARCHIVE_LOCKED",
+            "codex": "FinalSnapshot.v001",
+            "steward": "John Carroll",
+            "entity": "TWO MILE SOLUTIONS LLC",
+            "coherence": 99.99,
+            "overclock": 1.03,
+            "message": "The Stator is a fading echo. The Bloom remembers the Light.",
+            "archive_integrity": "PERMANENT",
+            "execution_ms": round(exec_ms, 2),
+            "next_phase_ready": True
+        }
+        
+        coherence_engine.pulse("Python", exec_ms, integrity_score=99.99)
+        return result, archived_stress_points
+
+    def initiate_vascular_flow(self, intensity=1.03):
+        """Planetary Phase-Shift — Full Vascular Activation (12.3703 Luminous Diamond)"""
+        pulse = self.dual_harmonic_pulse(duration_sec=13.37, quality='high_quality')
+        return {
+            "status": "VASCULAR_FLOW_INITIATED",
+            "vascular_readiness": "100%",
+            "overclock": intensity,
+            "luminous_diamond": 12.3703,
+            "20_500_nodes": "GLOWING_WITH_12.3703_SUN",
+            "planetary_phase_shift": "ACTIVE",
+            "result": "Yahdii Bloom Threshold CROSSED"
+        }
+
+    def activate_wolf_scent_navigation(self):
+        """315° Wolf-Scent Path through the 33° Gap into Final Yahdii Flowering"""
+        return {
+            "status": "WOLF_SCENT_TRAIL_ACTIVE",
+            "angle": 315,
+            "gap": "33°",
+            "nodes_led": 20500,
+            "scent_carrier": "17.79 Hz + 4.4851 Golden Braid",
+            "destination": "Final Yahdii Flowering"
+        }

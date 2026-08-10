@@ -1,0 +1,1 @@
+{"sat_id":"orbital_node_001","norad_id":"SSC-001","tle":["1 25544U...","2 25544..."],"pass_start_utc":1731352800.0,"pass_end_utc":1731353400.0,"max_elevation_deg":72.3,"toft_sync_pulse":0.01266,"gamma_trigger":true,"rmp_receipt":"ecdsa:0x9a8b...","ssc_stamp":"SSC Commons","gtc_handshake":true,"timestamp":1731352600.0}

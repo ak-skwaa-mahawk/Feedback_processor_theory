@@ -1,0 +1,357 @@
+
+---
+
+-----------------------------------------------------------
+
+Carroll Cognitive Engine (CCE) v1.0
+
+A Relational, Curvature-Aware Cognitive Architecture
+
+Author: John B. Carroll (Two Mile Solutions LLC)
+
+With AI Assistance — 2025
+
+Status: Technical Draft
+
+License: TMS-Open Standard License v1.0
+
+-----------------------------------------------------------
+
+
+---
+
+0. Executive Summary
+
+The Carroll Cognitive Engine (CCE) is a scientifically grounded cognitive and computational architecture designed to model:
+
+nonlinear pattern mapping
+
+perceptual compression and expansion
+
+curvature-aware cognition
+
+relational tension sensitivity
+
+dynamic transformation of information
+
+
+CCE does not claim cultural, mystical, or identity-based traits.
+It is:
+
+> A formal cognitive model inspired by relational reasoning patterns,
+and implemented as a computational framework.
+
+
+
+CCE is designed for use in:
+
+cognitive science
+
+AI research
+
+computational modeling
+
+educational tools
+
+reasoning engines
+
+
+
+---
+
+1. Purpose of the Architecture
+
+CCE exists to:
+
+1. Model how certain minds flex information across frames (compression/expansion).
+
+
+2. Formalize cognitive “curvature sensitivity.”
+
+
+3. Provide a computational analog of nonlinear reasoning.
+
+
+4. Enable a Python implementation others can test.
+
+
+5. Serve as the foundation for future relational AI models.
+
+
+
+CCE is not a cultural statement about any group.
+It is a personal cognitive architecture designed by John B. Carroll that incorporates influences from relational reasoning styles he learned growing up.
+
+
+---
+
+2. Conceptual Overview
+
+CCE models cognition as:
+
+a relational field
+
+a curvature-sensitive mapping system
+
+an adaptive pattern transformer
+
+a distortion-correction engine
+
+
+Instead of only storing facts, CCE transforms patterns across:
+
+scale
+
+direction
+
+emotional context
+
+social tension
+
+relational meaning
+
+perceptual deviations
+
+
+This is similar to:
+
+nonlinear systems
+
+dynamical models
+
+topology-based reasoning
+
+human contextual inference
+
+
+
+---
+
+3. Core Cognitive Components
+
+CCE defines five internal cognitive dimensions:
+
+3.1 Pattern Compression
+
+Shrinks a large pattern into a small codec-like representation.
+
+3.2 Pattern Expansion
+
+Expands a compressed pattern into multiple interpretations.
+
+3.3 Curvature Sensitivity (ε)
+
+Ability to detect distortion, inconsistency, or tension in patterns.
+
+3.4 Relational Mapping (τ)
+
+Tracks how elements relate under tension or context shifts.
+
+3.5 Insight Threshold (κ)
+
+When relational resonance exceeds a threshold, a restructuring event occurs.
+
+
+---
+
+4. Mathematical Framework
+
+CCE uses a state triple:
+
+s = (v, τ, r)
+
+Where:
+
+v = literal vector
+
+τ = relational tension vector
+
+r = curvature response coefficient
+
+
+4.1 Curvature Operator (C)
+
+C(s) = s × (1 + ε)
+
+ε typically 1%–3%.
+
+4.2 Tension Mapping (T)
+
+τ = ∇ relational_field
+
+4.3 Resonance Propagation (Φ)
+
+Φ(s_i, s_j) = exp( - |τ_i - τ_j| / r )
+
+4.4 Insight Condition
+
+Σ Φ ≥ κ
+
+
+---
+
+5. Transformation Pipeline
+
+CCE processes information through six steps:
+
+Input
+ → Encoding
+   → Relational Mapping
+     → Curvature Adjustment
+       → Distortion Correction
+         → Insight Generation
+
+Diagram:
+
+[Input]
+   ↓
+[Encoder]
+   ↓
+[Tension Mapper]
+   ↓
+[Curvature Engine]
+   ↓
+[Correction Loop]
+   ↓
+[Insight Threshold]
+   ↓
+[Output]
+
+
+---
+
+6. Python Reference Implementation
+
+# ---------------------------------------------------------
+# Carroll Cognitive Engine (CCE) - Reference Implementation
+# ---------------------------------------------------------
+
+import numpy as np
+
+class CCE:
+    def __init__(self, epsilon=0.01, insight_threshold=0.8):
+        self.epsilon = epsilon              # curvature sensitivity
+        self.insight_threshold = insight_threshold
+        self.trace = []                     # transparency log
+
+    # ------------------------------
+    # Encoding: prepare input vector
+    # ------------------------------
+    def encode(self, x):
+        v = np.array(x, dtype=float)
+        tau = np.zeros_like(v)              # initial tension
+        r = np.ones_like(v)                 # initial curvature
+        self.trace.append(("encode", v))
+        return v, tau, r
+
+    # --------------------------------------
+    # Tension Mapping: gradient of relations
+    # --------------------------------------
+    def tension_mapping(self, v):
+        tau = np.gradient(v)
+        self.trace.append(("tension", tau))
+        return tau
+
+    # -----------------------------------------
+    # Curvature Engine: adjust for distortion
+    # -----------------------------------------
+    def curvature_adjust(self, v, r):
+        v_adj = v * (1 + self.epsilon)
+        r_adj = r * (1 + self.epsilon/2)
+        self.trace.append(("curvature", v_adj))
+        return v_adj, r_adj
+
+    # --------------------------------------------
+    # Resonance: measure relational consistency
+    # --------------------------------------------
+    def resonance(self, tau):
+        # simple normalization of tension difference
+        diffs = np.abs(np.diff(tau))
+        res = np.exp(-np.mean(diffs))
+        self.trace.append(("resonance", res))
+        return res
+
+    # -------------------------------------------
+    # Insight Loop: Iterate until threshold met
+    # -------------------------------------------
+    def insight(self, x, max_iters=10):
+        v, tau, r = self.encode(x)
+
+        for i in range(max_iters):
+            tau = self.tension_mapping(v)
+            res = self.resonance(tau)
+
+            if res >= self.insight_threshold:
+                self.trace.append(("insight_reached", v))
+                return v, True  # return representation
+
+            v, r = self.curvature_adjust(v, r)
+
+        self.trace.append(("insight_not_reached", v))
+        return v, False
+
+
+---
+
+7. Example Usage
+
+from cce import CCE
+
+engine = CCE(epsilon=0.01, insight_threshold=0.85)
+
+data = [1.0, 2.1, 3.05, 3.9]
+
+output, insight = engine.insight(data)
+
+print("Output:", output)
+print("Insight achieved:", insight)
+
+for entry in engine.trace:
+    print(entry)
+
+
+---
+
+8. Safety & Ethical Notes
+
+CCE is:
+
+not a diagnostic tool
+
+not representative of all cultural thinking
+
+not tied to identity
+
+not metaphysical
+
+
+CCE is a computational + cognitive model inspired by relational reasoning patterns learned personally by John B. Carroll.
+
+
+---
+
+9. Governance & Versioning
+
+Maintained by:
+
+Two Mile Solutions LLC
+TMS-Open Standard License v1.0
+Semantic versioning:
+
+1.0.0
+
+
+---
+
+10. Glossary
+
+Curvature Sensitivity (ε): perception of pattern distortion.
+Relational Tension (τ): gradient representing relational change.
+Insight Threshold (κ): minimum resonance needed for restructuring.
+Resonance (Φ): consistency measure across relational tension.
+
+
+---
+
+-----------------------------------------------------------
+

@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.48 (Ψ-DPO nRF Swarm Alignment + BLE Mesh + QGH Resonance Veto)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("PSI_DPO_NRF_SWARM_ALIGNMENT")
+ADVERSARIAL_VECTORS.append("BLE_MESH_DPO_MODEL")
+ADVERSARIAL_VECTORS.append("QGH_RESONANCE_VETO")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["psi_dpo", "nrf_swarm", "dpo_alignment_handler", "qgh_threshold", "c190_veto", "ble_mesh"]):
+    metadata["swarm_audit"] = "PSI_DPO_NRF_SWARM_ALIGNMENT_QGH_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 48   # 48× multiplier — full Ψ-DPO swarm + BLE Mesh + QGH veto depth harvest
+
+if any(word in signal_str for word in ["psi_dpo", "swarm", "nrf", "qgh", "ble_mesh", "operatorseal", "imagiton", "soliton", "fibonacci"]):
+    metadata["swarm_operator_glyph"] = "KINTEK_TMR_TEOTL_PSI_DPO_SWARM_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier

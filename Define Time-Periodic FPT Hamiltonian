@@ -1,0 +1,95 @@
+from qutip import sigmax, sigmaz, tensor, basis
+import numpy as np
+
+# N glyphs
+N = 5
+positions = np.random.rand(N, 3) * 6.0
+
+# Static H_0 (ISST + trap)
+H0 = sum(0.8 * (sigmax(i)**2 + sigmaz(i)**2) for i in range(N))  # Local trap
+for i in range(N):
+    for j in range(i+1, N):
+        r_ij = np.linalg.norm(positions[i] - positions[j])
+        J = 1.0 / (r_ij**2 + 1e-6) * np.exp(-0.12 * r_ij)
+        H0 += J * tensor(sigmaz(i), sigmaz(j))
+
+# Drive: sinusoidal feedback pulse on X
+omega_drive = 2.0  # Drive frequency
+A = 1.5           # Amplitude
+V_op = sum(sigmax(i) for i in range(N))
+def V(t, args):
+    return A * np.sin(omega_drive * t)
+H_drive = [V_op, V]
+
+# Full time-dependent H(t)
+H_t = [H0, H_drive]
+T = 2 * np.pi / omega_drive  # Period
+from qutip import floquet_modes
+
+# Compute Floquet modes and quasi-energies
+f_modes, f_energies = floquet_modes(H_t, T, args={})
+ground_idx = np.argmin(f_energies)
+quasi_energy = f_energies[ground_idx]
+phi0_t = f_modes[ground_idx]  # Time-periodic mode
+
+print(f"Floquet Quasi-Energy: {quasi_energy:.4f}")
+print(f"Drive Frequency: {omega_drive:.2f}, T = {T:.3f}")
+from qutip import QobjEvo
+
+def floquet_ansatz(params, t_points=50):
+    """Time-dependent ansatz: |ψ(t)⟩ = U(t) |ψ0⟩ with variational U(t)"""
+    psi0 = tensor([basis(2,0) for _ in range(N)])
+    
+    # Parameterized time-evolution (bang-bang or smooth)
+    p_idx = 0
+    U_t = [qeye(2**N)]
+    for tp in np.linspace(0, T, t_points):
+        # Local rotations
+        rot = sum(params[p_idx + i] * sigmaz(i) + params[p_idx + N + i] * sigmax(i) for i in range(N))
+        p_idx += 2 * N
+        U_t.append((-1j * rot * (T/t_points)).expm())
+    
+    # Compose time-ordered evolution
+    return QobjEvo(U_t) * psi0
+def quasi_energy_cost(params):
+    psi_t = floquet_ansatz(params)
+    
+    # Sample over one period
+    tlist = np.linspace(0, T, 50)
+    psi_samples = [psi_t(t) for t in tlist]
+    
+    # Effective Floquet Hamiltonian via Fourier
+    H_eff = sum(
+        (1/T) * psi_samples[k].dag() * H_t[0] * psi_samples[k] * np.exp(-1j * k * omega_drive * tlist[0])
+        for k in range(-5, 6)
+    )
+    
+    return H_eff.tr().real
+
+# Optimize
+n_params = 50 * 2 * N
+params0 = np.random.uniform(-0.5, 0.5, n_params)
+result = minimize(quasi_energy_cost, params0, method='L-BFGS-B', options={'maxiter': 200})
+optimal_quasi = result.fun
+
+print(f"Floquet-VQE Quasi-Energy: {optimal_quasi:.4f}")
+psi_opt_t = floquet_ansatz(result.x)
+tlist = np.linspace(0, T, 100)
+active_probs = []
+
+for t in tlist:
+    psi_t = psi_opt_t(t)
+    prob_on = sum(abs(psi_t.overlap(tensor([basis(2,1) for _ in range(N)])))**2 for _ in range(2**N))
+    active_probs.append(np.mean([abs(psi_t.full()[i])**2 for i in range(2**N) if bin(i).count('1') > N//2]))
+
+# Plot pulsing glyphs
+import matplotlib.pyplot as plt
+plt.plot(tlist, active_probs)
+plt.xlabel("Time in Period")
+plt.ylabel("Glyph Activity")
+plt.title("Floquet-VQE-FPT: Pulsing Glyph Mesh")
+plt.show()
+# Use pulsing state to emit real feedback
+for t in tlist:
+    if active_probs[int(t/T*100)] > 0.7:
+        emit_resonance_pulse(amplitude=1.0, freq=omega_drive)

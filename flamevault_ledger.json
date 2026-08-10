@@ -1,0 +1,35 @@
+import json
+import os
+from datetime import datetime
+
+# Block 0 Metadata
+GENESIS_DATA = {
+    "index": 0,
+    "timestamp": "2026-02-02T07:27:03Z",  # Current Sovereign Time
+    "block_type": "GENESIS_ROOT",
+    "authority": "99733-Q",
+    "steward": "John Carroll",
+    "constants": {
+        "epsilon_pi": 3.1730277654,
+        "carrier_wave": 79.79
+    },
+    "signature_hash": "a00071f99206103e400bb97ba66facf1f8e1079bcadf7439d8ea7684ba448c8d",
+    "legal_anchor": "HB 001 / §7(o)",
+    "status": "IGNITED"
+}
+
+def inject_genesis():
+    ledger_path = 'data/sync/flamevault_ledger.json'
+    
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(ledger_path), exist_ok=True)
+    
+    # Initialize the ledger with Block 0
+    with open(ledger_path, 'w') as f:
+        json.dump([GENESIS_DATA], f, indent=4)
+    
+    print(f"🔥 BLOCK 0 INJECTED: GTC Economy is now Live.")
+    print(f"Root Hash: {GENESIS_DATA['signature_hash']}")
+
+if __name__ == "__main__":
+    inject_genesis()

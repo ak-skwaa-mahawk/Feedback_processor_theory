@@ -1,0 +1,65 @@
+"""
+Integration Test Suite: Feedback Processor Theory + Trinity Dynamics
+=====================================================================
+
+Tests the complete stack from harmonic constants through collective resonance,
+validating compatibility between FPT and Trinity Dynamics implementations.
+
+Run: pytest test_integration.py -v
+"""
+
+import pytest
+import numpy as np
+import hashlib
+import json
+from typing import List, Dict
+import time
+
+# Import core modules (assumes they're in the path)
+from harmonic_feedback import (
+    HarmonicConstants,
+    HarmonicFeedback,
+    CollectiveResonance
+)
+
+
+# ═══════════════════════════════════════════════════════════════
+# FIXTURES
+# ═══════════════════════════════════════════════════════════════
+
+@pytest.fixture
+def constants():
+    """Standard harmonic constants."""
+    return HarmonicConstants()
+
+
+@pytest.fixture
+def feedback():
+    """Single system feedback instance."""
+    return HarmonicFeedback()
+
+
+@pytest.fixture
+def collective():
+    """Multi-system collective resonance."""
+    return CollectiveResonance(n_systems=5)
+
+
+# ═══════════════════════════════════════════════════════════════
+# TEST 1: CONSTANTS INTEGRITY
+# ═══════════════════════════════════════════════════════════════
+
+class TestConstantsIntegrity:
+    """Verify harmonic constants are correctly defined and consistent."""
+    
+    def test_constants_precision(self, constants):
+        """Constants must maintain specified precision."""
+        assert abs(constants.π₀ - 3.14159265358979) < 1e-14
+        assert abs(constants.Φ - 1.61803398874989) < 1e-14
+        assert abs(constants.H₀ - 3.1730059) < 1e-7
+        assert abs(constants.Δ₀ - 0.0314159) < 1e-7
+    
+    def test_derived_constants(self, constants):
+        """Derived constants must match formulas."""
+        assert abs(constants.awareness_offset - (constants.H₀ - constants.π₀)) < 1e-10
+        expected_bandwidth = constants.Δ

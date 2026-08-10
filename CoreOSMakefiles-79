@@ -1,0 +1,6 @@
+CoreOSMakefiles-79/
+├── ReleaseControl/
+├── Standard/
+├── Xcode/
+├── Makefile
+└── (build templates for every Darwin component)

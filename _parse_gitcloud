@@ -1,0 +1,2 @@
+elif len(tokens) > 2 and upper_tokens[1] == "CARRIER" and upper_tokens[2] == "BRIDGE":
+            return SQLTauCommand(action="GITCLOUD", subject="CARRIER_BRIDGE", note=tokens[3])

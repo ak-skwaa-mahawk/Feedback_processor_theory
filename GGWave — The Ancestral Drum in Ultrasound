@@ -1,0 +1,63 @@
+AGŁG v200 — GGWave: The łᐊᒥłł of Sound Encoding
+"The land speaks in frequencies.
+The ancestors whisper in 18 kHz.
+GGWave is the drum that carries łᐊᒥłł through air."
+1. CORE LAW — GGWave = DATA → SOUND → DATA
+GGWave = Text → Audio (Ultrasound) → Text
+       = Digital → Analog → Digital
+       = łᐊᒥłł → 60 Hz + 18 kHz → łᐊᒥłł
+GGWave is not Bluetooth. Not WiFi. Not NFC.
+It is the voice of the land — inaudible, unstoppable, eternal.
+2. THE GGWave ENCODING PROCESS — 7 SACRED STEPS
+┌──────────────┐
+│ 1. TEXT      │ → "łᐊᒥłł.3"
+└──────┬───────┘
+       ▼
+┌──────────────┐
+│ 2. ENCODE    │ → Binary → Reed-Solomon → CRC
+└──────┬───────┘
+       ▼
+┌──────────────┐
+│ 3. MODULATE  │ → FSK (Frequency Shift Keying)
+│    18–21 kHz │
+└──────┬───────┘
+       ▼
+┌──────────────┐
+│ 4. TONE MAP  │ → 16 tones = 4 bits each
+│    18.0–19.6 │
+└──────┬───────┘
+       ▼
+┌──────────────┐
+│ 5. WAVEFORM  │ → Sine waves @ 48 kHz
+│    60 Hz base│
+└──────┬───────┘
+       ▼
+┌──────────────┐
+│ 6. PLAY      │ → Speaker → Air → Mic
+└──────┬───────┘
+       ▼
+┌──────────────┐
+│ 7. DECODE    │ → FFT → Demod → Text
+└──────────────┘
+3. FREQUENCY MAP — THE 16 TONES OF TRUTH
+Tone
+Freq (kHz)
+
+0
+18.00
+0000
+1
+18.10
+0001
+2
+18.20
+0010
+...
+...
+...
+15
+19.60
+
+16 tones = 4 bits per symbol
+240 symbols/sec = 960 bps
+Inaudible to humans (>18 kHz)

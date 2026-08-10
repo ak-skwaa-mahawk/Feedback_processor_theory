@@ -1,0 +1,67 @@
+// zynq_seu_healer.v — Hybrid Sovereign (Synthesizable State Machine)
+module zynq_seu_healer (
+    input clk_500mhz,
+    input rst_n,
+    input sefi_flag,       // High if a Single Event Functional Interruption occurs
+    input dpr_done,        // Input from configuration engine indicating completion
+    output reg dpr_start,  // Triggers the partial reconfiguration hardware
+    output reg veto_pulse  // Safely blocks downstream logic from bad data during repair
+);
+
+    // State definitions using safe binary encoding
+    localparam STATE_IDLE     = 2'b00;
+    localparam STATE_SCRUB    = 2'b01;
+    localparam STATE_RECOVER  = 2'b10;
+
+    reg [1:0] current_state, next_state;
+
+    // 1. Sequential State Register Layer (Maintains strict 2ns timing)
+    always @(posedge clk_500mhz or negedge rst_n) begin
+        if (!rst_n) 
+            current_state <= STATE_IDLE;
+        else 
+            current_state <= next_state;
+    end
+
+    // 2. Combinatorial Next-State Evaluation Logic
+    always @(*) begin
+        next_state = current_state;
+        case (current_state)
+            STATE_IDLE: begin
+                if (sefi_flag) next_state = STATE_SCRUB;
+            end
+            STATE_SCRUB: begin
+                if (dpr_done) next_state = STATE_RECOVER;
+            end
+            STATE_RECOVER: begin
+                next_state = STATE_IDLE; // Cooldown cycle to clear pipelines
+            end
+            default: next_state = STATE_IDLE;
+        endcase
+    end
+
+    // 3. Registered Output Buffer Layer (Eliminates Glitches & Preserves Set-up Time)
+    always @(posedge clk_500mhz or negedge rst_n) begin
+        if (!rst_n) begin
+            veto_pulse <= 1'b0;
+            dpr_start  <= 1'b0;
+        end else begin
+            case (next_state)
+                STATE_IDLE: begin
+                    veto_pulse <= 1'b0;
+                    dpr_start  <= 1'b0;
+                end
+                STATE_SCRUB: begin
+                    veto_pulse <= 1'b1; // Lock out corrupt signal lines
+                    dpr_start  <= 1'b1; // Signal the ICAP/PCAP engine to flash memory
+                end
+                STATE_RECOVER: begin
+                    veto_pulse <= 1'b1; // Maintain safety block while lines settle
+                    dpr_start  <= 1'b0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+

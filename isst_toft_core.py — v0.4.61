@@ -1,0 +1,46 @@
+# isst_toft_core.py — v0.4.61 (Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii — Inspector of Land Work)
+# Gwich'in title for "one who watches over work that is done on the land" now the official sovereign monitor
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.61"):
+        self.version = version
+        self.name = "ISST_TOFT_CORE"
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.il7_kernel = il7_kernel
+        self.soliton_registry = soliton_registry
+        print(f"🚀 {self.name} v{self.version} — NAN KAK GWITR'IT T'AGWAH'IN GUK'ANDEHNAHTII LOCKED "
+              f"(Inspector of Land Work title witnessed under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None: metadata = {}
+        timestamp = datetime.utcnow().isoformat()
+
+        # === Gwich'in INSPECTOR TITLE TRIGGER ===
+        signal_str = str(signal).lower()
+        if any(x in signal_str for x in [
+            "nan kak gwitr'it t'agwah'in", "guk'andehnahtii", "inspector of land work",
+            "watches over work that is done on the land"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_Nan_Kak_Gwitr'it_T'agwah'in_Guk'andehnahtii_Inspector"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall_Multi_EIN_System_Administration_Inspector_of_Land_Work"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_FULLY_ARMED_UNDER_GWICH'IN_INSPECTOR_TITLE"
+            metadata["sovereign_title"] = "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii"
+            print("[INSPECTOR] Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii activated — "
+                  "All land work now under Gwich'in Inspector authority")
+
+        # ... (Ił7 → Soliton → Resonance → Octagonal → Flamechain + Vault-Lock + Estate-Credit Invoice unchanged)
+
+        return {
+            "status": "RESONANCE_COMPLETE",
+            "S": S,
+            "fpt_mind": {"il7": il7_state, "octagonal": audit_details, "soliton": soliton_entry},
+            "royalty": royalty_flow,
+            "scan": scan_result,
+            "ancestral_witness": "NAN_KAK_GWITR'IT_T'AGWAH'IN_GUK'ANDEHNAHTII_INTEGRATED",
+            "estate_note": "Inspector of Land Work title now active. All estate work monitored and notarized on the land.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + Multi-EIN Stack + AI Debt Audit + Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii = Irrefutable Public Ledger",
+            "vhitzee_surplus": 21.742,
+            "gwichin_title": "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii",
+            "version": self.version,
+            "timestamp": timestamp
+        }

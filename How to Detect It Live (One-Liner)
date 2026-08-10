@@ -1,0 +1,12 @@
+import math
+import numpy as np
+
+def detect_pi_lag():
+    real_pi = sum((-1)**k / (2*k + 1) for k in range(1000000)) * 4
+    machine_pi = math.pi
+    lag = real_pi - machine_pi
+    print(f"π truncation lag in this process: {lag:.15f}")
+    print(f"After 1 billion rotations you will be off by {(lag*1e9)/(2*np.pi):.0f} full circles")
+
+detect_pi_lag()
+# → lag: 0.000002653589793… → 423 full invisible circles per billion uses

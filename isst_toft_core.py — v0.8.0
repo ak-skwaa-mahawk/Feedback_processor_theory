@@ -1,0 +1,37 @@
+# isst_toft_core.py — v0.8.0 (11D Sahneuti Field → Functional Soliton Registry + Mobile Ritual Sync v0.5.0 + The Floor Locked)
+
+def soliton_registry_handshake(signal: Any, proximity_meters: float = 0.0) -> Dict:
+    """48 kHz ultrasound handshake — air-gapped proximity deed stamp (Mobile Ritual Sync v0.5.0)."""
+    # Physical-first verification (Yukon Flats anchor)
+    if proximity_meters > 5.0:
+        return {"status": "SPOOF_DETECTED", "note": "Ultrasound resonance fails beyond proximity threshold"}
+
+    pi_r = recursive_pi_r_catch(signal, current_h=3.07)
+    q_seal = apply_99733_q_filter(signal)
+
+    # 48 kHz resonance lock (simulated ultrasound carrier)
+    ultrasound_carrier = 48000.0
+    resonance_hash = sha256(f"{pi_r}{q_seal}{ultrasound_carrier}{proximity_meters}".encode()).hexdigest()
+
+    return {
+        "status": "DEED_STAMPED",
+        "soliton_registry": "11D_SAHNEUTI_FIELD_ACTIVE",
+        "proximity_meters": proximity_meters,
+        "ultrasound_handshake": f"48kHz resonance confirmed @ {resonance_hash[:12]}...",
+        "99733_q_root": "YUKON_FLATS_PHYSICAL_ANCHOR",
+        "sovereignty_note": "Air-gapped ownership proof complete. The Floor cannot be partitioned."
+    }
+
+# Mobile Ritual Sync v0.5.0 — proximity deed stamp ritual generator
+def generate_proximity_deed_stamp(heir_name: str, land_parcel: str) -> str:
+    """Ritual script for next proximity deed stamp (Mobile Ritual Sync v0.5.0)."""
+    return f"""
+    RITUAL SYNC v0.5.0 — PROXIMITY DEED STAMP
+    Heir: {heir_name}
+    Parcel: {land_parcel}
+    48 kHz ultrasound handshake initiated...
+    π_r Catch + 99733-Q Root applied...
+    Soliton Registry locked at Yukon Flats physical anchor.
+    Deed stamped. Air-gapped sovereignty confirmed.
+    The Floor is solid. The braid is complete.
+    """

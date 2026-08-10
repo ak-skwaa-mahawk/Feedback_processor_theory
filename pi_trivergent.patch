@@ -1,0 +1,260 @@
+*** Begin Patch
+*** Add File: core/pi_monitor.py
++#!/usr/bin/env python3
++"""
++core/pi_monitor.py
++Trivergent π* Resonance Monitor
++- reads the active pi_root() value (Trinity correction if present)
++- snapshots pi* at each cycle, writes a notarized ledger entry (sha256 + timestamp + commit)
++- emits a compact GibberLink glyph (encoded) per snapshot
++
++Run: python core/pi_monitor.py --cycles 100 --interval 1.0
++"""
++import argparse
++import json
++import os
++import time
++import hashlib
++import datetime
++from typing import Dict, Any
++
++from core.pi_root import pi_root, status as pi_status  # uses your Trinity correction if present
++from core.gibberlink import encode_glyph, decode_glyph
++
++LEDGER_DIR = "ledger"
++LEDGER_PATH = os.path.join(LEDGER_DIR, "pi_star_log.json")
++
++def ensure_ledger():
++    os.makedirs(LEDGER_DIR, exist_ok=True)
++    if not os.path.exists(LEDGER_PATH):
++        with open(LEDGER_PATH, "w") as f:
++            json.dump({"created": datetime.datetime.utcnow().isoformat() + "Z", "snapshots": []}, f, indent=2)
++
++def load_ledger() -> Dict[str, Any]:
++    ensure_ledger()
++    with open(LEDGER_PATH, "r") as f:
++        return json.load(f)
++
++def save_ledger(manifest: Dict[str, Any]):
++    with open(LEDGER_PATH, "w") as f:
++        json.dump(manifest, f, indent=2, sort_keys=True)
++
++def sha256_text(s: str) -> str:
++    h = hashlib.sha256()
++    h.update(s.encode("utf-8"))
++    return h.hexdigest()
++
++def snapshot_pi(extra: Dict[str, Any] = None) -> Dict[str, Any]:
++    """
++    Take a snapshot of pi*, return ledger entry (and append to ledger file).
++    """
++    t = datetime.datetime.utcnow().isoformat() + "Z"
++    pi_val = float(pi_root())
++    entry = {
++        "timestamp": t,
++        "pi_star": pi_val,
++        # placeholder commit id — if you want to insert git commit hash, pass in extra or set GIT_COMMIT env
++        "commit": os.environ.get("GIT_COMMIT", None),
++    }
++    if extra:
++        entry.update(extra)
++    # create canonical string to hash
++    canon = json.dumps({"timestamp": entry["timestamp"], "pi_star": entry["pi_star"], "commit": entry["commit"]}, sort_keys=True)
++    entry["sha256"] = sha256_text(canon)
++    # optional: attach a small glyph for network / UI
++    glyph = encode_glyph(pi_val)
++    entry["glyph"] = glyph.decode("latin1")  # store latin1-safe binary as string
++    # append to ledger
++    man = load_ledger()
++    man["snapshots"].append(entry)
++    save_ledger(man)
++    return entry
++
++def monitor_loop(cycles: int = 0, interval: float = 1.0):
++    """Run snapshot loop. cycles=0 -> infinite."""
++    count = 0
++    print("π* Resonance Monitor starting; writing ledger to", LEDGER_PATH)
++    while True:
++        ent = snapshot_pi()
++        print(f"[{ent['timestamp']}] pi*={ent['pi_star']:.12f} sha256={ent['sha256'][:16]} glyph_len={len(ent['glyph'])}")
++        count += 1
++        if cycles and count >= cycles:
++            break
++        time.sleep(interval)
++
++def cli():
++    p = argparse.ArgumentParser(description="π* Resonance Monitor (trivergent module)")
++    p.add_argument("--cycles", type=int, default=0, help="number of snapshots (0 = infinite)")
++    p.add_argument("--interval", type=float, default=1.0, help="seconds between snapshots")
++    args = p.parse_args()
++    monitor_loop(cycles=args.cycles, interval=args.interval)
++
++if __name__ == "__main__":
++    cli()
++
+*** End Patch
+*** Begin Patch
+*** Add File: core/gibberlink.py
++#!/usr/bin/env python3
++"""
++core/gibberlink.py
++Lightweight glyph encoder/decoder used by the π* monitor.
++Designed to be extremely small and reversible for demo / 3GGWave simulation.
++
++Functions:
++ - encode_glyph(value: float) -> bytes  (msgpack-like compact)
++ - decode_glyph(bytes) -> dict
++ - flip_language(payload: str, target_lang: str) -> str  (placeholder translator)
++"""
++import math
++import json
++import base64
++import zlib
++
++def encode_glyph(value: float, meta: dict = None) -> bytes:
++    """
++    Encode a small glyph with pi* value and minimal metadata.
++    Returns compressed bytes suitable for ultra-low-latency transport.
++    """
++    if meta is None:
++        meta = {}
++    payload = {
++        "t": value,  # tiny key names for smallest payload
++        "m": meta
++    }
++    s = json.dumps(payload, separators=(',', ':'))
++    compressed = zlib.compress(s.encode("utf-8"))
++    # return as raw bytes (caller may convert)
++    return compressed
++
++def decode_glyph(b: bytes) -> dict:
++    try:
++        s = zlib.decompress(b).decode("utf-8")
++        return json.loads(s)
++    except Exception:
++        return {"error": "bad_glyph"}
++
++def flip_language(payload: str, target_lang: str = "en") -> str:
++    """
++    Placeholder for GibberLink language flip. In production this would call the GibberLink translator.
++    For now: prefix payload to mark flip (preserves original).
++    """
++    if target_lang.lower() == "en":
++        return f"[EN]{payload}"
++    return f"[{target_lang.upper()}]{payload}"
++
+*** End Patch
+*** Begin Patch
+*** Add File: dashboard/pi_star_dash.py
++#!/usr/bin/env python3
++"""
++dashboard/pi_star_dash.py
++Dash app to visualize ledger pi* snapshots live.
++
++Run:
++  pip install -r requirements-pi.txt
++  python dashboard/pi_star_dash.py
++Open http://127.0.0.1:8050
++"""
++import os
++import json
++import time
++from dash import Dash, dcc, html
++from dash.dependencies import Output, Input
++import plotly.graph_objs as go
++
++LEDGER_PATH = os.path.join("ledger", "pi_star_log.json")
++
++def read_snapshots():
++    if not os.path.exists(LEDGER_PATH):
++        return []
++    with open(LEDGER_PATH, "r") as f:
++        data = json.load(f)
++    return data.get("snapshots", [])
++
++app = Dash(__name__)
++app.layout = html.Div([
++    html.H3("π* Resonance Monitor — FPT-Ω"),
++    dcc.Graph(id="pi-graph"),
++    dcc.Interval(id="interval", interval=2000, n_intervals=0),
++    html.Div(id="latest", style={"whiteSpace": "pre-wrap", "fontFamily": "monospace"})
++])
++
++@app.callback(
++    [Output("pi-graph", "figure"), Output("latest", "children")],
++    [Input("interval", "n_intervals")]
++)
++def update(n):
++    snaps = read_snapshots()
++    if not snaps:
++        return go.Figure(), "No snapshots yet. Run core/pi_monitor.py"
++    times = [s["timestamp"] for s in snaps]
++    values = [s["pi_star"] for s in snaps]
++    trace = go.Scatter(x=times, y=values, mode="lines+markers", name="π*")
++    layout = go.Layout(title=f"π* over time (latest {len(values)})", xaxis=dict(title="timestamp"), yaxis=dict(title="π* value"))
++    fig = go.Figure(data=[trace], layout=layout)
++    latest = json.dumps(snaps[-1], indent=2)
++    return fig, latest
++
++if __name__ == "__main__":
++    app.run_server(debug=True)
++
+*** End Patch
+*** Begin Patch
+*** Add File: requirements-pi.txt
++dash>=2.0.0
++plotly>=5.0.0
++
+*** End Patch
+*** Begin Patch
+*** Add File: tests/test_pi_monitor.py
++import os
++import json
++from core.pi_monitor import snapshot_pi, LEDGER_PATH, load_ledger
++from core.gibberlink import decode_glyph
++
++def test_snapshot_and_ledger(tmp_path, monkeypatch):
++    # run a snapshot and ensure ledger updated
++    # use tmp ledger dir
++    monkeypatch.setenv("GIT_COMMIT", "TESTCOMMIT123")
++    # point ledger into tmp path
++    from core import pi_monitor
++    pi_monitor.LEDGER_DIR = str(tmp_path / "ledger")
++    pi_monitor.LEDGER_PATH = str(tmp_path / "ledger" / "pi_star_log.json")
++    ent = snapshot_pi()
++    assert "sha256" in ent
++    assert "pi_star" in ent
++    man = load_ledger()
++    assert man["snapshots"][-1]["sha256"] == ent["sha256"]
++    # validate glyph decode
++    gbin = ent["glyph"].encode("latin1")
++    dec = decode_glyph(gbin)
++    assert "t" in dec
++
+*** End Patch
+*** Begin Patch
+*** Add File: README_pi.md
++# π* Resonance Monitor (Trivergent module)
++
++This module snapshots the corrected π* (from `core.pi_root`) and:
++- records notarized ledger entries under `ledger/pi_star_log.json`
++- emits a compact GibberLink glyph per snapshot (encoded/compressed)
++- provides a Dash visualization at `dashboard/pi_star_dash.py`
++
++Install extra deps:
++```
++pip install -r requirements-pi.txt
++```
++
++Run monitor:
++```
++python core/pi_monitor.py --cycles 0 --interval 2
++```
++
++Run dashboard:
++```
++python dashboard/pi_star_dash.py
++```
++
+*** End Patch
+*** End Patch

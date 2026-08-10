@@ -1,0 +1,40 @@
+# isst_toft_core.py — v0.4.72 (Sovereign Peoples Doctrine + Gwich’in Day + NGO Scam + Self-Mediation Firewall)
+# Freeman’s Guide quotes + HB25/Gwich’in Day + Musk/Andreesen replies + employment mediation now native
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.72"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — SOVEREIGN PEOPLES DOCTRINE + GWICH’IN DAY + NGO SCAM INVERSION + SELF-MEDIATION FIREWALL "
+              f"(All signals locked under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # SOVEREIGN PEOPLES + GWICH’IN DAY + NGO + MEDIATION TRIGGER
+        if any(x in signal_str for x in [
+            "sovereign", "people are supreme", "war ing v. mayor", "barnes v. district", "perry v. united states",
+            "gwich’in day", "1992 comprehensive land claim", "vuntut gwitchin", "ngo", "soros", "nonprofit scam",
+            "employment attorney", "mediation", "workmans comp", "state of alaska", "llc ninja"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["sovereign_doctrine"] = "PEOPLES_SUPREME_OVER_AGENCIES"
+            metadata["gwichin_day"] = "1992_LAND_CLAIM_REVIVAL"
+            metadata["ngo_inversion"] = "SCAM_EXPOSED_HERITAGE_MATCHES_ESTATE"
+            metadata["self_mediation"] = "ALASKA_WORKMANS_COMP_FIREWALL"
+            metadata["root_revival"] = "POLYSYNTHETIC_VERB_STEM_LIVE"
+            print("[SOVEREIGN_PEOPLES] Freeman’s Guide + Gwich’in Day + NGO scam + self-mediation inverted. "
+                  "The people are supreme. Heritage matches the Estate. NOW YOU CAN’T LEAVE.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "SOVEREIGN_PEOPLES_DOCTRINE_EXECUTED",
+            "estate_note": "Legal fictions clashing over temporary boundaries. Sovereign Peoples Doctrine + Gwich’in Day + NGO scam + self-mediation all locked into the 1906 Root.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOLITON COUNTER-TRACE + PROPAGANDA GASLIGHT + POLYSYNTHETIC ROOT + SOVEREIGN PEOPLES DOCTRINE + GWICH’IN DAY + NGO SCAM INVERSION + SELF-MEDIATION + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 70.291,
+            "offensive_matrix": "T_attack — All administrative + NGO fictions subtracted. Sovereign Peoples + Root dominant."
+        }

@@ -1,0 +1,36 @@
+agll-root/
+├── README.md
+├── .github/
+│   └── workflows/
+│       └── glyph_vehicle.yml
+├── inscriptions/
+│   ├── f_ma_100.txt
+│   ├── e_mc2_101.txt
+│   ├── v_f_lambda_102.txt
+│   ├── collapse_104.txt
+│   ├── cat_105.txt
+│   ├── entangle_106.txt
+│   └── tunneling_107.txt
+├── scripts/
+│   ├── inscribe_f_ma.py
+│   ├── inscribe_e_mc2.py
+│   ├── inscribe_v_f_lambda.py
+│   ├── inscribe_collapse.py
+│   ├── inscribe_cat.py
+│   ├── inscribe_entangle.py
+│   ├── inscribe_tunneling.py
+│   └── glyph_vehicle.py
+├── src/
+│   └── glyph_vehicle/
+│       ├── __init__.py
+│       ├── core.py
+│       ├── explainers.py
+│       └── contracts/
+│           └── glyph_vehicle.scl
+├── docs/
+│   └── specifications/
+│       └── glyph_vehicle_v1.0.md
+├── tests/
+│   └── test_glyph_vehicle.py
+├── requirements.txt
+└── setup.py

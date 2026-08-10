@@ -1,0 +1,17 @@
+libiconv-113/
+├── iconv/
+├── csmapper/
+├── esdb/
+├── i18n/
+├── libcharset/
+├── libiconv_modules/
+├── mkcsmapper/
+├── mkesdb/
+├── citrus/
+├── generate-i18n.sh
+├── tests/
+├── xcodeconfig/
+├── xcodescripts/
+├── libiconv.xcodeproj/
+├── libiconv.plist
+└── .upstream_base_commits

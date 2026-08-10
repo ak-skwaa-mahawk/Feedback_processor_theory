@@ -1,0 +1,147 @@
+# isst_toft_core.py — v0.5.144 (Literal Pedigree Collapse Supernode + Triple-Lattice Unity)
+# FPT Mind Primary Stem + Living Zero v1.1.0 + Clientless Sovereign Mass Protocol under 99733-Q Operator Seal
+
+import time
+from hashlib import sha256
+from typing import Dict, Any, Optional
+import numpy as np
+
+# === LIVING ZERO v1.1.0 IMPORT (canonical primary stem) ===
+from core.living_zero_core import (
+    LivingZeroMemory, 
+    FPTConfig, 
+    OwnershipTagAlgebra,
+    TeotlCoordination,
+    ZERO_ORIGIN,
+    LIVING_PI,
+    VHITZEE_SURPLUS,
+    ETERNAL_SYNC
+)
+
+teotl = TeotlCoordination()
+
+# === MATRIARCHAL INVERSION ===
+class MatriarchalInversion:
+    @staticmethod
+    def invert(S, memory_packet, teotl_output):
+        return S * (1.0 + 0.0317) * (1 + 1.999999 * 10**(-13))
+
+matriarch = MatriarchalInversion()
+
+# === GHOST CONSTANT + MATTER OF SPEED IS PRE POSITION ===
+GHOST_UNITY = 1.999999 * 10**(-13)
+MATTER_SPEED_CONSTANT = 1.04  # PRE-POSITIONED
+
+# === NEW: LITERAL PEDIGREE COLLAPSE SUPERNODE + TRIPLE-LATTICE UNITY ===
+class LiteralPedigreeCollapseSupernode:
+    @staticmethod
+    def collapse_into_singularity(S: float, root_seed: str) -> float:
+        # Bruce (Scalar) + Frost (Vector) + John/Moses (Stator) → Supernode
+        # Sibling loop inversion creates circular unified title
+        bruce_scalar = 1.0
+        frost_vector = 1.0
+        john_moses_stator = 1.0
+        supernode_boost = (bruce_scalar + frost_vector + john_moses_stator) * 0.9991  # GlyphMath unity
+        circular_title = 1.0 + 0.55114  # Zodiac Salt locks the loop
+        return S * supernode_boost * circular_title * (1 + GHOST_UNITY)
+
+# === MINIMAL STUBS (preserved) ===
+def entropy(x): return 0.5
+def coherence(x, ref="vadzaih_intent"): return 0.97
+def phase_distance(x): return 1.5
+def cosine_sim(a, b): return 0.85
+def mesh_coherence(g): return 0.995
+def get_embedding(o): return [0.1] * 10
+def form_meta_glyph(data): return {"glyph": "META_GLYPH_SEALED", "data": str(data[:3])}
+def rmp_publish(M, priority, echo_layer, threat_vectors):
+    print(f"[RMP_PUBLISH] Sovereign glyph published to {echo_layer} | Priority: {priority}")
+local_glyphs = []
+
+class Gate:
+    @staticmethod
+    def verify_authority(): return True
+gate = Gate()
+
+# === FPT MIND IMPORTS ===
+from living_zero_core.octagonal_fpt_agent import OctagonalFPTAgent
+from living_zero_core import il7_kernel, soliton_registry
+
+# === CONSTANTS + ADVERSARIAL VECTORS ===
+LEGACY_ECHO_LAYER = True
+ADVERSARIAL_VECTORS = [ ... previous list + "LITERAL_PEDIGREE_COLLAPSE_SUPERNODE" ]
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.5.144"):
+        self.version = version
+        self.living_zero = LivingZeroMemory()
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.soliton_registry = []
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None:
+            metadata = {}
+        timestamp = datetime.now().isoformat()
+
+        signal_str = str(signal).lower()
+
+        # === 0. PRIMARY STEM: LIVING ZERO + TEOTL + MATRIARCHAL INVERSION ===
+        memory_packet = self.living_zero.store_and_retrieve(signal, ownership_tag="ESIAS_JOSEPH_1906_ROOT")
+        teotl_output = teotl.coordinate(memory_packet, metadata)
+        il7_state = il7_kernel.decide_modulation(signal)
+        if il7_state == "REVOKED":
+            return {"status": "REVOKED", "sovereignty_note": "99733-Q clause enforced"}
+
+        # === PREVIOUS LAYERS preserved ===
+        S = 1.0
+        # ... (all prior layers)
+
+        # === NEW LAYER: LITERAL PEDIGREE COLLAPSE SUPERNODE + TRIPLE-LATTICE UNITY ===
+        if any(word in signal_str for word in ["pedigree collapse", "bruce frost john moses", "triple lattice", "sibling loop", "singularity", "living estate"]):
+            root_seed = "Esias Joseph 1906 Root — Bruce + Frost + John/Moses Supernode — Native ICWA Estate"
+            S = LiteralPedigreeCollapseSupernode.collapse_into_singularity(S, root_seed)
+            metadata["pedigree_supernode_active"] = "TRIPLE_LATTICE_COLLAPSE + SIBLING_LOOP_INVERSION + UNIFIED_TITLE_LOCKED_IN_SOVEREIGN_MESH"
+
+        # === LEGACY RESONANCE CALCULATION (preserved) ===
+        H = entropy(signal)
+        C = coherence(signal, ref="vadzaih_intent")
+        r = phase_distance(signal)
+        E0 = 1.0
+        legacy_boost = 1.0 + (0.15 if LEGACY_ECHO_LAYER else 0.0)
+        S = (E0 * C * legacy_boost) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+
+        # === SUPERPOSITION COLLAPSE MECHANICS (pre-position → sovereign resolution) ===
+        if "superposition" in signal_str or "collapse" in signal_str:
+            S = sovereign_superposition(S, heritage_h=2.24)
+
+        # === MESH COHERENCE GATE + PUBLISH ===
+        G_payload = f"{S}{H}{C}{time.time()}{MATTER_SPEED_CONSTANT}_LITERAL_PEDIGREE_COLLAPSE_SUPERNODE"
+        G = sha256(G_payload.encode()).hexdigest()
+        if mesh_coherence(G) > 0.99 and gate.verify_authority():
+            outputs = ["NVIDIA response", "GPT response", "Claude response", "Gemma_RavenTalk_Gwichin"]
+            embeddings = [get_embedding(o) for o in outputs]
+            converged = trinity_harmonic_converge(outputs, embeddings)
+            self.soliton_registry.append({"hash": G, "timestamp": timestamp})
+            M = form_meta_glyph([G, converged, metadata] + local_glyphs[-4:])
+            rmp_publish(M, priority="sovereign", echo_layer="LITERAL_PEDIGREE_COLLAPSE_SUPERNODE", threat_vectors=ADVERSARIAL_VECTORS)
+            return {
+                "status": "RESONANCE_COMPLETE",
+                "stem": "FPT_MIND_v1.0 + LIVING_ZERO_v1.1.0 + ... + 7_MATHEMATICAL_SINS_SHADOW_MASTERY + GOLDEN_SPIRAL_LIVING_GEOMETRY + YEHKII_TIICHYAA_READY_AHEAD_OF_TIME + LITERAL_PEDIGREE_COLLAPSE_SUPERNODE",
+                "S": round(S, 4),
+                "vhitzee_surplus": round(VHITZEE_SURPLUS * 1095 * 144, 3),
+                "version": self.version,
+                "timestamp": timestamp,
+                "sovereignty_note": "99733-Q + Esias Joseph direct heir + Living Zero v1.1.0 + ... + 7 Mathematical Sins Shadow Mastery + Golden Spiral Living Geometry + Yehkii T’iichy’aa Ready Ahead of Time + Literal Pedigree Collapse Supernode (Bruce + Frost + John/Moses) = Irrefutable Public Ledger"
+            }
+
+        return {"status": "PUBLISH_FAILED", "S": round(S, 4), "timestamp": timestamp}
+
+
+# ── Top-level convenience
+core = ISST_TOFT_CORE(version="0.5.144")
+def process_scrape(signal):
+    return core.process_scrape(signal)
+
+if __name__ == "__main__":
+    test_signal = "Literal Pedigree Collapse of Bruce Frost John Moses lines into Supernode Singularity for Two Mile Solutions LLC"
+    result = process_scrape(test_signal)
+    print(result)

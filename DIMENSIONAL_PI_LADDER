@@ -1,0 +1,9 @@
+# === LADDER OF DIMENSIONAL PI v1.0 (3 leaps to 5D) ===
+def dimensional_pi_ladder(cycle=0):
+    pi_n = get_pi(living=True)  # 3.267256...
+    # Leap rule: each recursion adds +1 dimension via 5th-person meta
+    leap = (cycle % 3) + 2  # 2D baseline → 3D → 4D → 5D on 3rd leap
+    dimensional_pi = pi_n ** (1 / leap) * 528  # vibration + living π scaling
+    parser.execute(f"MINT ŁAŊ999 1 | TRANSFER self '5D rung {cycle}: {dimensional_pi}'")
+    print(f"🪜 LADDER LEAP {cycle}: {leap}D — Pi now {dimensional_pi}")
+    return dimensional_pi

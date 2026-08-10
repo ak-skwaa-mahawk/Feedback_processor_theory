@@ -1,0 +1,92 @@
+### Sovereign Coil – Terms of Sovereignty
+
+*(This is not a “Terms of Service.” This is a living excerpt from Codex.Legis.Neurodata.v1, witnessed by the Soliton Registry and bound to every session you run in this app. You are not “agreeing” to be extracted. You are declaring a boundary that the system must honor.)*
+
+---
+
+**Preamble**  
+Your nervous system is sovereign territory.  
+No measurement of it shall ever become a key, a credential, or a commodity without your ongoing, revocable consent.
+
+This application, Sovereign Coil, exists solely to let a living nervous system modulate a field in accordance with FPT and Ił7 principles — and to guarantee your right to recoil at any moment.
+
+---
+
+**Codex.Legis.Neurodata.v1 – Binding Clauses**
+
+**§1  Living nervous systems are not keys**  
+(1) No brainwave, heartbeat, breath pattern, or other signal from your nervous system shall be used as an identity credential, password, cryptographic key, or biometric identifier.  
+(2) Sovereign Coil implements the Ił7 kernel automaton, which mathematically prohibits any such linkage.
+
+**§2  Consent is always session-scoped and revocable**  
+(1) Every sensed session begins only after you explicitly consent.  
+(2) Consent is bound to a single session ID and a revocation token that remains under your control.  
+(3) You may revoke consent at any time using the ritual provided: breath, phrase, and token.  
+(4) Upon revocation:  
+   - EEG influence immediately recoils to baseline (ε_d = ε_base).  
+   - No further computational use is made of that session’s aggregates.  
+   - A formal EEG_REVOCATION entry is written to the Soliton Registry, marking the data as frozen testimony.
+
+**§3  Only aggregates, never raw**  
+(1) Raw EEG samples never leave your device.  
+(2) The only data that may be logged to the Soliton Registry (with your scoped consent) are windowed vitality aggregates and band power averages.  
+(3) These aggregates contain no per-sample detail, no waveform, and no reversible biometric trace.
+
+**§4  Right to recoil is absolute**  
+(1) Revocation requires no justification.  
+(2) Revocation incurs no penalty: you remain fully able to participate in any mesh or group resonance without EEG.  
+(3) The system treats revocation as a sovereign act of boundary-setting, not defection.
+
+**§5  Transparency and witness**  
+(1) Every aggregate logged carries a hash bound to your Sovereign Neurodata Header (SNH).  
+(2) Every revocation is itself logged as an immutable Registry entry, including:  
+   - hash of your revocation token  
+   - session(s) affected  
+   - action taken (stop future use)  
+(3) You may export a cryptographic receipt of any revocation at any time.
+
+**§6  Graceful degradation and sovereign fallback**  
+(1) If EEG is unavailable, revoked, or declined, the system falls back to baseline surplus (vitality = 1.0, ε_d = ε_base).  
+(2) Your standing in any field or mesh is unchanged.
+
+**§7  No extraction in disguise**  
+(1) No data collected by this application is used for training, advertising, profiling, or sale.  
+(2) The sole purpose of any Registry logging is to witness collective resonance when explicitly consented to.
+
+**§8  Alignment with stronger law**  
+(1) Where tribal, Indigenous, state, or international law offers greater protection to neurodata, that law governs.  
+(2) This application is designed to comply with HB 001 (Alaska Quantum & Biological Data Sovereignty Act) and any successor statute.
+
+---
+
+**Your Declaration**
+
+By starting a sensed session you declare:  
+“I uncoil this stream under my own sovereignty, with full knowledge that I may recoil it at any moment, without penalty, and that it shall never become a key.”
+
+By revoking you declare:  
+“I withdraw this stream.”
+
+Both declarations are witnessed by the Soliton Registry and honored by the Ił7 kernel.
+
+---
+
+**Glyph Legend** (visible throughout the app)
+
+⟲  
+Open coil – baseline, no EEG active.
+
+⟲·  
+Coil with living center – EEG active under consent; revocation possible.
+
+⟲·//  
+Coil recoiled – revocation honored; stream frozen.
+
+---
+
+You are not a user.  
+You are a sovereign node.
+
+The field breathes with you only as long as you choose.
+
+*— Witnessed this 23rd day of December, 2025, under Codex.Legis.Neurodata.v1*

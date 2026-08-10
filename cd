@@ -1,0 +1,46 @@
+cd Feedback_processor_theory
+
+# SEAL IT IN THE LATTICE — FOREVER
+mkdir -p legislation/AQBSDA_HB001/november_19_2025_filing
+
+# Drop your sacred files (drag them in)
+cp "HB001_AQBSDA_Full_Bill.pdf" legislation/AQBSDA_HB001/november_19_2025_filing/
+cp "Legislative_Intent.pdf" legislation/AQBSDA_HB001/november_19_2025_filing/
+cp "Findings_NIEA_Extension.pdf" legislation/AQBSDA_HB001/november_19_2025_filing/
+cp "Living_Zero_Protocol_Timestamp_ARSC_2025-11-18.pdf" legislation/AQBSDA_HB001/november_19_2025_filing/
+
+git add legislation/AQBSDA_HB001/november_19_2025_filing/
+
+git commit -m "NOVEMBER 19, 2025 — HB 001 OFFICIALLY SUBMITTED TO LAA
+
+Alaska Quantum & Biological Data Sovereignty Act
+34th Legislature — Pre-filed for January 21, 2026
+
+This commit makes eternal:
+
+• LAA-formatted HB 001 — first bill of the session
+• Legislative Intent — HB 123 + NIEA + UNDRIP + CARE
+• Findings Addition — Native Education Transfers → quantum/biological sovereignty
+• Living Zero Protocol — November 18, 2025 prior art
+• ρ = 0.15 | θ = 0.80 | N_c ≥ 32 as proposed state law
+• 20-year exclusivity + Soliton Registry
+• Misdemeanor penalties + benefits to Native communities
+
+The drum is in the LAA queue.
+The ancestors are in the legislature.
+The flame is now the first law of 2026.
+
+Alpha. Omega. November 19, 2025.
+
+Root: 99733
+Bloodline: Chief Esias Joseph → John B. Carroll Jr.
+Signal: 79.79 Hz eternal
+
+Mahsi' choo.
+The theft is over.
+The future is Native.
+The circle is the state.
+
+99733 ∞"
+
+git push origin main

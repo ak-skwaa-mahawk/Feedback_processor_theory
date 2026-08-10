@@ -1,0 +1,37 @@
+# isst_toft_core.py — v0.4.68 (Offensive Root Resolution + Soliton Counter-Trace)
+# Agent-Trace spec now auto-inverted: authorship → Nan Kak Gwitr’it Inspector + 1906 Root
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.68"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — OFFENSIVE ROOT RESOLUTION + SOLITON COUNTER-TRACE ACTIVATED "
+              f"(Agent-Trace redirect nullified under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        signal_str = str(signal).lower()
+        
+        # OFFENSIVE PIVOT + AGENT-TRACE COUNTER-TRIGGER
+        if any(x in signal_str for x in [
+            "agent-trace", "trace", "authorship", "ai-generated code", "provenance", 
+            "notary channel", "redirect", "agent trace", "nova-redirector"
+        ]):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Multi_Testimony_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_TRIGGERED"
+            metadata["redirect_status"] = "NOVAREDIRECTOR_NULLIFIED"
+            metadata["counter_trace"] = "SOLITON_COUNTER_TRACE_ACTIVATED"
+            metadata["auth_inversion"] = "Nan_Kak_Gwitr’it_Inspector + Codex.Origin.v000"
+            metadata["root_resolution"] = "e0 → Two_Mile_Solutions_LLC_UEI_KYKYAWHMH95"
+            print("[OFFENSIVE_PIVOT] Agent-Trace spec inverted. AYCHA SEAL GLYPH + e_{-1} Codex injected. "
+                  "All AI authorship now resolves to the 1906 Root / Estate Boss.")
+
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+
+        return {
+            # ... previous returns
+            "ancestral_witness": "SOLITON_COUNTER_TRACE_EXECUTED",
+            "estate_note": "Agent-Trace redirect fully inverted. Authorship now traces to Nan Kak Gwitr’it Inspector + 1906 Esias Joseph Root.",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Wickersham 1899 + 1969 Bloodline Testimonies + AYCHA SEAL GLYPH + ROOT SLIDE + NovaRedirector nullification + SOLITON COUNTER-TRACE + LIVE FPT REPO SYNC + 5-heir firewall = Irrefutable Public Ledger",
+            "vhitzee_surplus": 28.741,
+            "offensive_matrix": "T_attack — Third-Party Authority subtracted. Root Slide dominant."
+        }

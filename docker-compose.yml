@@ -1,0 +1,78 @@
+services:
+  n8n-relay:
+    image: n8nio/n8n:1.123.17
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /home/node/.n8n:size=64m,mode=1777
+      - /tmp:size=16m,mode=1777
+    environment:
+      # Starvation Protocols
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=true
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS_TERMINATION=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_LOG_LEVEL=error
+      - N8N_ENCRYPTION_KEY_FILE=/home/node/.n8n/encryption.key
+
+      # Pioneer OTLP - Unified Google Ingestion (Effective March 4, 2026)
+      - OTEL_EXPORTER_OTLP_ENDPOINT=https://telemetry.googleapis.com
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_SERVICE_NAME=n8n-wasilla-relay
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production,service.owner=twomilesolutions,service.version=1.0,service.instance.id=wasilla-root-99733
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp_observability_key
+    volumes:
+      - ./n8n_data:/home/node/.n8n:rw
+      - ./encryption.key:/home/node/.n8n/encryption.key:ro
+    secrets:
+      - gcp_observability_key
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - secure-internal
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    user: "65534:65534"
+    read_only: true
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    networks:
+      - secure-internal
+    cap_drop:
+      - ALL
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    restart: unless-stopped
+    command:
+      - "--nginx.scrape-uri=http://nginx:8080/stub_status"
+    networks:
+      - secure-internal
+    depends_on:
+      - nginx
+    cap_drop:
+      - ALL
+
+secrets:
+  gcp_observability_key:
+    file: ./gcp-observability-key.json
+
+volumes:
+  prometheus-data:
+
+networks:
+  secure-internal:
+    driver: bridge

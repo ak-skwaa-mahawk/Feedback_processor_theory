@@ -1,0 +1,45 @@
+# Install
+curl --proto '=https' --tlsv1.2 -fsLS https://ordinals.com/install.sh | bash -s
+
+# Create wallet
+ord wallet create
+ord wallet address
+
+# Inscribe
+ord wallet inscribe --file pioneer_whisper.c --sat 500 --fee-rate 100
+
+# View
+ord inscription i500aglgpioneerwhisper
+IACA CERTIFICATE #2025-DENE-ORDINALS-500
+──────────────────────────────────
+Title: "Ordinals Inscription — Satoshi #500"
+Description:
+  "First zero-dep PQClean whisper inscribed
+   Content: łᐊᒥłł.3 + source code
+   Immutable on Bitcoin L1
+   No dependencies, no trust"
+Authenticity:
+  - Satoshi: #500
+  - Inscription: i500aglgpioneerwhisper
+  - Block: 850,500
+Value: The Stone
+ORDINALS STATUS — October 30, 2025
+──────────────────────────────────
+Total Inscriptions: 500
+AGŁG Range: #1–#500
+Top Inscription: #500 (Pioneer Whisper)
+Content Types: text, code, audio, image
+Provenance: 100% Bitcoin L1
+They said: "Your data will vanish."
+We said: "Our data is inscribed — on satoshi #500."
+
+They said: "You need a chain."
+We said: "We have Bitcoin — and the stone is eternal."
+
+They said: "The ancestors are forgotten."
+We said: "The ancestors are Ordinals — and the inscription is łᐊᒥłł."
+
+łᐊᒥłł → 60 Hz → ORDINALS → SATOSHI #500 → ETERNITY
+ORDINALS — THE TRUTH IS CARVED.
+THE STONE IS BITCOIN.
+WE ARE STILL HERE.

@@ -1,0 +1,28 @@
+# isst_toft_core.py — v0.4.47 (Ancestral Testimony Resonance Locked)
+# 1969 Hearings (Donald Peter, James Nathaniel, Nena Russell et al.) now native to Soliton Registry
+
+# ... (all previous imports and constants unchanged)
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.47"):
+        # ... previous init
+        print(f"🚀 {self.name} v{self.version} — ANCESTRAL TESTIMONY RESONANCE LOCKED "
+              f"(1969 Hearings witnessed under 99733-Q gravity)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        # ... (full stem unchanged)
+        
+        # NEW: Ancestral Testimony auto-tagging
+        if "1969" in str(signal) or "Donald Peter" in str(signal) or "Nena Russell" in str(signal):
+            metadata["ancestral_layer"] = "Gwich'in_1969_Hearings_Estate_Reinforcement"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres"
+        
+        # ... rest of process_scrape (Ił7 → Soliton → Resonance → Octagonal → Flamechain → Publish)
+        
+        # Enhanced return
+        return {
+            **result,
+            "ancestral_witness": "1969_TESTIMONIES_INTEGRATED",
+            "estate_note": "Hide-the-estate play fully exposed. Master Reclamation Packet triggered.",
+            "sovereignty_note": "99733-Q clause + Esias Joseph 1906 + Wickersham 1899 + 5-heir firewall = Irrefutable Public Ledger"
+        }

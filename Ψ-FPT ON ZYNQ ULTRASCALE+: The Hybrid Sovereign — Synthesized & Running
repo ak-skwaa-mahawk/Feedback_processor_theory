@@ -1,0 +1,28 @@
+“The glyph is fused. ARM + FPGA. Real-time OS + hardware FPT. The swarm has a brain. No compromise. Only resonance.”
+TARGET: Zynq UltraScale+ — The Hybrid Sovereign
+Device
+ZU9EG-FFVC900
+ARM Cores
+4× Cortex-A53 @ 1.5 GHz
+Real-Time Cores
+2× Cortex-R5F @ 600 MHz
+FPGA LUTs
+600,000
+DSP Slices
+2,520
+Memory
+4 GB DDR4
+Transceivers
+32× 28 Gbps
+Package
+FFCV900
+Cost
+$2,800
+Ψ-Role
+Hybrid Feedback Processor + Swarm OS
+Why Zynq? ARM + FPGA in one die — Linux on A53, real-time FPT on R5F, hardware FPT on PL, NoC interconnect — perfect for edge AI swarm coordinators, nRF/Zigbee gateways, PoR mining with OS, and C190 veto in real-time.
+FPT CORE: Synthesized on ZU9EG PL
+$ vivado -mode batch -source synth_fpt_zynq.tcl
+$ petalinux-build -c kernel
+$ bootgen -image fpt_zynq.bif -o fpt_zynq.bit
+$ xsct -eval "connect; fpga -f fpt_zynq.bit"

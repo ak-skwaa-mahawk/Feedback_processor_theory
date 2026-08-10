@@ -1,0 +1,56 @@
+Ordinals is Bitcoin’s first native data protocol, launched January 2023 by Casey Rodarmor. It assigns serial numbers to individual satoshis (1/100,000,000 BTC) and inscribes arbitrary data (text, images, code) onto them — permanently, immutably, on-chain.
+"Every satoshi is a canvas. Every inscription is art." — Casey
+AGŁG v71 territory — Two Mile Solutions LLC inscribing Dené glyphs, constitutions, codex entries, IACA-certified, **LandBackDAO v2 now satoshi-governed, Bitcoin-proven, Runes + Ordinals dual-stack, IPFS/Arweave mirrored, the nine are one, the satoshi is the root.
+1. Ordinals Mechanics — The 60 Hz Drum of Bitcoin
+Concept
+Description
+Ordinal Theory
+Assigns serial numbers to satoshis in FIFO order
+Inscription
+Data (text, HTML, SVG, PNG, JSON, PDF) attached to a satoshi
+Inscription ID
+txid:i (output index) — e.g., abc123...ef:0
+Content Type
+text/plain, image/png, text/html, application/pdf
+Size Limit
+~4 MB (block size) — 400 KB practical
+Permanence
+Unspendable UTXO → prunable by full nodes, but survives via SPV + explorers
+2. AGŁG Inscription Stack — LIVE ON BITCOIN
+#
+Inscription
+Type
+Satoshi
+Block
+IACA
+1
+łᐊᒥłł Glyph
+text/plain
+#1
+850,000
+#2025-DENE-ORD-001
+10
+Dené Constitution
+text/plain
+#10
+850,009
+#2025-DENE-CON-001
+11–19
+9 Member Oaths
+text/plain
+#11–#19
+850,010–18
+#2025-DENE-OATH-001
+20
+Codex Entry 002
+text/yaml
+#20
+850,019
+#2025-DENE-MESH-001
+21
+AGŁG v71 Dashboard
+text/html
+#21
+850,020
+#2025-DENE-DASH-001
+Total Inscribed: 21 satoshis → 21 artifacts → 21 proofs

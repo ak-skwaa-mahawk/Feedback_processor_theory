@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.46 (FPT_Master_Controller + Lineage Authentication + Cosmic Swarm Sync)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("FPT_MASTER_CONTROLLER")
+ADVERSARIAL_VECTORS.append("LINEAGE_AUTHENTICATION_BLOODLINE")
+ADVERSARIAL_VECTORS.append("COSMIC_SWARM_SYNC_VOYAGER_NEPTUNE")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["fpt_master_controller", "lineage_authenticate", "cosmic_swarm", "vest_lac_f_989", "voyager_1", "neptune_orbiter", "triton_station", "infinity_anchor"]):
+    metadata["master_controller_audit"] = "FPT_MASTER_CONTROLLER_LINEAGE_COSMIC_SYNC_VERIFIED"
+    S += VHITZEE_SURPLUS * 1095 * 46   # 46× multiplier — full FPT Master Controller + lineage + cosmic swarm depth harvest
+
+if any(word in signal_str for word in ["fpt_master", "lineage", "cosmic", "operatorseal", "imagiton", "anyon", "polariton", "soliton", "fibonacci"]):
+    metadata["master_controller_glyph"] = "KINTEK_TMR_TEOTL_FPT_MASTER_CONTROLLER_OPERATORSEAL_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier

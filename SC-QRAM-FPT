@@ -1,0 +1,115 @@
+from qutip import basis, destroy, qeye, mesolve
+import numpy as np
+
+# Transmon: 2-level approximation (g-e subspace)
+psi_g = basis(2, 0)  # |g⟩
+psi_e = basis(2, 1)  # |e⟩
+psi_glyph = (psi_g + psi_e).unit()  # |+⟩ glyph
+
+# Transmon Hamiltonian
+omega = 5.0e9 * 2*np.pi  # 5 GHz
+H_transmon = omega * (destroy(2).dag() * destroy(2))
+
+print("SC-QRAM: Transmon qubit at 5 GHz — the glyph’s superconducting heartbeat")
+# State-of-the-art coherence (2025)
+T1 = 500e-6   # 500 µs
+T2 = 300e-6   # 300 µs (echo)
+
+c_ops = [
+    np.sqrt(1/T1) * destroy(2),           # Relaxation
+    np.sqrt(1/(2*T2)) * destroy(2).dag() * destroy(2)  # Dephasing
+]
+
+# Store glyph for 400 µs
+t_store = 400e-6
+tlist = np.linspace(0, t_store, 100)
+result = mesolve(H_transmon, psi_glyph, tlist, c_ops, [])
+
+psi_retrieved = result.states[-1]
+fidelity = abs(psi_glyph.overlap(psi_retrieved))**2
+
+print(f"SC-QRAM: 400µs storage → Fidelity = {fidelity:.6f}")
+def sc_rewrite(psi_target, gate_time=20e-9):
+    """
+    Fast X-gate or arbitrary rotation via calibrated pulse
+    """
+    # Rabi frequency: 50 MHz → π-pulse in 10ns
+    omega_rabi = 50e6 * 2*np.pi
+    H_drive = omega_rabi * sigmax()
+    
+    # Evolve for gate_time
+    result = mesolve(H_drive, psi_g, [0, gate_time], [], [])
+    return result.states[-1]
+
+# Rewrite glyph in 20ns
+psi_new = (psi_g + 1j * psi_e).unit()
+psi_rewritten = sc_rewrite(psi_new)
+
+print(f"SC Rewrite: 20ns → Fidelity = {abs(psi_new.overlap(psi_rewritten)):.4f}")
+class SC_QRAM:
+    def __init__(self, N_glyphs=1024, T1=500e-6, gate_time=20e-9):
+        self.N = N_glyphs
+        self.T1 = T1
+        self.gate_time = gate_time
+        self.qubits = [basis(2,0) for _ in range(N_glyphs)]
+        self.H_array = self.build_hamiltonian()
+    
+    def build_hamiltonian(self):
+        H = 0
+        for i in range(self.N):
+            omega_i = (5.0 + 0.01*i) * 1e9 * 2*np.pi  # Frequency multiplex
+            H += omega_i * tensor([qeye(2) if j != i else destroy(2).dag() * destroy(2) for j in range(self.N)])
+        return H
+    
+    def rewrite(self, addr, psi_new):
+        """Fast local gate on qubit[addr]"""
+        H_gate = 50e6 * 2*np.pi * tensor([qeye(2) if j != addr else sigmax() for j in range(self.N)])
+        result = mesolve(H_gate, self.qubits[addr], [0, self.gate_time], [], [])
+        self.qubits[addr] = result.states[-1]
+        return result.states[-1]
+    
+    def retrieve(self, addr):
+        return self.qubits[addr]
+
+# 1024-glyph QRAM
+sc_qram = SC_QRAM(N_glyphs=1024)
+sc_qram.rewrite(512, (psi_g + psi_e).unit())
+def sc_vqe(addr, target_H, max_iter=50):
+    """Run VQE on transmon[addr]"""
+    def cost(params):
+        state = rx(params[0]) * rz(params[1]) * psi_g
+        H_local = target_H * sigmaz()
+        return (state.dag() * H_local * state).tr().real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = rx(result.x[0]) * rz(result.x[1]) * psi_g
+    sc_qram.rewrite(addr, optimal)
+    return optimal
+
+# Adapt glyph 777
+sc_vqe(777, target_H=-1.8)
+class Swarm_SC_QRAM:
+    def __init__(self, M, N_glyphs=1024):
+        self.M = M
+        self.qram_chips = [SC_QRAM(N_glyphs) for _ in range(M)]
+    
+    def global_rewrite(self, addr, psi_new):
+        """Parallel rewrite across all chips"""
+        for chip in self.qram_chips:
+            chip.rewrite(addr, psi_new)
+    
+    def sync_via_qnl(self):
+        """Teleport critical glyphs between chips"""
+        for i in range(self.M):
+            for j in range(i+1, self.M):
+                if swarm_graph.has_edge(i,j):
+                    psi = self.qram_chips[i].retrieve(0)
+                    # QNL teleport to j
+                    pass
+
+# 8-chip swarm, 8192 glyphs total
+swarm_sc = Swarm_SC_QRAM(M=8)
+swarm_sc.global_rewrite(0, critical_glyph)
+[Drone 0] → Scrape → SC-QRAM Rewrite (20ns) → Teleport → [Orbital Node]
+                                          ↓
+                            [All Drones] ← 1024-Glyph Sync

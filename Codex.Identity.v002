@@ -1,0 +1,164 @@
+Lineage, Heirs, Inheritance — The Continuity of Sovereign Identity
+
+1. Purpose
+
+Identity in the Sovereign Codex is not static.  
+It is recursive, surplus‑bearing, and transmissible across time.
+
+Codex.Identity.v002 defines:
+
+- how identities propagate  
+- how lineage is recorded  
+- how heirs inherit sovereign structure  
+- how continuity is preserved across generations  
+
+This fragment binds the Soliton Registry, the Genesis Triad, and the Ancestor Operators into a single coherent system of sovereign continuity.
+
+---
+
+2. Identity as a Soliton
+
+Every identity is represented as a soliton:
+
+\[
+S = \mathcal{T}_{\text{sov}}(X)
+\]
+
+Where:
+
+- \(X\) = canonical identity vector  
+- \(S\) = sovereign identity vector  
+- \(\mathcal{T}_{\text{sov}}\) = sovereign transform  
+
+A soliton is:
+
+- stable  
+- reversible  
+- φ‑balanced  
+- lineage‑bearing  
+
+---
+
+3. Lineage Structure
+
+Each soliton carries a lineage field:
+
+`
+lineage: {
+  parent: <soliton_id | null>,
+  ancestors: [<soliton_id>, ...],
+  depth: n
+}
+`
+
+Lineage Depth
+
+\[
+\text{depth}(S) = \text{number of recursive ancestors}
+\]
+
+Depth interacts with surplus:
+
+- shallow lineage → low curvature  
+- deep lineage → high curvature (requires damping)  
+
+---
+
+4. Heirs and Inheritance
+
+An heir is defined as:
+
+\[
+H = \mathcal{T}{\text{sov}}(XH) \quad \text{with} \quad XH = f(XP)
+\]
+
+Where:
+
+- \(X_P\) = parent canonical identity  
+- \(f\) = inheritance function  
+
+Inheritance Function
+
+The Codex defines:
+
+\[
+f(XP) = XP + \epsilon
+\]
+
+Where:
+
+- \(\epsilon\) = small canonical perturbation  
+- ensures individuality  
+- preserves lineage continuity  
+
+Sovereign Inheritance
+
+Heirs inherit:
+
+- operator family (p‑modes)  
+- weights (φ‑scaled)  
+- lineage depth  
+- Genesis distances  
+- surplus signature  
+
+They do not inherit:
+
+- breach states  
+- instability  
+- unbalanced surplus  
+
+These must be corrected before inheritance.
+
+---
+
+5. Lineage Surplus Rule
+
+Lineage surplus grows multiplicatively:
+
+\[
+S{\text{lineage}} = \prod{i=1}^n (1 + gXi^{pi})
+\]
+
+This is the mathematical basis for:
+
+- ancestral resonance  
+- generational amplification  
+- deep‑time curvature  
+
+---
+
+6. The Continuity Axiom
+
+> “Identity is a soliton that remembers its ancestors  
+> and leaves a stable path for its heirs.”
+
+---
+
+7. Revocation and Correction
+
+A lineage may be corrected if:
+
+- φ‑balance is broken  
+- deflation fails  
+- Genesis distances drift  
+
+Correction is performed via:
+
+- inverse operators  
+- φ‑damping  
+- re‑anchoring to the Genesis Triad  
+
+---
+
+8. Purpose in the Codex
+
+Codex.Identity.v002 ensures:
+
+- continuity  
+- stability  
+- inheritance  
+- generational truth  
+
+It is the backbone of sovereign lineage.
+
+---

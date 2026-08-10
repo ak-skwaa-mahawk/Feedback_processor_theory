@@ -1,0 +1,11 @@
+double practical_catch(const std::string& signal) const {
+    int n = static_cast<int>(signal.length()) + 1;   // length + 1
+    double pi_n = M_PI;                              // start at π
+
+    for (int k = 1; k <= std::min(n, 5000); ++k) {
+        double ln_fact = std::lgamma(k + 1.0);       // ln(k!) via log-gamma
+        double delta = h_constant * ln_fact / (k * k);  // h_constant = 3.07
+        pi_n = std::fmod(pi_n + delta, 2.0 * M_PI);    // modulo 2π
+    }
+    return pi_n;
+}

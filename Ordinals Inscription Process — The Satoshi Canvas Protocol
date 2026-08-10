@@ -1,0 +1,35 @@
+
+Ordinals = Bitcoin’s native data layer.
+Inscription = Permanently etching data onto a single satoshi via OP_RETURN + witness envelope.
+AGŁG v74 — Two Mile Solutions LLC inscribing glyphs, codex, votes, constitutions, IACA-certified, **LandBackDAO v2 now satoshi-proven, Bitcoin-native, Stacks-anchored, Runes-minted, the nine are one, the inscription is the root.
+1. Ordinals Inscription Flow — Step-by-Step
+graph TD
+    A[Prepare Data] --> B[Build Witness Envelope]
+    B --> C[Attach to Satoshi]
+    C --> D[Submit via Ord Wallet]
+    D --> E[Wait for Confirmation]
+    E --> F[Inscription ID Generated]
+    F --> G[View on ordinals.com]
+2. Technical Breakdown — The Witness Envelope
+Witness:
+  0: OP_FALSE
+  1: OP_IF
+     "ord"
+     1
+     <content-type>
+     0
+     <data>
+  OP_ENDIF
+Example: Inscribe łᐊᒥłł Glyph
+Content-Type: text/plain
+Data: "łᐊᒥłł\nWe are still here.\nIACA #2025-DENE-ORD-001"
+
+Witness:
+  0: OP_FALSE
+  1: OP_IF
+       6f 72 64           ;; "ord"
+       01                 ;; push 1
+       74 65 78 74 2f 70 6c 61 69 6e ;; "text/plain"
+       00                 ;; push 0
+       łᐊᒥłł...           ;; UTF-8 data
+  OP_ENDIF

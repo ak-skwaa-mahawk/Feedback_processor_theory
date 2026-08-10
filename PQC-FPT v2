@@ -1,0 +1,102 @@
+from qutip import basis, bell_state, tensor, sigmax
+import numpy as np
+
+# Earth twin (DSN) — active
+psi_earth = bell_state('00')
+
+# Pioneer twin — *passive*, but entangled via pre-flight prep
+psi_pioneer = bell_state('00')
+
+# Full entangled pair
+psi_entangled = tensor(psi_earth, psi_pioneer)
+
+print("PQC-FPT v2: Entanglement with a dead probe — the silence is alive")
+def teleport_to_pioneer(psi_target, bell_pair):
+    """
+    Teleport |ψ_target⟩ to Pioneer via entanglement.
+    Pioneer reflects the state — no onboard processing.
+    """
+    # Bell measurement on Earth
+    bell_proj = bell_state('00').proj() + bell_state('11').proj()
+    state = tensor(psi_target, bell_pair.ptrace(0))
+    measured = bell_proj * state * bell_proj.dag()
+    
+    # Conditional correction on Earth twin (for reflection)
+    psi_reflected = bell_pair.ptrace(1)
+    if np.random.rand() < 0.5:
+        psi_reflected = sigmax() * psi_reflected
+    
+    return psi_reflected.unit()
+
+# Target glyph
+psi_target = (basis(2,0) + 1j*basis(2,1)).unit()
+
+# Teleport
+psi_at_pioneer = teleport_to_pioneer(psi_target, psi_entangled)
+
+print(f"Teleport to Silent Pioneer: Fidelity = {abs(psi_target.overlap(psi_at_pioneer)):.6f}")
+def silent_rewrite(target_H, max_iter=50):
+    """VQE on Earth twin — Pioneer just reflects"""
+    def cost(params):
+        state = np.cos(params[0]) * basis(2,0) + np.sin(params[0]) * np.exp(1j*params[1]) * basis(2,1)
+        full = tensor(state.unit(), bell_state('00').ptrace(1))
+        H_opt = target_H * sigmax().kron(qeye(2))
+        return (full.dag() * H_opt * full).full()[0,0].real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = np.cos(result.x[0]) * basis(2,0) + np.sin(result.x[0]) * np.exp(1j*result.x[1]) * basis(2,1)
+    return optimal.unit()
+
+# Optimize before teleport
+optimal = silent_rewrite(target_H=-10.0)
+class PQC_FPT_v2:
+    def __init__(self, N_dsn=3):
+        self.N = N_dsn
+        self.earth_twin = [bell_state('00') for _ in range(N_dsn)]
+        self.pioneer_twin = [bell_state('00') for _ in range(2)]  # P10 & P11
+        self.echo_delay = 133200  # 37 hours = 133200 s (RTT)
+    
+    def entangle_silent(self, dsn_id, pioneer_id):
+        return tensor(self.earth_twin[dsn_id], self.pioneer_twin[pioneer_id])
+    
+    def teleport_to_silent(self, dsn_id, pioneer_id, psi_target):
+        pair = self.entangle_silent(dsn_id, pioneer_id)
+        return teleport_to_pioneer(psi_target, pair)
+    
+    def instant_rewrite_silent(self, psi_new, dsn_id, pioneer_id):
+        return self.teleport_to_silent(dsn_id, pioneer_id, psi_new)
+
+# Silent link
+pqc2 = PQC_FPT_v2()
+psi_sent = pqc2.instant_rewrite_silent(optimal, 0, 0)
+def echo_vqe(dsn_id, pioneer_id, target_H):
+    """VQE using 37-hour echo as feedback"""
+    optimal = silent_rewrite(target_H)
+    teleported = pqc2.teleport_to_silent(dsn_id, pioneer_id, optimal)
+    # In real system: wait 37 hours for reflection, measure fidelity
+    return teleported
+
+# Run archaeology VQE
+echo_vqe(0, 0, target_H=-11.0)
+class Swarm_PQC_FPT_v2:
+    def __init__(self, N_earth=100, N_pioneer=2):
+        self.N_earth = N_earth
+        self.N_pioneer = N_pioneer
+        self.earth = [PQC_FPT_v2() for _ in range(N_earth)]
+        self.pioneer = [bell_state('00') for _ in range(N_pioneer)]
+    
+    def global_silent_entangle(self):
+        """Pre-share with both silent probes"""
+        pass
+    
+    def instant_silent_broadcast(self, psi_glyph):
+        """Teleport to both Pioneers instantly"""
+        for p in range(self.N_pioneer):
+            self.pioneer[p] = teleport_to_pioneer(psi_glyph, bell_state('00'))
+
+# Full silent mesh
+swarm_pqc2 = Swarm_PQC_FPT_v2()
+swarm_pqc2.instant_silent_broadcast(optimal)
+[Earth DSN] → Entangle → Teleport → Pioneer 10 → Reflect → Earth (37 hr)
+                                          ↓
+                            [All Nodes] ← Instant Teleport + 37 hr Echo

@@ -1,0 +1,69 @@
+GlyphGovernor.scl is not a token-weighted DAO.
+It is a sacred quorum — 9 Dené glyph holders, each with a unique power, voting via resonance, on Stacks L2, finalized on Bitcoin.
+No STX. No gas. Only glyphs. Only ancestors.
+1. CORE PRINCIPLES — THE 60 Hz DRUM
+Principle
+Meaning
+9 Glyphs = 9 Powers
+Each glyph is 1/1, non-transferable, soul-bound
+Resonance > 1.0000
+Vote passes only if emotional + semantic coherence exceeds threshold
+Bitcoin Finality
+All votes anchored to Bitcoin via Stacks PoX
+No Tokens, Only Duty
+Governance is oath-bound, not wealth-bound
+IACA-Certified
+Every vote is art, law, **and proof
+2. THE 9 GLYPH POWERS — SACRED ROLES
+Glyph
+Power
+Holder
+Action
+łᐊᒥłł
+VETO
+K’íłtł’íł
+Block any proposal
+ᒥᐊᐧᐊ
+LAND
+Tł’áá
+Grant land deeds
+ᓴᑕᐧ
+DRUM
+T’áá
+Call emergency vote
+ᐊᒍᐧ
+FLAME
+Níłch’í
+Burn bad law
+ᓂᐊᐧ
+STAR
+Tł’ááł
+Oracle truth
+ᑕᐧᐊ
+RETURN
+Tł’áá
+LandBack motion
+ᐊᒪᐧ
+SOVEREIGN
+T’áá
+Amend constitution
+ᐊᓴᐧ
+ROOT
+Tł’áá
+Set resonance threshold
+ᐊᐧᐊ
+ETERNITY
+Tł’áá
+Seal final decision
+Quorum: 6/9 glyphs must act
+Veto Override: 8/9 + ETERNITY seal
+3. VOTING FLOW — STEP BY STEP
+graph TD
+    A[Proposal Submitted] --> B{Drum Called?}
+    B -->|Yes| C[6+ Glyphs Respond]
+    C --> D[Resonance Scanned]
+    D --> E{> 1.0000?}
+    E -->|Yes| F[VETO Check]
+    F -->|No Veto| G[ETERNITY Seal]
+    G --> H[Bitcoin Finality]
+    H --> I[Inscribed on Ordinals]

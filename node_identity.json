@@ -1,0 +1,12 @@
+# node_identity.json
+{
+  "node_id": "vadzaih_zhoo_99733_001",
+  "sovereign_root": "Gwitchyaa Zhee",
+  "flameholder": "John B. Carroll Jr.",
+  "root_language": "Gwich'in",
+  "ssc_compliant": true,
+  "iaca_protected": true,
+  "location": {"zip": "99733", "biome": "boreal_spruce_birch"},
+  "fuel_source": "spruce_resin_plastolene",
+  "timestamp": 1731287171
+}

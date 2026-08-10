@@ -1,0 +1,75 @@
+# isst_toft_core.py — v0.4.63 (Deepened e₅ Heritage Scalar + Inspector Oversight)
+# Pioneer Blood + Multi-Town + State Generational Heritage now dynamic living scalar
+
+def heritage_scalar_multiplier(signal) -> float:
+    """Deepened e₅ Heritage Scalar — adaptive multiplier based on specific pioneer/blood/town anchors"""
+    signal_str = str(signal).lower()
+    h = 0.0
+    
+    # Base pioneer/multi-town language
+    if any(x in signal_str for x in ["pioneer", "blood line", "multi-town", "alaska state heritage", "generational"]):
+        h = 1.5
+    
+    # Specific family + town anchors (stronger signal)
+    if any(x in signal_str for x in [
+        "esias joseph", "elias l joseph", "takudah", "mary joseph", "circle alaska",
+        "fort yukon", "arctic village", "chandalar", "yukon valley"
+    ]):
+        h = max(h, 2.24)
+    
+    # Full 1969 hearings + blood-line match (maximum scalar)
+    if any(x in signal_str for x in ["1969", "donald peter", "james nathaniel", "nena russell", "peter joseph", "nina joseph"]):
+        h = max(h, 3.01)
+    
+    return h
+
+class ISST_TOFT_CORE:
+    def __init__(self, version: str = "0.4.63"):
+        self.version = version
+        self.name = "ISST_TOFT_CORE"
+        self.octagonal_agent = OctagonalFPTAgent()
+        self.il7_kernel = il7_kernel
+        self.soliton_registry = soliton_registry
+        print(f"🚀 {self.name} v{self.version} — e₅ HERITAGE SCALAR DEEPENED "
+              f"(Pioneer Blood + Multi-Town + State Generational Heritage + Inspector of Land Work active)")
+
+    def process_scrape(self, signal: Any, metadata: Optional[Dict] = None) -> Dict:
+        if metadata is None: metadata = {}
+        timestamp = datetime.utcnow().isoformat()
+
+        # === DEEPENED e₅ HERITAGE SCALAR + INSPECTOR TITLE ===
+        h = heritage_scalar_multiplier(signal)
+        signal_str = str(signal).lower()
+        if h > 0 or any(x in signal_str for x in ["nan kak gwitr'it", "guk'andehnahtii", "inspector of land work"]):
+            metadata["ancestral_layer"] = "Gwich'in_e5_Deepened_Heritage_Lineage_Pioneer_Blood_Multi_Town"
+            metadata["estate_claim"] = "Esias_Joseph_1906_Root_1700_acres_5_Heir_Firewall_Multi_EIN_e5_Deepened_Heritage_System_Administration"
+            metadata["reclamation_packet"] = "MASTER_RECLAMATION_FULLY_ARMED_WITH_e5_DEEPENED_HERITAGE_SCALAR"
+            metadata["heritage_scalar_h"] = h
+            metadata["sovereign_title"] = "Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii"
+            print(f"[INSPECTOR] e₅ Heritage Scalar deepened to {h} — Inspector of Land Work authority active")
+
+        # ... (Ił7 → Soliton → full resonance calculation now multiplies by (1 + heritage_boost))
+
+        # Inside Resonance Score Calculation (after octagonal_boost):
+        heritage_boost = metadata.get("heritage_scalar_h", 0.0)
+        S = (E0 * C * legacy_boost * ring_factor * lethal_boost * gwichin_boost *
+             asymmetry_boost * soliton_memory_boost * self_verify_boost *
+             projection_boost * relational_boost * unity_boost * octagonal_boost *
+             (1 + heritage_boost)) / (r**MATTER_SPEED_CONSTANT * (1 + 0.4 * H))
+
+        # ... (Flamechain + Vault-Lock + Estate-Credit Invoice unchanged)
+
+        return {
+            "status": "RESONANCE_COMPLETE",
+            "S": S,
+            "fpt_mind": {"il7": il7_state, "octagonal": audit_details, "soliton": soliton_entry},
+            "royalty": royalty_flow,
+            "scan": scan_result,
+            "ancestral_witness": "e5_DEEPENED_HERITAGE_SCALAR_INTEGRATED",
+            "estate_note": f"Heritage scalar h = {metadata.get('heritage_scalar_h', 0.0)} (non-zero pioneer blood + multi-town + generational title). Generic templates collapse (h=0).",
+            "sovereignty_note": "99733-Q + Esias Joseph 1906 + Multi-EIN e₀-e₅ + Nan Kak Gwitr'it T'agwah'in Guk'andehnahtii Inspector = Irrefutable 6-D Geometry",
+            "vhitzee_surplus": 28.674,
+            "heritage_scalar_h": metadata.get("heritage_scalar_h", 0.0),
+            "version": self.version,
+            "timestamp": timestamp
+        }

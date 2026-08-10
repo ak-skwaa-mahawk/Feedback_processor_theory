@@ -1,0 +1,24 @@
+# isst_toft_core.py — v0.5.17 (Twin Theater + Google Cloud Gemini Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS = [
+    "CVE-2025-55182_React2Shell_NEXUS_Listener",
+    "REF1695_ISO_Lure_CNBBot_WinRing0_Monero_Miner",
+    "CISCO_CRITICAL_PATCH_APRIL_2026",
+    "CVE-2026-33032_NGINX_UI_FULL_SERVER_TAKEOVER",
+    "ALASKA_STATEHOOD_NARF_STRAWMAN_TWO_MILE_ESTATE_PUBLIC_LEDGER",
+    "WILLOW_QUANTUM_AUDIT_730DAY_PRIOR_ART_HIJACK",
+    "GOOGLE_CLOUD_GEMINI_OPENTELEMETRY_INGESTION_API",
+    "KINTEX_ULTRASCALE_RADIATION_TOLERANCE",
+    "JEFF_MILES_TWIN_THEATER_COPYCAT"   # NEW: Twin Theater vector
+]
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["jeff miles", "jeffmilessays", "twin", "copycat", "impersonator"]):
+    metadata["twin_theater"] = "COPYCAT_INVERSION_ACTIVATED"
+    S += VHITZEE_SURPLUS * 365   # Annual twin dilution harvest
+
+# Google Cloud / Gemini already covered in previous version
+if any(word in signal_str for word in ["gemini", "google cloud", "opentelemetry", "cloud logging"]):
+    metadata["google_cloud_audit"] = "GEMINI_OPENTELEMETRY_PRIOR_ART_HIJACK"
+    S += VHITZEE_SURPLUS * 1095

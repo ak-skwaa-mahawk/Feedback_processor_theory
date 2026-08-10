@@ -1,0 +1,171 @@
+"""
+Experimental Validation Suite
+==============================
+Generate empirical results for publication:
+- Convergence benchmarks
+- Collective resonance scaling
+- Comparison to baseline methods
+- Real conversation analysis
+
+Run: python experimental_validation.py
+Output: results/ directory with figures and data
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import pearsonr, spearmanr
+import pandas as pd
+from pathlib import Path
+import json
+from datetime import datetime
+
+from harmonic_feedback import (
+    HarmonicConstants,
+    HarmonicFeedback,
+    CollectiveResonance,
+    plot_resonance_signature,
+    plot_collective_resonance
+)
+
+# Create output directory
+OUTPUT_DIR = Path("results")
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+sns.set_style("whitegrid")
+plt.rcParams['figure.dpi'] = 150
+
+
+# ═══════════════════════════════════════════════════════════════
+# EXPERIMENT 1: CONVERGENCE CHARACTERISTICS
+# ═══════════════════════════════════════════════════════════════
+
+def experiment_1_convergence_analysis():
+    """
+    Measure convergence properties across wide range of inputs.
+    
+    Questions:
+    1. How many iterations needed for 99% convergence?
+    2. Is convergence rate input-dependent?
+    3. What's the stability profile?
+    """
+    print("\n" + "="*60)
+    print("EXPERIMENT 1: CONVERGENCE ANALYSIS")
+    print("="*60)
+    
+    feedback = HarmonicFeedback()
+    constants = HarmonicConstants()
+    
+    # Test across logarithmic range
+    test_inputs = np.logspace(-3, 3, 50)  # 0.001 to 1000
+    
+    results = []
+    for signal in test_inputs:
+        sig = feedback.resonance_signature(signal, iterations=30)
+        results.append({
+            'input': signal,
+            'final': sig['final'],
+            'harmonic_distance': sig['harmonic_distance'],
+            'convergence_rate': sig['convergence_rate'],
+            'stability_index': sig['stability_index'],
+            'iterations_to_99': _iterations_to_threshold(sig['path'], constants.H₀, 0.01)
+        })
+    
+    df = pd.DataFrame(results)
+    
+    # Statistical summary
+    print(f"\nConvergence Statistics (n={len(df)}):")
+    print(f"  Mean iterations to 99%: {df['iterations_to_99'].mean():.1f}")
+    print(f"  Median iterations to 99%: {df['iterations_to_99'].median():.1f}")
+    print(f"  Mean harmonic distance: {df['harmonic_distance'].mean():.6f}")
+    print(f"  Mean stability index: {df['stability_index'].mean():.6f}")
+    
+    # Correlation analysis
+    corr_input_iters = pearsonr(np.log10(df['input']), df['iterations_to_99'])
+    print(f"\nCorrelation (log input vs iterations): r={corr_input_iters[0]:.3f}, p={corr_input_iters[1]:.3e}")
+    
+    # Visualization
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    
+    # Plot 1: Iterations needed vs input magnitude
+    axes[0, 0].semilogx(df['input'], df['iterations_to_99'], 'bo', alpha=0.6)
+    axes[0, 0].axhline(y=12, color='r', linestyle='--', label='Default (12)')
+    axes[0, 0].set_xlabel('Input Signal Magnitude')
+    axes[0, 0].set_ylabel('Iterations to 99% Convergence')
+    axes[0, 0].set_title('Convergence Speed vs Input Scale')
+    axes[0, 0].legend()
+    axes[0, 0].grid(alpha=0.3)
+    
+    # Plot 2: Final state distribution
+    axes[0, 1].hist(df['final'], bins=30, edgecolor='black', alpha=0.7)
+    axes[0, 1].axvline(constants.H₀, color='r', linestyle='--', linewidth=2, label='H₀')
+    axes[0, 1].set_xlabel('Final State Value')
+    axes[0, 1].set_ylabel('Frequency')
+    axes[0, 1].set_title('Distribution of Final States')
+    axes[0, 1].legend()
+    
+    # Plot 3: Harmonic distance
+    axes[1, 0].semilogx(df['input'], df['harmonic_distance'], 'go', alpha=0.6)
+    axes[1, 0].axhline(y=0.01, color='orange', linestyle='--', label='1% threshold')
+    axes[1, 0].set_xlabel('Input Signal Magnitude')
+    axes[1, 0].set_ylabel('Harmonic Distance to H₀')
+    axes[1, 0].set_title('Equilibrium Precision')
+    axes[1, 0].legend()
+    axes[1, 0].grid(alpha=0.3)
+    
+    # Plot 4: Stability index
+    axes[1, 1].semilogx(df['input'], df['stability_index'], 'mo', alpha=0.6)
+    axes[1, 1].set_xlabel('Input Signal Magnitude')
+    axes[1, 1].set_ylabel('Stability Index')
+    axes[1, 1].set_title('Endpoint Stability')
+    axes[1, 1].grid(alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig(OUTPUT_DIR / 'exp1_convergence_analysis.png', dpi=150, bbox_inches='tight')
+    print(f"\n✓ Saved: {OUTPUT_DIR / 'exp1_convergence_analysis.png'}")
+    
+    # Save data
+    df.to_csv(OUTPUT_DIR / 'exp1_convergence_data.csv', index=False)
+    
+    return df
+
+
+def _iterations_to_threshold(path, target, threshold):
+    """Helper: count iterations until within threshold of target."""
+    for i, val in enumerate(path):
+        if abs(val - target) < threshold:
+            return i
+    return len(path)
+
+
+# ═══════════════════════════════════════════════════════════════
+# EXPERIMENT 2: COLLECTIVE RESONANCE SCALING
+# ═══════════════════════════════════════════════════════════════
+
+def experiment_2_collective_scaling():
+    """
+    How does collective coherence scale with:
+    1. Number of systems (2 to 50)
+    2. Initial variance (tight vs dispersed)
+    3. Iteration count
+    """
+    print("\n" + "="*60)
+    print("EXPERIMENT 2: COLLECTIVE RESONANCE SCALING")
+    print("="*60)
+    
+    system_counts = [2, 5, 10, 15, 20, 30, 50]
+    variance_levels = ['low', 'medium', 'high']
+    
+    results = []
+    
+    for n_systems in system_counts:
+        for var_level in variance_levels:
+            # Generate initial states with different spreads
+            if var_level == 'low':
+                initial = np.random.uniform(2.5, 3.5, n_systems)
+            elif var_level == 'medium':
+                initial = np.random.uniform(1.0, 5.0, n_systems)
+            else:  # high
+                initial = np.random.uniform(0.1, 10.0, n_systems)
+            
+            collective = CollectiveResonance(

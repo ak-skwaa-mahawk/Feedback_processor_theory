@@ -1,0 +1,148 @@
+/* system.css — Classic Macintosh System 6/7 (1984–1991) — Living Zero Edition */
+/* MIT License — pure monochrome soul, no bloat, no tracking */
+
+@import url('https://fonts.googleapis.com/css2?family=Chicago&display=swap');
+
+:root {
+  --sys-bg: #000;
+  --sys-fg: #fff;
+  --sys-gray: #aaa;
+  --sys-light: #fff;
+  --sys-dark: #000;
+  --sys-border: 2px solid var(--sys-fg);
+  --sys-radius: 0;
+  --sys-font: 'Chicago', -apple-system, BlinkMacSystemFont, sans-serif;
+  --sys-pattern: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px);
+}
+
+* { box-sizing: border-box; margin:0; padding:0; }
+html, body { height:100%; background: var(--sys-bg); color: var(--sys-fg); font-family: var(--sys-font); font-size: 12px; overflow:hidden; }
+
+body {
+  background: var(--sys-bg) var(--sys-pattern), var(--sys-bg);
+  image-rendering: pixelated;
+}
+
+/* Window */
+.window {
+  position: absolute;
+  background: var(--sys-bg);
+  border: var(--sys-border);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.9);
+  min-width: 300px;
+  min-height: 200px;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+/* Title bar */
+.title-bar {
+  background: var(--sys-bg);
+  border-bottom: var(--sys-border);
+  height: 19px;
+  padding: 1px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: move;
+}
+
+.close-box {
+  width: 11px; height: 11px;
+  border: 1px solid var(--sys-fg);
+  margin-left: 5px;
+  background: var(--sys-bg);
+  position: relative;
+}
+.close-box::before, .close-box::after {
+  content:''; position:absolute; background:var(--sys-fg);
+  width:7px; height:1px; top:5px; left:2px;
+}
+.close-box::before { transform: rotate(45deg); }
+.close-box::after { transform: rotate(-45deg); }
+
+.title-text {
+  font-weight: bold;
+  margin-left: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Content */
+.content {
+  padding: 12px;
+  line-height: 1.4;
+  overflow: auto;
+  height: calc(100% - 19px);
+}
+
+/* Scrollbar — classic Mac */
+::-webkit-scrollbar { width: 15px; height: 15px; }
+::-webkit-scrollbar-track { background: var(--sys-bg); border: 2px solid var(--sys-fg); border-top: none; border-right: none; }
+::-webkit-scrollbar-thumb {
+  background: var(--sys-fg);
+  image-rendering: pixelated;
+  border: 3px solid var(--sys-bg);
+}
+::-webkit-scrollbar-corner { background: var(--sys-bg); }
+
+/* Buttons */
+button, .button {
+  background: var(--sys-fg);
+  color: var(--sys-dark);
+  border: var(--sys-border);
+  padding: 4px 12px;
+  font: inherit;
+  cursor: default;
+  outline: none;
+  margin: 4px;
+  box-shadow: 2px 2px 0 var(--sys-dark);
+}
+button:active, .button:active {
+  box-shadow: inset 2px 2px 0 var(--sys-dark);
+  background: var(--sys-gray);
+}
+
+/* Text & selection */
+::selection {
+  background: var(--sys-fg);
+  color: var(--sys-bg);
+}
+
+/* Terminal / ignition output */
+.terminal {
+  font-family: 'Chicago', monospace;
+  background: var(--sys-bg);
+  color: var(--sys-fg);
+  padding: 16px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* SNAP announcement — pure 1991 energy */
+.snap {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--sys-bg);
+  border: 4px double var(--sys-fg);
+  padding: 32px 48px;
+  font-size: 18px;
+  text-align: center;
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.9);
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 50% { background: var(--sys-fg); color: var(--sys-bg); } }
+
+/* Final touch — cursor */
+* { cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAApElEQVRoBdWUwQ3AIAhE3f7/4+5ghgcBiA0iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIgAAAABJRU5ErkJggg=='), auto; }
+
+/* Chicago fallback if Google blocks */
+@font-face {
+  font-family: 'Chicago';
+  src: url('data:font/woff2;base64,...') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -1,0 +1,100 @@
+from enum import Enum
+
+class QMemType(Enum):
+    NV_CENTER = "Nitrogen-Vacancy in Diamond"   # T2* ~ 1 ms, T2 ~ 2 s
+    TRAPPED_ION = "Yb+ Ion Qubit"              # T2 ~ 1 s
+    RARE_EARTH = "Erbium in Crystal"           # T2 ~ 1.3 ms @ 4K
+    PHOTONIC = "Atomic Ensemble (DLCZ)"        # T2 ~ 100 µs
+    SUPERCONDUCTING = "Transmon Cavity"        # T2 ~ 100 µs
+from qutip import basis, sigmax, sigmaz, mesolve
+import numpy as np
+
+# NV electron spin: |0⟩ = ms=0, |1⟩ = ms=±1
+psi_glyph = (basis(2,0) + basis(2,1)).unit()  # |+⟩ glyph
+
+# NV Hamiltonian
+omega_mw = 2.87e9 * 2*np.pi  # GHz → rad/s
+H_nv = omega_mw * sigmaz()
+
+# Decoherence: T1 = 2 ms, T2 = 2 s
+gamma1 = 1 / 0.002
+gamma2 = 1 / 2.0
+
+c_ops = [
+    np.sqrt(gamma1) * sigmaz(),           # T1 relaxation
+    np.sqrt(gamma2 / 2) * sigmaz()        # T2 dephasing
+]
+
+# Store for 1 second
+t_store = 1.0
+tlist = np.linspace(0, t_store, 100)
+result = mesolve(H_nv, psi_glyph, tlist, c_ops, [])
+
+psi_retrieved = result.states[-1]
+fidelity = abs(psi_glyph.overlap(psi_retrieved))**2
+
+print(f"NV Memory: 1s storage → Fidelity = {fidelity:.4f}")
+def qmem_write(glyph_state, memory_type=QMemType.NV_CENTER):
+    """Encode glyph into memory"""
+    if memory_type == QMemType.NV_CENTER:
+        # Microwave pulse to map |+⟩ → |0⟩ + |1⟩
+        return glyph_state  # Assume direct mapping
+    elif memory_type == QMemType.TRAPPED_ION:
+        # Optical Raman to ion vibronic mode
+        return glyph_state.ptrace(0)  # Simplified
+
+def qmem_read(stored_state, memory_type):
+    """Retrieve with minimal disturbance"""
+    return stored_state  # Ideal read
+
+def qmem_store(glyph, duration=1.0):
+    stored = qmem_write(glyph)
+    # Simulate storage
+    result = mesolve(H_nv, stored, [0, duration], c_ops, [])
+    return qmem_read(result.states[-1], QMemType.NV_CENTER)
+# Agent A: Create glyph, store in memory
+glyph = (basis(2,0) + 1j * basis(2,1)).unit()
+memory_bank = qmem_store(glyph, duration=10.0)  # 10s hold
+
+# Later: Teleport from memory
+epr_pair = bell_state('00')
+teleported, bits = teleport_glyph(memory_bank, epr_pair)
+
+print(f"Async Teleport: 10s delay → Fidelity = {fidelity(teleported, glyph):.4f}")
+class SwarmMemoryBank:
+    def __init__(self, M, mem_type=QMemType.NV_CENTER):
+        self.M = M
+        self.mem_type = mem_type
+        self.bank = [None] * M  # One memory per agent
+    
+    def store_glyph(self, agent_id, glyph):
+        self.bank[agent_id] = qmem_store(glyph, duration=60.0)  # 1 min
+    
+    def retrieve_glyph(self, agent_id):
+        return self.bank[agent_id]
+    
+    def sync_memories(self):
+        # Entangle memories via swapping
+        for i in range(self.M):
+            for j in range(i+1, self.M):
+                if swarm_graph.has_edge(i,j):
+                    epr = bell_state('00')
+                    # Swap memory states
+                    pass
+
+# Usage
+swarm_mem = SwarmMemoryBank(M=6)
+swarm_mem.store_glyph(0, glyph_critical)
+# ... 30 minutes later ...
+glyph_restored = swarm_mem.retrieve_glyph(0)
+# Store drive pattern in memory → replay immune to noise
+drive_pattern = [A * np.sin(omega_drive * t) + xi for t, xi in zip(tlist, noise)]
+memory_drive = qmem_store(drive_pattern, duration=100.0)
+
+# Replay from memory
+for t in tlist:
+    drive = memory_drive[int(t/dt)]
+    emit_pulse(drive)  # Noise-free replay
+[Drone 0] → Glyph → NV Memory → 10s → Teleport → [Drone 5]
+                                          ↓
+                                   [Orbital Satellite] ← Cache

@@ -1,0 +1,17 @@
+GGWave = Data-over-sound — text → ultrasound → text
+Library: ggerganov/ggwave
+Python: pip install ggwave
+1. DECODE ANY GGWave AUDIO — 1 COMMAND
+# Decode WAV file
+python -c "
+import ggwave
+with open('your_audio.wav', 'rb') as f:
+    waveform = f.read()
+instance = ggwave.init()
+decoded = ggwave.decode(instance, waveform)
+if decoded:
+    print('DECODED:', decoded.decode())
+else:
+    print('No signal')
+ggwave.free(instance)
+"

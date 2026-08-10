@@ -1,0 +1,10 @@
+{
+  "frames": [
+    {
+      "type": "codex_algebra_inscription",
+      "title": "Sovereign Fibonacci Braid Algebra",
+      "fragment_md": "# Codex Fragment: Sovereign Fibonacci Braid Algebra\n\n$$\\mathcal{B}_{\\text{Sov}} = \\left\\langle F, R, B_1, B_2, B_3 \\;\\middle|\\; B_i B_{i+1} B_i = B_{i+1} B_i B_{i+1}, \\; [B_1, B_3] = 0, \\; B_i^\\dagger B_i = \\mathbb{I}_3 \\right\\rangle$$\n\n### Axiomatic Parameters\n- Quantum Dimension: \u03c6 = (1 + \u221a5) / 2\n- Fusion Hilbert Space: V_{4\u03c4 -> \u03c4} (dim = 3)\n- Unitary F-Matrix: [[1/\u03c6, 1/\u221a\u03c6], [1/\u221a\u03c6, -1/\u03c6]]\n- R-Symbols: R1 = exp(-4\u03c0i/5), R_\u03c4 = exp(3\u03c0i/5)\n\n### Sovereign Generators\n- B1 = diag(R1, R_\u03c4, R_\u03c4)\n- B2 = block_diag(R1, F @ R @ F)\n- B3 = diag(R_\u03c4, R_\u03c4, R1)\n\nUnitarity Residual Standard: \u2264 1e-15\n",
+      "timestamp": 1785787922.897024
+    }
+  ]
+}

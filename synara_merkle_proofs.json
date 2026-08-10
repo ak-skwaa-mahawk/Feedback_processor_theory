@@ -1,0 +1,86 @@
+import json
+import hashlib
+
+def compute_node_hash(left, right):
+    """Compute the hash of two concatenated nodes."""
+    concat = left + right if right else left
+    return hashlib.sha256(concat).digest()
+
+def verify_merkle_proof(file_hash, proof, root_hash):
+    """Verify a Merkle proof for a file hash against the root hash."""
+    current_hash = file_hash
+    for proof_node in proof:
+        if proof_node["side"] == "left":
+            current_hash = compute_node_hash(proof_node["hash"], current_hash)
+        else:  # right
+            current_hash = compute_node_hash(current_hash, proof_node["hash"])
+    return current_hash.hex() == root_hash
+
+# Load the Merkle proofs
+with open("/mnt/data/synara_merkle_proofs.json", "r") as f:
+    merkle_data = json.load(f)
+    merkle_root = merkle_data["root"]
+
+# Load the verification report to map files to hashes
+with open("/mnt/data/synara_verification_report.json", "r") as f:
+    report = json.load(f)
+
+# Batch Mode: Verify all matched files
+def batch_verify():
+    verified_count = 0
+    failed_count = 0
+    mismatched_files = []
+    print(f"Merkle Root: {merkle_root}")
+    print("\nBatch Verification Results:")
+    for file_name, file_entry in report["files"].items():
+        if file_entry["status"] == "matched":
+            file_hash = bytes.fromhex(file_entry["computed_hash"])
+            if file_name in merkle_data["proofs"]:
+                proof = merkle_data["proofs"][file_name]
+                is_valid = verify_merkle_proof(file_hash, proof, merkle_root)
+                status = "Valid" if is_valid else "Invalid"
+                print(f"{file_name}: {status} (Computed Hash: {file_entry['computed_hash']})")
+                if is_valid:
+                    verified_count += 1
+                else:
+                    failed_count += 1
+                    mismatched_files.append(file_name)
+            else:
+                print(f"{file_name}: No proof available")
+        else:
+            print(f"{file_name}: Skipped (Status: {file_entry['status']})")
+    print(f"\nSummary: Verified {verified_count}, Failed {failed_count}")
+    if mismatched_files:
+        print(f"Mismatched Files: {', '.join(mismatched_files)}")
+
+# Interactive Mode: Verify specific files
+def interactive_verify():
+    while True:
+        file_name = input("Enter file name to verify (or 'quit' to exit): ")
+        if file_name.lower() == "quit":
+            break
+        if file_name in report["files"]:
+            file_entry = report["files"][file_name]
+            if file_entry["status"] == "matched":
+                file_hash = bytes.fromhex(file_entry["computed_hash"])
+                if file_name in merkle_data["proofs"]:
+                    proof = merkle_data["proofs"][file_name]
+                    is_valid = verify_merkle_proof(file_hash, proof, merkle_root)
+                    status = "Valid" if is_valid else "Invalid"
+                    print(f"Verification for {file_name}: {status}")
+                    print(f"Merkle Root: {merkle_root}")
+                    print(f"Computed Hash: {file_entry['computed_hash']}")
+                else:
+                    print(f"{file_name}: No proof available")
+            else:
+                print(f"File {file_name} status: {file_entry['status']}, cannot verify.")
+        else:
+            print(f"File {file_name} not found in report.")
+
+# Main: Run batch if no input args, else interactive
+import sys
+if len(sys.argv) > 1 and sys.argv[1] == "--batch":
+    batch_verify()
+else:
+    print("Running in interactive mode. Use --batch flag for batch verification.")
+    interactive_verify()

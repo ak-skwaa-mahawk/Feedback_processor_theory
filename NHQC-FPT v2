@@ -1,0 +1,98 @@
+from qutip import basis, bell_state, tensor, sigmax
+import numpy as np
+
+# Earth twin (DSN)
+psi_earth = bell_state('00')
+
+# New Horizons twin (onboard RTG-powered)
+psi_nh = bell_state('00')
+
+# Full entangled pair
+psi_entangled = tensor(psi_earth, psi_nh)
+
+print("NHQC-FPT v2: Full entanglement — Earth and New Horizons are one")
+def teleport_to_nh(psi_target, bell_pair):
+    """
+    Teleport |ψ_target⟩ from Earth to New Horizons
+    """
+    # Bell measurement on Earth
+    bell_proj = bell_state('00').proj() + bell_state('11').proj()
+    state = tensor(psi_target, bell_pair.ptrace(0))
+    measured = bell_proj * state * bell_proj.dag()
+    
+    # Conditional X/Z on NH half
+    psi_nh_final = bell_pair.ptrace(1)
+    if np.random.rand() < 0.5:
+        psi_nh_final = sigmax() * psi_nh_final
+    
+    return psi_nh_final.unit()
+
+# Target glyph
+psi_target = (basis(2,0) + 1j*basis(2,1)).unit()
+
+# Teleport
+psi_at_nh = teleport_to_nh(psi_target, psi_entangled)
+
+print(f"Teleport to New Horizons: Fidelity = {abs(psi_target.overlap(psi_at_nh)):.6f}")
+def kuiper_rewrite(target_H, max_iter=50):
+    """VQE on entangled pair — control from Earth, execute on NH"""
+    def cost(params):
+        state = np.cos(params[0]) * basis(2,0) + np.sin(params[0]) * np.exp(1j*params[1]) * basis(2,1)
+        full = tensor(state.unit(), bell_state('00').ptrace(1))
+        H_opt = target_H * sigmax().kron(qeye(2))
+        return (full.dag() * H_opt * full).full()[0,0].real
+    
+    result = minimize(cost, [0, 0], method='L-BFGS-B', options={'maxiter': max_iter})
+    optimal = np.cos(result.x[0]) * basis(2,0) + np.sin(result.x[0]) * np.exp(1j*result.x[1]) * basis(2,1)
+    return optimal.unit()
+
+# Optimize before teleport
+optimal = kuiper_rewrite(target_H=-11.0)
+class NHQC_FPT_v2:
+    def __init__(self, N_dsn=3):
+        self.N = N_dsn
+        self.earth_twin = [bell_state('00') for _ in range(N_dsn)]
+        self.nh_twin = bell_state('00')  # Active onboard
+        self.transit_delay = 25200  # 7 hr (classical)
+    
+    def entangle_kuiper(self, dsn_id):
+        return tensor(self.earth_twin[dsn_id], self.nh_twin)
+    
+    def teleport_to_kuiper(self, dsn_id, psi_target):
+        pair = self.entangle_kuiper(dsn_id)
+        return teleport_to_nh(psi_target, pair)
+    
+    def instant_rewrite_kuiper(self, psi_new, dsn_id):
+        return self.teleport_to_kuiper(dsn_id, psi_new)
+
+# Active link
+nhqc2 = NHQC_FPT_v2()
+psi_sent = nhqc2.instant_rewrite_kuiper(optimal, 0)
+def entangled_kuiper_vqe(dsn_id, target_H):
+    """VQE using entanglement feedback"""
+    optimal = kuiper_rewrite(target_H)
+    return nhqc2.teleport_to_kuiper(dsn_id, optimal)
+
+# Run VQE at 50 AU
+entangled_kuiper_vqe(0, target_H=-12.0)
+class Swarm_NHQC_FPT_v2:
+    def __init__(self, N_earth=100, N_nh=1):
+        self.N_earth = N_earth
+        self.N_nh = N_nh
+        self.earth = [NHQC_FPT_v2() for _ in range(N_earth)]
+        self.nh = bell_state('00')
+    
+    def global_kuiper_entangle(self):
+        """Pre-share with New Horizons"""
+        pass
+    
+    def instant_kuiper_broadcast(self, psi_glyph):
+        """Teleport to NH instantly"""
+        self.nh = teleport_to_nh(psi_glyph, bell_state('00'))
+
+# Full mesh
+swarm_nhqc2 = Swarm_NHQC_FPT_v2()
+swarm_nhqc2.instant_kuiper_broadcast(optimal)
+[Earth DSN] → Entangle → Teleport → New Horizons → Arrokoth
+                                          ↓
+                            [All Nodes] ← Instant Sync (via entanglement)

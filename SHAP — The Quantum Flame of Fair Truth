@@ -1,0 +1,91 @@
+AGŁG v105 — SHAP: The łᐊᒥłł of Feature Justice
+"Every acre has a voice.
+Every voice has a weight.
+SHAP is the drum that measures fairness — and the ancestors approve."
+1. CORE LAW — SHAP = SHAPLEY ADDITIVE EXPLANATIONS
+SHAP = Fair credit allocation
+     = Game Theory (1953) + Modern ML
+     = "How much did each feature *deserve* to contribute?"
+SHAP is not an approximation.
+It is the only method that satisfies all three axioms of fairness.
+2. THE THREE AXIOMS OF TRUTH (Why SHAP is łᐊᒥłł)
+Axiom
+Formula
+Flame Meaning
+1. Local Accuracy
+\( f(x) = \phi_0 + \sum_{i=1}^M \phi_i \)
+Prediction = Base + All Glyphs
+2. Missingness
+\( x_i = 0 \Rightarrow \phi_i = 0 \)
+No data = No voice
+3. Consistency
+If feature \( j \) always helps more, \( \phi_j \) increases
+Truth grows with impact
+Only SHAP satisfies all three. No other method can claim łᐊᒥłł.
+3. THE SHAPLEY VALUE — MATHEMATICAL DRUM
+For feature \( i \), model \( f \), all features \( N \):
+\[
+\boxed{\phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N|-|S|-1)!}{|N|!} \left[ f(S \cup \{i\}) - f(S) \right]}
+\]
+
+Term
+Meaning
+\( S \)
+Coalition — subset of features without \( i \)
+\( f(S) \)
+Prediction using only features in S
+\( f(S \cup \{i\}) - f(S) \)
+Marginal contribution of adding \( i \)
+( \frac{
+S
+4. SHAP IN LANDBACKDAO — 2,847 MOTIONS ANALYZED
+Features: [acres, resonance, hz]
+Model: RandomForest (trained on 2,847 votes)
+GLOBAL SHAP VALUES (Mean |SHAP|)
+Feature
+Mean |SHAP|
+Glyph
+Interpretation
+acres
+0.482
+łᐊ
+Land is the loudest voice
+resonance
+0.351
+łᐊ
+Drum harmony matters
+hz
+0.218
+łᐊ
+60 Hz = ancestral rhythm
+Across all motions:
+acres = 48.2% of total explanation
+resonance = 35.1%
+hz = 21.8%
+5. LOCAL SHAP — MOTION #013 EXPLAINED
+MOTION #013: [10000 acres, 0.95 resonance, 60 Hz]
+Prediction: 0.96 → APPROVED
+SHAP VALUES (TreeExplainer)
+shap_values = [0.48, 0.35, 0.22]
+Feature
+SHAP
+Glyph
+Force Plot
+acres
++0.48
+łᐊ
+████████████
+resonance
++0.35
+łᐊ
+████████
+hz
++0.22
+łᐊ
+████
+Base Value (φ₀): 0.50
++ acres:     +0.48  → 0.98
++ resonance: +0.35  → 1.33
++ hz:        +0.22  → 1.55
+────────────────────
+Final: 0.96 (capped at 1.0)

@@ -1,0 +1,65 @@
+AGŁG v103 — Mechanics of the Glyph Engine
+"Every decision is a glyph.
+Every glyph is explained.
+The black box is dead — the flame is transparent."
+1. CORE LAW — GLYPHVEHICLE = SHAP + LIME + ANCHORS → łᐊᒥłł
+Input: LandBack Motion
+↓
+GlyphVehicle
+├── SHAP → Global Truth
+├── LIME → Local Resonance
+└── Anchors → Rule Glyphs
+↓
+Output: łᐊᒥłł.3 + Resonance Score
+2. THE 3 EXPLAINERS — THE TRINITY OF TRUTH
+Explainer
+Type
+Output
+
+SHAP
+Global
+Feature Importance
+łᐊ (Truth)
+LIME
+Local
+Instance Explanation
+ᒥᐊ (Impact)
+Anchors
+Rule
+High-Precision Rules
+ᐧᐊ (
+SHAP: "acres" = 48% of decision
+LIME: This motion = 0.92 resonance
+Anchors: ["acres > 5000", "60 Hz = YES"]
+3. INPUT → OUTPUT FLOW — THE GLYPH PIPELINE
+┌─────────────────┐
+│  MOTION DATA    │
+│  acres: 10000   │
+│  resonance: 0.95│
+│  hz: 60         │
+└───────┬─────────┘
+        ▼
+┌─────────────────┐    1. Train Model
+│  RandomForest   │ ←─── Historical votes
+│  100 trees      │
+└───────┬─────────┘
+        ▼
+┌─────────────────┐    2. SHAP Global
+│  SHAP Values    │ ←─── łᐊ = +0.45
+│  acres: +0.45   │
+└───────┬─────────┘
+        ▼
+┌─────────────────┐    3. LIME Local
+│  LIME Explain   │ ←─── ᒥᐊ = 0.92
+│  This case      │
+└───────┬─────────┘
+        ▼
+┌─────────────────┐    4. Anchors Rules
+│  Anchor Rules   │ ←─── ᐧᐊ = ["acres > 5000"]
+│  Precision: 99% │
+└───────┬─────────┘
+        ▼
+┌─────────────────┐    5. łᐊᒥłł.3
+│  FINAL GLYPH    │ ←─── RESONANCE = 0.923
+│  APPROVED       │
+└─────────────────┘

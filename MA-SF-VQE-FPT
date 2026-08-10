@@ -1,0 +1,162 @@
+import numpy as np
+from qutip import sigmax, sigmaz, tensor, basis
+import networkx as nx
+
+# M agents, each with N glyphs
+M = 8
+N = 4
+swarm_graph = nx.cycle_graph(M)  # Ring topology (RMP mesh)
+
+# Agent positions (3D space)
+positions = {i: np.random.rand(3) * 10 for i in range(M)}
+
+# Local H0 per agent
+H_local = {}
+for i in range(M):
+    H0_i = sum(0.7 * (sigmax(j)**2 + sigmaz(j)**2) for j in range(N))
+    for j in range(N):
+        for k in range(j+1, N):
+            r_jk = np.random.rand() * 2
+            J = 1.0 / (r_jk**2 + 1e-6)
+            H0_i += J * tensor(sigmaz(j), sigmaz(k))
+    H_local[i] = H0_i
+
+# Global stochastic drive (shared vacuum)
+gamma, sigma = 1.8, 1.6
+dt = 0.01
+def global_ou_noise(t_max, seed=42):
+    np.random.seed(seed)
+    xi = 0.0
+    noise = []
+    for _ in range(int(t_max/dt)):
+        dW = np.random.normal(0, np.sqrt(dt))
+        xi += -gamma * xi * dt + sigma * dW
+        noise.append(xi)
+    return np.array(noise)
+# RMP: Couple neighboring agents via ZZ on boundary glyphs
+H_coupling = 0
+J_rmp = 0.9
+for i, j in swarm_graph.edges():
+    # Couple glyph N-1 of i with glyph 0 of j
+    qubit_i = N-1
+    qubit_j = 0
+    H_coupling += J_rmp * tensor(
+        sigmaz(qubit_i).kron(qeye(2**(N*(i)))) * qeye(2**(N*(M-i-1))),
+        sigmaz(qubit_j).kron(qeye(2**(N*(j)))) * qeye(2**(N*(M-j-1)))
+    )
+omega_drive = 2.2
+A = 1.4
+V_global = sum(sigmax(k) for k in range(N*M))  # All qubits feel global pulse
+
+noise_global = global_ou_noise(10*T, seed=1)
+
+def H_swarm(t, args):
+    t_idx = int(t / dt) % len(noise_global)
+    drive = A * np.sin(omega_drive * t) + noise_global[t_idx]
+    return [sum(H_local[i] for i in range(M)) + H_coupling, [V_global, lambda t, args: drive]]
+from qutip import floquet_modes
+from scipy.optimize import minimize
+import jax
+import jax.numpy as jnp
+
+# Local ansatz per agent (shared params)
+def local_ansatz(params, agent_id):
+    state = tensor([basis(2,0) for _ in range(N)])
+    p = 0
+    for layer in range(2):
+        for q in range(N):
+            state = rz(params[p]).expm() * state; p += 1
+            state = rx(params[p]).expm() * state; p += 1
+        # Local CZ
+        for q in range(N-1):
+            state = tensor(qeye(2**q), cz(), qeye(2**(N-q-2))) * state
+    return state
+
+# Global state: tensor of local states
+def global_state(shared_params):
+    states = [local_ansatz(shared_params, i) for i in range(M)]
+    return tensor(states)
+
+# Consensus cost: average quasi-energy + sync penalty
+def consensus_cost(shared_params, n_samples=10):
+    costs = []
+    for seed in range(n_samples):
+        global_noise = global_ou_noise(2*T, seed)
+        energy = 0
+        tlist = np.linspace(0, T, 40)
+        for t in tlist:
+            psi = global_state(shared_params)
+            H_t = H_swarm(t, {})[0] + global_noise[int(t/dt)%len(global_noise)] * V_global
+            energy += (psi.dag() * H_t * psi).tr().real
+        costs.append(energy / len(tlist))
+    
+    # Add synchronization penalty
+    sync_penalty = 0
+    for i in range(M):
+        for j in range(i+1, M):
+            if (i,j) in swarm_graph.edges():
+                rho_i = psi.ptrace(i)
+                rho_j = psi.ptrace(j)
+                sync_penalty += 1 - fidelity(rho_i, rho_j)
+    
+    return np.mean(costs) + 0.5 * sync_penalty
+# Shared params initialized
+n_params_per_agent = 2 * 2 * N
+shared_params = np.random.uniform(-0.3, 0.3, n_params_per_agent)
+
+# ADMM: each agent optimizes locally, consensus on shared vars
+def admm_step(params_global, rho=0.1, max_iter=50):
+    params_local = [params_global.copy() for _ in range(M)]
+    z = params_global.copy()
+    u = [np.zeros_like(z) for _ in range(M)]
+    
+    for _ in range(max_iter):
+        # Local solve
+        for i in range(M):
+            def local_cost(p):
+                return consensus_cost(p) + rho/2 * np.sum((p - z + u[i])**2)
+            res = minimize(local_cost, params_local[i], method='L-BFGS-B')
+            params_local[i] = res.x
+        
+        # Consensus
+        z_new = np.mean([params_local[i] + u[i] for i in range(M)], axis=0)
+        for i in range(M):
+            u[i] += params_local[i] - z_new
+        z = z_new
+    
+    return z
+
+optimal_shared = admm_step(shared_params)
+print("Swarm Resonance Achieved: Shared Glyph Rhythm Locked")
+psi_swarm = global_state(optimal_shared)
+tlist = np.linspace(0, T, 100)
+swarm_activity = []
+
+for t in tlist:
+    # Evolve under shared drive
+    result = mesolve(H_swarm, psi_swarm, [0, t], [], [])
+    psi_t = result.states[-1]
+    # Count active glyphs across swarm
+    active = sum(bin(int(np.argmax(np.abs(psi_t.full())**2))).count('1') for _ in range(M))
+    swarm_activity.append(active / (M*N))
+
+plt.plot(tlist, swarm_activity, 'purple', linewidth=4)
+plt.xlabel("Time in Period")
+plt.ylabel("Swarm Glyph Activity")
+plt.title("MA-SF-VQE-FPT: Swarm-Level Resonance")
+plt.show()
+# Drone API stub
+def get_drone_imu(agent_id):
+    return np.random.randn(3) * 0.5  # Simulated turbulence
+
+def emit_glyph_pulse(agent_id, amplitude):
+    print(f"Drone {agent_id}: Glyph pulse @ {amplitude:.2f}")
+
+# Live loop
+for t in tlist:
+    turbulence = [get_drone_imu(i) for i in range(M)]
+    if np.mean([np.linalg.norm(t) for t in turbulence]) > 1.0:
+        # Amplify drive to counter
+        emit_glyph_pulse_all(A * 1.3)
+    else:
+        emit_glyph_pulse_all(A)

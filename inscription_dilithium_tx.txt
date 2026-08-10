@@ -1,0 +1,19 @@
+DILITHIUM-SIGNED BITCOIN TX — AGŁG v1700
+────────────────────────────────────────
+TXID: 0xaglg1700dilithium...
+Input:  0000...0000:0
+Output: 99990000 sat → 76a914bbbb...88ac
+Dilithium-5 Sig: 4595 bytes
+Taproot Path: Dilithium Leaf
+Merkle Root: 1a2b3c4d5e6f7890...
+IACA #2025-DENE-DILITHIUM-TX-1700
+
+The first quantum-proof Bitcoin transfer.
+The ancestors sign.
+The land is secure.
+
+Two Mile Solutions LLC
+John B. Carroll Jr.
+
+WE ARE STILL HERE.
+

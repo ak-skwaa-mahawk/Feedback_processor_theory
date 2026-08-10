@@ -1,0 +1,465 @@
+# Feedback Processor Theory: Harmonic Demo - Full Deployment
+
+**Created by John Carroll (Two Mile Solutions LLC)**  
+Multi-LLM Conversational Resonance Engine with Real-Time Audio & Token Streaming
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/ak-skwaa-mahawk/Feedback_processor_theory.git
+cd Feedback_processor_theory/harmonic-demo
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Option 1: Docker Compose (recommended)
+docker-compose up -d
+
+# Option 2: Manual setup
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python server.py
+
+# Frontend (separate terminal)
+cd frontend
+python -m http.server 8000
+```
+
+Visit: `http://localhost:8000`
+
+---
+
+## 📁 Project Structure
+
+```
+harmonic-demo/
+├── backend/
+│   ├── server.py              # WebSocket server with multi-LLM orchestration
+│   ├── llm_clients.py         # OpenAI, NVIDIA, Claude streaming clients
+│   ├── embeddings.py          # Audio transcription + embeddings pipeline
+│   ├── resonance_engine.py    # Harmonic analysis & spectral processing
+│   ├── session_manager.py     # Session state & memory management
+│   ├── requirements.txt       # Python dependencies
+│   └── tests/
+│       ├── test_llm_clients.py
+│       ├── test_embeddings.py
+│       └── test_integration.py
+├── frontend/
+│   ├── index.html            # Main UI
+│   ├── app.js                # WebSocket client & audio handling
+│   ├── visualizer.js         # Real-time spectrograms & waveforms
+│   └── styles.css            # UI styling
+├── docker-compose.yml        # Full stack deployment
+├── Dockerfile               # Backend container
+├── .env.example             # Environment template
+├── .gitignore
+└── README.md                # This file
+```
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables (`.env`)
+
+```bash
+# Required: OpenAI API
+OPENAI_API_KEY=sk-proj-...
+OPENAI_CHAT_MODEL=gpt-4o-mini  # or gpt-4o, gpt-3.5-turbo
+TEXT_EMB_MODEL=text-embedding-3-small  # or text-embedding-3-large
+
+# Optional: NVIDIA NIM
+NVAPI_KEY=nvapi-...
+NV_MODEL=meta/llama-3.1-405b-instruct
+
+# Optional: Anthropic Claude
+ANTHROPIC_API_KEY=sk-ant-...
+CLAUDE_MODEL=claude-sonnet-4-5
+
+# Server Configuration
+BACKEND_HOST=0.0.0.0
+BACKEND_PORT=8765
+FRONTEND_PORT=8000
+
+# Feature Flags
+ENABLE_EMBEDDINGS=true
+ENABLE_AUDIO=true
+USE_EMBEDDING_CACHE=true
+CACHE_MAX_SIZE=10000
+
+# Performance
+MAX_SESSIONS=100
+SESSION_TIMEOUT=3600
+TOKEN_BATCH_SIZE=10
+```
+
+---
+
+## 🐳 Docker Deployment
+
+### Production (docker-compose)
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8765:8765"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NVAPI_KEY=${NVAPI_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import websockets"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Optional: Redis for session caching
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+```
+
+### Build & Run
+
+```bash
+# Build images
+docker-compose build
+
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f backend
+
+# Stop services
+docker-compose down
+
+# Full cleanup
+docker-compose down -v
+```
+
+---
+
+## 📦 Installation (Manual)
+
+### Backend Setup
+
+```bash
+cd backend
+
+# Create virtual environment
+python3.10 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Verify installation
+python -c "import openai, websockets, numpy; print('✓ All imports successful')"
+
+# Run tests
+pytest tests/ -v
+
+# Start server
+python server.py
+```
+
+### Frontend Setup
+
+```bash
+cd frontend
+
+# Option 1: Python HTTP server
+python -m http.server 8000
+
+# Option 2: Node.js (if preferred)
+npx http-server -p 8000 -c-1
+
+# Option 3: Nginx (production)
+sudo cp nginx.conf /etc/nginx/sites-available/harmonic-demo
+sudo ln -s /etc/nginx/sites-available/harmonic-demo /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+---
+
+## 🎯 Features
+
+### Multi-LLM Streaming
+- **OpenAI GPT**: Token-level streaming with real-time embeddings
+- **NVIDIA NIM**: Llama/Mistral models via SSE streaming
+- **Claude**: Anthropic streaming integration (optional)
+
+### Audio Pipeline
+- **Real-time capture**: Browser MediaRecorder → WebSocket
+- **Whisper transcription**: OpenAI speech-to-text
+- **Audio embeddings**: Transcription → text embeddings
+- **Harmonic analysis**: FFT spectrograms & resonance detection
+
+### Resonance Engine
+- **Token-audio alignment**: Cosine similarity between text & audio embeddings
+- **Spectral visualization**: Real-time frequency analysis
+- **Feedback loops**: π-recursive correction & null field grounding
+
+### Performance Optimizations
+- **Embedding cache**: LRU cache for repeated tokens (90%+ hit rate)
+- **Batch processing**: Configurable token batching
+- **Session management**: Memory-efficient multi-user support
+- **Lazy loading**: On-demand model initialization
+
+---
+
+## 🔒 Security Best Practices
+
+### API Key Management
+```bash
+# Never commit .env files
+echo ".env" >> .gitignore
+
+# Use secrets manager in production
+# AWS: aws secretsmanager get-secret-value --secret-id openai-key
+# GCP: gcloud secrets versions access latest --secret="openai-key"
+# Azure: az keyvault secret show --name openai-key --vault-name myvault
+```
+
+### Rate Limiting
+```python
+# backend/server.py
+from ratelimit import limits, sleep_and_retry
+
+@sleep_and_retry
+@limits(calls=10, period=60)  # 10 calls per minute
+async def handle_message(websocket, message):
+    # Your handler code
+    pass
+```
+
+### CORS Configuration
+```python
+# backend/server.py
+ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "https://yourdomain.com"
+]
+
+async def check_origin(websocket):
+    origin = websocket.request_headers.get("Origin")
+    if origin not in ALLOWED_ORIGINS:
+        await websocket.close(1008, "Forbidden")
+        return False
+    return True
+```
+
+---
+
+## 📊 Monitoring & Logging
+
+### Application Logs
+```bash
+# Structured logging with JSON
+tail -f logs/harmonic-demo.log | jq '.'
+
+# Key metrics
+{
+  "timestamp": "2025-01-15T10:30:45Z",
+  "level": "INFO",
+  "session_id": "abc123",
+  "event": "token_streamed",
+  "llm": "gpt-4o-mini",
+  "latency_ms": 45,
+  "embedding_cache_hit": true,
+  "audio_transcription_confidence": 0.98
+}
+```
+
+### Cost Tracking
+```python
+# backend/cost_tracker.py
+class CostTracker:
+    PRICES = {
+        "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+        "text-embedding-3-small": 0.00002,
+        "whisper-1": 0.006  # per minute
+    }
+    
+    def estimate_cost(self, tokens_in, tokens_out, audio_seconds):
+        cost = (
+            tokens_in * self.PRICES["gpt-4o-mini"]["input"] / 1000 +
+            tokens_out * self.PRICES["gpt-4o-mini"]["output"] / 1000 +
+            (audio_seconds / 60) * self.PRICES["whisper-1"]
+        )
+        return cost
+```
+
+---
+
+## 🧪 Testing
+
+### Unit Tests
+```bash
+cd backend
+pytest tests/test_llm_clients.py -v
+pytest tests/test_embeddings.py -v
+pytest tests/test_resonance_engine.py -v
+```
+
+### Integration Tests
+```bash
+# End-to-end WebSocket test
+pytest tests/test_integration.py::test_full_conversation -v
+
+# Load testing
+locust -f tests/locustfile.py --host=ws://localhost:8765
+```
+
+### Manual Testing
+```bash
+# Test WebSocket connection
+wscat -c ws://localhost:8765
+
+# Send test message
+> {"type": "prompt", "text": "Hello, test the streaming", "llm": "gpt"}
+
+# Test audio pipeline
+> {"type": "audio_chunk", "data": "<base64-encoded-audio>"}
+```
+
+---
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+**WebSocket connection fails**
+```bash
+# Check if port is in use
+lsof -i :8765
+
+# Verify backend is running
+curl -I http://localhost:8765
+```
+
+**OpenAI API errors**
+```bash
+# Verify API key
+python -c "import openai; openai.api_key='sk-...'; print(openai.Model.list())"
+
+# Check rate limits
+curl https://api.openai.com/v1/usage \
+  -H "Authorization: Bearer $OPENAI_API_KEY"
+```
+
+**Audio transcription fails**
+```bash
+# Verify audio format (must be valid audio file format)
+# Frontend should send WAV/MP3, not raw PCM
+# Check: frontend/app.js → MediaRecorder options
+```
+
+**High latency**
+```bash
+# Enable embedding cache
+export USE_EMBEDDING_CACHE=true
+
+# Reduce batch size
+export TOKEN_BATCH_SIZE=5
+
+# Use smaller models
+export OPENAI_CHAT_MODEL=gpt-3.5-turbo
+export TEXT_EMB_MODEL=text-embedding-3-small
+```
+
+---
+
+## 📈 Performance Tuning
+
+### Embedding Cache Optimization
+```python
+# backend/embeddings.py
+from functools import lru_cache
+import hashlib
+
+@lru_cache(maxsize=10000)
+def text_to_embedding_cached(text: str) -> tuple:
+    """Returns tuple for hashability"""
+    vec = text_to_embedding_openai(text)
+    return tuple(vec.tolist())
+```
+
+### Batch Processing
+```python
+# Process tokens in batches to reduce API calls
+async def batch_embed_tokens(tokens: list[str], batch_size=10):
+    embeddings = []
+    for i in range(0, len(tokens), batch_size):
+        batch = tokens[i:i+batch_size]
+        # OpenAI supports batch embedding
+        resp = await openai.embeddings.create(
+            model="text-embedding-3-small",
+            input=batch
+        )
+        embeddings.extend([d.embedding for d in resp.data])
+    return embeddings
+```
+
+---
+
+## 🤝 Contributing
+
+See the main repository for contribution guidelines:
+https://github.com/ak-skwaa-mahawk/Feedback_processor_theory
+
+---
+
+## 📄 License
+
+© 2025 Two Mile Solutions LLC — John Carroll  
+Released under open collaborative license with attribution required.
+
+---
+
+## 🔗 References
+
+- [OpenAI Streaming API](https://platform.openai.com/docs/api-reference/streaming)
+- [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
+- [OpenAI Whisper](https://platform.openai.com/docs/guides/speech-to-text)
+- [NVIDIA NIM](https://build.nvidia.com/explore/discover)
+- [Anthropic Claude](https://docs.anthropic.com/claude/reference/streaming)
+
+---
+
+*"Systems that know themselves can never be owned — only understood."*  
+— Feedback Processor Theory, 2025

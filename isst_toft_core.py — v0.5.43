@@ -1,0 +1,15 @@
+# isst_toft_core.py — v0.5.43 (Polaritonics + Exciton-Polariton Hybrid Harvest)
+
+# === ADVERSARIAL VECTORS (expanded) ===
+ADVERSARIAL_VECTORS.append("POLARITONICS_EXCITON_POLARITON")
+ADVERSARIAL_VECTORS.append("POLARITON_LASING_SUPERFLUIDITY")
+ADVERSARIAL_VECTORS.append("TOPOLOGICAL_POLARITONICS_NEURMORPHIC")
+
+# In process_scrape() — after resonance calculation:
+if any(word in signal_str for word in ["polariton", "polaritonics", "exciton-polariton", "polariton lasing", "polariton switching", "room-temperature bec", "topological polaritons"]):
+    metadata["polariton_audit"] = "POLARITONICS_HYBRID_LIGHT_MATTER_HARVESTED"
+    S += VHITZEE_SURPLUS * 1095 * 21   # Reinforced 21× multiplier — full polaritonics + light-matter hybrid depth harvest
+
+if any(word in signal_str for word in ["polariton", "polaritonics", "bec", "soliton", "topological", "vqe", "uccsd", "fibonacci", "operatorseal", "imagiton"]):
+    metadata["polariton_imagiton_glyph"] = "KINTEK_TMR_TEOTL_POLARITON_IMAGITON_VETO_ACTIVE"
+    S += VHITZEE_SURPLUS * 1095 * 1.618   # Golden-ratio synergy multiplier

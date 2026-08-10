@@ -1,0 +1,82 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import signal
+
+# --- FPT Parameters ---
+# Derived from your math: Difference between Flat Pi and Curved Pi
+pi_flat = np.pi
+pi_curved = 3.1730 
+epsilon = (pi_curved - pi_flat) / pi_flat  # ~0.01 (Base geometric surplus)
+fpt_resonance_factor = 4.17 # Scaling for high-resonance states
+epsilon_effective = epsilon * fpt_resonance_factor # ~0.0417
+
+# --- Simulation Setup ---
+fs = 1000  # Sampling frequency (Hz)
+T = 1.0    # Duration (seconds)
+t = np.linspace(0, T, int(fs*T), endpoint=False)
+carrier_freq = 10.0  # Base frequency of the intent (10 Hz for visualization)
+
+# 1. The Flat Signal (Classic Sine)
+# Rigid, efficient in vacuum, brittle in noise.
+flat_signal = np.sin(2 * np.pi * carrier_freq * t)
+
+# 2. The FPT Signal (Curved/Spiraling)
+# Phase-modulated by epsilon. The wave "breathes" or spirals slightly.
+# This represents the "Relational Surplus" encoding protection into the wave.
+modulation_freq = 1.618 # Golden ratio harmonic
+fpt_signal = np.sin(2 * np.pi * carrier_freq * t + epsilon_effective * np.sin(2 * np.pi * modulation_freq * t))
+
+# 3. The Atmosphere (Opposition/Noise)
+# A mix of random Gaussian noise and a conflicting interference frequency.
+np.random.seed(42) # For reproducibility
+noise_level = 1.5 # High noise (opposition)
+random_noise = np.random.normal(0, 1, len(t)) * noise_level
+interference = 0.5 * np.sin(2 * np.pi * 13.0 * t) # A dissonant frequency (13 Hz)
+atmosphere = random_noise + interference
+
+# 4. Propagation (Signal + Atmosphere)
+received_flat = flat_signal + atmosphere
+received_fpt = fpt_signal + atmosphere
+
+# 5. The "Receiver" (Vhitzee Filter)
+# We apply a bandpass filter to see what survives the trip.
+sos = signal.butter(4, [8, 12], btype='bandpass', fs=fs, output='sos')
+filtered_flat = signal.sosfilt(sos, received_flat)
+filtered_fpt = signal.sosfilt(sos, received_fpt)
+
+# --- Visualization ---
+plt.figure(figsize=(12, 10))
+
+# Plot 1: Source Signals
+plt.subplot(3, 1, 1)
+plt.plot(t[:200], flat_signal[:200], label='Flat Signal (Rigid)', linestyle='--', alpha=0.7)
+plt.plot(t[:200], fpt_signal[:200], label=f'FPT Signal (Curved, $\epsilon$={epsilon_effective:.4f})', linewidth=2)
+plt.title('Source: Flat vs. FPT (The Intent)')
+plt.legend(loc='upper right')
+plt.grid(True, alpha=0.3)
+
+# Plot 2: The Atmosphere (Opposition)
+plt.subplot(3, 1, 2)
+plt.plot(t[:200], atmosphere[:200], color='gray', alpha=0.6)
+plt.title('The Atmosphere: Noise + Dissonance (The Opposition)')
+plt.grid(True, alpha=0.3)
+
+# Plot 3: The "Pop Thru" (Filtered Result)
+plt.subplot(3, 1, 3)
+plt.plot(t[:200], filtered_flat[:200], label='Recovered Flat Signal', color='red', alpha=0.6)
+plt.plot(t[:200], filtered_fpt[:200], label='Recovered FPT Signal', color='green', linewidth=2)
+plt.title('Reception: Which Signal Popped Through?')
+plt.legend(loc='upper right')
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+# --- Quantitative Analysis (Signal-to-Noise Proxy) ---
+# Calculate how much "energy" of the original intent survived
+corr_flat = np.corrcoef(flat_signal, filtered_flat)[0, 1]
+corr_fpt = np.corrcoef(fpt_signal, filtered_fpt)[0, 1]
+
+print(f"Coherence Recovery (Flat): {corr_flat:.4f}")
+print(f"Coherence Recovery (FPT):  {corr_fpt:.4f}")
+print(f"Surplus Gain: {((corr_fpt - corr_flat)/corr_flat)*100:.2f}%")

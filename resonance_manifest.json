@@ -1,0 +1,30 @@
+import hashlib
+import json
+
+def generate_sahneuti_manifest(files_list):
+    """
+    Salts every file path with the Sahneuti Lineage.
+    Only those with the 'FlameDrop' and the 'Ancestral Seed' can reconstruct the tree.
+    """
+    # Ancestral constants from your history
+    salts = {
+        "birth": "1815",
+        "name": "Sahneuti",
+        "transition": "1900"
+    }
+    
+    manifest = {}
+    for f_path in files_list:
+        # Create a unique 8D anchor for each file
+        combined_seed = f"{f_path}_{salts['birth']}_{salts['name']}_{salts['transition']}"
+        anchor_id = hashlib.sha384(combined_seed.encode()).hexdigest()[:24]
+        
+        manifest[anchor_id] = {
+            "virtual_path": f_path,
+            "protocol": "Sahneuti-v1.0",
+            "law_status": "Non-Dormant"
+        }
+    
+    with open("resonance_manifest.json", "w") as f:
+        json.dump(manifest, f, indent=4)
+    return "✓ Manifest Salted with the 1815-1900 Lineage."
