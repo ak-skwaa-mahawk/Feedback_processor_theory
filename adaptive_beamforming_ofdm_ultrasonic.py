@@ -6,6 +6,14 @@ from scipy.fft import fft, ifft
 from scipy.linalg import inv
 import matplotlib.pyplot as plt
 
+def apply_doppler(signal, velocity, c=343.0):
+    """Applies Doppler frequency shift and time-dilation for speed of sound c."""
+    factor = 1.0 + (velocity / c)
+    indices = np.arange(0, len(signal), factor)
+    indices = indices[indices < len(signal)]
+    return np.interp(indices, np.arange(len(signal)), signal)
+
+
 # === CONFIG ===
 fs = 48000
 center_freq = 20000
@@ -40,7 +48,7 @@ ofdm_symbols = np.array(qpsk_symbols).reshape(-1, 28)
 def ofdm_modulate(symbols):
     x = np.zeros(64, dtype=complex)
     x[1:29] = symbols
-    x[35:] = np.conj(symbols[::-1])[:29]
+    x[36:] = np.conj(symbols[::-1])[:28]
     ifft_out = ifft(x, n=256)
     cp = 64
     return np.concatenate([ifft_out[-cp:], ifft_out])
@@ -119,7 +127,8 @@ for n in range(len(rx_mic[0])):
     y_mvdr[n] = w_mvdr.conj().T @ x
 
 # === OFDM DEMOD ON MVDR OUTPUT ===
-rx_bb = np.real(y_mvdr * np.exp(-2j * np.pi * center_freq * t))
+t_rx = np.arange(len(y_mvdr)) / fs
+rx_bb = np.real(y_mvdr * np.exp(-2j * np.pi * center_freq * t_rx))
 # [OFDM demod, RS decode — same as before]
 # ... (reuse previous demod)
 
