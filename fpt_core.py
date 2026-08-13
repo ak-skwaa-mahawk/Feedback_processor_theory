@@ -99,7 +99,7 @@ class Satellite {
 // FPT Coherence Calculator
 class FPTCoherence {
   static calculate(distance, signalAge, linkQuality = 1.0) {
-    // ISST formula: S(r,H,C) = E0 * C / (r² * (1 + αH))
+    # ISST formula: S(r,H,C) = E0 * C / (r**2 * (1 + alpha*H))
     const E0 = 1.0;
     const alpha = 0.001; // history decay
     const r_normalized = distance / 1000; // normalize to manageable scale
