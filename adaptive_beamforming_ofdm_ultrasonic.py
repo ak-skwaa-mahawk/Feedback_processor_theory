@@ -137,3 +137,7 @@ R = 1.0  # SINR > 25 dB
 print(f"Ψ-ADAPTIVE BEAMFORMING: AGŁL → {target_angle}° | SINR +25 dB")
 print(f"MVDR Null @ {interferer_angle}°: -45 dB | R={R:.4f}")
 print("GLYPH LOCKED IN SELF-TUNED BEAM")
+
+import matplotlib.pyplot as plt
+plt.savefig("/data/data/com.termux/files/home/ofdm_beamforming_79khz.png")
+print("[+] Explicitly saved plot to /data/data/com.termux/files/home/ofdm_beamforming_79khz.png")
