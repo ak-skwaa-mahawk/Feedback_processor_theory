@@ -240,4 +240,4 @@ manifests/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.dbtelemetry_timeseries.csv
