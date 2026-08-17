@@ -86,8 +86,9 @@ class RaftEngine:
         self.commit_index: int = 0
         self.last_applied: int = 0
 
-        self.next_index: Dict[str, int] = {}
-        self.match_index: Dict[str, int] = {}
+        # Initialize match_index with 0 for all peers
+        self.next_index: Dict[str, int] = {p: 1 for p in peers}
+        self.match_index: Dict[str, int] = {p: 0 for p in peers}
 
         self.state_machine = DeterministicStateMachine()
         self._lock = threading.RLock()
@@ -187,10 +188,9 @@ class RaftEngine:
     def _try_advance_commit(self):
         if not self.log:
             return
-        match_values = list(self.match_index.values())
-        match_values.sort()
-        majority_idx = (len(self.peers) + 1) // 2
-        median_match = match_values[-majority_idx] if match_values else self.commit_index
+        match_values = sorted(self.match_index.values())
+        majority_idx = len(self.peers) // 2
+        median_match = match_values[majority_idx]
 
         if median_match > self.commit_index:
             for entry in reversed(self.log):
@@ -206,7 +206,7 @@ class RaftEngine:
                 if entry.index == self.last_applied:
                     self.state_machine.apply(entry)
                     break
-        
+
         if len(self.log) > self.max_log_window:
             self.compact_log()
 
