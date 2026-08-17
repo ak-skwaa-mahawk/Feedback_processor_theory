@@ -1,0 +1,22 @@
+{
+  "title": "Feedback Processor Theory: Invariant Chase Dynamics in Deterministic 79 Hz Cadence Loops",
+  "creators": [
+    {
+      "name": "Carroll Jr., John",
+      "affiliation": "Two Mile Solutions LLC (UEI: KYKYAWHMH95)"
+    }
+  ],
+  "keywords": [
+    "Feedback Processor Theory",
+    "Asset Integrity Management",
+    "Fractional-N Synthesizer",
+    "Deterministic State Ledgers",
+    "MASH Delta-Sigma"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/ak-skwaa-mahawk/Feedback_processor_theory"
+    }
+  ]
+}
