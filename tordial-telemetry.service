@@ -1,0 +1,38 @@
+[Unit]
+Description=Tordial Hardened UDP Telemetry Ingress & Prometheus Exporter
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=telemetry
+Group=telemetry
+WorkingDirectory=/opt/tordial
+ExecStart=/usr/bin/python3 /opt/tordial/hardened_telemetry_ingress.py
+Restart=always
+RestartSec=3s
+
+# Sandboxing & Hardening
+ProtectSystem=strict
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+# Resource Limits
+LimitNOFILE=65536
+MemoryMax=256M
+CPUQuota=50%
+
+# Standard logging to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tordial-telemetry
+
+[Install]
+WantedBy=multi-user.target

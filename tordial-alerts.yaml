@@ -1,0 +1,52 @@
+groups:
+  - name: tordial_telemetry_alerts
+    rules:
+      - alert: TelemetryIngestStalled
+        expr: rate(tordial_telemetry_received_total[1m]) == 0
+        for: 30s
+        labels:
+          severity: critical
+          subsystem: telemetry
+        annotations:
+          summary: "Telemetry ingress has stalled"
+          description: "Zero UDP frames received on port 9999 for >30s. Check node 192.168.1.231 connectivity and socket listener."
+
+      - alert: HighTelemetryRejectionRate
+        expr: sum(rate(tordial_telemetry_rejected_total[1m])) / sum(rate(tordial_telemetry_received_total[1m])) > 0.05
+        for: 1m
+        labels:
+          severity: warning
+          subsystem: telemetry
+        annotations:
+          summary: "High packet rejection rate (>5%)"
+          description: "Over 5% of incoming telemetry frames are failing validation (IP, length, sequence, or range checks)."
+
+      - alert: UnauthorizedIngressDetected
+        expr: rate(tordial_telemetry_rejected_total{reason="ip"}[1m]) > 0
+        for: 10s
+        labels:
+          severity: critical
+          subsystem: security
+        annotations:
+          summary: "Unauthorized source IP attempting telemetry injection"
+          description: "Frames arriving from an unapproved IP address outside 192.168.1.231."
+
+      - alert: PhaseVectorOutOfBounds
+        expr: tordial_phase_vector < 0.0 or tordial_phase_vector > 1.0
+        for: 0s
+        labels:
+          severity: critical
+          subsystem: governance
+        annotations:
+          summary: "Phase vector channel out of physical bounds [0.0, 1.0]"
+          description: "Channel {{ $labels.channel }} reported value {{ $value }}, violating normalized range limits."
+
+      - alert: TelemetrySequenceDrift
+        expr: rate(tordial_telemetry_rejected_total{reason="sequence"}[1m]) > 1
+        for: 30s
+        labels:
+          severity: warning
+          subsystem: telemetry
+        annotations:
+          summary: "Packet sequence anomalies or out-of-order frames detected"
+          description: "Monotonic sequence violations occurring at >1 frame/s. Potential packet reordering or duplicate transmission."
