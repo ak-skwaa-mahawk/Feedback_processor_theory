@@ -241,3 +241,4 @@ manifests/
 # OS
 .DS_Store
 Thumbs.dbtelemetry_timeseries.csv
+runs/

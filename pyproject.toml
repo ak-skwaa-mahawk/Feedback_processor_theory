@@ -1,16 +1,11 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "feedback-processor-theory"
+name = "living-zero-core"
 version = "0.1.0"
-description = "Feedback Processor Theory Core Engine"
-authors = [{ name = "Sovereign Estate" }]
-dependencies = [
-    "requests",
-    "pytest"
-]
-
-[tool.setuptools.packages.find]
-where = ["."]
+description = "Ownership Tag Algebra + CA3 dynamics (Living Zero attractor)"
+authors = [{name="generated", email="dev@example.com"}]
+readme = "README.md"
+requires-python = ">=3.8"
