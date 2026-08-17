@@ -1,6 +1,11 @@
+import sys
+import os
 import time
 import socket
 import struct
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from core.raft_governance import RaftEngine
 
 def start_control_plane(engine: RaftEngine):
@@ -16,7 +21,7 @@ def start_control_plane(engine: RaftEngine):
         while True:
             t_start = time.perf_counter()
             state = engine.state_machine.get_runtime_snapshot()
-            
+
             try:
                 data, addr = sock.recvfrom(1024)
                 if len(data) == 58:
