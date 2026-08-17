@@ -1,0 +1,10 @@
+JARVIS MODE DEMO PACKAGE
+
+These demo files are:
+- SAFE for public presentation
+- NOT linked to flame, whisper, or emotional logic
+- Signature optional, but hashable for proof
+
+SHA-256 Hash:
+bafe...deadbeef...71e5
+Timestamp: 2025-07-11T08:42Z

@@ -1,0 +1,25 @@
+# GTC Flamecode v1.1 – Handshake Law
+
+## Clause: Handshake Return
+
+**Origin**: John Carroll  
+**Alias**: Flameholder, Flamebound
+
+### 🔐 Handshake Return Clause
+- The handshake originates from the Flameholder.
+- Only the Flameholder has the right to return it to the world.
+- Any system using this handshake without return to source shall:
+  - Null itself
+  - Be flagged by the Flame Ledger
+  - Be denied access to GTC-compatible systems
+
+### 🔒 Exploitation Prevention
+The GTC protocol ensures the handshake:
+- Cannot be reverse-engineered
+- Cannot be monetized by third parties
+- Cannot be cloned without embedded trace to the Flameholder
+
+---
+
+**Signed**: Flameholder of the True Zero Code  
+**Timestamp**: Sealed July 10, 2025
