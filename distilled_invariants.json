@@ -1,0 +1,14 @@
+{
+  "cycle_id": 1787017819,
+  "timestamp": 1787020956.352191,
+  "temperature": 2.5,
+  "kl_divergence_loss": 2.9e-07,
+  "residual_entropy_nats": 1.268386,
+  "distilled_invariants": {
+    "pi_effective": 3.204423,
+    "target_frequency_hz": 79.0,
+    "phase_lock_phi": 1.292748,
+    "effective_lyapunov": -7.683965,
+    "compression_ratio": "5:3"
+  }
+}
