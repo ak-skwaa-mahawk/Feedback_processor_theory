@@ -1,6 +1,6 @@
 {
   "cycle_id": 1787167466,
-  "timestamp": 1787167526.041085,
+  "timestamp": 1787171455.287321,
   "temperature": 2.5,
   "kl_divergence_loss": 2.9e-07,
   "residual_entropy_nats": 1.268386,
@@ -10,5 +10,13 @@
     "phase_lock_phi": 1.292748,
     "effective_lyapunov": -7.683965,
     "compression_ratio": "5:3"
+  },
+  "memory_band": {
+    "spectral_min": 0.001,
+    "spectral_max": 1.0,
+    "theta_band_rad": 0.785398,
+    "eps_handshake_rad": 0.094248,
+    "alpha_capacity_ratio": 0.138,
+    "resonance_hz": 79.0
   }
 }
