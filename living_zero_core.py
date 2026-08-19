@@ -158,3 +158,36 @@ def demo_small_run(seed=0):
             events += 1
             mem.encode(x, raw_tag=tag)
     return {"final_sim": float(np.dot(normalize(x), normalize(p))), "events": events}
+
+# ---------- Memory Band Definition ----------
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class MemoryBand:
+    spectral_min: float = 1e-3
+    spectral_max: float = 1.0
+    theta_band: float = 0.25 * math.pi      # Basin capture limit (~45 deg)
+    eps_handshake: float = 0.03 * math.pi   # Reward handshake boundary (~5.4 deg)
+    alpha_capacity: float = 0.138           # Theoretical Hebbian capacity limit (P/N)
+    f_res_hz: float = 79.0                  # FFT coherence frequency anchor
+
+    def check_state(self, x: np.ndarray, p: np.ndarray, W: np.ndarray) -> dict:
+        x_n = normalize(x)
+        p_n = normalize(p)
+        dot = max(-1.0, min(1.0, float(np.dot(x_n, p_n))))
+        theta = math.acos(dot)
+
+        spectral_norm = float(np.linalg.norm(W @ x_n))
+        in_angular_band = theta <= self.theta_band
+        in_handshake = theta <= self.eps_handshake
+        in_spectral_band = self.spectral_min <= spectral_norm <= self.spectral_max
+
+        return {
+            "theta_rad": theta,
+            "spectral_norm": spectral_norm,
+            "in_angular_band": in_angular_band,
+            "in_handshake": in_handshake,
+            "in_spectral_band": in_spectral_band,
+            "stable": in_angular_band and in_spectral_band,
+        }
+
