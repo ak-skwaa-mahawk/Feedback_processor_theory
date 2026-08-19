@@ -1,7 +1,7 @@
 {
-  "timestamp_epoch": 1787073849.945717,
-  "timestamp_iso": "2026-08-18T17:24:09Z",
-  "governance_cycle_id": 1787027764,
+  "timestamp_epoch": 1787167404.2103846,
+  "timestamp_iso": "2026-08-19T19:23:24Z",
+  "governance_cycle_id": 1787165241,
   "frequency_target_hz": 79.0,
   "merkle_asset_root": "35fbc6cc20ade60ce211f8fbe7368d1e942ee1fd2d992a87c2de2eb41efd5c52",
   "total_assets_indexed": 3,
