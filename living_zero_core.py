@@ -85,7 +85,7 @@ class OwnershipMemory:
             u = self.W @ x
             if Phi is not None and beta != 0.0:
                 u = (np.eye(self.N) + beta * Phi) @ u
-            x = activation(u)
+            x = normalize(activation(u))
         return x
     def selective_revoke(self, raw_tag, rho=1.0):
         enc = OwnershipEncoder(d=self.Oproj.d)
