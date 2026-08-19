@@ -53,3 +53,19 @@ def test_mathematical_invariants():
     p = normalize(rng.normal(size=(N,)))
     mem.encode(p, raw_tag="owner:invariants")
     assert np.allclose(mem.W, mem.W.T, atol=1e-10)
+
+def test_mathematical_invariants():
+    from living_zero_core import OwnershipProjector, OwnershipMemory, MemoryBand, OwnershipEncoder, normalize
+    N, d = 128, 32
+    O = OwnershipProjector(N=N, d=d, seed=7)
+    mem = OwnershipMemory(N=N, ownership_projector=O, eta=1e-3, gamma=1.0)
+    band = MemoryBand()
+    enc = OwnershipEncoder(d=d)
+    u = enc.encode("owner:invariants")
+    Phi, w_hat = O.projector(u)
+    assert np.allclose(Phi @ Phi, Phi, atol=1e-10)
+    assert np.allclose(Phi, Phi.T, atol=1e-10)
+    assert np.isclose(np.linalg.norm(w_hat), 1.0, atol=1e-10)
+    p = normalize(np.random.RandomState(7).normal(size=(N,)))
+    mem.encode(p, raw_tag="owner:invariants")
+    assert np.allclose(mem.W, mem.W.T, atol=1e-10)
