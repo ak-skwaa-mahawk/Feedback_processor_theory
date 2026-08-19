@@ -242,3 +242,5 @@ manifests/
 .DS_Store
 Thumbs.dbtelemetry_timeseries.csv
 runs/
+swicc-pcsc/
+swsim/
