@@ -184,7 +184,7 @@ class MeshOrchestrator:
         try:
             import matplotlib
             if "Agg" not in matplotlib.get_backend():
-                # plt.show(block=False)
+                pass
         except Exception:
             pass
 
