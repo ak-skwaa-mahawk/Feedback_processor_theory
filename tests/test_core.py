@@ -32,3 +32,24 @@ def test_memory_band_invariants():
     assert res["in_angular_band"]
     assert res["in_spectral_band"]
     assert res["stable"]
+
+def test_mathematical_invariants():
+    from living_zero_core import OwnershipProjector, OwnershipMemory, MemoryBand, OwnershipEncoder, normalize
+    N, d = 128, 32
+    O = OwnershipProjector(N=N, d=d, seed=7)
+    mem = OwnershipMemory(N=N, ownership_projector=O, eta=1e-3, gamma=1.0)
+    band = MemoryBand()
+    enc = OwnershipEncoder(d=d)
+
+    # 1. Projector Idempotence & Symmetry: Phi^2 == Phi, Phi == Phi^T
+    u = enc.encode("owner:invariants")
+    Phi, w_hat = O.projector(u)
+    assert np.allclose(Phi @ Phi, Phi, atol=1e-10)
+    assert np.allclose(Phi, Phi.T, atol=1e-10)
+    assert np.isclose(np.linalg.norm(w_hat), 1.0, atol=1e-10)
+
+    # 2. Weight Matrix Symmetry
+    rng = np.random.RandomState(7)
+    p = normalize(rng.normal(size=(N,)))
+    mem.encode(p, raw_tag="owner:invariants")
+    assert np.allclose(mem.W, mem.W.T, atol=1e-10)
