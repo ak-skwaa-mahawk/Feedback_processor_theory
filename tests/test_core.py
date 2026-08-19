@@ -69,3 +69,17 @@ def test_mathematical_invariants():
     p = normalize(np.random.RandomState(7).normal(size=(N,)))
     mem.encode(p, raw_tag="owner:invariants")
     assert np.allclose(mem.W, mem.W.T, atol=1e-10)
+
+def test_audit_memory_state_report():
+    from living_zero_core import OwnershipProjector, OwnershipMemory, MemoryBand, normalize
+    from living_zero_diagnostics import audit_memory_state
+    N, d = 128, 32
+    O = OwnershipProjector(N=N, d=d, seed=12)
+    mem = OwnershipMemory(N=N, ownership_projector=O, eta=5e-3, gamma=1.0)
+    band = MemoryBand()
+    p = normalize(np.random.RandomState(12).normal(size=(N,)))
+    mem.encode(p, raw_tag="owner:audit")
+    report = audit_memory_state(mem, ["owner:audit"], band)
+    assert report["sym_error"] < 1e-12
+    assert report["max_projector_residual"] < 1e-12
+    assert report["within_spectral_band"]
