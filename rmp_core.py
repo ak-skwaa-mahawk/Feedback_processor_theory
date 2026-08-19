@@ -50,10 +50,10 @@ IDENTITY = NodeIdentity()
 def load_or_create_keypair() -> tuple[SigningKey, VerifyingKey]:
     key_path = Path("rmp_key.pem")
     if key_path.exists():
-        sk = SigningKey.from_pem(key_path.read_text())
+        sk = SigningKey.from_pem(key_path.read_bytes())
     else:
         sk = SigningKey.generate(curve=SECP256k1)
-        key_path.write_text(sk.to_pem())
+        key_path.write_bytes(sk.to_pem())
         log.info("New sovereign key generated: rmp_key.pem")
     vk = sk.verifying_key
     return sk, vk
@@ -109,7 +109,11 @@ def generate_79hz_pulse(duration_sec: float = 0.1266) -> List[float]:
 # =============================================================================
 
 def generate_glyph(scrape: dict) -> str:
-    payload = f"{scrape['S']:.4f}{scrape['H']:.4f}{scrape['C']:.4f}{scrape['ts']}"
+    s = scrape.get("S", scrape.get("signal", 1.0))
+    h = scrape.get("H", scrape.get("harmonic", 1.0))
+    c = scrape.get("C", scrape.get("coherence", scrape.get("curvature", 1.0)))
+    ts = scrape.get("ts", scrape.get("timestamp", time.time()))
+    payload = f"{s:.4f}{h:.4f}{c:.4f}{ts}"
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 def form_meta_glyph(glyphs: List[str], coherence_avg: float) -> Optional[str]:
