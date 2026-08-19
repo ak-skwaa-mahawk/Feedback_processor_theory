@@ -67,7 +67,9 @@ def sign_receipt(data: dict) -> str:
 
 def verify_receipt(data: dict, sig_hex: str, vk: VerifyingKey = VK) -> bool:
     try:
-        payload = json.dumps(data, sort_keys=True).encode()
+        clean_data = {k: v for k, v in data.items() if k != "receipt"}
+        clean_data["receipt"] = ""
+        payload = json.dumps(clean_data, sort_keys=True).encode()
         sig = bytes.fromhex(sig_hex)
         return vk.verify(sig, payload, sigdecode=sigdecode_der)
     except:
@@ -162,6 +164,11 @@ class RMPCore:
         self.lock = threading.Lock()
         self.udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            self.udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        except AttributeError:
+            pass
         self.udp_sock.bind(('', 7979))
         threading.Thread(target=self._listen, daemon=True).start()
         log.info("RMP Core initialized — SKODEN")
@@ -176,6 +183,8 @@ class RMPCore:
                 log.debug(f"RMP listen error: {e}")
 
     def _handle_incoming(self, packet: dict, addr):
+        if packet.get("emitter") == getattr(self, "identity", IDENTITY).node_id:
+            return
         with self.lock:
             if not verify_receipt(packet, packet.get("receipt", "")):
                 log.warning(f"Invalid receipt from {addr}")

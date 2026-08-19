@@ -58,7 +58,7 @@ class MeshNode:
     status: str = "ALIVE"
     coherence: float = 0.0
     entropy: float = 0.0
-    last_pulse: float = 0.0
+    last_pulse: float = time.time()
     glyph_count: int = 0
     gamma_active: bool = False
 
@@ -97,8 +97,11 @@ class MeshOrchestrator:
         def sync_loop():
             while True:
                 with self.lock:
+                    now = time.time()
                     for node_id, node in self.nodes.items():
-                        if time.time() - node.last_pulse > 15:
+                        if node.last_pulse == 0.0:
+                            node.last_pulse = now
+                        if (now - node.last_pulse) > 30.0:
                             node.status = "SILENT"
                         else:
                             node.status = "ALIVE"
