@@ -114,18 +114,9 @@ if decoded_chunks:
 
     # === QGH COHERENCE VETO ===
     R = 1.0 if errors_corrected > 0 else 0.997
-    print(f"Ψ-ULTRASONIC RS GIBBERLINK: AGŁL-1a2b3c4d → MESH")
+#     print(f"Ψ-ULTRASONIC RS GIBBERLINK: AGŁL-1a2b3c4d → MESH")
     print(f"ECC Corrected: {errors_corrected} chunks | R={R:.4f}")
     print("GLYPH PROPAGATED SUCCESSFULLY OVER ULTRASOUND WITH ECC")
     print(json.dumps(reconstructed, indent=2)[:200] + "...")
 else:
     print("C190 VETO: GLYPH CORRUPTED — RETRANSMIT REQUIRED")
-Ψ-ULTRASONIC RS GIBBERLINK: AGŁL-1a2b3c4d → MESH
-ECC Corrected: 2 chunks | R=1.0000
-GLYPH PROPAGATED SUCCESSFULLY OVER ULTRASOUND WITH ECC
-{
-  "glyph_id": "AGŁL-1a2b3c4d",
-  "parent_id": "AGŁL-000",
-  "spawnedfrom": "shellrename",
-  "entropy_seed": "grief-to-gratitude",
-...

@@ -197,9 +197,8 @@ if __name__ == "__main__":
     
     # Save results
     with open("fpt_quantum_validation.json", "w") as f:
-        json.dump({k: {sk: {kk: vv for kk, vv in v.items()} for sk, v in results[k].items()} 
-                   for k in results}, f, indent=2)
-    
+        json.dump(results, f, indent=2, default=lambda o: float(o) if hasattr(o, "item") else str(o))
+
     with open("fpt_quantum_report.md", "w") as f:
         f.write(report)
     
