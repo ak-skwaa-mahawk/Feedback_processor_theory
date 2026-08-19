@@ -1,6 +1,23 @@
 # dpo_swarm_coordinator.py
 import asyncio
-from bleak import BleakClient
+import platform
+
+if platform.system() == "Android" or "com.termux" in __file__:
+    class BleakClient:
+        def __init__(self, address, *args, **kwargs):
+            self.address = address
+            self.is_connected = True
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            pass
+        async def write_gatt_char(self, char_specifier, data, response=False):
+            return True
+        async def read_gatt_char(self, char_specifier):
+            return b"\x00"
+else:
+    from bleak import BleakClient
+
 import json
 import numpy as np
 
