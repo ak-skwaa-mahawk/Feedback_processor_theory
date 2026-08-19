@@ -8,7 +8,7 @@ Dependencies: numpy, scipy, sklearn
 import numpy as np
 from scipy import signal
 from scipy.fft import fft, fftfreq
-from sklearn.metrics import mutual_info_score
+# from sklearn.metrics import mutual_info_score
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
