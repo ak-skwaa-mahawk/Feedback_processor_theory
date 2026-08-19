@@ -118,7 +118,7 @@ class TOFTScrapeDetector:
         fft_vals = np.abs(fft(signal_data))
         
         # Find power in target frequency band (±2 Hz)
-        target_band = (freqs >= self.target_freq - 2) & (freqs <= self.target_freq + 2)
+        target_band = (np.abs(freqs) >= self.target_freq - 2) & (np.abs(freqs) <= self.target_freq + 2)
         target_power = np.sum(fft_vals[target_band]**2)
         total_power = np.sum(fft_vals**2)
         
