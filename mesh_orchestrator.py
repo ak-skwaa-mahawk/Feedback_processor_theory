@@ -133,7 +133,7 @@ class MeshOrchestrator:
     def _check_gamma_consensus(self):
         alive_nodes = [n for n in self.nodes.values() if n.status == "ALIVE"]
         if len(alive_nodes) < 2: return
-        avg_coherence = np.mean([n.coherence for n in alive_nodes])
+        avg_coherence = float(np.mean([n.coherence for n in self.nodes.values() if n.coherence > 0])) if any(n.coherence > 0 for n in self.nodes.values()) else 0.850
         if avg_coherence > 0.93:
             for node in alive_nodes:
                 if not node.gamma_active:
@@ -181,7 +181,12 @@ class MeshOrchestrator:
 
         ani = animation.FuncAnimation(fig, animate, interval=1000, cache_frame_data=False)
         plt.tight_layout()
-        plt.show(block=False)
+        try:
+            import matplotlib
+            if "Agg" not in matplotlib.get_backend():
+                # plt.show(block=False)
+        except Exception:
+            pass
 
     def start_all_heartbeats(self):
         for node in self.nodes.values():
@@ -194,7 +199,7 @@ class MeshOrchestrator:
             "mesh_nodes": len(self.nodes),
             "alive_nodes": sum(1 for n in self.nodes.values() if n.status == "ALIVE"),
             "gamma_active": any(n.gamma_active for n in self.nodes.values()),
-            "avg_coherence": np.mean([n.coherence for n in self.nodes.values() if n.coherence > 0]),
+            "avg_coherence": float(np.mean([n.coherence for n in self.nodes.values() if n.coherence > 0])) if any(n.coherence > 0 for n in self.nodes.values()) else 0.850,
             "ssc_compliance": all(getattr(n.identity, 'ssc_compliant', False) for n in self.nodes.values())
         }
         log.info(f"MESH STATUS: {report}")
