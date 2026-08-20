@@ -6,12 +6,27 @@ from __future__ import annotations
 
 __version__ = "0.1.0"
 
-from fpt.events import ProjectionEvent, EventDispatcher
-from fpt.adapters import SovereignLedgerAdapter, TordialManifoldAdapter
+from .events import ProjectionEvent, EventDispatcher
+from .adapters import SovereignLedgerAdapter, TordialManifoldAdapter
 
-# Optional fallback for local dev environment
+# Canonical engine exports
 try:
     from living_zero_core import *
+except ImportError:
+    pass
+
+try:
+    from living_zero_projection import OwnershipProjector, OnlineProjectionMemory
+except ImportError:
+    pass
+
+try:
+    from async_projection_service import AsyncProjectionService
+except ImportError:
+    pass
+
+try:
+    from async_dispatch_pipeline import AsyncWorkerPool
 except ImportError:
     pass
 
@@ -21,4 +36,8 @@ __all__ = [
     "EventDispatcher",
     "SovereignLedgerAdapter",
     "TordialManifoldAdapter",
+    "OwnershipProjector",
+    "OnlineProjectionMemory",
+    "AsyncProjectionService",
+    "AsyncWorkerPool",
 ]
