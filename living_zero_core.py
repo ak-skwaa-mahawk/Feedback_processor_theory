@@ -74,7 +74,7 @@ class OwnershipMemory:
         if self.weight_decay > 0:
             self.W *= (1.0 - self.weight_decay)
         self.W = 0.5 * (self.W + self.W.T)
-    def recall_iter(self, x0, steps=10, bias_tag=None, beta=0.0, activation=np.tanh):
+    def recall_iter(self, x0, steps=10, bias_tag=None, beta=0.0, kappa=150.0, activation=np.tanh):
         x = np.array(x0, dtype=float)
         Phi = None
         if bias_tag is not None:
@@ -85,7 +85,7 @@ class OwnershipMemory:
             u = self.W @ x
             if Phi is not None and beta != 0.0:
                 u = (np.eye(self.N) + beta * Phi) @ u
-            x = normalize(activation(u))
+            x = normalize(activation(kappa * u))
         return x
     def selective_revoke(self, raw_tag, rho=1.0):
         enc = OwnershipEncoder(d=self.Oproj.d)
