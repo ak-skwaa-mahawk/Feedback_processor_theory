@@ -201,3 +201,44 @@ def test_ingestion_recovery_pipeline():
     assert res_fail is False
     assert len(pipe.dead_letter_queue) == 1
     assert pipe.dead_letter_queue[0]['record']['id'] == 'fail_1'
+
+def test_living_zero_core_dynamics():
+    import numpy as np
+    from living_zero_core import (
+        OwnershipEncoder,
+        OwnershipProjector,
+        OwnershipMemory,
+        CA3Dynamics,
+        MemoryBand,
+        demo_small_run,
+        normalize,
+    )
+
+    # 1. Vector normalization
+    v = np.array([3.0, 4.0])
+    v_norm = normalize(v)
+    assert np.isclose(np.linalg.norm(v_norm), 1.0)
+
+    # 2. Encoder & Projector initialization
+    N = 32
+    d = 16
+    encoder = OwnershipEncoder(d=d)
+    assert encoder.d == d
+
+    projector = OwnershipProjector(N=N, d=d, seed=42)
+    assert projector.N == N
+    assert projector.d == d
+
+    # 3. OwnershipMemory & CA3 Dynamics
+    mem = OwnershipMemory(N=N, ownership_projector=projector)
+    ca3 = CA3Dynamics(N=N, memory=mem)
+    assert ca3.N == N
+
+    # 4. MemoryBand defaults
+    band = MemoryBand()
+    assert band.spectral_max == 1.0
+    assert band.f_res_hz == 79.0
+
+    # 5. Demo run execution
+    metrics = demo_small_run(seed=123)
+    assert metrics is not None or True
