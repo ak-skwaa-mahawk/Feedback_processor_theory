@@ -28,3 +28,26 @@ def evaluate_capacity_scaling(N: int = 512, d: int = 64, P_list: list[int] = [10
 
 if __name__ == "__main__":
     evaluate_capacity_scaling()
+
+def evaluate_revocation_scaling(N: int = 512, d: int = 64, P: int = 50, n_revoke: int = 10):
+    from living_zero_projection import OnlineProjectionMemory
+    rng = np.random.RandomState(42)
+    O = OwnershipProjector(N=N, d=d, seed=42)
+    mem = OnlineProjectionMemory(N=N, ownership_projector=O)
+
+    patterns = [normalize(rng.normal(size=(N,))) for _ in range(P)]
+    for i, p in enumerate(patterns):
+        mem.encode(p, raw_tag=f"owner:{i}")
+
+    for i in range(n_revoke):
+        mem.selective_revoke(f"owner:{i}")
+
+    revoked_sims = [float(np.dot(mem.recall(patterns[i]), patterns[i])) for i in range(n_revoke)]
+    retained_sims = [float(np.dot(mem.recall(patterns[i]), patterns[i])) for i in range(n_revoke, P)]
+
+    print(f"Revocation Benchmark (Total={P}, Revoked={n_revoke}):")
+    print(f"  Mean Revoked Target Similarity:  {np.mean(revoked_sims):.4f}")
+    print(f"  Mean Retained Target Similarity: {np.mean(retained_sims):.4f}")
+
+if __name__ == '__main__':
+    evaluate_revocation_scaling()

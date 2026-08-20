@@ -39,4 +39,7 @@ class OnlineProjectionMemory:
             u = enc.encode(bias_tag)
             Phi, _ = self.Oproj.projector(u)
             rec = (np.eye(self.N) + beta * Phi) @ rec
-        return normalize(rec)
+        norm = np.linalg.norm(rec)
+        if norm < 0.5:
+            return np.zeros_like(rec)
+        return rec / norm
