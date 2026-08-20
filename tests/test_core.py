@@ -83,3 +83,19 @@ def test_audit_memory_state_report():
     assert report["sym_error"] < 1e-12
     assert report["max_projector_residual"] < 1e-12
     assert report["within_spectral_band"]
+
+def test_projection_rule_continuous_capacity():
+    from living_zero_core import normalize, MemoryBand
+    N, P = 256, 30
+    rng = np.random.RandomState(42)
+    band = MemoryBand()
+
+    X = np.array([normalize(rng.normal(size=(N,))) for _ in range(P)])
+    W = X.T @ np.linalg.pinv(X @ X.T) @ X
+
+    for p in X:
+        cue = normalize(p + 0.3 * normalize(rng.normal(size=(N,))))
+        rec = normalize(W @ cue)
+        assert float(np.dot(rec, p)) > 0.95
+        status = band.check_state(rec, p, W)
+        assert status["in_angular_band"]

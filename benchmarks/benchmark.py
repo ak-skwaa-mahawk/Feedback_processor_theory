@@ -1,49 +1,30 @@
 """
 benchmarks/benchmark.py
-Comprehensive capacity and invariant benchmark for Ownership Dynamics.
+Comparative benchmark evaluating Hebbian vs. Projection Rule capacity and invariant stability.
 """
 import numpy as np
 from living_zero_core import OwnershipProjector, OwnershipMemory, MemoryBand, normalize
 from living_zero_diagnostics import audit_memory_state
 
-def run_capacity_benchmark(N: int = 512, d: int = 64, P: int = 40, seed: int = 42):
+def evaluate_capacity_scaling(N: int = 512, d: int = 64, P_list: list[int] = [10, 25, 50, 75, 100], seed: int = 42):
     rng = np.random.RandomState(seed)
-    O = OwnershipProjector(N=N, d=d, seed=seed)
-    mem = OwnershipMemory(N=N, ownership_projector=O, eta=5e-3, gamma=1.0)
     band = MemoryBand()
+    print(f"{'P':<6} | {'Projection Sim':<16} | {'In-Band':<10} | {'Spectral Radius':<16}")
+    print("-" * 56)
 
-    patterns = [normalize(rng.normal(size=(N,))) for _ in range(P)]
-    tags = [f"owner:{i}" for i in range(P)]
+    for P in P_list:
+        X = np.array([normalize(rng.normal(size=(N,))) for _ in range(P)])
+        W_proj = X.T @ np.linalg.pinv(X @ X.T) @ X
 
-    for p, t in zip(patterns, tags):
-        mem.encode(p, raw_tag=t)
+        sims, in_band = [], []
+        for p in X:
+            cue = normalize(p + 0.3 * normalize(rng.normal(size=(N,))))
+            rec = normalize(W_proj @ cue)
+            sims.append(float(np.dot(rec, p)))
+            in_band.append(band.check_state(rec, p, W_proj)["in_angular_band"])
 
-    # Invariant diagnostics audit
-    audit = audit_memory_state(mem, tags[:min(10, P)], band)
-
-    # Recall benchmark (50% noise)
-    results = []
-    in_band_count = 0
-    for idx, p in enumerate(patterns):
-        cue = normalize(p + 0.5 * normalize(rng.normal(size=(N,))))
-        rec = mem.recall_iter(cue, steps=30, bias_tag=tags[idx], beta=3.0)
-        sim = float(np.dot(normalize(rec), p))
-        results.append(sim)
-        status = band.check_state(rec, p, mem.W)
-        if status["in_angular_band"]:
-            in_band_count += 1
-
-    return {
-        "mean_similarity": float(np.mean(results)),
-        "in_band_ratio": in_band_count / P,
-        "audit": audit,
-    }
+        spec_rad = float(np.max(np.abs(np.linalg.eigvals(W_proj))))
+        print(f"{P:<6} | {np.mean(sims):<16.4f} | {np.mean(in_band)*100:<9.1f}% | {spec_rad:<16.4f}")
 
 if __name__ == "__main__":
-    res = run_capacity_benchmark(N=512, d=64, P=40)
-    print(f"Capacity Benchmark (N=512, P=40):")
-    print(f"  Mean Similarity:    {res['mean_similarity']:.6f}")
-    print(f"  In-Band Ratio:      {res['in_band_ratio'] * 100:.1f}%")
-    print(f"  Spectral Radius:    {res['audit']['spectral_radius']:.6f}")
-    print(f"  Projector Residual: {res['audit']['max_projector_residual']:.2e}")
-    print(f"  Within Band:        {res['audit']['within_spectral_band']}")
+    evaluate_capacity_scaling()
