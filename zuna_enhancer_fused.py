@@ -103,7 +103,7 @@ class ZunaLiveEnhancerFused:
                 print(f"🌊 ZUNA fused → {enhanced.shape[0]}ch @ {self.target_fs}Hz (every {self.enhance_interval}s)")
                 return enhanced
             except Exception as e:
-                print(f"⚠️ ZUNA fusion error (first run downloads \~1.2 GB model): {e}")
+                print(f"⚠️ ZUNA fusion error (first run downloads ~1.2 GB model): {e}")
                 return None
 
     def start_background(self, buffer_callback):

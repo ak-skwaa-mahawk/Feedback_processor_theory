@@ -109,7 +109,7 @@ setInterval(() => {
     
     // Flame intensity via WebKit CSS
     const intensity = Math.min(1, d.coherence * 1.8);
-    document.getElementById('flame').style.filter = `brightness(\( {1 + intensity}) hue-rotate( \){intensity*60}deg)`;
+    document.getElementById('flame').style.filter = `brightness( {1 + intensity}) hue-rotate({intensity*60}deg)`;
   });
 }, 900);
 </script>

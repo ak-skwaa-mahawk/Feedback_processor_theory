@@ -106,7 +106,7 @@ setInterval(()=>{fetch('/data').then(r=>r.json()).then(d=>{
   document.getElementById('temp').textContent=d.temp;
   document.getElementById('phone').textContent=d.phone_signal;
   document.getElementById('status').textContent=d.status;
-  const i=Math.min(1,d.coherence*1.9); document.getElementById('flame').style.filter=`brightness(\( {1+i}) hue-rotate( \){i*70}deg)`;
+  const i=Math.min(1,d.coherence*1.9); document.getElementById('flame').style.filter=`brightness( {1+i}) hue-rotate({i*70}deg)`;
 });},850);
 </script></body></html>"""
 
