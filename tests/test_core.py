@@ -269,3 +269,21 @@ async def test_async_worker_pool_pipeline():
     assert sorted(processed) == [10, 20, 40]
     assert len(pool.recovery.dead_letter_queue) == 1
     assert pool.recovery.dead_letter_queue[0]["record"]["id"] == "t3"
+
+@pytest.mark.asyncio
+async def test_async_projection_service_pipeline():
+    from async_projection_service import AsyncProjectionService
+    import numpy as np
+
+    d = 16
+    service = AsyncProjectionService(d=d, num_workers=2)
+    await service.start()
+
+    vectors = [np.random.randn(d) for _ in range(5)]
+    vectors = [v / np.linalg.norm(v) for v in vectors]
+
+    await service.ingest_batch(vectors, action="add")
+    await service.shutdown()
+
+    assert service.memory.current_patterns == 5
+    assert len(service.pool.recovery.dead_letter_queue) == 0
