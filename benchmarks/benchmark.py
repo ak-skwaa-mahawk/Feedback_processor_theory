@@ -25,7 +25,7 @@ def run_capacity_benchmark(N: int = 512, d: int = 64, P: int = 40, seed: int = 4
     results = []
     in_band_count = 0
     for idx, p in enumerate(patterns):
-        cue = normalize(p + 0.5 * rng.normal(size=(N,)))
+        cue = normalize(p + 0.5 * normalize(rng.normal(size=(N,))))
         rec = mem.recall_iter(cue, steps=30, bias_tag=tags[idx], beta=3.0)
         sim = float(np.dot(normalize(rec), p))
         results.append(sim)
