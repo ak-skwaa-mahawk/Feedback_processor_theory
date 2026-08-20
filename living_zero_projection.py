@@ -23,6 +23,14 @@ class OnlineProjectionMemory:
         if raw_tag is not None:
             self.tags[raw_tag] = v
 
+    def selective_revoke(self, raw_tag: str) -> None:
+        if raw_tag in self.tags:
+            v = self.tags[raw_tag]
+            P_v = np.outer(v, v)
+            self.P_mat = (np.eye(self.N) - P_v) @ self.P_mat @ (np.eye(self.N) - P_v)
+            self.P_mat = 0.5 * (self.P_mat + self.P_mat.T)
+            del self.tags[raw_tag]
+
     def recall(self, cue: np.ndarray, bias_tag: str | None = None, beta: float = 0.0) -> np.ndarray:
         x = np.array(cue, dtype=float)
         rec = self.P_mat @ x

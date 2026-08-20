@@ -123,3 +123,49 @@ def test_online_projection_memory():
         sim = float(np.dot(rec, p))
         assert sim > 0.95
         assert band.check_state(rec, p, mem.P_mat)["in_angular_band"]
+
+def test_online_projection_revocation():
+    from living_zero_core import OwnershipProjector, normalize
+    from living_zero_projection import OnlineProjectionMemory
+    N, d = 256, 32
+    rng = np.random.RandomState(101)
+    O = OwnershipProjector(N=N, d=d, seed=101)
+    mem = OnlineProjectionMemory(N=N, ownership_projector=O)
+
+    p0 = normalize(rng.normal(size=(N,)))
+    p1 = normalize(rng.normal(size=(N,)))
+    mem.encode(p0, raw_tag="owner:alice")
+    mem.encode(p1, raw_tag="owner:bob")
+
+    # Add selective revocation method to OnlineProjectionMemory if not present
+    # Revoke alice's pattern subspace: P <- (I - p0 p0^T) P (I - p0 p0^T)
+    P_alice = np.outer(p0, p0)
+    mem.P_mat = (np.eye(N) - P_alice) @ mem.P_mat @ (np.eye(N) - P_alice)
+    mem.P_mat = 0.5 * (mem.P_mat + mem.P_mat.T)
+
+    rec0 = mem.recall(p0)
+    rec1 = mem.recall(p1)
+
+    assert float(np.dot(rec0, p0)) < 0.1
+    assert float(np.dot(rec1, p1)) > 0.95
+
+def test_online_projection_revocation():
+    from living_zero_core import OwnershipProjector, normalize
+    from living_zero_projection import OnlineProjectionMemory
+    N, d = 256, 32
+    rng = np.random.RandomState(101)
+    O = OwnershipProjector(N=N, d=d, seed=101)
+    mem = OnlineProjectionMemory(N=N, ownership_projector=O)
+
+    p0 = normalize(rng.normal(size=(N,)))
+    p1 = normalize(rng.normal(size=(N,)))
+    mem.encode(p0, raw_tag="owner:alice")
+    mem.encode(p1, raw_tag="owner:bob")
+
+    mem.selective_revoke("owner:alice")
+
+    rec0 = mem.recall(p0)
+    rec1 = mem.recall(p1)
+
+    assert float(np.dot(rec0, p0)) < 0.1
+    assert float(np.dot(rec1, p1)) > 0.95
