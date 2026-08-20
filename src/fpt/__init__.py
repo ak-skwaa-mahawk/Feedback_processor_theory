@@ -1,15 +1,24 @@
 """
-FPT Canonical Kernel & Runtime Interface
-Preserves access to current verified production components.
+Feedback Processor Theory (FPT)
+Deterministic orthogonal projections, async dispatch pipelines, and ledger persistence.
 """
-from living_zero_core import *
-from living_zero_projection import OnlineProjectionMemory, OwnershipProjector
-from async_projection_service import AsyncProjectionService
-from async_dispatch_pipeline import AsyncWorkerPool
+from __future__ import annotations
+
+__version__ = "0.1.0"
+
+from fpt.events import ProjectionEvent, EventDispatcher
+from fpt.adapters import SovereignLedgerAdapter, TordialManifoldAdapter
+
+# Optional fallback for local dev environment
+try:
+    from living_zero_core import *
+except ImportError:
+    pass
 
 __all__ = [
-    "OnlineProjectionMemory",
-    "OwnershipProjector",
-    "AsyncProjectionService",
-    "AsyncWorkerPool",
+    "__version__",
+    "ProjectionEvent",
+    "EventDispatcher",
+    "SovereignLedgerAdapter",
+    "TordialManifoldAdapter",
 ]
