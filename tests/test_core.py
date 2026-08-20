@@ -242,3 +242,30 @@ def test_living_zero_core_dynamics():
     # 5. Demo run execution
     metrics = demo_small_run(seed=123)
     assert metrics is not None or True
+
+import pytest
+
+@pytest.mark.asyncio
+async def test_async_worker_pool_pipeline():
+    from async_dispatch_pipeline import AsyncWorkerPool
+
+    processed = []
+
+    def task_handler(payload):
+        if payload.get("corrupt"):
+            raise ValueError("Corrupted data chunk")
+        processed.append(payload["val"])
+
+    pool = AsyncWorkerPool(num_workers=2, max_retries=2, base_backoff=0.01)
+    await pool.start(handler=task_handler)
+
+    await pool.submit("t1", {"val": 10, "corrupt": False})
+    await pool.submit("t2", {"val": 20, "corrupt": False})
+    await pool.submit("t3", {"val": 30, "corrupt": True})
+    await pool.submit("t4", {"val": 40, "corrupt": False})
+
+    await pool.shutdown()
+
+    assert sorted(processed) == [10, 20, 40]
+    assert len(pool.recovery.dead_letter_queue) == 1
+    assert pool.recovery.dead_letter_queue[0]["record"]["id"] == "t3"
