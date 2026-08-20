@@ -169,3 +169,35 @@ def test_online_projection_revocation():
 
     assert float(np.dot(rec0, p0)) < 0.1
     assert float(np.dot(rec1, p1)) > 0.95
+
+def test_ingestion_recovery_pipeline():
+    from ingestion_recovery import IngestionPipeline
+
+    pipe = IngestionPipeline(max_retries=3, base_delay=0.01)
+    
+    # 1. Immediate success
+    res_ok = pipe.process_record_with_recovery({'id': 'ok_1'}, lambda r: None)
+    assert res_ok is True
+    assert len(pipe.dead_letter_queue) == 0
+
+    # 2. Transient failure recovered on attempt 2
+    attempts = 0
+    def transient_handler(r):
+        nonlocal attempts
+        attempts += 1
+        if attempts < 2:
+            raise ConnectionResetError("Temporary drop")
+
+    res_retry = pipe.process_record_with_recovery({'id': 'retry_1'}, transient_handler)
+    assert res_retry is True
+    assert attempts == 2
+    assert len(pipe.dead_letter_queue) == 0
+
+    # 3. Permanent failure routed to DLQ
+    def failing_handler(r):
+        raise ValueError("Invalid format")
+
+    res_fail = pipe.process_record_with_recovery({'id': 'fail_1'}, failing_handler)
+    assert res_fail is False
+    assert len(pipe.dead_letter_queue) == 1
+    assert pipe.dead_letter_queue[0]['record']['id'] == 'fail_1'
