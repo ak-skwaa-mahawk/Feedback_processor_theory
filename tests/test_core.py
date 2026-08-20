@@ -99,3 +99,27 @@ def test_projection_rule_continuous_capacity():
         assert float(np.dot(rec, p)) > 0.95
         status = band.check_state(rec, p, W)
         assert status["in_angular_band"]
+
+def test_online_projection_memory():
+    from living_zero_core import OwnershipProjector, normalize, MemoryBand
+    from living_zero_projection import OnlineProjectionMemory
+    N, d, P = 256, 32, 20
+    rng = np.random.RandomState(99)
+    O = OwnershipProjector(N=N, d=d, seed=99)
+    mem = OnlineProjectionMemory(N=N, ownership_projector=O)
+    band = MemoryBand()
+
+    patterns = [normalize(rng.normal(size=(N,))) for _ in range(P)]
+    for i, p in enumerate(patterns):
+        mem.encode(p, raw_tag=f"owner:{i}")
+
+    # Verify projector idempotence and symmetry
+    assert np.allclose(mem.P_mat @ mem.P_mat, mem.P_mat, atol=1e-10)
+    assert np.allclose(mem.P_mat, mem.P_mat.T, atol=1e-10)
+
+    for i, p in enumerate(patterns):
+        cue = normalize(p + 0.3 * normalize(rng.normal(size=(N,))))
+        rec = mem.recall(cue, bias_tag=f"owner:{i}", beta=0.5)
+        sim = float(np.dot(rec, p))
+        assert sim > 0.95
+        assert band.check_state(rec, p, mem.P_mat)["in_angular_band"]
