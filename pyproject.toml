@@ -1,11 +1,18 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "living-zero-core"
+name = "feedback-processor-theory"
 version = "0.1.0"
-description = "Ownership Tag Algebra + CA3 dynamics (Living Zero attractor)"
-authors = [{name="generated", email="dev@example.com"}]
+description = "Deterministic orthogonal projections, async dispatch pipelines, and cryptographic state verification."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.22.0",
+    "scipy>=1.8.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["fpt", "fpt.*"]
