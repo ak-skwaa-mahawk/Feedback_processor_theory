@@ -9,26 +9,20 @@ __version__ = "0.1.0"
 from .events import ProjectionEvent, EventDispatcher
 from .adapters import SovereignLedgerAdapter, TordialManifoldAdapter
 
-# Canonical engine exports
-try:
-    from living_zero_core import *
-except ImportError:
-    pass
+# Canonical algebra & memory dynamics
+from .algebra.living_zero_core import (
+    normalize,
+    OwnershipEncoder,
+    OwnershipProjector,
+    OwnershipMemory,
+    CA3Dynamics,
+    demo_small_run,
+)
+from .algebra.living_zero_projection import OnlineProjectionMemory
 
-try:
-    from living_zero_projection import OwnershipProjector, OnlineProjectionMemory
-except ImportError:
-    pass
-
-try:
-    from async_projection_service import AsyncProjectionService
-except ImportError:
-    pass
-
-try:
-    from async_dispatch_pipeline import AsyncWorkerPool
-except ImportError:
-    pass
+# Canonical runtime & worker services
+from .runtime.async_dispatch_pipeline import AsyncWorkerPool, ProcessingTask
+from .runtime.async_projection_service import AsyncProjectionService
 
 __all__ = [
     "__version__",
@@ -36,8 +30,14 @@ __all__ = [
     "EventDispatcher",
     "SovereignLedgerAdapter",
     "TordialManifoldAdapter",
+    "normalize",
+    "OwnershipEncoder",
     "OwnershipProjector",
+    "OwnershipMemory",
+    "CA3Dynamics",
     "OnlineProjectionMemory",
-    "AsyncProjectionService",
     "AsyncWorkerPool",
+    "ProcessingTask",
+    "AsyncProjectionService",
+    "demo_small_run",
 ]

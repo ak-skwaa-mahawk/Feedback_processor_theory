@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "package": {
+    "name": "fpt",
+    "root": "src/fpt",
+    "version": "0.1.0",
+    "status": "canonical"
+  },
+  "authority": {
+    "runtime": "src/fpt",
+    "packaging": "pyproject.toml",
+    "test_suite": "tests",
+    "dependencies": "requirements.txt"
+  },
+  "subsystem_classification": {
+    "canonical": {
+      "path": "src/fpt",
+      "authority": "authoritative",
+      "guarantee": "semver_stable"
+    },
+    "integrations": {
+      "sovereign_ledger": {
+        "adapter": "src/fpt/adapters.py:SovereignLedgerAdapter",
+        "target": "Human_inthe_loop/sovereign_ledger.db"
+      },
+      "tordial_manifold": {
+        "adapter": "src/fpt/adapters.py:TordialManifoldAdapter",
+        "target": "Tordial-GS-_Manifold/tordial_manifold.db"
+      }
+    },
+    "experimental": {
+      "patterns": ["fpt_*.py", "fpt_*.v", "fpt_*.c"],
+      "authority": "non_authoritative",
+      "guarantee": "unstable_research"
+    },
+    "archive": {
+      "patterns": ["archive/*", "docs/*"],
+      "authority": "provenance_only",
+      "guarantee": "immutable_historical"
+    }
+  },
+  "invariants": {
+    "boundary_rule": "src/fpt must never import from experimental, root-level scripts, or archive paths.",
+    "algebra_subspace": "Idempotent, QR-orthonormalized projection operators (Phi^2 == Phi).",
+    "runtime_fault_tolerance": "Async worker queues must handle transient failure via exponential backoff and DLQ routing."
+  }
+}
