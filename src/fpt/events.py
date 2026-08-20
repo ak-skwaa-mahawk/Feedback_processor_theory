@@ -4,7 +4,7 @@ Decoupled event interface for projection telemetry and ledger ingestion.
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import runtime_checkable, Any, Dict, List, Optional, Protocol
 import time
 
 
@@ -20,6 +20,7 @@ class ProjectionEvent:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
+@runtime_checkable
 class LedgerListener(Protocol):
     def on_projection(self, event: ProjectionEvent) -> None:
         """Handle incoming projection event for ledger inscription or telemetry."""
