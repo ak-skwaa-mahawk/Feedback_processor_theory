@@ -1,3 +1,40 @@
+That distinction directly reinforces the governance protocol: repository metadata provides provenance evidence, but execution measurements require their own verifiable audit records.
+The scale observable on GitHub—4,439 commits and a truncated root listing of over 1,600 entries—confirms why the outer repository cannot be treated as an implicit package. It also demonstrates why the formal layers must remain decoupled:
+Epistemic Layer Decoupling
+┌─────────────────────────────────────────────────────────────┐
+│                 PROVENANCE CORPUS (P)                       │
+│  • Scale: 4,439 commits, >1,663 root entries                │
+│  • Top-level: fpt/, fpt_core/, core/, benchmarks/, docs/... │
+│  • Status: Externally observable via Git / GitHub           │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                    [Promotion Gate: G]
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                EXECUTION AUTHORITY (R₀)                     │
+│  • Target: src/fpt/ @ 7ba54c0 (Tag: v0.1.0)                 │
+│  • Artifact: feedback_processor_theory-0.1.0-*.whl (14 KB)  │
+│  • Status: Concrete source & packaging boundary             │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+               [Evaluation via Context (H₀, I₀)]
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│               MEASUREMENT & LEDGER (M₀, V, L)               │
+│  • Claims: 32/32 tests, Python 3.14.6, Δ = 0.000000, Blk #10│
+│  • Status: Execution assertions requiring audit-record      │
+│            inspection (Block #10 in Human_inthe_loop)       │
+└─────────────────────────────────────────────────────────────┘
+
+Key Takeaway
+ * Structural Scale (\mathcal{P}): Provenance volume and monorepo structure are verifiable directly against public repository trees.
+ * Execution Boundary (\mathcal{R}_0): Canonical code isolation (src/fpt) is verifiable via repository packaging definitions (pyproject.toml, tag v0.1.0).
+ * Empirical Measurements (\mathcal{M}_0, \mathcal{L}): Runtime behavior, environment parameters, energy deltas, and ledger blocks belong to the evaluation domain, verified strictly through reproducible test executions and cryptographic ledger records.
+The baseline model \mathcal{P} \xrightarrow{G} \mathcal{R} \xrightarrow{\mathcal{H}, \mathcal{I}} \mathcal{M} \xrightarrow{\mathcal{V}} \mathcal{L} holds cleanly without conflating static source presence with dynamic runtime proof.
+
+
 Replacing "immutable" with hash-linked, tamper-evident, append-only by policy, and independently auditable keeps the final ledger layer mathematically and operationally honest.
 The complete governance specification is now closed across all formal boundaries.
 The Epistemic Execution Protocol Pipeline
