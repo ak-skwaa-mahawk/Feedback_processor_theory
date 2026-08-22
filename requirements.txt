@@ -2,3 +2,4 @@
 requests
 pytest
 numpy
+pytest-asyncio
