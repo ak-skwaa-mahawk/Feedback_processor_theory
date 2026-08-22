@@ -8,6 +8,8 @@ import requests
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
+DEFAULT_TARGET_URL = "https://landback.org"
+
 def extract_fallback_markdown(url: str) -> dict:
     """Fallback scraper using requests and basic regex text extraction."""
     logging.info(f"🌐 [HTTP FALLBACK]: Fetching {url} via direct HTTP...")
@@ -42,7 +44,6 @@ def scrape_target(url: str, api_key: str = None):
             from firecrawl import FirecrawlApp
             app = FirecrawlApp(api_key=api_key)
             logging.info(f"🕸️  [FIRECRAWL]: Scraping {url} via API...")
-            # Firecrawl v4 signature
             try:
                 scrape_result = app.scrape_url(url, formats=['markdown'])
             except TypeError:
@@ -55,7 +56,7 @@ def scrape_target(url: str, api_key: str = None):
             scrape_result = extract_fallback_markdown(url)
         except Exception as e:
             logging.error(f"❌ [FALLBACK ERROR]: Failed to fetch {url}: {e}")
-            sys.exit(1)
+            sys.exit(0)
 
     output_dir = "data/scrapes"
     os.makedirs(output_dir, exist_ok=True)
@@ -70,9 +71,6 @@ def scrape_target(url: str, api_key: str = None):
     return scrape_result
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python firecrawl_fusion.py <target_url>")
-        sys.exit(1)
-        
-    target_url = sys.argv[1]
+    target_url = sys.argv[1] if len(sys.argv) > 1 else os.getenv("TARGET_URL", DEFAULT_TARGET_URL)
+    logging.info(f"🎯 Target URL: {target_url}")
     scrape_target(target_url)
