@@ -5,10 +5,14 @@ import json
 import logging
 import re
 import requests
+from typing import List
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-DEFAULT_TARGET_URL = "https://landback.org"
+DEFAULT_TARGETS = [
+    "https://landback.org",
+    "https://example.com"
+]
 
 def extract_fallback_markdown(url: str) -> dict:
     """Fallback scraper using requests and basic regex text extraction."""
@@ -17,13 +21,10 @@ def extract_fallback_markdown(url: str) -> dict:
     resp.raise_for_status()
     html_text = resp.text
 
-    # Extract title and clean basic tags
     title_match = re.search(r'<title>(.*?)</title>', html_text, re.IGNORECASE)
     title = title_match.group(1).strip() if title_match else "Scraped Document"
     
-    # Strip script and style tags
     clean_text = re.sub(r'<(script|style).*?</\1>', '', html_text, flags=re.DOTALL | re.IGNORECASE)
-    # Strip remaining HTML tags
     clean_text = re.sub(r'<[^>]+>', ' ', clean_text)
     clean_text = re.sub(r'\s+', ' ', clean_text).strip()
 
@@ -35,7 +36,7 @@ def extract_fallback_markdown(url: str) -> dict:
         "source": "http_fallback"
     }
 
-def scrape_target(url: str, api_key: str = None):
+def scrape_target(url: str, api_key: str = None) -> dict:
     api_key = api_key or os.getenv("FIRECRAWL_API_KEY")
     scrape_result = None
 
@@ -56,7 +57,7 @@ def scrape_target(url: str, api_key: str = None):
             scrape_result = extract_fallback_markdown(url)
         except Exception as e:
             logging.error(f"❌ [FALLBACK ERROR]: Failed to fetch {url}: {e}")
-            sys.exit(0)
+            return None
 
     output_dir = "data/scrapes"
     os.makedirs(output_dir, exist_ok=True)
@@ -70,7 +71,46 @@ def scrape_target(url: str, api_key: str = None):
     logging.info(f"✅ [SCRAPE COMPLETE]: Output written to {output_path}")
     return scrape_result
 
+def resolve_target_urls(arg_or_env: str) -> List[str]:
+    """Resolves target input from file paths, comma-separated strings, or env variables."""
+    if not arg_or_env:
+        return DEFAULT_TARGETS
+
+    # 1. File path target
+    if os.path.isfile(arg_or_env):
+        logging.info(f"📂 [CONFIG INGEST]: Loading target URLs from file: {arg_or_env}")
+        if arg_or_env.endswith(".json"):
+            with open(arg_or_env, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return [u.strip() for u in data if isinstance(u, str) and u.strip()]
+                elif isinstance(data, dict) and "urls" in data:
+                    return [u.strip() for u in data["urls"] if isinstance(u, str) and u.strip()]
+        else:
+            with open(arg_or_env, "r", encoding="utf-8") as f:
+                return [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
+    # 2. Comma-separated list
+    if "," in arg_or_env:
+        return [u.strip() for u in arg_or_env.split(",") if u.strip()]
+
+    # 3. Single URL string
+    return [arg_or_env.strip()]
+
+def run_batch_scrape(target_spec: str = None):
+    raw_spec = target_spec or os.getenv("TARGET_URL") or os.getenv("TARGET_FILE")
+    targets = resolve_target_urls(raw_spec)
+    logging.info(f"🚀 Initializing batch scrape for {len(targets)} target(s)...")
+
+    success_count = 0
+    for idx, url in enumerate(targets, 1):
+        logging.info(f"[{idx}/{len(targets)}] Processing: {url}")
+        res = scrape_target(url)
+        if res:
+            success_count += 1
+
+    logging.info(f"✨ Batch scrape complete: {success_count}/{len(targets)} succeeded.")
+
 if __name__ == "__main__":
-    target_url = sys.argv[1] if len(sys.argv) > 1 else os.getenv("TARGET_URL", DEFAULT_TARGET_URL)
-    logging.info(f"🎯 Target URL: {target_url}")
-    scrape_target(target_url)
+    cli_arg = sys.argv[1] if len(sys.argv) > 1 else None
+    run_batch_scrape(cli_arg)
