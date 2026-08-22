@@ -1,26 +1,16 @@
-"scripts": {
-  "test": "jest",
-  "test:watch": "jest --watch"
-},
-"devDependencies": {
-  "@types/jest": "^29.5.0",
-  "jest": "^29.5.0",
-  "ts-jest": "^29.1.0"
-}
 {
-  "dependencies": {
-    "next": "16.0.7",          // ← safe (or 15.5.7 if you’re stuck on 15.x)
-    "react": "19.2.1",         // ← safe
-    "react-dom": "19.2.1",     // ← safe
-    // ... your other deps
+  "name": "feedback-processor-theory",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "devDependencies": {
-    // if you have these, also update:
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.1",
-    "typescript": "^5.8.0"    // or whatever you use
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
   }
 }
-"next": "latest",
-"react": "latest",
-"react-dom": "latest"
